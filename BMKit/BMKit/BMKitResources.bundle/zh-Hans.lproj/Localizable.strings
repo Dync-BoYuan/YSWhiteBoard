@@ -1,0 +1,31 @@
+/*
+ Meetings.strings
+ Meetings
+ 
+ Created by macmini on 15/2/3.
+ Copyright (c) 2015年 macmini. All rights reserved.
+ */
+
+"Prompt.OK" = "确定";
+"Prompt.Cancel" = "取消";
+
+"ToolBar.Previous" = "上一个";
+"ToolBar.Next" = "下一个";
+"ToolBar.Delete" = "删除";
+"ToolBar.Edit" = "编辑";
+
+"EmptyView.NoData" = "该页面空空如也...";
+"EmptyView.NetworkError" = "网络链接暂时失败...";
+"EmptyView.OtherError" = "抱歉，页面出现问题了";
+"EmptyView.FreshText" = "轻点屏幕即可刷新重试";
+"EmptyView.ButtonText" = "点击重试";
+
+"Fresh.Default.NormalHeaderText" = "下拉可以刷新";
+"Fresh.Default.WillLoadHeaderText" = "松开立即刷新";
+"Fresh.Default.LoadingHeaderText" = "正在刷新数据中...";
+
+"Fresh.Default.NormalFooterText" = "上拉可以加载更多";
+"Fresh.Default.AutoNormalFooterText" = "上拉或点击可以加载更多";
+"Fresh.Default.WilllLoadFooterText" = "松开立即加载更多";
+"Fresh.Default.LoadingFooterText" = "正在加载更多的数据...";
+"Fresh.Default.NoMoredataFooterText" = "已经全部加载完毕";
