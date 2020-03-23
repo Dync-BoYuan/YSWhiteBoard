@@ -16,6 +16,16 @@
 		87AD160D2427232000EAE233 /* BMKitResources.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 87AD16072427232000EAE233 /* BMKitResources.bundle */; };
 		87AD160E2427232000EAE233 /* BMDatePicker.nib in Resources */ = {isa = PBXBuildFile; fileRef = 87AD16082427232000EAE233 /* BMDatePicker.nib */; };
 		87AD160F2427232000EAE233 /* YSRoomSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 87AD16092427232000EAE233 /* YSRoomSDK.framework */; };
+		87AD16192427554900EAE233 /* YSRoomConfiguration.h in Headers */ = {isa = PBXBuildFile; fileRef = 87AD16172427554900EAE233 /* YSRoomConfiguration.h */; };
+		87AD161A2427554900EAE233 /* YSRoomConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = 87AD16182427554900EAE233 /* YSRoomConfiguration.m */; };
+		87AD162024275E4800EAE233 /* YSWBDrawViewManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 87AD161E24275E4800EAE233 /* YSWBDrawViewManager.h */; };
+		87AD162124275E4800EAE233 /* YSWBDrawViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 87AD161F24275E4800EAE233 /* YSWBDrawViewManager.m */; };
+		87AD162424275E5900EAE233 /* YSWBWebViewManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 87AD162224275E5900EAE233 /* YSWBWebViewManager.h */; };
+		87AD162524275E5900EAE233 /* YSWBWebViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 87AD162324275E5900EAE233 /* YSWBWebViewManager.m */; };
+		87AD162924284E8E00EAE233 /* YSRoomUtil.h in Headers */ = {isa = PBXBuildFile; fileRef = 87AD162724284E8E00EAE233 /* YSRoomUtil.h */; };
+		87AD162A24284E8E00EAE233 /* YSRoomUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 87AD162824284E8E00EAE233 /* YSRoomUtil.m */; };
+		87AD162D2428536200EAE233 /* YSWKWebViewWeakDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 87AD162B2428536200EAE233 /* YSWKWebViewWeakDelegate.h */; };
+		87AD162E2428536200EAE233 /* YSWKWebViewWeakDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 87AD162C2428536200EAE233 /* YSWKWebViewWeakDelegate.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -30,6 +40,19 @@
 		87AD16072427232000EAE233 /* BMKitResources.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = BMKitResources.bundle; sourceTree = "<group>"; };
 		87AD16082427232000EAE233 /* BMDatePicker.nib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; path = BMDatePicker.nib; sourceTree = "<group>"; };
 		87AD16092427232000EAE233 /* YSRoomSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = YSRoomSDK.framework; sourceTree = "<group>"; };
+		87AD1610242725EB00EAE233 /* YSWhiteBoardMacro.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YSWhiteBoardMacro.h; sourceTree = "<group>"; };
+		87AD16172427554900EAE233 /* YSRoomConfiguration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YSRoomConfiguration.h; sourceTree = "<group>"; };
+		87AD16182427554900EAE233 /* YSRoomConfiguration.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YSRoomConfiguration.m; sourceTree = "<group>"; };
+		87AD161B2427586700EAE233 /* YSWhiteBoardDefines.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YSWhiteBoardDefines.h; sourceTree = "<group>"; };
+		87AD161E24275E4800EAE233 /* YSWBDrawViewManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YSWBDrawViewManager.h; sourceTree = "<group>"; };
+		87AD161F24275E4800EAE233 /* YSWBDrawViewManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YSWBDrawViewManager.m; sourceTree = "<group>"; };
+		87AD162224275E5900EAE233 /* YSWBWebViewManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YSWBWebViewManager.h; sourceTree = "<group>"; };
+		87AD162324275E5900EAE233 /* YSWBWebViewManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YSWBWebViewManager.m; sourceTree = "<group>"; };
+		87AD16262428449000EAE233 /* YSWhiteBoardManagerDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YSWhiteBoardManagerDelegate.h; sourceTree = "<group>"; };
+		87AD162724284E8E00EAE233 /* YSRoomUtil.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YSRoomUtil.h; sourceTree = "<group>"; };
+		87AD162824284E8E00EAE233 /* YSRoomUtil.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YSRoomUtil.m; sourceTree = "<group>"; };
+		87AD162B2428536200EAE233 /* YSWKWebViewWeakDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YSWKWebViewWeakDelegate.h; sourceTree = "<group>"; };
+		87AD162C2428536200EAE233 /* YSWKWebViewWeakDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YSWKWebViewWeakDelegate.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -65,10 +88,16 @@
 		8732B8D224270E18005BEB99 /* YSWhiteBoard */ = {
 			isa = PBXGroup;
 			children = (
+				87AD16162427554900EAE233 /* YSRoomUtil */,
+				87AD161C24275E3C00EAE233 /* YSWBDrawViewManager */,
+				87AD161D24275E3C00EAE233 /* YSWBWebViewManager */,
 				8732B8D324270E18005BEB99 /* YSWhiteBoard.h */,
-				8732B8D424270E18005BEB99 /* Info.plist */,
+				87AD1610242725EB00EAE233 /* YSWhiteBoardMacro.h */,
+				87AD161B2427586700EAE233 /* YSWhiteBoardDefines.h */,
+				87AD16262428449000EAE233 /* YSWhiteBoardManagerDelegate.h */,
 				87AD15FE242721F000EAE233 /* YSWhiteBoardManager.h */,
 				87AD15FF242721F000EAE233 /* YSWhiteBoardManager.m */,
+				8732B8D424270E18005BEB99 /* Info.plist */,
 			);
 			path = YSWhiteBoard;
 			sourceTree = "<group>";
@@ -94,6 +123,37 @@
 			path = BMKit;
 			sourceTree = "<group>";
 		};
+		87AD16162427554900EAE233 /* YSRoomUtil */ = {
+			isa = PBXGroup;
+			children = (
+				87AD16172427554900EAE233 /* YSRoomConfiguration.h */,
+				87AD16182427554900EAE233 /* YSRoomConfiguration.m */,
+				87AD162724284E8E00EAE233 /* YSRoomUtil.h */,
+				87AD162824284E8E00EAE233 /* YSRoomUtil.m */,
+			);
+			path = YSRoomUtil;
+			sourceTree = "<group>";
+		};
+		87AD161C24275E3C00EAE233 /* YSWBDrawViewManager */ = {
+			isa = PBXGroup;
+			children = (
+				87AD161E24275E4800EAE233 /* YSWBDrawViewManager.h */,
+				87AD161F24275E4800EAE233 /* YSWBDrawViewManager.m */,
+			);
+			path = YSWBDrawViewManager;
+			sourceTree = "<group>";
+		};
+		87AD161D24275E3C00EAE233 /* YSWBWebViewManager */ = {
+			isa = PBXGroup;
+			children = (
+				87AD162224275E5900EAE233 /* YSWBWebViewManager.h */,
+				87AD162324275E5900EAE233 /* YSWBWebViewManager.m */,
+				87AD162B2428536200EAE233 /* YSWKWebViewWeakDelegate.h */,
+				87AD162C2428536200EAE233 /* YSWKWebViewWeakDelegate.m */,
+			);
+			path = YSWBWebViewManager;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -101,8 +161,13 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				87AD162024275E4800EAE233 /* YSWBDrawViewManager.h in Headers */,
+				87AD16192427554900EAE233 /* YSRoomConfiguration.h in Headers */,
 				8732B8D524270E18005BEB99 /* YSWhiteBoard.h in Headers */,
+				87AD162D2428536200EAE233 /* YSWKWebViewWeakDelegate.h in Headers */,
+				87AD162924284E8E00EAE233 /* YSRoomUtil.h in Headers */,
 				87AD1600242721F000EAE233 /* YSWhiteBoardManager.h in Headers */,
+				87AD162424275E5900EAE233 /* YSWBWebViewManager.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -178,7 +243,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				87AD162E2428536200EAE233 /* YSWKWebViewWeakDelegate.m in Sources */,
+				87AD162524275E5900EAE233 /* YSWBWebViewManager.m in Sources */,
+				87AD162124275E4800EAE233 /* YSWBDrawViewManager.m in Sources */,
+				87AD162A24284E8E00EAE233 /* YSRoomUtil.m in Sources */,
 				87AD1601242721F000EAE233 /* YSWhiteBoardManager.m in Sources */,
+				87AD161A2427554900EAE233 /* YSRoomConfiguration.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -236,7 +306,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -291,7 +361,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
