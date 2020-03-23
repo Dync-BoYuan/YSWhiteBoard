@@ -24,6 +24,13 @@ NSString *const YSWhiteBoardPlayBackKey         = @"playback";
 static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 
 @interface YSWhiteBoardManager ()
+<
+    YSWBWebViewManagerDelegate
+>
+
+@property (nonatomic, weak) id <YSWhiteBoardManagerDelegate> wbDelegate;
+/// 配置项
+@property (nonatomic, strong) NSDictionary *configration;
 
 /// 房间数据
 @property (nonatomic, strong) NSDictionary *roomDic;
@@ -170,6 +177,12 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     {
         [self.preLoadingFileCacheMsgPool removeAllObjects];
     }
+}
+
+- (void)registerDelegate:(id <YSWhiteBoardManagerDelegate>)delegate configration:(NSDictionary *)config
+{
+    self.wbDelegate = delegate;
+    self.configration = config;
 }
 
 #pragma mark - 监听课堂 底层通知消息

@@ -396,7 +396,7 @@
     msgDic[@"mobileInfo"] = @{ @"isSendLogMessageToProtogenesis" : @(false), @"clientType" : @"ios" };
     msgDic[@"isSendLogMessageToProtogenesis"] = @(false);
     msgDic[@"clientType"] = @"ios";
-    msgDic[@"playback"] = [YSWhiteBoardManager shareInstance].roomDic[YSWhiteBoardPlayBackKey];
+    msgDic[@"playback"] = [YSWhiteBoardManager shareInstance].configration[YSWhiteBoardPlayBackKey];
 
     [self onPagefinishSendJSMessage:msgDic];
 }

@@ -7,12 +7,17 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "YSWhiteBoardManagerDelegate.h"
 #import "YSRoomConfiguration.h"
 
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface YSWhiteBoardManager : NSObject
+
+@property (nonatomic, weak, readonly) id <YSWhiteBoardManagerDelegate> wbDelegate;
+/// 配置项
+@property (nonatomic, strong, readonly) NSDictionary *configration;
 
 /// 房间数据
 @property (nonatomic, strong, readonly) NSDictionary *roomDic;
