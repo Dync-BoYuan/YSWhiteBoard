@@ -349,7 +349,7 @@
             }
         }];
         
-        if (IS_IOS_10_OR_LATER)
+        if (BMIS_IOS_10_OR_LATER)
         {
             [coordinator notifyWhenInteractionChangesUsingBlock:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
                 if (!context.isCancelled && self.inGesture) {

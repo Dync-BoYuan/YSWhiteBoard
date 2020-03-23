@@ -40,7 +40,7 @@
 
 - (instancetype)initWithText:(NSString *)text
 {
-    return [self initWithText:text height:TABLE_CELL_HEIGHT];
+    return [self initWithText:text height:BMTABLE_CELL_HEIGHT];
 }
 
 - (instancetype)initWithText:(NSString *)text height:(CGFloat)height
@@ -100,7 +100,7 @@
     
     if (height <= 0)
     {
-        height = TABLE_CELL_HEIGHT;
+        height = BMTABLE_CELL_HEIGHT;
     }
     self.bm_height = height;
     
@@ -113,7 +113,7 @@
 
 - (instancetype)initWithAttributedText:(NSAttributedString *)attributedText
 {
-    return [self initWithAttributedText:attributedText height:TABLE_CELL_HEIGHT];
+    return [self initWithAttributedText:attributedText height:BMTABLE_CELL_HEIGHT];
 }
 
 - (instancetype)initWithAttributedText:(NSAttributedString *)attributedText height:(CGFloat)height
@@ -123,12 +123,12 @@
 
 - (instancetype)initWithAttributedText:(NSAttributedString *)attributedText image:(NSString *)image
 {
-    return [self initWithImage:image attributedText:attributedText type:BMImageTextViewType_ImageRight height:TABLE_CELL_HEIGHT gap:6.0f];
+    return [self initWithImage:image attributedText:attributedText type:BMImageTextViewType_ImageRight height:BMTABLE_CELL_HEIGHT gap:6.0f];
 }
 
 - (instancetype)initWithAttributedText:(NSAttributedString *)attributedText image:(NSString *)image gap:(CGFloat)gap
 {
-    return [self initWithImage:image attributedText:attributedText type:BMImageTextViewType_ImageRight height:TABLE_CELL_HEIGHT gap:gap];
+    return [self initWithImage:image attributedText:attributedText type:BMImageTextViewType_ImageRight height:BMTABLE_CELL_HEIGHT gap:gap];
 }
 
 - (instancetype)initWithImage:(NSString *)image attributedText:(NSAttributedString *)attributedText height:(CGFloat)height gap:(CGFloat)gap

@@ -179,7 +179,7 @@
 - (void)caleCellHeightWithTableView:(UITableView *)tableView
 {
     CGFloat height = BMCheckBoxGroupCell_TitleTop;
-    self.titleWidth = UI_SCREEN_WIDTH-(tableView.contentInset.left+tableView.contentInset.right)-BMCheckBoxGroupCell_TitleLeft*2;
+    self.titleWidth = BMUI_SCREEN_WIDTH-(tableView.contentInset.left+tableView.contentInset.right)-BMCheckBoxGroupCell_TitleLeft*2;
     if (self.titleAttrStr)
     {
         CGSize maxSize = CGSizeMake(self.titleWidth, CGFLOAT_MAX);

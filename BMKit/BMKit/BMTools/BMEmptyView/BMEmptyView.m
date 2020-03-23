@@ -70,7 +70,7 @@
     _imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 200.0f, 200.0f)];
     [self addSubview:_imageView];
     
-    _messageLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, UI_SCREEN_WIDTH, 40.0f)];
+    _messageLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, BMUI_SCREEN_WIDTH, 40.0f)];
     _messageLabel.textColor = [UIColor bm_colorWithHex:0x577EEE];
     _messageLabel.font = [UIFont systemFontOfSize:16.0f];
     _messageLabel.textAlignment = NSTextAlignmentCenter;
@@ -82,7 +82,7 @@
     [self addSubview:_indecator];
 
     // 全视图点击刷新功能
-    _refreshLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, UI_SCREEN_WIDTH, 20.0f)];
+    _refreshLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, BMUI_SCREEN_WIDTH, 20.0f)];
     _refreshLabel.textColor = [UIColor bm_colorWithHex:0x999999];
     _refreshLabel.font = [UIFont systemFontOfSize:14];
     _refreshLabel.textAlignment = NSTextAlignmentCenter;
@@ -101,7 +101,7 @@
     [self addSubview:_freshButton];
     
     // 用户视图
-    _customBgView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, UI_SCREEN_WIDTH, 0)];
+    _customBgView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, BMUI_SCREEN_WIDTH, 0)];
     _customBgView.backgroundColor = [UIColor clearColor];
     [self addSubview:_customBgView];
     

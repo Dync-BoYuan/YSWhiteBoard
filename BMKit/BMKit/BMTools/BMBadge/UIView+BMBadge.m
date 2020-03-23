@@ -366,7 +366,7 @@
 - (void)adjustbadgeLabelWidth
 {
     //CGSize labelsize = [self.badgeLabel labelSizeToFitWidth:UI_SCREEN_WIDTH];
-    CGSize labelsize = [self.badgeLabel sizeThatFits:CGSizeMake(UI_SCREEN_WIDTH, MAXFLOAT)];
+    CGSize labelsize = [self.badgeLabel sizeThatFits:CGSizeMake(BMUI_SCREEN_WIDTH, MAXFLOAT)];
     labelsize.width += BMBadgeDefaultBorderGap + self.badgeBorderWidth;
     labelsize.height += BMBadgeDefaultBorderGap + self.badgeBorderWidth;
     if (labelsize.width < labelsize.height)

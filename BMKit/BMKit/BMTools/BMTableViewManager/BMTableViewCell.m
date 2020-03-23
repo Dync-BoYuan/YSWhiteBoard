@@ -106,7 +106,7 @@
     }
     else
     {
-        self.singleLineView.lineColor = UI_DEFAULT_LINECOLOR;
+        self.singleLineView.lineColor = BMUI_DEFAULT_LINECOLOR;
     }
     self.singleLineView.lineWidth = self.item.underLineWidth;
     if (self.item.underLineWidth > 1.0f)
@@ -358,7 +358,7 @@
             {
                 self.textLabel.frame = CGRectMake(self.section.style.contentViewMargin, self.textLabel.frame.origin.y, self.textLabel.frame.size.width, self.textLabel.frame.size.height);
                 
-                CGFloat width = [self.textLabel bm_labelSizeToFitWidth:UI_SCREEN_WIDTH].width;
+                CGFloat width = [self.textLabel bm_labelSizeToFitWidth:BMUI_SCREEN_WIDTH].width;
                self.imageView.frame = CGRectMake(self.section.style.contentViewMargin + width + IMAGE_LABLE_GAP, self.imageView.frame.origin.y, self.imageView.frame.size.width, self.imageView.frame.size.height);
              }
             else
@@ -386,7 +386,7 @@
                     self.imageView.bm_height = self.item.imageH;
                     self.imageView.bm_centerY = self.bm_height * 0.5;
                 }
-                CGFloat width = [self.textLabel bm_labelSizeToFitWidth:UI_SCREEN_WIDTH].width;
+                CGFloat width = [self.textLabel bm_labelSizeToFitWidth:BMUI_SCREEN_WIDTH].width;
                 self.imageView.bm_left = self.textLabel.bm_left + width + IMAGE_LABLE_GAP;
             }
             else

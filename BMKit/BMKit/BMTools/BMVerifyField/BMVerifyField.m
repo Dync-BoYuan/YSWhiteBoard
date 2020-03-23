@@ -114,11 +114,11 @@
     //_secureImage = [UIImage imageNamed:@"navigationbar_help_icon"];
     //_secureSymbol = @"?";
 
-    if (IS_IOS_12_OR_LATER)
+    if (BMIS_IOS_12_OR_LATER)
     {
         _textContentType = UITextContentTypeOneTimeCode;
     }
-    else if (IS_IOS_10_OR_LATER)
+    else if (BMIS_IOS_10_OR_LATER)
     {
         _textContentType = @"one-time-code";
     }

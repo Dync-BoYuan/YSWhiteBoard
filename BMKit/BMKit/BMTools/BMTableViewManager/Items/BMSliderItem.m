@@ -42,7 +42,7 @@
     self.sliderable = YES;
     self.valueChangeHandler = valueChangeHandler;
     
-    self.sliderWidth = (UI_SCREEN_WIDTH - 40.0f) * 0.5f;
+    self.sliderWidth = (BMUI_SCREEN_WIDTH - 40.0f) * 0.5f;
 
     return self;
 }

@@ -35,7 +35,7 @@
 {
     CGFloat height = self.textLabelTopGap;
     
-    CGFloat titleWidth = UI_SCREEN_WIDTH-(tableView.contentInset.left+tableView.contentInset.right)-30.0f;
+    CGFloat titleWidth = BMUI_SCREEN_WIDTH-(tableView.contentInset.left+tableView.contentInset.right)-30.0f;
     
     CGFloat titleHeight;
     if (self.titleAttrStr)

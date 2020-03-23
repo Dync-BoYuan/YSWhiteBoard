@@ -17,7 +17,7 @@ const CGFloat DJFreshFooterHeight = 40.0f;
     [super prepare];
     
     // 设置高度
-    self.bm_width = UI_SCREEN_WIDTH;
+    self.bm_width = BMUI_SCREEN_WIDTH;
     self.bm_height = DJFreshFooterHeight;
 }
 

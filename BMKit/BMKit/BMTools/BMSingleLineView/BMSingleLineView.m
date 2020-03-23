@@ -26,7 +26,7 @@
 
 - (id)initWithCoder:(NSCoder *)aDecoder
 {
-    return [self initWithFrame:CGRectMake(15.0f, 0, UI_SCREEN_WIDTH-30.0f, 2) direction:SingleLineDirectionLandscape];
+    return [self initWithFrame:CGRectMake(15.0f, 0, BMUI_SCREEN_WIDTH-30.0f, 2) direction:SingleLineDirectionLandscape];
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -43,9 +43,9 @@
         
         _lineDirection = direction;
         _lineColor = [UIColor lightGrayColor];
-        _lineWidth = SINGLE_LINE_WIDTH;
+        _lineWidth = BMSINGLE_LINE_WIDTH;
         _needGap = YES;
-        _lineGap = SINGLE_LINE_ADJUST_OFFSET;//1.0f-SINGLE_LINE_WIDTH;
+        _lineGap = BMSINGLE_LINE_ADJUST_OFFSET;//1.0f-SINGLE_LINE_WIDTH;
         _isDash = NO;
         _lineLength = SINGLE_LINE_LINELENGTH;
         _lineSpacing = SINGLE_LINE_LINESPACING;
@@ -70,9 +70,9 @@
 
 - (void)setLineWidth:(CGFloat)alineWidth
 {
-    if (alineWidth < SINGLE_LINE_WIDTH)
+    if (alineWidth < BMSINGLE_LINE_WIDTH)
     {
-        alineWidth = SINGLE_LINE_WIDTH;
+        alineWidth = BMSINGLE_LINE_WIDTH;
     }
     _lineWidth = alineWidth;
     
@@ -88,9 +88,9 @@
 
 - (void)setLineGap:(CGFloat)alineGap
 {
-    if (alineGap < 1.0f-SINGLE_LINE_WIDTH)
+    if (alineGap < 1.0f-BMSINGLE_LINE_WIDTH)
     {
-        alineGap = 1.0f-SINGLE_LINE_WIDTH;
+        alineGap = 1.0f-BMSINGLE_LINE_WIDTH;
     }
     _lineGap = alineGap;
     

@@ -57,7 +57,7 @@ static inline NSString *getAssetsName(NSString *assetsName)
 
 - (UIImage *)bm_imageWithImageName:(NSString *)imageName
 {
-    if (IS_IOS_8_OR_LATER)
+    if (BMIS_IOS_8_OR_LATER)
     {
         return [UIImage imageNamed:imageName inBundle:self compatibleWithTraitCollection:nil];
     }

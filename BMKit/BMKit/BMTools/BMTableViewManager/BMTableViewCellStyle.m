@@ -9,7 +9,7 @@
 #import "BMTableViewCellStyle.h"
 
 // 默认高度
-#define Default_Cell_Height     TABLE_CELL_HEIGHT
+#define Default_Cell_Height     BMTABLE_CELL_HEIGHT
 
 @implementation BMTableViewCellStyle
 

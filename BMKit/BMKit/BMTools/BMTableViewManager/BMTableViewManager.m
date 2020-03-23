@@ -101,7 +101,7 @@
 
 - (CGFloat)defaultTableViewSectionHeight
 {
-    return self.tableView.style == UITableViewStyleGrouped ? TABLE_CELL_HEIGHT : 22.0f;
+    return self.tableView.style == UITableViewStyleGrouped ? BMTABLE_CELL_HEIGHT : 22.0f;
 }
 
 - (NSArray *)sections
@@ -512,7 +512,7 @@
 
         case UITableViewCellAnimationStyle_Move:
         {
-            cell.transform = CGAffineTransformMakeTranslation(-UI_SCREEN_WIDTH, 0);
+            cell.transform = CGAffineTransformMakeTranslation(-BMUI_SCREEN_WIDTH, 0);
             
             [UIView beginAnimations:@"move" context:nil];
             UIView.animationDuration = 0.3f;
@@ -523,7 +523,7 @@
 
         case UITableViewCellAnimationStyle_MoveSpring:
         {
-            cell.transform = CGAffineTransformMakeTranslation(-UI_SCREEN_WIDTH, 0);
+            cell.transform = CGAffineTransformMakeTranslation(-BMUI_SCREEN_WIDTH, 0);
             
             [UIView animateWithDuration:0.3f delay:0.2f usingSpringWithDamping:0.7f initialSpringVelocity:1.0f/0.7f options:UIViewAnimationOptionCurveEaseIn animations:^{
                 cell.transform = CGAffineTransformIdentity;

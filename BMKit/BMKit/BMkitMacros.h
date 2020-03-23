@@ -12,20 +12,24 @@
 #pragma mark -
 #pragma mark - Device macro
 
-#define IS_IPHONE4  (CGSizeEqualToSize(CGSizeMake(320.0f, 480.0f), [[UIScreen mainScreen] bounds].size) ? YES : NO)
-#define IS_IPHONE5  (CGSizeEqualToSize(CGSizeMake(320.0f, 568.0f), [[UIScreen mainScreen] bounds].size) ? YES : NO)
-#define IS_IPHONE6  (CGSizeEqualToSize(CGSizeMake(375.0f, 667.0f), [[UIScreen mainScreen] bounds].size) ? YES : NO)
-#define IS_IPHONE6P (CGSizeEqualToSize(CGSizeMake(414.0f, 736.0f), [[UIScreen mainScreen] bounds].size) ? YES : NO)
-#define IS_IPHONEX  (CGSizeEqualToSize(CGSizeMake(375.0f, 812.0f), [[UIScreen mainScreen] bounds].size) ? YES : NO)
-#define IS_IPHONEXP (CGSizeEqualToSize(CGSizeMake(414.0f, 896.0f), [[UIScreen mainScreen] bounds].size) ? YES : NO)
+#define BMIS_IPHONE4  (CGSizeEqualToSize(CGSizeMake(320.0f, 480.0f), [[UIScreen mainScreen] bounds].size) ? YES : NO)
+#define BMIS_IPHONE5  (CGSizeEqualToSize(CGSizeMake(320.0f, 568.0f), [[UIScreen mainScreen] bounds].size) ? YES : NO)
+#define BMIS_IPHONE6  (CGSizeEqualToSize(CGSizeMake(375.0f, 667.0f), [[UIScreen mainScreen] bounds].size) ? YES : NO)
+#define BMIS_IPHONE6P (CGSizeEqualToSize(CGSizeMake(414.0f, 736.0f), [[UIScreen mainScreen] bounds].size) ? YES : NO)
+#define BMIS_IPHONEX  (CGSizeEqualToSize(CGSizeMake(375.0f, 812.0f), [[UIScreen mainScreen] bounds].size) ? YES : NO)
+#define BMIS_IPHONEXP (CGSizeEqualToSize(CGSizeMake(414.0f, 896.0f), [[UIScreen mainScreen] bounds].size) ? YES : NO)
 
-#define IS_IPHONEXANDP (IS_IPHONEX | IS_IPHONEXP)
+#define BMIS_IPHONEXANDP (BMIS_IPHONEX | BMIS_IPHONEXP)
 
+//iphone
+#define BMIS_IPHONE         (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone)
+//ipad
+#define BMIS_PAD            (UI_USER_INTERFACE_IDIOM()== UIUserInterfaceIdiomPad)
 
 // 获取系统版本
-#define CURRENT_SYSTEMVERSION [[UIDevice currentDevice] systemVersion]
-#ifndef IOS_VERSION
-#define IOS_VERSION [[[UIDevice currentDevice] systemVersion] floatValue]
+#define BMCURRENT_SYSTEMVERSION [[UIDevice currentDevice] systemVersion]
+#ifndef BMIOS_VERSION
+#define BMIOS_VERSION [[[UIDevice currentDevice] systemVersion] floatValue]
 #endif
 
 /**
@@ -33,15 +37,15 @@
  *
  *  @return Returns a BOOL
  */
-#define IS_IOS_5_OR_LATER    (IOS_VERSION >= 5.0f)
-#define IS_IOS_6_OR_LATER    (IOS_VERSION >= 6.0f)
-#define IS_IOS_7_OR_LATER    (IOS_VERSION >= 7.0f)
-#define IS_IOS_8_OR_LATER    (IOS_VERSION >= 8.0f)
-#define IS_IOS_9_OR_LATER    (IOS_VERSION >= 9.0f)
-#define IS_IOS_10_OR_LATER   (IOS_VERSION >= 10.0f)
-#define IS_IOS_11_OR_LATER   (IOS_VERSION >= 11.0f)
-#define IS_IOS_12_OR_LATER   (IOS_VERSION >= 12.0f)
-#define IS_IOS_13_OR_LATER   (IOS_VERSION >= 13.0f)
+#define BMIS_IOS_5_OR_LATER    (BMIOS_VERSION >= 5.0f)
+#define BMIS_IOS_6_OR_LATER    (BMIOS_VERSION >= 6.0f)
+#define BMIS_IOS_7_OR_LATER    (BMIOS_VERSION >= 7.0f)
+#define BMIS_IOS_8_OR_LATER    (BMIOS_VERSION >= 8.0f)
+#define BMIS_IOS_9_OR_LATER    (BMIOS_VERSION >= 9.0f)
+#define BMIS_IOS_10_OR_LATER   (BMIOS_VERSION >= 10.0f)
+#define BMIS_IOS_11_OR_LATER   (BMIOS_VERSION >= 11.0f)
+#define BMIS_IOS_12_OR_LATER   (BMIOS_VERSION >= 12.0f)
+#define BMIS_IOS_13_OR_LATER   (BMIOS_VERSION >= 13.0f)
 
 
 /**
@@ -52,17 +56,17 @@
  *  @return Return a BOOL
  */
 // 检查系统版本
-#define SYSTEM_VERSION_EQUAL_TO(v)                  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] == NSOrderedSame)
-#define SYSTEM_VERSION_GREATER_THAN(v)              ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] == NSOrderedDescending)
-#define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
-#define SYSTEM_VERSION_LESS_THAN(v)                 ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] == NSOrderedAscending)
-#define SYSTEM_VERSION_LESS_THAN_OR_EQUAL_TO(v)     ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedDescending)
+#define BMSYSTEM_VERSION_EQUAL_TO(v)                  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] == NSOrderedSame)
+#define BMSYSTEM_VERSION_GREATER_THAN(v)              ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] == NSOrderedDescending)
+#define BMSYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
+#define BMSYSTEM_VERSION_LESS_THAN(v)                 ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] == NSOrderedAscending)
+#define BMSYSTEM_VERSION_LESS_THAN_OR_EQUAL_TO(v)     ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedDescending)
 
-#define APP_VERSIONNO [[NSBundle mainBundle] infoDictionary][@"CFBundleShortVersionString"]
-#define APP_BUILDNO [[NSBundle mainBundle] infoDictionary][@"CFBundleVersion"]
+#define BMAPP_VERSIONNO [[NSBundle mainBundle] infoDictionary][@"CFBundleShortVersionString"]
+#define BMAPP_BUILDNO [[NSBundle mainBundle] infoDictionary][@"CFBundleVersion"]
 
 // 获取当前语言
-#define CurrentLanguage [[NSLocale preferredLanguages] objectAtIndex:0]
+#define BMCurrentLanguage [[NSLocale preferredLanguages] objectAtIndex:0]
 
 // 字体
 #define UI_BMFONT_MAKE(FontName, FontSize)  [UIFont bm_fontForFontName:FontName size:FontSize]
@@ -71,7 +75,7 @@
 #define UI_BM_BOLDFONT(fontSize)            [UIFont boldSystemFontOfSize:fontSize]
 
 // 颜色
-#define RGBColor(r,g,b,a)   [UIColor colorWithRed:r/255. green:g/255. blue:b/255. alpha:a]
+#define BMRGBColor(r,g,b,a)   [UIColor colorWithRed:r/255. green:g/255. blue:b/255. alpha:a]
 
 // 判断是否IPHONE
 #if TARGET_OS_IPHONE
@@ -88,11 +92,11 @@
 #pragma mark - data change macro
 
 // 由角度获取弧度 由弧度获取角度
-#define DEGREES_TO_RADIANS(x)       ((x) * (M_PI / 180.0))
-#define RADIANS_TO_DEGREES(x)       ((x) * (180.0 / M_PI))
+#define BMDEGREES_TO_RADIANS(x)       ((x) * (M_PI / 180.0))
+#define BMRADIANS_TO_DEGREES(x)       ((x) * (180.0 / M_PI))
 
 //RGB color macro
-#define UIColorFromRGB(rgbValue) [UIColor colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0 \
+#define BMUIColorFromRGB(rgbValue) [UIColor colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0 \
 green:((float)((rgbValue & 0xFF00) >> 8))/255.0 \
 blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 
@@ -132,41 +136,41 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 #pragma mark -
 #pragma mark - UI macro
 
-#define UI_NAVIGATION_BAR_DEFAULTHEIGHT 44
-#define UI_NAVIGATION_BAR_HEIGHT        44
-#define UI_TOOL_BAR_HEIGHT              44
-#define UI_HOME_INDICATOR_HEIGHT        (IS_IPHONEXANDP ? 34 : 0.0f)
-#define UI_TAB_BAR_HEIGHT               (IS_IPHONEXANDP ? (49+UI_HOME_INDICATOR_HEIGHT) : 49)
-#define UI_STATUS_BAR_HEIGHT            (IS_IPHONEXANDP ? 44 : 20)
+#define BMUI_NAVIGATION_BAR_DEFAULTHEIGHT 44
+#define BMUI_NAVIGATION_BAR_HEIGHT        44
+#define BMUI_TOOL_BAR_HEIGHT              44
+#define BMUI_HOME_INDICATOR_HEIGHT        (BMIS_IPHONEXANDP ? 34 : 0.0f)
+#define BMUI_TAB_BAR_HEIGHT               (BMIS_IPHONEXANDP ? (49+BMUI_HOME_INDICATOR_HEIGHT) : 49)
+#define BMUI_STATUS_BAR_HEIGHT            (BMIS_IPHONEXANDP ? 44 : 20)
 
-#define UI_SCREEN_WIDTH                 ([[UIScreen mainScreen] bounds].size.width)
-#define UI_SCREEN_HEIGHT                ([[UIScreen mainScreen] bounds].size.height)
+#define BMUI_SCREEN_WIDTH                 ([[UIScreen mainScreen] bounds].size.width)
+#define BMUI_SCREEN_HEIGHT                ([[UIScreen mainScreen] bounds].size.height)
 
-#define UI_SCREEN_WIDTH_ROTATE          ([[UIScreen mainScreen] bounds].size.height)
-#define UI_SCREEN_HEIGHT_ROTATE         ([[UIScreen mainScreen] bounds].size.width)
+#define BMUI_SCREEN_WIDTH_ROTATE          ([[UIScreen mainScreen] bounds].size.height)
+#define BMUI_SCREEN_HEIGHT_ROTATE         ([[UIScreen mainScreen] bounds].size.width)
 
 //#define SCREEN_WIDTH ((([UIApplication sharedApplication].statusBarOrientation == UIInterfaceOrientationPortrait) || ([UIApplication sharedApplication].statusBarOrientation == UIInterfaceOrientationPortraitUpsideDown)) ? [[UIScreen mainScreen] bounds].size.width : [[UIScreen mainScreen] bounds].size.height)
 //#define SCREEN_HEIGHT ((([UIApplication sharedApplication].statusBarOrientation == UIInterfaceOrientationPortrait) || ([UIApplication sharedApplication].statusBarOrientation == UIInterfaceOrientationPortraitUpsideDown)) ? [[UIScreen mainScreen] bounds].size.height : [[UIScreen mainScreen] bounds].size.width)
-#define UI_SCREEN_SCALE                 ([UIScreen mainScreen].scale)
-#define UI_MAINSCREEN_HEIGHT            (UI_SCREEN_HEIGHT - UI_STATUS_BAR_HEIGHT)
-#define UI_MAINSCREEN_HEIGHT_ROTATE     (UI_SCREEN_WIDTH - UI_STATUS_BAR_HEIGHT)
-#define UI_WHOLE_SCREEN_FRAME           CGRectMake(0, 0, UI_SCREEN_WIDTH, UI_SCREEN_HEIGHT)
-#define UI_WHOLE_SCREEN_FRAME_ROTATE    CGRectMake(0, 0, UI_SCREEN_HEIGHT, UI_SCREEN_WIDTH)
-#define UI_MAIN_VIEW_FRAME              CGRectMake(0, UI_STATUS_BAR_HEIGHT, UI_SCREEN_WIDTH, UI_MAINSCREEN_HEIGHT)
-#define UI_MAIN_VIEW_FRAME_ROTATE       CGRectMake(0, UI_STATUS_BAR_HEIGHT, UI_SCREEN_HEIGHT, UI_MAINSCREEN_HEIGHT_ROTATE)
+#define BMUI_SCREEN_SCALE                 ([UIScreen mainScreen].scale)
+#define BMUI_MAINSCREEN_HEIGHT            (BMUI_SCREEN_HEIGHT - BMUI_STATUS_BAR_HEIGHT)
+#define BMUI_MAINSCREEN_HEIGHT_ROTATE     (BMUI_SCREEN_WIDTH - BMUI_STATUS_BAR_HEIGHT)
+#define BMUI_WHOLE_SCREEN_FRAME           CGRectMake(0, 0, BMUI_SCREEN_WIDTH, BMUI_SCREEN_HEIGHT)
+#define BMUI_WHOLE_SCREEN_FRAME_ROTATE    CGRectMake(0, 0, BMUI_SCREEN_HEIGHT, BMUI_SCREEN_WIDTH)
+#define BMUI_MAIN_VIEW_FRAME              CGRectMake(0, BMUI_STATUS_BAR_HEIGHT, BMUI_SCREEN_WIDTH, BMUI_MAINSCREEN_HEIGHT)
+#define BMUI_MAIN_VIEW_FRAME_ROTATE       CGRectMake(0, BMUI_STATUS_BAR_HEIGHT, BMUI_SCREEN_HEIGHT, BMUI_MAINSCREEN_HEIGHT_ROTATE)
 
-#define UI_IPHONE4_SCREEN_HEIGHT        480.0f
-#define UI_IPHONE5_SCREEN_HEIGHT        568.0f
-#define UI_IPHONE6_SCREEN_HEIGHT        667.0f
-#define UI_IPHONE6P_SCREEN_HEIGHT       736.0f
+#define BMUI_IPHONE4_SCREEN_HEIGHT        480.0f
+#define BMUI_IPHONE5_SCREEN_HEIGHT        568.0f
+#define BMUI_IPHONE6_SCREEN_HEIGHT        667.0f
+#define BMUI_IPHONE6P_SCREEN_HEIGHT       736.0f
 
 //6为标准适配的,如果需要其他标准可以修改
-#define kScale_W(w) ((UI_SCREEN_WIDTH)/375) * (w)
-#define kScale_H(h) ((UI_SCREEN_HEIGHT)/667) * (h)
+#define kBMScale_W(w) ((BMUI_SCREEN_WIDTH)/375) * (w)
+#define kBMScale_H(h) ((BMUI_SCREEN_HEIGHT)/667) * (h)
 
 // 单像素
-#define SINGLE_LINE_WIDTH           (1 / [UIScreen mainScreen].scale)
-#define SINGLE_LINE_ADJUST_OFFSET   ((1 / [UIScreen mainScreen].scale) / 2)
+#define BMSINGLE_LINE_WIDTH           (1 / [UIScreen mainScreen].scale)
+#define BMSINGLE_LINE_ADJUST_OFFSET   ((1 / [UIScreen mainScreen].scale) / 2)
 // UIView *view = [[UIView alloc] initWithFrame:CGrect(x - SINGLE_LINE_ADJUST_OFFSET, 0, SINGLE_LINE_WIDTH, 100)];
 
 
@@ -174,20 +178,20 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 #pragma mark - Default define
 
 // 动画默认时长
-#define DEFAULT_DELAY_TIME              (0.25f)
+#define BMDEFAULT_DELAY_TIME              (0.25f)
 // 等待默认时长
-#define PROGRESSBOX_DEFAULT_HIDE_DELAY  (2.0f)
+#define BMPROGRESSBOX_DEFAULT_HIDE_DELAY  (2.0f)
 
-#define TABLE_CELL_HEIGHT   44.0f
+#define BMTABLE_CELL_HEIGHT   44.0f
 
-#define UI_DEFAULT_LINECOLOR        [UIColor bm_colorWithHex:0xD8D8D8]
+#define BMUI_DEFAULT_LINECOLOR        [UIColor bm_colorWithHex:0xD8D8D8]
 
 // Cell背景颜色
-#define UI_CELL_BGCOLOR             [UIColor bm_colorWithHex:0xFFFFFF]
+#define BMUI_CELL_BGCOLOR             [UIColor bm_colorWithHex:0xFFFFFF]
 
 // Cell选中状态背景颜色
-#define UI_CELL_SELECT_BGCOLOR      [UIColor bm_colorWithHex:0xCCCCCC]
-#define UI_CELL_HIGHLIGHT_BGCOLOR   [UIColor bm_colorWithHex:0xE8373D]
+#define BMUI_CELL_SELECT_BGCOLOR      [UIColor bm_colorWithHex:0xCCCCCC]
+#define BMUI_CELL_HIGHLIGHT_BGCOLOR   [UIColor bm_colorWithHex:0xE8373D]
 
 
 // 弱引用/强引用 weakSelf

@@ -181,12 +181,12 @@
     if ([self.stateTitles[@(self.freshState)] isKindOfClass:[NSAttributedString class]])
     {
         self.messageLabel.attributedText = self.stateTitles[@(self.freshState)];
-        textWidth = [self.messageLabel bm_attribSizeToFitWidth:UI_SCREEN_WIDTH * 0.5].width;
+        textWidth = [self.messageLabel bm_attribSizeToFitWidth:BMUI_SCREEN_WIDTH * 0.5].width;
     }
     else
     {
         self.messageLabel.text = self.stateTitles[@(self.freshState)];
-        textWidth = [self.messageLabel bm_labelSizeToFitWidth:UI_SCREEN_WIDTH * 0.5].width;
+        textWidth = [self.messageLabel bm_labelSizeToFitWidth:BMUI_SCREEN_WIDTH * 0.5].width;
     }
     
     if (textWidth)

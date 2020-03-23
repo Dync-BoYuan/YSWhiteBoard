@@ -551,11 +551,11 @@ static const CGFloat BMAlertViewVerticalEdgeMinMargin = 25.0f;
     CGFloat totalButonHeight = [self freshButtons];
     
     CGFloat margin = BMAlertViewVerticalEdgeMinMargin;
-    if (IS_IPHONE5 || IS_IPHONE6 || IS_IPHONEX)
+    if (BMIS_IPHONE5 || BMIS_IPHONE6 || BMIS_IPHONEX)
     {
         margin *= 2;
     }
-    else if (IS_IPHONE6P || IS_IPHONEXP)
+    else if (BMIS_IPHONE6P || BMIS_IPHONEXP)
     {
         margin *= 3;
     }

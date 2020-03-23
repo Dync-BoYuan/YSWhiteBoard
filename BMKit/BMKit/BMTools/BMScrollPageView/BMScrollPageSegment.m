@@ -9,7 +9,7 @@
 #import "BMScrollPageSegment.h"
 #import "BMSingleLineView.h"
 
-#define LINE_COLOR          UI_DEFAULT_LINECOLOR
+#define LINE_COLOR          BMUI_DEFAULT_LINECOLOR
 
 #define BUTTON_START_TAG    100
 #define BUTTON_MINWIDTH     30.0f

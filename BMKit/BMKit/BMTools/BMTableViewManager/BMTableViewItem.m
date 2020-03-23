@@ -87,13 +87,13 @@
         //self.isDrawUnderLine = YES;
         self.underLineDrawType = BMTableViewCell_UnderLineDrawType_SeparatorInset;
         self.underLineIsDash = NO;
-        self.underLineColor = UI_DEFAULT_LINECOLOR;
-        self.underLineWidth = SINGLE_LINE_WIDTH;
+        self.underLineColor = BMUI_DEFAULT_LINECOLOR;
+        self.underLineWidth = BMSINGLE_LINE_WIDTH;
         
         self.isShowSelectBg = NO;
-        self.selectBgColor = UI_CELL_SELECT_BGCOLOR;
+        self.selectBgColor = BMUI_CELL_SELECT_BGCOLOR;
         self.isShowHighlightBg = YES;
-        self.highlightBgColor = [UI_CELL_HIGHLIGHT_BGCOLOR colorWithAlphaComponent:0.15];
+        self.highlightBgColor = [BMUI_CELL_HIGHLIGHT_BGCOLOR colorWithAlphaComponent:0.15];
 
         self.contentTopBottomGap = 16.0f;
         self.contentMiddleGap = 8.0f;
@@ -192,12 +192,12 @@
 
 + (BMImageTextView *)DefaultAccessoryView
 {
-    return [[BMImageTextView alloc] initWithImage:@"BMTableView_arrows_rightBlack" height:TABLE_CELL_HEIGHT];
+    return [[BMImageTextView alloc] initWithImage:@"BMTableView_arrows_rightBlack" height:BMTABLE_CELL_HEIGHT];
 }
 
 + (BMImageTextView *)DefaultAccessoryViewWithClicked:(BMImageTextViewClicked)clicked
 {
-    BMImageTextView *imageTextView = [[BMImageTextView alloc] initWithImage:@"BMTableView_arrows_rightBlack" height:TABLE_CELL_HEIGHT];
+    BMImageTextView *imageTextView = [[BMImageTextView alloc] initWithImage:@"BMTableView_arrows_rightBlack" height:BMTABLE_CELL_HEIGHT];
     imageTextView.imageTextViewClicked = clicked;
     return imageTextView;
 }
@@ -296,7 +296,7 @@
     
     CGFloat height = self.contentTopBottomGap;
 
-    CGFloat titleWidth = UI_SCREEN_WIDTH-(tableView.contentInset.left+tableView.contentInset.right)-30.0f;
+    CGFloat titleWidth = BMUI_SCREEN_WIDTH-(tableView.contentInset.left+tableView.contentInset.right)-30.0f;
     
     CGFloat titleHeight;
     if (self.titleAttrStr)

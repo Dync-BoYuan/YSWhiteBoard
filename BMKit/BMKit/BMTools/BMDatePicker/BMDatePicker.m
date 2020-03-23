@@ -166,21 +166,21 @@
     self.picker.backgroundColor = [UIColor clearColor];
     //self.picker.hidden = YES;
     
-    self.bm_width = UI_SCREEN_WIDTH - 20;
+    self.bm_width = BMUI_SCREEN_WIDTH - 20;
     self.backgroundColor = [UIColor whiteColor];
     
-    self.formateColor = RGBColor(233, 233, 233, 0.8);
+    self.formateColor = BMRGBColor(233, 233, 233, 0.8);
     
-    self.yearColor = RGBColor(233, 233, 233, 0.8);
+    self.yearColor = BMRGBColor(233, 233, 233, 0.8);
     
-    self.pickerLabelColor = RGBColor(247, 133, 51, 1);
+    self.pickerLabelColor = BMRGBColor(247, 133, 51, 1);
     self.pickerItemColor = [UIColor blackColor];
     self.pickerCurrentItemColor = [UIColor blueColor];
     
     self.doneBtn.layer.cornerRadius = 10;
     self.doneBtn.layer.masksToBounds = YES;
     
-    self.doneBtnBgColor = RGBColor(247, 133, 51, 1);
+    self.doneBtnBgColor = BMRGBColor(247, 133, 51, 1);
     self.doneBtnTextColor = [UIColor whiteColor];
 
     _showChineseMonth = NO;

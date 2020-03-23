@@ -58,15 +58,15 @@
     
     self.pickerPlaceholderColor = [UIColor lightGrayColor];
     
-    self.formateColor = RGBColor(233, 233, 233, 0.8);
+    self.formateColor = BMRGBColor(233, 233, 233, 0.8);
     
-    self.bigYearColor = RGBColor(233, 233, 233, 0.8);
+    self.bigYearColor = BMRGBColor(233, 233, 233, 0.8);
     
-    self.pickerLabelColor = RGBColor(247, 133, 51, 1);
+    self.pickerLabelColor = BMRGBColor(247, 133, 51, 1);
     self.pickerItemColor = [UIColor blackColor];
     
     self.showDoneBtn = YES;
-    self.doneBtnBgColor = RGBColor(247, 133, 51, 1);
+    self.doneBtnBgColor = BMRGBColor(247, 133, 51, 1);
     self.doneBtnTextColor = [UIColor whiteColor];
 
     self.maxLimitDate = [NSDate bm_dateFromString:@"2099-12-31 23:59" withFormat:@"yyyy-MM-dd HH:mm"];

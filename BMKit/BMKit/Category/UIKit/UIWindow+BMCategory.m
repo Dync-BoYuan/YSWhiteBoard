@@ -20,7 +20,7 @@
 {
     // Source (Under MIT License): https://github.com/shinydevelopment/SDScreenshotCapture/blob/master/SDScreenshotCapture/SDScreenshotCapture.m#L35
     
-    BOOL ignoreOrientation = SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"8.0");
+    BOOL ignoreOrientation = BMSYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"8.0");
     
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
     

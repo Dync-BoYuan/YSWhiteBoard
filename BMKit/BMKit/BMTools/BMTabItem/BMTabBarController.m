@@ -56,7 +56,7 @@
     self.tabBarBgView = [[UIView alloc] initWithFrame:self.tabBar.bounds];
     self.tabBarBgView.userInteractionEnabled = YES;
     
-    UIImageView *imageview = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, UI_SCREEN_WIDTH, UI_TAB_BAR_HEIGHT)];
+    UIImageView *imageview = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, BMUI_SCREEN_WIDTH, BMUI_TAB_BAR_HEIGHT)];
     imageview.image = resizeImage;
     [self.tabBarBgView addSubview:imageview];
     
@@ -68,11 +68,11 @@
         return;
     }
     
-    CGFloat width = UI_SCREEN_WIDTH/tab_Count;
+    CGFloat width = BMUI_SCREEN_WIDTH/tab_Count;
 
     for (NSUInteger i=0; i<tab_Count; i++)
     {
-        CGRect rect = CGRectMake(width * i, 0, width, UI_TAB_BAR_HEIGHT-UI_HOME_INDICATOR_HEIGHT);
+        CGRect rect = CGRectMake(width * i, 0, width, BMUI_TAB_BAR_HEIGHT-BMUI_HOME_INDICATOR_HEIGHT);
         
         BMTabItemButton *item = [[BMTabItemButton alloc] initWithFrame:rect];
         
