@@ -45,6 +45,15 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 /// 信令缓存数据 预加载后页面加载完成前
 @property (nonatomic, strong) NSMutableArray *cacheMsgPool;
 
+
+// UI
+
+/// web文档
+@property (nonatomic, strong) YSWBWebViewManager *documentBoard;
+/// 普通文档
+@property (nonatomic, strong) YSWBDrawViewManager *nativeWBController;
+
+
 @end
 
 @implementation YSWhiteBoardManager
@@ -179,11 +188,33 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     }
 }
 
+
+#pragma -
+#pragma mark createWhiteBoard
+
 - (void)registerDelegate:(id <YSWhiteBoardManagerDelegate>)delegate configration:(NSDictionary *)config
 {
     self.wbDelegate = delegate;
     self.configration = config;
 }
+
+//- (UIView *)createWhiteBoardWithFrame:(CGRect)frame
+//                    loadFinishedBlock:(loadFinishedBlock)loadFinishedBlock
+//{
+//    
+//    _contentView        = [[UIView alloc] initWithFrame:frame];
+//    _wbView             = [_documentBoard createWhiteBoardWithFrame:frame
+//                                                  loadComponentName:loadComponentName
+//                                                  loadFinishedBlock:loadFinishedBlock];
+//    [_contentView addSubview:_wbView];
+//    
+//    _nativeWBController = [[YSWhiteBoardController alloc] initWithBackView:_contentView webView:_wbView];
+//    [_nativeWBController setConfiguration:_ysRoomProperty];
+//    
+//    _nativeWBController.wkWebView = _wbView;
+//    
+//    return _contentView;
+//}
 
 #pragma mark - 监听课堂 底层通知消息
 
