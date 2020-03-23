@@ -24,6 +24,7 @@
 /// webview崩溃标识
 @property (nonatomic, assign) BOOL isWebViewCrash;
 
+@property (nonatomic, strong) NSMutableDictionary *audioDic;
 
 @end
 
@@ -247,23 +248,31 @@
         [self onPageFinished];
 
     }
-    #if 0
-    else if ([message.name isEqualToString:sPrintLogMessage]) {
-        [self printLogMessage:message.name aMessageBody:message.body];
-
-    } else if ([message.name isEqualToString:sPublishNetworkMedia]) {
+    else if ([message.name isEqualToString:sYSSignalPrintLogMessage])
+    {
+        //[self printLogMessage:message.name aMessageBody:message.body];
+    }
+    else if ([message.name isEqualToString:sYSSignalPublishNetworkMedia])
+    {
         [self onPublishNetworkMedia:message.body];
-    } else if ([message.name isEqualToString:sUnpublishNetworkMedia]) {
+    }
+    else if ([message.name isEqualToString:sYSSignalUnpublishNetworkMedia])
+    {
 
     }
     // 全屏
-    else if ([message.name isEqualToString:sChangeWebPageFullScreen]) {
-        [self ChangeWebPageFullScreen:message.name aMessageBody:message.body];
-
-    } else if ([message.name isEqualToString:sSetProperty]) {
+    else if ([message.name isEqualToString:sYSSignalChangeWebPageFullScreen])
+    {
+        //[self ChangeWebPageFullScreen:message.name aMessageBody:message.body];
+    }
+    else if ([message.name isEqualToString:sYSSignalSetProperty])
+    {
         [self setProperty:message.body];
 
-    } else if ([message.name isEqualToString:sSendActionCommand]) {
+    }
+    #if 0
+    else if ([message.name isEqualToString:sSendActionCommand])
+    {
 
         [self sendActionCommand:message.name aMessageBody:message.body];
 
@@ -387,14 +396,14 @@
     NSMutableDictionary *msgDic = [NSMutableDictionary dictionary];
 
     msgDic[@"languageType"] = [YSRoomUtil getCurrentLanguage];
-    msgDic[@"deviceType"]   = BMIS_IPHONE ? @"phone" : @"pad";
-    msgDic[@"debugLog"]     = @(false);
+    msgDic[@"deviceType"] = BMIS_IPHONE ? @"phone" : @"pad";
+    msgDic[@"debugLog"] = @(false);
 
     // 文档(主白板)
     // isSendLogMessageToProtogenesis clientType 字段 外层和 mobileInfo下 都是有用的，不能去重
     msgDic[@"mobileInfo"] = @{ @"isSendLogMessageToProtogenesis" : @(false), @"clientType" : @"ios" };
     msgDic[@"isSendLogMessageToProtogenesis"] = @(false);
-    msgDic[@"clientType"]                     = @"ios";
+    msgDic[@"clientType"] = @"ios";
     msgDic[@"playback"] = [YSWhiteBoardManager shareInstance].roomDic[YSWhiteBoardPlayBackKey];
 
     [self onPagefinishSendJSMessage:msgDic];
@@ -432,6 +441,171 @@
             [weakSelf.delegate onWBWebViewManagerPageFinshed];
         }
     }];
+}
+
+- (void)ChangeWebPageFullScreen:(id)messageName aMessageBody:(id)aMessageBody
+{
+//    if ([aMessageBody isKindOfClass:[NSDictionary class]]) {
+//
+//        NSString *tDataString = [aMessageBody objectForKey:@"data"];
+//        if (!tDataString) {
+//            return;
+//        }
+//        NSData *tJsData = [tDataString dataUsingEncoding:NSUTF8StringEncoding];
+//        NSDictionary *tDic = [NSJSONSerialization JSONObjectWithData:tJsData
+//        options:NSJSONReadingMutableContainers error:nil];
+//
+//        if ([[tDic allKeys] containsObject:@"fullScreen"]) {
+//
+//            BOOL fullScreen = [[tDic objectForKey:@"fullScreen"] boolValue];
+//
+//            [self sendAction:@"fullScreenChangeCallback"
+//            command:@{@"isFullScreen":@(fullScreen)}];
+//
+//            if (self.delegate && [self.delegate
+//            respondsToSelector:@selector(onWhiteBoardHandleFullScreen:)]) {
+//                [self.delegate onWhiteBoardHandleFullScreen:fullScreen];
+//            }
+//        }
+//
+//    }
+}
+
+/// app中play PPT中的media
+- (void)onPublishNetworkMedia:(NSDictionary *)videoData
+{
+    //    publishNetworkMediaJson = {url:url , audio:audio , video:video
+    //    ,attributes:{source:'dynamicPPT' , filename:filename , fileid:fileid , toID:toID ,
+    //    type:'media' } }
+
+    if (![videoData bm_isNotEmptyDictionary])
+    {
+        return;
+    }
+    
+    NSString *tDataString = [videoData bm_stringForKey:@"data"];
+    NSDictionary *dataDic = [YSRoomUtil convertWithData:tDataString];
+    
+    if ([[dataDic bm_stringForKey:@"type"] isEqualToString:@"audio"])
+    {
+        [self onJsPlayMp3:dataDic];
+        return;
+    }
+
+    NSString *url = [dataDic bm_stringForKey:@"url"];
+    BOOL isvideo = [dataDic bm_boolForKey:@"video"];
+    NSString *toID = YSRoomPubMsgTellAll;
+    NSDictionary *param = [dataDic bm_dictionaryForKey:@"attributes"];
+
+#warning 播放课件内视频
+    [[YSRoomInterface instance] startShareMediaFile:url
+                                          isVideo:isvideo
+                                             toID:toID
+                                       attributes:param
+                                            block:nil];
+}
+
+- (NSMutableDictionary *)audioDic
+{
+    if (!_audioDic)
+    {
+        _audioDic = [NSMutableDictionary dictionary];
+    }
+    
+    return _audioDic;
+}
+
+- (void)onJsPlayMp3:(NSDictionary *)videoData
+{
+    NSDictionary *dic = [videoData bm_dictionaryForKey:@"other"];
+
+    NSString *url = [videoData bm_stringForKey:@"url"];
+    NSString *audioElementId = [dic bm_stringForKey:@"audioElementId" withDefault:@""];
+    NSString *key = [NSString stringWithFormat:@"%@-%@", url, audioElementId];
+    NSString *resumeKey = [NSString stringWithFormat:@"resume%@-%@", url, audioElementId];
+
+    NSLog(@"onJsPlayMp3 %@", videoData);
+    
+    if ([videoData bm_boolForKey:@"isPlay"])
+    {
+        int oldPlayerId = (int)[self.audioDic bm_intForKey:key];
+        if (oldPlayerId > -1)
+        {
+            if ([self.audioDic bm_boolForKey:resumeKey])
+            {
+                [[YSRoomInterface instance] resumePlayMedia:oldPlayerId];
+                [self.audioDic removeObjectForKey:resumeKey];
+            }
+            else
+            {
+                [[YSRoomInterface instance] stopPlayMediaFile:oldPlayerId];
+                
+                NSInteger playerId = [[YSRoomInterface instance] startPlayMediaFile:url window:nil loop:NO progress:nil];
+                if (playerId > -1)
+                {
+                    [self.audioDic bm_setInteger:playerId forKey:key];
+                }
+            }
+        }
+        else
+        {
+            NSInteger playerId = [[YSRoomInterface instance] startPlayMediaFile:url window:nil loop:NO progress:nil];
+            if (playerId > -1)
+            {
+                [self.audioDic bm_setInteger:playerId forKey:key];
+            }
+        }
+    }
+    else
+    {
+        int oldPlayerId = (int)[self.audioDic bm_intForKey:key];
+        if (oldPlayerId > -1)
+        {
+            NSString *current  = [dic[@"currentTime"] description];
+            NSString *duration = [dic[@"duration"] description];
+            if ([current isEqualToString:duration] == NO)
+            {
+                [self.audioDic bm_setBool:YES forKey:resumeKey];
+                [[YSRoomInterface instance] pausePlayMedia:oldPlayerId];
+            }
+        }
+    }
+}
+
+// 翻页停止播放媒体MP3
+- (void)stopPlayMp3
+{
+    if (self.audioDic.count > 0)
+    {
+        for (NSNumber *num in self.audioDic.allValues)
+        {
+            [[YSRoomInterface instance] stopPlayMediaFile:[num intValue]];
+        }
+    }
+    
+    [_audioDic removeAllObjects];
+}
+
+- (void)setProperty:(id)aMessageBody
+{
+    if (![aMessageBody bm_isNotEmptyDictionary])
+    {
+        return;
+    }
+    
+    NSString *tDataString = [aMessageBody bm_stringForKey:@"data"];
+    if (!tDataString)
+    {
+        return;
+    }
+    
+    NSDictionary *msgDic = [YSRoomUtil convertWithData:tDataString];
+
+    NSString *peerId = [msgDic bm_stringForKey:@"id"];
+    [[YSRoomInterface instance] changeUserProperty:peerId
+                                        tellWhom:YSRoomPubMsgTellAll
+                                            data:msgDic[@"properties"]
+                                      completion:nil];
 }
 
 @end
