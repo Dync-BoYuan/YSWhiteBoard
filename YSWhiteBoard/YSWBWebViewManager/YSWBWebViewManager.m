@@ -270,24 +270,22 @@
         [self setProperty:message.body];
 
     }
-    #if 0
-    else if ([message.name isEqualToString:sSendActionCommand])
+    else if ([message.name isEqualToString:sYSSignalSendActionCommand])
     {
-
         [self sendActionCommand:message.name aMessageBody:message.body];
-
-    } else if ([message.name isEqualToString:sSaveValueByKey]) {
-
+    }
+    else if ([message.name isEqualToString:sYSSignalSaveValueByKey])
+    {
         [self saveVlueByKey:message.body];
-
-    } else if ([message.name isEqualToString:sGetValueByKey]) {
-
+    }
+    else if ([message.name isEqualToString:sYSSignalGetValueByKey])
+    {
         [self getValueByKey:message.body];
-
-    } else if ([message.name isEqualToString:sOnJsPlay]) {
+    }
+    else if ([message.name isEqualToString:sYSSignalOnJsPlay])
+    {
         [self onJsPlay:message.body];
     }
-#endif
 }
 
 - (void)onPubMsg:(NSDictionary *)aJs
@@ -606,6 +604,375 @@
                                         tellWhom:YSRoomPubMsgTellAll
                                             data:msgDic[@"properties"]
                                       completion:nil];
+}
+
+- (void)sendActionCommand:(id)messageName aMessageBody:(id)aMessageBody
+{
+    if (![aMessageBody bm_isNotEmptyDictionary])
+    {
+        return;
+    }
+
+    NSString *tDataString = [aMessageBody bm_stringForKey:@"data"];
+    NSDictionary *msgDic = [YSRoomUtil convertWithData:tDataString];
+    if (![msgDic bm_isNotEmptyDictionary])
+    {
+        return;
+    }
+    
+    NSString *action = [msgDic bm_stringForKey:@"action"];
+    NSDictionary *dic = [msgDic bm_dictionaryForKey:@"cmd"];
+    
+#pragma mark 文档状态更新
+    // 文档状态更新
+    if ([action isEqualToString:WBViewStateUpdate])
+    {
+        if (self.delegate &&
+            [self.delegate respondsToSelector:@selector(onWBWebViewManagerStateUpdate:)])
+        {
+            [self.delegate onWBWebViewManagerStateUpdate:dic];
+        }
+    }
+    else if ([action isEqualToString:WBDocumentLoadSuccessOrFailure])
+    {
+        if (self.delegate &&
+            [self.delegate respondsToSelector:@selector(onWBWebViewManagerLoadSuccess:)])
+        {
+            [self.delegate onWBWebViewManagerLoadSuccess:dic];
+        }
+    }
+    else if ([action isEqualToString:WBDocumentSlideLoadTimeout])
+    {
+        if (self.delegate &&
+            [self.delegate respondsToSelector:@selector(onWBWebViewManagerSlideLoadTimeout:)])
+        {
+            [self.delegate onWBWebViewManagerSlideLoadTimeout:dic];
+        }
+    }
+
+#pragma mark preloadingFished 预加载文档结束
+    
+    // 预加载文档结束
+    else if ([action isEqualToString:WBPreloadingFished])
+    {
+        WB_INFO(@"evaluateJS - preFinish - %@", msgDic);
+        [YSWhiteBoardManager shareInstance].preloadingFished = YES;
+
+        //        [self afterConnectToRoomAndPreloadingFished];
+
+        if (self.delegate &&
+            [self.delegate respondsToSelector:@selector(onWBWebViewManagerPreloadingFished)])
+        {
+            [self.delegate onWBWebViewManagerPreloadingFished];
+        }
+    }
+}
+
+- (void)saveVlueByKey:(id)aMessageBody
+{
+    if (![aMessageBody bm_isNotEmptyDictionary])
+    {
+        return;
+    }
+
+    NSDictionary *dic     = (NSDictionary *)aMessageBody;
+    NSString *tDataString = [dic objectForKey:@"data"];
+    
+    NSDictionary *msgDic = [YSRoomUtil convertWithData:tDataString];
+    
+    NSString *key = [msgDic bm_stringForKey:@"key"];
+    NSString *value = [msgDic bm_stringForKey:@"value"];
+    if (key && value)
+    {
+        [[NSUserDefaults standardUserDefaults] setObject:value forKey:key];
+    }
+}
+
+- (void)getValueByKey:(id)aMessageBody
+{
+    if (![aMessageBody bm_isNotEmptyDictionary])
+    {
+        return;
+    }
+
+    NSDictionary *dic     = (NSDictionary *)aMessageBody;
+    NSString *tDataString = [dic objectForKey:@"data"];
+    
+    NSDictionary *msgDic = [YSRoomUtil convertWithData:tDataString];
+
+    NSString *callbackID = [msgDic bm_stringForKey:@"callbackID"];
+    NSString *strM = nil;
+    NSString *key = [msgDic bm_stringForKey:@"key"];
+    if (key)
+    {
+        strM = [[NSUserDefaults standardUserDefaults] objectForKey:key];
+    }
+    if (![strM bm_isNotEmpty])
+    {
+        return;
+    }
+    
+    NSString *js = [NSString stringWithFormat:@"JsSocket.JsSocketCallback('%@',%@)", callbackID, strM];
+    
+    if (self.webView)
+    {
+        [self.webView evaluateJavaScript:js
+                   completionHandler:^(id _Nullable response, NSError *_Nullable error){}];
+    }
+}
+
+- (void)onJsPlay:(NSDictionary *)aMessageBody
+{
+    if (![aMessageBody bm_isNotEmptyDictionary])
+    {
+        return;
+    }
+
+    [self onPublishNetworkMedia:aMessageBody];
+}
+
+
+#pragma -
+#pragma mark Function
+
+- (void)sendSignalMessageToJS:(NSString *)signalingName message:(nullable id)message
+{
+    NSString *msgName = nil;
+    NSDictionary *data = nil;
+    
+    if ([signalingName isEqualToString:WBPubMsg] || [signalingName isEqualToString:WBDelMsg])
+    {
+        // 信令转发时大部分有message
+        if ([message bm_isNotEmptyDictionary])
+        {
+            msgName = [message bm_stringForKey:@"name"];
+            if (msgName != nil)
+            {
+                // 只转发 ClassBegin， ShowPage  和 H5DocumentAction， NewPptTriggerActionClick 四种信令
+                if (![msgName isEqualToString:sYSSignalShowPage] && ![msgName isEqualToString:sYSSignalH5DocumentAction] && ![msgName isEqualToString:sYSSignalNewPptTriggerActionClick] && ![msgName isEqualToString:sYSSignalClassBegin])
+                {
+                    return;
+                }
+                
+                data = [message bm_dictionaryForKey:@"data"];
+                
+                if ([signalingName isEqualToString:WBDelMsg])
+                {
+                    msgName = [NSString stringWithFormat:@"\"%@\"", msgName];
+                    // WBDelMsg只发送信令名
+                    NSString *jsReceivePhoneByTriggerEvent = [NSString stringWithFormat:@"JsSocket.%@(%@)", signalingName, msgName];
+                    [self sendMessageToJS:jsReceivePhoneByTriggerEvent];
+                    return;
+                }
+            }
+        }
+    }
+    else if ([signalingName isEqualToString:WBSetProperty])
+    {
+        // 不再发送WBSetProperty，改变自己的sUserCandraw时发送WBUpdatePermission
+        if ([message bm_isNotEmptyDictionary])
+        {
+            NSDictionary *properties = [message bm_dictionaryForKey:@"properties"];
+            NSString *peerId = [message bm_stringForKey:@"id"];
+            // sYSUserCandraw
+            if ([properties bm_containsObjectForKey:sYSUserCandraw])
+            {
+                NSString *localUserPeerID = [YSRoomInterface instance].localUser.peerID;
+                if ([peerId isEqualToString:localUserPeerID])
+                {
+                    BOOL canDraw = [properties bm_boolForKey:sYSUserCandraw];
+
+                    signalingName = WBUpdatePermission;
+                    message = canDraw ? @"1" : @"0";
+
+                    NSString *jsReceivePhoneByTriggerEvent =
+                        [NSString stringWithFormat:@"JsSocket.%@(%@)", signalingName, message];
+                    [self sendMessageToJS:jsReceivePhoneByTriggerEvent];
+                }
+            }
+        }
+        return;
+    }
+    
+    if (data)
+    {
+        message = data;
+    }
+    
+    NSString *tJsonDataJsonString;
+    if (message)
+    {
+        if ([message isKindOfClass:[NSString class]])
+        {
+            tJsonDataJsonString = message;
+        }
+        else
+        {
+            NSData *tJsonData = [NSJSONSerialization dataWithJSONObject:message
+                                                                options:NSJSONWritingPrettyPrinted
+                                                                  error:nil];
+            tJsonDataJsonString =
+                [[NSString alloc] initWithData:tJsonData encoding:NSUTF8StringEncoding];
+        }
+    }
+    else
+    {
+        tJsonDataJsonString = @"";
+    }
+
+    NSString *jsReceivePhoneByTriggerEvent = nil;
+    if (msgName)
+    {
+        msgName = [NSString stringWithFormat:@"\"%@\"", msgName];
+        if (message)
+        {
+            jsReceivePhoneByTriggerEvent = [NSString stringWithFormat:@"JsSocket.%@(%@,%@)", signalingName, msgName, tJsonDataJsonString];
+        }
+        else
+        {
+            jsReceivePhoneByTriggerEvent = [NSString stringWithFormat:@"JsSocket.%@(%@)", signalingName, msgName];
+        }
+    }
+    else
+    {
+        jsReceivePhoneByTriggerEvent = [NSString stringWithFormat:@"JsSocket.%@(%@)", signalingName, tJsonDataJsonString];
+    }
+
+    [self sendMessageToJS:jsReceivePhoneByTriggerEvent];
+}
+
+- (void)sendMessageToJS:(NSString *)message
+{
+    WB_INFO(@"evaluateJS - msg - %@", message);
+    [self.webView evaluateJavaScript:message
+               completionHandler:^(id _Nullable id, NSError *_Nullable error){
+               }];
+}
+
+- (void)sendAction:(NSString *)action command:(nullable NSDictionary *)cmd
+{
+    NSString *tJsonDataJsonString;
+    NSString *jsReceivePhoneByTriggerEvent;
+
+    if (cmd)
+    {
+        NSData *tJsonData = [NSJSONSerialization dataWithJSONObject:cmd
+                                                            options:NSJSONWritingPrettyPrinted
+                                                              error:nil];
+
+        tJsonDataJsonString =
+            [[NSString alloc] initWithData:tJsonData encoding:NSUTF8StringEncoding];
+
+        jsReceivePhoneByTriggerEvent =
+            [NSString stringWithFormat:@"JsSocket.%@('%@',%@)", sYSSignalReceiveActionCommand, action,
+                                       tJsonDataJsonString];
+    }
+    else
+    {
+        jsReceivePhoneByTriggerEvent =
+            [NSString stringWithFormat:@"JsSocket.%@('%@')", sYSSignalReceiveActionCommand, action];
+    }
+
+    WB_INFO(@"evaluateJS - Action - %@ - %@ - %@", action, cmd, jsReceivePhoneByTriggerEvent);
+    [self.webView evaluateJavaScript:jsReceivePhoneByTriggerEvent
+               completionHandler:^(id _Nullable id, NSError *_Nullable error){
+               }];
+}
+
+- (void)whiteBoardOnRoomConnectedUserlist:(NSNumber *)code response:(NSDictionary *)response
+{
+    NSMutableDictionary *newDic = [NSMutableDictionary dictionaryWithDictionary:response];
+    [newDic enumerateKeysAndObjectsUsingBlock:^(id _Nonnull key, NSDictionary *_Nonnull obj,
+                                                BOOL *_Nonnull stop) {
+        if ([key isEqualToString:@"msglist"])
+        {
+            NSMutableDictionary *msglist = [NSMutableDictionary dictionaryWithDictionary:obj];
+            [msglist enumerateKeysAndObjectsUsingBlock:^(
+                         NSString *_Nonnull key, NSDictionary *_Nonnull obj, BOOL *_Nonnull stop) {
+                if ([key isEqualToString:sYSSignalDocumentFilePage_ShowPage])
+                {
+                    NSMutableDictionary *bigGuy =
+                        [NSMutableDictionary dictionaryWithDictionary:obj];
+                    NSMutableDictionary *tDic = nil;
+                    id data = [obj objectForKey:@"data"];
+                    tDic = [YSRoomUtil convertWithData:data];
+
+                    NSMutableDictionary *filedata =
+                        [NSMutableDictionary dictionaryWithDictionary:[tDic bm_dictionaryForKey:@"filedata"]];
+                    NSString *fileid = [NSString stringWithFormat:@"%@", [filedata bm_stringForKey:@"fileid"]];
+                    
+                    if ([YSWhiteBoardManager supportPreload] &&
+                        [[NSFileManager defaultManager] fileExistsAtPath:[[NSTemporaryDirectory() stringByAppendingPathComponent:@"YSFile"] stringByAppendingPathComponent:fileid]])
+                    {
+                        NSString *type         = nil;
+                        BOOL isH5Document = [tDic bm_boolForKey:@"isH5Document"];
+                        BOOL isDynamicPPT = [tDic bm_boolForKey:@"isDynamicPPT"];
+                        if (isH5Document) { type = @"/index.html"; }
+                        if (isDynamicPPT) { type = @"/newppt.html"; }
+
+                        NSString *baseurl =
+                        [NSURL fileURLWithPath:[[[NSTemporaryDirectory() stringByAppendingPathComponent:@"YSFile"]
+                                                 stringByAppendingPathComponent:fileid]
+                                                stringByAppendingPathComponent:type]]
+                        .relativeString;
+                        [filedata setObject:baseurl forKey:@"baseurl"];
+                        [tDic setObject:filedata forKey:@"filedata"];
+                        NSString *dataString = [[NSString alloc]
+                            initWithData:[NSJSONSerialization
+                                             dataWithJSONObject:tDic
+                                                        options:NSJSONWritingPrettyPrinted
+                                                          error:nil]
+                                encoding:NSUTF8StringEncoding];
+                        dataString =
+                            [dataString stringByReplacingOccurrencesOfString:@"\n" withString:@""];
+                        [bigGuy setObject:dataString forKey:@"data"];
+                        [msglist setObject:bigGuy forKey:key];
+                        [newDic setObject:msglist forKey:@"msglist"];
+                    }
+
+                    BOOL isMedia = [tDic bm_boolForKey:@"isMedia"];
+                    if (isMedia) { [newDic removeObjectForKey:key]; }
+                }
+            }];
+        }
+    }];
+
+    NSString *tJsonDataJsonString;
+    if (response)
+    {
+        NSData *tJsonData = [NSJSONSerialization dataWithJSONObject:newDic
+                                                            options:NSJSONWritingPrettyPrinted
+                                                              error:nil];
+        tJsonDataJsonString =
+            [[NSString alloc] initWithData:tJsonData encoding:NSUTF8StringEncoding];
+    }
+    else
+    {
+        tJsonDataJsonString = @"";
+    }
+
+    NSString *jsReceivePhoneByTriggerEvent = [NSString
+        stringWithFormat:@"JsSocket.%@(%@,%@)", WBRoomConnected, code, tJsonDataJsonString];
+
+    [self sendMessageToJS:jsReceivePhoneByTriggerEvent];
+
+    [[YSRoomInterface instance] pubMsg:sYSSignalUpdateTime
+                               msgID:sYSSignalUpdateTime
+                                toID:[YSRoomInterface instance].localUser.peerID
+                                data:@""
+                                save:NO
+                     associatedMsgID:nil
+                    associatedUserID:nil
+                             expires:0
+                          completion:nil];
+
+    // Get msgList from "msglist"
+    NSDictionary *msgDic = [response bm_dictionaryForKey:@"msglist"];
+    if (self.delegate &&
+        [self.delegate respondsToSelector:@selector(onWBWebViewManagerOnRoomConnectedMsglist:)])
+    {
+        [self.delegate onWBWebViewManagerOnRoomConnectedMsglist:msgDic];
+    }
 }
 
 @end

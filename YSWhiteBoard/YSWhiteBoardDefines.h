@@ -76,13 +76,36 @@ static  NSString *const sYSSignalOnJsPlay               = @"isPlayAudio";
 
 /// 显示课件
 static  NSString *const sYSSignalShowPage               = @"ShowPage";
+/// ShowPage ID
+static  NSString *const sYSSignalDocumentFilePage_ShowPage = @"DocumentFilePage_ShowPage";
 
 /// 更换画笔工具
 static  NSString *const sYSSignalSharpsChange           = @"SharpsChange";
 
 
+static  NSString *const sYSSignalH5DocumentAction       = @"H5DocumentAction";
+static  NSString *const sYSSignalNewPptTriggerActionClick = @"NewPptTriggerActionClick";
+
+static  NSString *const sYSSignalClassBegin             = @"ClassBegin";
+static  NSString *const sYSSignalUpdateTime             = @"UpdateTime";
+
+
+
 #pragma - mark js命令
 
-#define WBFakeJsSdkInitInfo         @"updateFakeJsSdkInitInfo"
+#define WBFakeJsSdkInitInfo                         @"updateFakeJsSdkInitInfo"
+#define WBViewStateUpdate                           @"viewStateUpdate"//视图更新
+#define WBDocumentLoadSuccessOrFailure              @"documentLoadSuccessOrFailure"
+#define WBDocumentSlideLoadTimeout                  @"slideLoadTimeout"
+
+#define WBPreloadingFished                          @"preloadingFished"//预加载文档结束
+
+#define WBPubMsg                                    @"pubMsg"
+#define WBDelMsg                                    @"delMsg"
+#define WBSetProperty                               @"setProperty"
+
+#define WBUpdatePermission                          @"updatePermission"
+
+#define WBRoomConnected                             @"roomConnected"
 
 #endif /* YSWhiteBoardDefines_h */

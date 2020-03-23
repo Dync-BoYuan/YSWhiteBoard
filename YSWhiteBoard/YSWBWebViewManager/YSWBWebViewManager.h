@@ -98,19 +98,19 @@ typedef void(^wbWebViewTerminateBlock)(void);
 
 @required
 
-//文档控制按钮状态更新
+/// 文档控制按钮状态更新
 - (void)onWBWebViewManagerStateUpdate:(NSDictionary *)message;
-//课件加载成功回调
+/// 课件加载成功回调
 - (void)onWBWebViewManagerLoadSuccess:(NSDictionary *)dic;
-//翻页超时
+/// 翻页超时
 - (void)onWBWebViewManagerSlideLoadTimeout:(NSDictionary *)dic;
-//房间链接成功msglist回调
+/// 房间链接成功msglist回调
 - (void)onWBWebViewManagerOnRoomConnectedMsglist:(NSDictionary *)msgList;
-// 教室加载状态
+/// 教室加载状态
 - (void)onWBWebViewManagerLoadedState:(NSDictionary *)message;
-// 白板初始化完成
+/// 白板初始化完成
 - (void)onWBWebViewManagerPageFinshed;
-// 预加载文档结束
+/// 预加载文档结束
 - (void)onWBWebViewManagerPreloadingFished;
 
 @end

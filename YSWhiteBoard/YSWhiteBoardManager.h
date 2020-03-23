@@ -22,10 +22,17 @@ NS_ASSUME_NONNULL_BEGIN
 /// 记录UI层是否开始上课
 @property (nonatomic, assign, readonly) BOOL isBeginClass;
 
+// 预加载文档标识
+@property (nonatomic, assign) BOOL preloadingFished;
+
+
 + (instancetype)shareInstance;
 + (NSString *)whiteBoardVersion;
 
++ (BOOL)supportPreload;
+
 - (void)doMsgCachePool;
+
 
 @end
 
