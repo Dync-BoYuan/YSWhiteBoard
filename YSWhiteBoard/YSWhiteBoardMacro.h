@@ -9,8 +9,6 @@
 #ifndef YSWhiteBoardMacro_h
 #define YSWhiteBoardMacro_h
 
-#define YSIS_PAD            (UI_USER_INTERFACE_IDIOM()== UIUserInterfaceIdiomPad)
-
 #define YSWBBUNDLE_NAME     @"YSResources.bundle"
 #define YSWBBUNDLE          [NSBundle bundleWithPath: [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:YSWBBUNDLE_NAME]]
 #define YSWBLocalized(s)    [YSWBBUNDLE localizedStringForKey:s value:@"" table:nil]
@@ -34,7 +32,7 @@ extern NSString *const YSWhiteBoardWebProtocolKey;
 extern NSString *const YSWhiteBoardWebHostKey;
 /// port
 extern NSString *const YSWhiteBoardWebPortKey;
-
+extern NSString *const YSWhiteBoardPlayBackKey;
 
 #pragma mark - 1.读取本地index  0.读取指定   ssssssssss
 #define IS_LOAD_LOCAL_INDEX 1

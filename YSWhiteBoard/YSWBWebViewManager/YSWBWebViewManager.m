@@ -232,19 +232,23 @@
     // NSDictionary, and NSNull类型
     WB_INFO(@"userContentController message.name:%@, message.body:%@", message.name, message.body);
     
-#if 0
-    if ([message.name isEqualToString:sYSSignalPubMsg]) {
+    if ([message.name isEqualToString:sYSSignalPubMsg])
+    {
         [self onPubMsg:message.body];
-
-    } else if ([message.name isEqualToString:sDelMsg]) {
+    }
+    else if ([message.name isEqualToString:sYSSignalDelMsg])
+    {
         [self onDelMsg:message.body];
 
     }
     // 页面加载完成
-    else if ([message.name isEqualToString:sOnPageFinished]) {
+    else if ([message.name isEqualToString:sYSSignalOnPageFinished])
+    {
         [self onPageFinished];
 
-    } else if ([message.name isEqualToString:sPrintLogMessage]) {
+    }
+    #if 0
+    else if ([message.name isEqualToString:sPrintLogMessage]) {
         [self printLogMessage:message.name aMessageBody:message.body];
 
     } else if ([message.name isEqualToString:sPublishNetworkMedia]) {
@@ -275,6 +279,159 @@
         [self onJsPlay:message.body];
     }
 #endif
+}
+
+- (void)onPubMsg:(NSDictionary *)aJs
+{
+    NSString *msgString = [aJs bm_stringForKey:@"data"];
+    if (![msgString bm_isNotEmpty])
+    {
+        return;
+    }
+    
+    NSMutableDictionary *msgDic = [NSMutableDictionary dictionaryWithDictionary:[YSRoomUtil convertWithData:msgString]];
+    if (![msgDic bm_isNotEmptyDictionary])
+    {
+        return;
+    }
+
+    NSString *msgName = [msgDic bm_stringForKey:@"name"];
+    if ([msgName isEqualToString:sYSSignalShowPage])
+    {
+        id data = msgDic[@"data"];
+        NSDictionary *dic = [YSRoomUtil convertWithData:data];
+        
+        NSMutableDictionary *dataDic = [NSMutableDictionary dictionaryWithDictionary:dic];
+        NSMutableDictionary *filedata =
+            [NSMutableDictionary dictionaryWithDictionary:dataDic[@"filedata"]];
+        [filedata removeObjectForKey:@"baseurl"];
+
+        [dataDic setObject:filedata forKey:@"filedata"];
+        
+        NSString *dataString = [dataDic bm_toJSON];
+        
+        [msgDic bm_setString:dataString forKey:@"data"];
+    }
+
+    NSString *msgId = [msgDic bm_stringForKey:@"id"];
+    NSString *toId = [msgDic bm_stringForKey:@"toID"];
+    NSString *tData = [msgDic bm_stringForKey:@"data"];
+    NSString *associatedMsgID  = [msgDic bm_stringForKey:@"associatedMsgID"];
+    NSString *associatedUserID = [msgDic bm_stringForKey:@"associatedUserID"];
+    NSDictionary *expandParams = [msgDic bm_dictionaryForKey:@"expandParams"];
+
+    if ([msgName isEqualToString:sYSSignalShowPage])
+    {
+        toId = YSRoomPubMsgTellAll;
+        [self stopPlayMp3];
+    }
+
+    NSMutableDictionary *pubDict = [NSMutableDictionary dictionary];
+    [pubDict setValue:associatedMsgID forKey:@"associatedMsgID"];
+    [pubDict setValue:associatedUserID forKey:@"associatedUserID"];
+    if (expandParams)
+    {
+        [pubDict addEntriesFromDictionary:expandParams];
+    }
+    
+    NSLog(@"onPubMsg msgName:%@", msgName);
+    
+    [[YSRoomInterface instance] pubMsg:msgName
+                                 msgID:msgId
+                                  toID:toId
+                                  data:tData
+                                  save:YES
+                         extensionData:pubDict
+                       associatedMsgID:nil
+                      associatedUserID:nil
+                               expires:0
+                            completion:nil];
+}
+
+- (void)onDelMsg:(NSDictionary *)aJs
+{
+    NSString *msgString = [aJs bm_stringForKey:@"data"];
+    if (![msgString bm_isNotEmpty])
+    {
+        return;
+    }
+    
+    NSDictionary *msgDic = [YSRoomUtil convertWithData:msgString];
+    if (![msgDic bm_isNotEmptyDictionary])
+    {
+        return;
+    }
+
+    NSString *msgName = [msgDic bm_stringForKey:@"name"];
+    NSString *msgId = [msgDic bm_stringForKey:@"id"];
+    NSString *toId = [msgDic bm_stringForKey:@"toID"];
+    NSString *data = [msgDic bm_stringForKey:@"data"];
+
+    BOOL isCanDraw = [YSRoomInterface instance].localUser.canDraw;
+    BOOL isTeacher = ([YSRoomInterface instance].localUser.role == YSUserType_Teacher);
+    BOOL isSharpsChangeMsg = [msgName isEqualToString:sYSSignalSharpsChange];
+    BOOL isBeginClass = [YSWhiteBoardManager shareInstance].isBeginClass;
+    BOOL isCanSend = (isBeginClass && ((isCanDraw && isSharpsChangeMsg) || isTeacher));
+    if (!isCanSend)
+    {
+        return;
+    }
+
+    [[YSRoomInterface instance] delMsg:msgName msgID:msgId toID:toId data:data completion:nil];
+}
+
+#pragma mark 页面加载完成
+
+- (void)onPageFinished
+{
+    NSMutableDictionary *msgDic = [NSMutableDictionary dictionary];
+
+    msgDic[@"languageType"] = [YSRoomUtil getCurrentLanguage];
+    msgDic[@"deviceType"]   = BMIS_IPHONE ? @"phone" : @"pad";
+    msgDic[@"debugLog"]     = @(false);
+
+    // 文档(主白板)
+    // isSendLogMessageToProtogenesis clientType 字段 外层和 mobileInfo下 都是有用的，不能去重
+    msgDic[@"mobileInfo"] = @{ @"isSendLogMessageToProtogenesis" : @(false), @"clientType" : @"ios" };
+    msgDic[@"isSendLogMessageToProtogenesis"] = @(false);
+    msgDic[@"clientType"]                     = @"ios";
+    msgDic[@"playback"] = [YSWhiteBoardManager shareInstance].roomDic[YSWhiteBoardPlayBackKey];
+
+    [self onPagefinishSendJSMessage:msgDic];
+}
+
+- (void)onPagefinishSendJSMessage:(NSDictionary *)msgDic
+{
+    if (![msgDic bm_isNotEmptyDictionary])
+    {
+        return;
+    }
+    
+    NSData *data = [NSJSONSerialization dataWithJSONObject:msgDic
+                                                   options:NSJSONWritingPrettyPrinted
+                                                     error:nil];
+    NSString *strMsg = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+    NSString *js   = [NSString stringWithFormat:@"JsSocket.%@(%@)", WBFakeJsSdkInitInfo, strMsg];
+
+    WB_INFO(@"evaluateJS - onPagefinish - %@", msgDic);
+
+    BMWeakSelf
+    [self.webView evaluateJavaScript:js completionHandler:^(id _Nullable response, NSError *_Nullable error) {
+        
+        if (weakSelf.loadFinishedBlock)
+        {
+            weakSelf.loadFinishedBlock();
+        }
+        
+        // 执行所有缓存的信令消息
+        [[YSWhiteBoardManager shareInstance] doMsgCachePool];
+        
+        // 尝试开始 预加载
+        if(weakSelf.delegate && [weakSelf.delegate respondsToSelector:@selector(onWBWebViewManagerPageFinshed)])
+        {
+            [weakSelf.delegate onWBWebViewManagerPageFinshed];
+        }
+    }];
 }
 
 @end

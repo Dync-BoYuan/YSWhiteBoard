@@ -69,14 +69,14 @@ typedef NS_OPTIONS(NSUInteger, YSWBLOG_MODE_MASK) {
 /// @name Methods
 ///-----------------------------------
 
-- (void)log:(YSWBLOG_MODE)mode file:(NSString *)file line:(NSNumber *)line format:(NSString *)format, ...;
-- (void)log:(YSWBLOG_MODE)mode file:(NSString *)file line:(NSNumber *)line format:(NSString *)format args:(va_list)args;
-- (void)logWithModesOverride:(YSWBLOG_MODE_MASK)overrideModes mode:(YSWBLOG_MODE)mode file:(NSString *)file line:(NSNumber *)line
+- (void)log:(YSWBLOG_MODE)mode file:(nullable NSString *)file line:(nullable NSNumber *)line format:(NSString *)format, ...;
+- (void)log:(YSWBLOG_MODE)mode file:(nullable NSString *)file line:(nullable NSNumber *)line format:(NSString *)format args:(va_list)args;
+- (void)logWithModesOverride:(YSWBLOG_MODE_MASK)overrideModes mode:(YSWBLOG_MODE)mode file:(nullable NSString *)file line:(nullable NSNumber *)line
                       format:(NSString *)format args:(va_list)args;
 
 @end
 
-FOUNDATION_STATIC_INLINE void logThis(YSWBLOG_MODE mode, NSString *file, NSNumber *line, NSString *format, ...) {
+FOUNDATION_STATIC_INLINE void logThis(YSWBLOG_MODE mode, NSString * _Nullable file, NSNumber * _Nullable line, NSString *format, ...) {
     va_list args;
     va_start(args, format);
 #ifdef YSWBLOG_MODES

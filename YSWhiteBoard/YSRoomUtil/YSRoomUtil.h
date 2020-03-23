@@ -12,6 +12,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface YSRoomUtil : NSObject
 
+/// 获取设备语言
++ (NSString *)getCurrentLanguage;
+
+/// 将数据转换成字典类型NSDictionary
++ (NSDictionary *)convertWithData:(id)data;
+
 @end
 
 NS_ASSUME_NONNULL_END

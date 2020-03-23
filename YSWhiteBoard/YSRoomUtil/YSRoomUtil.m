@@ -37,4 +37,37 @@
     return @"ch";
 }
 
++ (NSDictionary *)convertWithData:(id)data
+{
+    if (!data)
+    {
+        return nil;
+    }
+    
+    NSDictionary *dataDic = nil;
+    
+    if ([data isKindOfClass:[NSString class]])
+    {
+        NSString *tDataString = [NSString stringWithFormat:@"%@", data];
+        NSData *tJsData = [tDataString dataUsingEncoding:NSUTF8StringEncoding];
+        if (tJsData)
+        {
+            dataDic = [NSJSONSerialization JSONObjectWithData:tJsData
+                                                      options:NSJSONReadingMutableContainers
+                                                        error:nil];
+        }
+    }
+    else if ([data isKindOfClass:[NSDictionary class]])
+    {
+        dataDic = (NSDictionary *)data;
+    }
+    else if ([data isKindOfClass:[NSData class]])
+    {
+        NSString *dataStr = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+        dataDic = [YSRoomUtil convertWithData:dataStr];
+    }
+    
+    return dataDic;
+}
+
 @end

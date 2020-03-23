@@ -10,6 +10,10 @@
 #define YSWhiteBoardDefines_h
 
 
+static NSString *const kYSMethodNameKey = @"YSCacheMsg_MethodName";
+static NSString *const kYSParameterKey = @"YSCacheMsg_Parameter";
+
+
 #pragma - mark 用户属性
 
 /// 用户属性
@@ -69,5 +73,16 @@ static  NSString *const sYSSignalGetValueByKey          = @"getValueByKey";
 
 /// 播放ppt内部MP3
 static  NSString *const sYSSignalOnJsPlay               = @"isPlayAudio";
+
+/// 显示课件
+static  NSString *const sYSSignalShowPage               = @"ShowPage";
+
+/// 更换画笔工具
+static  NSString *const sYSSignalSharpsChange           = @"SharpsChange";
+
+
+#pragma - mark js命令
+
+#define WBFakeJsSdkInitInfo         @"updateFakeJsSdkInitInfo"
 
 #endif /* YSWhiteBoardDefines_h */

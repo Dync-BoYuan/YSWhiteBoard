@@ -7,6 +7,7 @@
 //
 
 #import "YSWhiteBoardManager.h"
+#import <objc/message.h>
 
 #import "YSWBDrawViewManager.h"
 #import "YSWBWebViewManager.h"
@@ -31,6 +32,9 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 
 /// 记录UI层是否开始上课
 @property (nonatomic, assign) BOOL isBeginClass;
+
+/// 信令缓存数据
+@property (nonatomic, strong) NSMutableArray *cacheMsgPool;
 
 @end
 
@@ -79,6 +83,45 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     }
     
     return YES;
+}
+
+- (void)doMsgCachePool
+{
+    // 执行所有缓存的信令消息
+    NSArray *array = self.cacheMsgPool;
+    for (NSDictionary *dic in array)
+    {
+        NSString *func = dic[kYSMethodNameKey];
+        SEL funcSel = NSSelectorFromString(func);
+
+        NSMutableArray *params = [NSMutableArray array];
+
+        if ([[dic allKeys] containsObject:kYSParameterKey])
+        {
+            params = dic[kYSParameterKey];
+        }
+        
+        switch (params.count)
+        {
+            case 0:
+                ((void (*)(id, SEL))objc_msgSend)(self, funcSel);
+                break;
+                
+            case 1:
+                ((void (*)(id, SEL, id))objc_msgSend)(self, funcSel, params.firstObject);
+                break;
+                
+            case 2:
+                ((void (*)(id, SEL, id, id))objc_msgSend)(
+                    self, funcSel, params.firstObject, params.lastObject);
+                break;
+
+            default:
+                break;
+        }
+    }
+    
+    [self.cacheMsgPool removeAllObjects];
 }
 
 #pragma mark - 监听课堂 底层通知消息

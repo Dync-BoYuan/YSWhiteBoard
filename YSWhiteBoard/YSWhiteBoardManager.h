@@ -25,6 +25,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (instancetype)shareInstance;
 + (NSString *)whiteBoardVersion;
 
+- (void)doMsgCachePool;
+
 @end
 
 NS_ASSUME_NONNULL_END
