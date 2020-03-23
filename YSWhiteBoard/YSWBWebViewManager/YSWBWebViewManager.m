@@ -21,9 +21,6 @@
 @property (nonatomic, copy) wbLoadFinishedBlock loadFinishedBlock;
 @property (nonatomic, strong) NSString *wbWebUrl;
 
-/// webview崩溃标识
-@property (nonatomic, assign) BOOL isWebViewCrash;
-
 @property (nonatomic, strong) NSMutableDictionary *audioDic;
 
 @end
@@ -33,7 +30,6 @@
 - (WKWebView *)createWhiteBoardWithFrame:(CGRect)frame
                        loadFinishedBlock:(wbLoadFinishedBlock)loadFinishedBlock
 {
-    self.isWebViewCrash    = NO;
     self.loadFinishedBlock = loadFinishedBlock;
     self.wbWebUrl = @"/publish/index.html#/mobileApp?languageType=ch";
 
@@ -240,13 +236,11 @@
     else if ([message.name isEqualToString:sYSSignalDelMsg])
     {
         [self onDelMsg:message.body];
-
     }
     // 页面加载完成
     else if ([message.name isEqualToString:sYSSignalOnPageFinished])
     {
         [self onPageFinished];
-
     }
     else if ([message.name isEqualToString:sYSSignalPrintLogMessage])
     {
@@ -895,7 +889,7 @@
                         [NSMutableDictionary dictionaryWithDictionary:obj];
                     NSMutableDictionary *tDic = nil;
                     id data = [obj objectForKey:@"data"];
-                    tDic = [YSRoomUtil convertWithData:data];
+                    tDic = [NSMutableDictionary dictionaryWithDictionary:[YSRoomUtil convertWithData:data]];
 
                     NSMutableDictionary *filedata =
                         [NSMutableDictionary dictionaryWithDictionary:[tDic bm_dictionaryForKey:@"filedata"]];
@@ -973,6 +967,183 @@
     {
         [self.delegate onWBWebViewManagerOnRoomConnectedMsglist:msgDic];
     }
+}
+
+
+#pragma mark - WKNavigationDelegate
+
+- (void)webViewWebContentProcessDidTerminate:(WKWebView *)webView
+    API_AVAILABLE(macosx(10.11), ios(9.0))
+{
+    WB_INFO(@"WKWebView 总体内存占用过大，页面即将白屏");
+    
+    [self webViewreload];
+}
+
+- (UIView *)viewForZoomingInScrollView:(UIScrollView *)scrollView
+{
+    return nil;
+}
+
+// 页面开始加载时调用
+- (void)webView:(WKWebView *)webView didStartProvisionalNavigation:(WKNavigation *)navigation
+{
+    WB_INFO(@"页面开始加载");
+}
+
+// 当内容开始返回时调用
+- (void)webView:(WKWebView *)webView didCommitNavigation:(WKNavigation *)navigation
+{
+    WB_INFO(@"当内容开始返回时调用");
+}
+
+// 页面加载完成之后调用
+- (void)webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation
+{
+    WB_INFO(@"页面加载完成");
+    
+    // 禁止网页手势缩放
+    NSString *injectionJSString = @"var script = document.createElement('meta');"
+    "script.name = 'viewport';"
+    "script.content=\"width=device-width, user-scalable=no\";"
+    "document.getElementsByTagName('head')[0].appendChild(script);";
+    [webView evaluateJavaScript:injectionJSString completionHandler:nil];
+}
+
+// 提交发生错误时调用
+- (void)webView:(WKWebView *)webView
+    didFailNavigation:(WKNavigation *)navigation
+            withError:(NSError *)error
+{
+    WB_INFO(@"页面加载失败：%@", error.debugDescription);
+}
+
+// 页面加载失败时调用
+- (void)webView:(WKWebView *)webView didFailProvisionalNavigation:(WKNavigation *)navigation
+{
+    WB_INFO(@"页面加载失败时调用");
+}
+
+//  接收到服务器跳转请求之后调用
+- (void)webView:(WKWebView *)webView
+    didReceiveServerRedirectForProvisionalNavigation:(WKNavigation *)navigation
+{
+    WB_INFO(@"接收到服务器跳转请求之后调用");
+}
+
+//  在收到响应后，决定是否跳转
+- (void)webView:(WKWebView *)webView
+    decidePolicyForNavigationResponse:(WKNavigationResponse *)navigationResponse
+                      decisionHandler:(void (^)(WKNavigationResponsePolicy))decisionHandler
+{
+    WB_INFO(@"在收到响应后，决定是否跳转");
+    decisionHandler(WKNavigationResponsePolicyAllow);
+}
+
+//  在发送请求之前，决定是否跳转
+- (void)webView:(WKWebView *)webView
+    decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction
+                    decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler
+{
+    NSURL *url = navigationAction.request.URL;
+    if ([url.absoluteString hasPrefix:@"about"]) {
+        decisionHandler(WKNavigationActionPolicyCancel);
+        return;
+    }
+    decisionHandler(WKNavigationActionPolicyAllow);
+    WB_INFO(@"在发送请求之前，决定是否跳转");
+}
+
+// 允许证书
+- (void)webView:(WKWebView *)webView
+    didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge
+                    completionHandler:
+                        (void (^)(NSURLSessionAuthChallengeDisposition disposition,
+                                  NSURLCredential *__nullable credential))completionHandler
+{
+    WB_INFO(@"%s", __FUNCTION__);
+
+    WB_INFO(@"Allow all");
+    SecTrustRef serverTrust = challenge.protectionSpace.serverTrust;
+    CFDataRef exceptions    = SecTrustCopyExceptions(serverTrust);
+    SecTrustSetExceptions(serverTrust, exceptions);
+    CFRelease(exceptions);
+    completionHandler(NSURLSessionAuthChallengeUseCredential,
+                      [NSURLCredential credentialForTrust:serverTrust]);
+}
+
+- (void)refreshWhiteBoardWithFrame:(CGRect)frame
+{
+    self.webView.frame = frame;
+
+    //给白板发送webview宽高
+    NSDictionary *tParamDic = @{
+        @"height" : @(CGRectGetHeight(self.webView.frame)), // DocumentFilePage_ShowPage
+        @"width" : @(CGRectGetWidth(self.webView.frame))
+    };
+
+    WB_INFO(@"refreshWhiteBoard : %@", NSStringFromCGRect(_webView.frame));
+    
+    [self sendAction:WBChangeDynamicPptSize command:tParamDic];
+}
+
+- (void)sendCacheInformation:(NSMutableArray *)array
+{
+    //发送room-msglist
+    for (NSDictionary *dic in array)
+    {
+        [self sendSignalMessageToJS:WBPubMsg message:dic];
+    }
+}
+
+// 重新加载白板
+- (void)webViewreload
+{
+    if (self.webViewTerminateBlock)
+    {
+        self.webViewTerminateBlock();
+    }
+    
+    [self.webView reload];
+}
+
+- (void)destory
+{
+    if (!self.webView)
+    {
+        return;
+    }
+
+    //解决音频未销毁的问题
+    NSURLRequest *request = [[NSURLRequest alloc] initWithURL:[NSURL URLWithString:@"about:blank"]];
+    [self.webView loadRequest:request];
+
+    [self.webView stopLoading];
+    
+    self.webView.scrollView.delegate = nil;
+    [[self.webView configuration].userContentController removeScriptMessageHandlerForName:sYSSignalPubMsg];
+    [[self.webView configuration].userContentController removeScriptMessageHandlerForName:sYSSignalDelMsg];
+    [[self.webView configuration].userContentController
+        removeScriptMessageHandlerForName:sYSSignalOnPageFinished];
+    [[self.webView configuration].userContentController
+        removeScriptMessageHandlerForName:sYSSignalPrintLogMessage];
+    [[self.webView configuration].userContentController
+        removeScriptMessageHandlerForName:sYSSignalPublishNetworkMedia];
+    [[self.webView configuration].userContentController removeScriptMessageHandlerForName:sYSSignalSetProperty];
+    [[self.webView configuration].userContentController
+        removeScriptMessageHandlerForName:sYSSignalChangeWebPageFullScreen];
+    [[self.webView configuration].userContentController
+        removeScriptMessageHandlerForName:sYSSignalSendActionCommand];
+    [[self.webView configuration].userContentController
+        removeScriptMessageHandlerForName:sYSSignalSaveValueByKey];
+    [[self.webView configuration].userContentController
+        removeScriptMessageHandlerForName:sYSSignalGetValueByKey];
+    [[self.webView configuration].userContentController removeScriptMessageHandlerForName:sYSSignalOnJsPlay];
+
+    [self.webView removeFromSuperview];
+    
+    self.webView  = nil;
+    self.delegate = nil;
 }
 
 @end

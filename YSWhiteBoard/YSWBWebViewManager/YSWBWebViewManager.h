@@ -85,10 +85,6 @@ typedef void(^wbWebViewTerminateBlock)(void);
  */
 - (void)webViewreload;
 
-/**
- 链接房间 预加载 都成功之后 发送预加载缓存
- */
-- (void)afterConnectToRoomAndPreloadingFished;
 - (void)stopPlayMp3;
 
 @end

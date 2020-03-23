@@ -94,11 +94,13 @@ static  NSString *const sYSSignalUpdateTime             = @"UpdateTime";
 #pragma - mark js命令
 
 #define WBFakeJsSdkInitInfo                         @"updateFakeJsSdkInitInfo"
-#define WBViewStateUpdate                           @"viewStateUpdate"//视图更新
+/// 视图更新
+#define WBViewStateUpdate                           @"viewStateUpdate"
 #define WBDocumentLoadSuccessOrFailure              @"documentLoadSuccessOrFailure"
 #define WBDocumentSlideLoadTimeout                  @"slideLoadTimeout"
 
-#define WBPreloadingFished                          @"preloadingFished"//预加载文档结束
+/// 预加载文档结束
+#define WBPreloadingFished                          @"preloadingFished"
 
 #define WBPubMsg                                    @"pubMsg"
 #define WBDelMsg                                    @"delMsg"
@@ -107,5 +109,9 @@ static  NSString *const sYSSignalUpdateTime             = @"UpdateTime";
 #define WBUpdatePermission                          @"updatePermission"
 
 #define WBRoomConnected                             @"roomConnected"
+
+/// 更新动态ppt大小
+#define WBChangeDynamicPptSize                     @"changeDynamicPptSize"
+
 
 #endif /* YSWhiteBoardDefines_h */
