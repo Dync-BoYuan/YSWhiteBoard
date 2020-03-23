@@ -222,4 +222,59 @@
     return userContentController;
 }
 
+
+#pragma mark - WKScriptMessageHandler
+
+- (void)userContentController:(WKUserContentController *)userContentController
+      didReceiveScriptMessage:(WKScriptMessage *)message
+{
+    // 打印所传过来的参数，只支持NSNumber, NSString, NSDate, NSArray,
+    // NSDictionary, and NSNull类型
+    WB_INFO(@"userContentController message.name:%@, message.body:%@", message.name, message.body);
+    
+#if 0
+    if ([message.name isEqualToString:sYSSignalPubMsg]) {
+        [self onPubMsg:message.body];
+
+    } else if ([message.name isEqualToString:sDelMsg]) {
+        [self onDelMsg:message.body];
+
+    }
+    // 页面加载完成
+    else if ([message.name isEqualToString:sOnPageFinished]) {
+        [self onPageFinished];
+
+    } else if ([message.name isEqualToString:sPrintLogMessage]) {
+        [self printLogMessage:message.name aMessageBody:message.body];
+
+    } else if ([message.name isEqualToString:sPublishNetworkMedia]) {
+        [self onPublishNetworkMedia:message.body];
+    } else if ([message.name isEqualToString:sUnpublishNetworkMedia]) {
+
+    }
+    // 全屏
+    else if ([message.name isEqualToString:sChangeWebPageFullScreen]) {
+        [self ChangeWebPageFullScreen:message.name aMessageBody:message.body];
+
+    } else if ([message.name isEqualToString:sSetProperty]) {
+        [self setProperty:message.body];
+
+    } else if ([message.name isEqualToString:sSendActionCommand]) {
+
+        [self sendActionCommand:message.name aMessageBody:message.body];
+
+    } else if ([message.name isEqualToString:sSaveValueByKey]) {
+
+        [self saveVlueByKey:message.body];
+
+    } else if ([message.name isEqualToString:sGetValueByKey]) {
+
+        [self getValueByKey:message.body];
+
+    } else if ([message.name isEqualToString:sOnJsPlay]) {
+        [self onJsPlay:message.body];
+    }
+#endif
+}
+
 @end

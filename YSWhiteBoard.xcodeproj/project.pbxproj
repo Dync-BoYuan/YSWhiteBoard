@@ -26,6 +26,8 @@
 		87AD162A24284E8E00EAE233 /* YSRoomUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 87AD162824284E8E00EAE233 /* YSRoomUtil.m */; };
 		87AD162D2428536200EAE233 /* YSWKWebViewWeakDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 87AD162B2428536200EAE233 /* YSWKWebViewWeakDelegate.h */; };
 		87AD162E2428536200EAE233 /* YSWKWebViewWeakDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 87AD162C2428536200EAE233 /* YSWKWebViewWeakDelegate.m */; };
+		87AD1631242859A900EAE233 /* YSWBLogger.h in Headers */ = {isa = PBXBuildFile; fileRef = 87AD162F242859A900EAE233 /* YSWBLogger.h */; };
+		87AD1632242859A900EAE233 /* YSWBLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 87AD1630242859A900EAE233 /* YSWBLogger.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -53,6 +55,8 @@
 		87AD162824284E8E00EAE233 /* YSRoomUtil.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YSRoomUtil.m; sourceTree = "<group>"; };
 		87AD162B2428536200EAE233 /* YSWKWebViewWeakDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YSWKWebViewWeakDelegate.h; sourceTree = "<group>"; };
 		87AD162C2428536200EAE233 /* YSWKWebViewWeakDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YSWKWebViewWeakDelegate.m; sourceTree = "<group>"; };
+		87AD162F242859A900EAE233 /* YSWBLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YSWBLogger.h; sourceTree = "<group>"; };
+		87AD1630242859A900EAE233 /* YSWBLogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YSWBLogger.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -128,6 +132,8 @@
 			children = (
 				87AD16172427554900EAE233 /* YSRoomConfiguration.h */,
 				87AD16182427554900EAE233 /* YSRoomConfiguration.m */,
+				87AD162F242859A900EAE233 /* YSWBLogger.h */,
+				87AD1630242859A900EAE233 /* YSWBLogger.m */,
 				87AD162724284E8E00EAE233 /* YSRoomUtil.h */,
 				87AD162824284E8E00EAE233 /* YSRoomUtil.m */,
 			);
@@ -168,6 +174,7 @@
 				87AD162924284E8E00EAE233 /* YSRoomUtil.h in Headers */,
 				87AD1600242721F000EAE233 /* YSWhiteBoardManager.h in Headers */,
 				87AD162424275E5900EAE233 /* YSWBWebViewManager.h in Headers */,
+				87AD1631242859A900EAE233 /* YSWBLogger.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -249,6 +256,7 @@
 				87AD162A24284E8E00EAE233 /* YSRoomUtil.m in Sources */,
 				87AD1601242721F000EAE233 /* YSWhiteBoardManager.m in Sources */,
 				87AD161A2427554900EAE233 /* YSRoomConfiguration.m in Sources */,
+				87AD1632242859A900EAE233 /* YSWBLogger.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

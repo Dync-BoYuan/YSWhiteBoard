@@ -24,4 +24,5 @@ FOUNDATION_EXPORT const unsigned char YSWhiteBoardVersionString[];
 #import "YSWhiteBoardManager.h"
 
 #import "YSRoomUtil.h"
+#import "YSWBLogger.h"
 
