@@ -8,6 +8,7 @@
 
 #import "YSWBDrawViewManager.h"
 #import "DrawView.h"
+#import "LaserPan.h"
 
 NSString *const YSWhiteBoardRemoteSelectTool = @"YSWhiteBoardRemoteSelectTool"; //远程选择
 
@@ -25,6 +26,10 @@ NSString *const YSWhiteBoardRemoteSelectTool = @"YSWhiteBoardRemoteSelectTool"; 
 /// 普通课件视图
 @property (nonatomic, strong) DocShowView *fileView;
 
+/// 激光笔
+@property (nonatomic, strong) LaserPan *laserPan;
+
+
 @property (nonatomic, strong) NSMutableDictionary *wbToolConfigs;
 @property (nonatomic, strong) NSString *defaultPrimaryColor;
 
@@ -36,6 +41,13 @@ NSString *const YSWhiteBoardRemoteSelectTool = @"YSWhiteBoardRemoteSelectTool"; 
 
 /// 记录刚进入教室 老师的画笔状态，是否使用选取工具
 @property (nonatomic, assign) BOOL selectMouse;
+
+/// 课件比例
+@property (nonatomic, assign) CGFloat ratio;
+@property (nonatomic, assign) CGFloat h5Ratio;
+/// 课件缩放比例
+@property (nonatomic, assign) CGFloat currentScale;
+
 
 @end
 
@@ -242,7 +254,6 @@ NSString *const YSWhiteBoardRemoteSelectTool = @"YSWhiteBoardRemoteSelectTool"; 
     }
 }
 
-/*
 - (void)observeValueForKeyPath:(NSString *)keyPath
                       ofObject:(id)object
                         change:(NSDictionary<NSKeyValueChangeKey, id> *)change
@@ -254,12 +265,16 @@ NSString *const YSWhiteBoardRemoteSelectTool = @"YSWhiteBoardRemoteSelectTool"; 
         {
             float zoomScale = self.fileView.zoomScale;
             CGPoint offset = self.fileView.contentOffset;
+            
             [self resetEnlargeValue:YSWHITEBOARD_MINZOOMSCALE animated:NO];
+            
             [self.fileView setContentOffset:CGPointZero];
-            [self updateWBRatio:_ratio];
+            [self updateWBRatio:self.ratio];
             [self.fileView setNeedsLayout];
             [self.fileView layoutIfNeeded];
+            
             [self resetEnlargeValue:zoomScale animated:NO];
+            
             if (offset.x < 0)
             {
                 offset.x = 0;
@@ -280,12 +295,301 @@ NSString *const YSWhiteBoardRemoteSelectTool = @"YSWhiteBoardRemoteSelectTool"; 
         }
         else
         {
-            [self updateWBRatio:_ratio];
+            [self updateWBRatio:self.ratio];
             [self.fileView setNeedsLayout];
             [self.fileView layoutIfNeeded];
         }
     }
 }
-*/
+
+- (void)setShowOnWeb:(BOOL)showOnWeb
+{
+    _showOnWeb = showOnWeb;
+    
+    if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 11.0)
+    {
+        if (showOnWeb)
+        {
+            self.fileView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+        }
+        else
+        {
+            self.fileView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentAlways;
+        }
+    }
+
+    [self setDragFileEnabled:self.selectMouse];
+}
+
+- (void)updateWBRatio:(CGFloat)ratio
+{
+    if (ratio == 0)
+    {
+        return;
+    }
+
+    if (self.fileid.integerValue == 0)
+    {
+        //避免image，pdf延迟加载影响白板比例
+        ratio = 16.0f / 9;
+    }
+    
+    self.ratio = ratio;
+    
+    if (self.showOnWeb)
+    {
+        self.h5Ratio = ratio;
+    }
+
+    [self.fileView.underView bmmas_remakeConstraints:^(BMMASConstraintMaker *make) {
+        make.left.bmmas_equalTo(self.fileView.bmmas_left);
+        make.right.bmmas_equalTo(self.fileView.bmmas_right);
+        make.top.bmmas_equalTo(self.fileView.bmmas_top);
+        make.bottom.bmmas_equalTo(self.fileView.bmmas_bottom);
+        make.width.bmmas_equalTo(self.contentView.bmmas_width);
+        make.height.bmmas_equalTo(self.contentView.bmmas_height);
+    }];
+
+    // 显示图片
+    if (!self.fileView.imageView.hidden) {
+        if (self.ratio >= self.contentView.frame.size.width / self.contentView.frame.size.height) {
+            //矮长型图片
+            [self.fileView.displayView bmmas_remakeConstraints:^(BMMASConstraintMaker *make) {
+                make.width.bmmas_equalTo(self.fileView.bmmas_width);
+                make.height.bmmas_equalTo(self.fileView.bmmas_width).multipliedBy(1 / self.ratio);
+                make.centerY.bmmas_equalTo(self.fileView.underView.bmmas_centerY);
+                make.centerX.bmmas_equalTo(self.fileView.underView.bmmas_centerX);
+            }];
+
+        } else {
+            //高瘦型图片
+            [self.fileView.displayView bmmas_remakeConstraints:^(BMMASConstraintMaker *make) {
+                make.height.bmmas_equalTo(self.fileView.bmmas_height);
+                make.width.bmmas_equalTo(self.fileView.bmmas_height).multipliedBy(self.ratio);
+                make.centerX.bmmas_equalTo(self.fileView.underView.bmmas_centerX);
+                make.centerY.bmmas_equalTo(self.fileView.underView.bmmas_centerY);
+            }];
+        }
+
+        return;
+    }
+
+    //显示pdf
+    if (!self.fileView.pdfView.hidden) {
+        if (self.ratio >= self.contentView.frame.size.width / self.contentView.frame.size.height) {
+            //矮长型图片
+            [self.fileView.displayView bmmas_remakeConstraints:^(BMMASConstraintMaker *make) {
+                make.width.bmmas_equalTo(self.fileView.bmmas_width);
+                make.height.bmmas_equalTo(self.fileView.bmmas_width).multipliedBy(1 / self.ratio);
+                make.centerY.bmmas_equalTo(self.fileView.underView.bmmas_centerY);
+                make.centerX.bmmas_equalTo(self.fileView.underView.bmmas_centerX);
+            }];
+
+        } else {
+            //高瘦型图片
+            [self.fileView.displayView bmmas_remakeConstraints:^(BMMASConstraintMaker *make) {
+                make.height.bmmas_equalTo(self.fileView.bmmas_height);
+                make.width.bmmas_equalTo(self.fileView.bmmas_height).multipliedBy(self.ratio);
+                make.centerX.bmmas_equalTo(self.fileView.underView.bmmas_centerX);
+                make.centerY.bmmas_equalTo(self.fileView.underView.bmmas_centerY);
+            }];
+        }
+
+        return;
+    }
+
+    //显示纯白板或者web上的画布
+    if (self.fileid.intValue == 0) {
+        if (self.ratio >= self.contentView.frame.size.width / self.contentView.frame.size.height) {
+            [self.fileView.displayView bmmas_remakeConstraints:^(BMMASConstraintMaker *make) {
+                make.width.bmmas_equalTo(self.fileView.bmmas_width);
+                make.height.bmmas_equalTo(self.fileView.bmmas_width).multipliedBy(1 / self.ratio);
+                make.centerY.bmmas_equalTo(self.fileView.underView.bmmas_centerY);
+                make.centerX.bmmas_equalTo(self.fileView.underView.bmmas_centerX);
+            }];
+        } else {
+            [self.fileView.displayView bmmas_remakeConstraints:^(BMMASConstraintMaker *make) {
+                make.height.bmmas_equalTo(self.fileView.bmmas_height);
+                make.width.bmmas_equalTo(self.fileView.bmmas_height).multipliedBy(self.ratio);
+                make.centerX.bmmas_equalTo(self.fileView.underView.bmmas_centerX);
+                make.centerY.bmmas_equalTo(self.fileView.underView.bmmas_centerY);
+            }];
+        }
+    } else {
+        if (self.ratio >= self.fileView.frame.size.width / self.fileView.frame.size.height) {
+            [self.fileView.displayView bmmas_remakeConstraints:^(BMMASConstraintMaker *make) {
+                make.width.bmmas_equalTo(self.fileView.bmmas_width);
+                make.height.bmmas_equalTo(self.fileView.bmmas_width).multipliedBy(1 / self.ratio);
+                make.centerY.bmmas_equalTo(self.fileView.underView.bmmas_centerY);
+                make.centerX.bmmas_equalTo(self.fileView.underView.bmmas_centerX);
+            }];
+        } else {
+            [self.fileView.displayView bmmas_remakeConstraints:^(BMMASConstraintMaker *make) {
+                make.height.bmmas_equalTo(self.fileView.bmmas_height);
+                make.width.bmmas_equalTo(self.fileView.bmmas_height).multipliedBy(self.ratio);
+                make.centerX.bmmas_equalTo(self.fileView.underView.bmmas_centerX);
+                make.centerY.bmmas_equalTo(self.fileView.underView.bmmas_centerY);
+            }];
+        }
+    }
+}
+
+// 设置具体放大值
+- (void)resetEnlargeValue:(float)value animated:(BOOL)animated
+{
+    self.currentScale = value;
+    //最小缩放系数为1，每级系数为-0.5
+    [self setDragFileEnabled:self.selectMouse];
+    
+    //_fileView.maximumZoomScale = value;
+    //_fileView.minimumZoomScale = value;
+    
+    [self.fileView setZoomScale:value animated:YES];
+
+    if (self.laserPan.superview)
+    {
+        [self showLaserPen];
+    }
+}
+
+// MARK: 设置课件可以拖动
+- (void)setDragFileEnabled:(BOOL)enable
+{
+    self.fileView.scrollEnabled = enable;
+    if ((([YSRoomInterface instance].localUser.role == YSUserType_Student) && ![YSRoomInterface instance].localUser.canDraw) ||
+        ([YSRoomInterface instance].localUser.role == YSUserType_Patrol))
+    {
+        // 如果学生未授权总是能放大拖动
+        self.fileView.scrollEnabled = YES;
+    }
+
+    if (self.showOnWeb)
+    {
+        self.currentScale = YSWHITEBOARD_MINZOOMSCALE;
+        [self.fileView setZoomScale:YSWHITEBOARD_MINZOOMSCALE animated:NO];
+        self.fileView.maximumZoomScale = YSWHITEBOARD_MINZOOMSCALE;
+        self.fileView.minimumZoomScale = YSWHITEBOARD_MINZOOMSCALE;
+        return;
+    }
+
+    
+    if (self.selectMouse)
+    {
+        // 直播支持手势缩放
+        self.fileView.maximumZoomScale = YSWHITEBOARD_MAXZOOMSCALE;
+        self.fileView.minimumZoomScale = YSWHITEBOARD_MINZOOMSCALE;
+    }
+    else
+    {
+        if ((([YSRoomInterface instance].localUser.role == YSUserType_Student) && ![YSRoomInterface instance].localUser.canDraw))
+        {
+            self.currentScale = YSWHITEBOARD_MINZOOMSCALE;
+            [self.fileView setZoomScale:YSWHITEBOARD_MINZOOMSCALE animated:NO];
+            
+            self.fileView.maximumZoomScale = YSWHITEBOARD_MINZOOMSCALE;
+            self.fileView.minimumZoomScale = YSWHITEBOARD_MINZOOMSCALE;
+        }
+        
+        self.fileView.maximumZoomScale = YSWHITEBOARD_MAXZOOMSCALE;
+        self.fileView.minimumZoomScale = YSWHITEBOARD_MINZOOMSCALE;
+    }
+}
+
+// 激光笔
+- (void)laserPen:(NSDictionary *)dic
+{
+    NSString *actionName = [dic bm_stringForKey:@"actionName"];
+
+    if ([actionName isEqualToString:sYSSignalActionShow])
+    { // 显示
+        if (!self.laserPan)
+        {
+            CGFloat width = BMIS_PAD ? 40. : 20.;
+            self.laserPan = [[LaserPan alloc] initWithFrame:CGRectMake(0, 0, width, width)];
+        }
+    }
+    else if ([actionName isEqualToString:@"move"])
+    { // 移动
+        if (dic[@"laser"][@"top"] && dic[@"laser"][@"left"])
+        {
+            CGFloat x     = [dic[@"laser"][@"left"] floatValue] / 100.;
+            CGFloat y     = [dic[@"laser"][@"top"] floatValue] / 100.;
+            CGFloat moveX = CGRectGetWidth(self.fileView.ysDrawView.rtDrawView.frame) * x;
+            CGFloat moveY = CGRectGetHeight(self.fileView.ysDrawView.rtDrawView.frame) * y;
+            
+            self.laserPan.offsetX = moveX;
+            self.laserPan.offsetY = moveY;
+            
+            [self showLaserPen];
+        }
+    }
+    else if ([actionName isEqualToString:@"hide"])
+    { // 隐藏
+        [self.laserPan removeFromSuperview];
+        self.laserPan = nil;
+    }
+}
+
+- (void)showLaserPen
+{
+    CGFloat moveX = self.laserPan.offsetX;
+    CGFloat moveY = self.laserPan.offsetY;
+    CGFloat zoomScale = self.fileView.zoomScale;
+
+    CGFloat offsetX = self.fileView.contentOffset.x;
+    CGFloat offsetY = self.fileView.contentOffset.y;
+    
+    moveX = moveX * zoomScale;
+    moveY = moveY * zoomScale;
+    moveX = moveX - offsetX;
+    moveY = moveY - offsetY;
+
+    CGFloat startX = CGRectGetMinX(self.fileView.displayView.frame);
+    CGFloat startY = CGRectGetMinY(self.fileView.displayView.frame);
+
+    if (!self.laserPan.superview)
+    {
+        [self.contentView addSubview:self.laserPan];
+    }
+    
+    [self.laserPan bmmas_remakeConstraints:^(BMMASConstraintMaker *make) {
+        make.left.bmmas_equalTo(startX + moveX - CGRectGetWidth(self.laserPan.frame) / 2);
+        make.top.bmmas_equalTo(startY + moveY - CGRectGetWidth(self.laserPan.frame) / 2);
+    }];
+}
+
+
+#pragma -
+#pragma mark DocShowViewZoomScaleDelegate
+
+/// 移动ScrollView
+- (void)onScrollViewDidScroll
+{
+    if (self.laserPan.superview)
+    {
+        [self showLaserPen];
+    }
+}
+
+/// 手势改变ZoomScale
+- (void)onZoomScaleChanged:(CGFloat)zoomScale
+{
+    self.currentScale = zoomScale;
+    
+    if (self.laserPan.superview)
+    {
+        [self showLaserPen];
+    }
+
+    if ([YSWhiteBoardManager shareInstance].wbDelegate &&
+        [[YSWhiteBoardManager shareInstance].wbDelegate
+            respondsToSelector:@selector(onWhiteBoardFileViewZoomScaleChanged:)])
+    {
+        [[YSWhiteBoardManager shareInstance].wbDelegate
+            onWhiteBoardFileViewZoomScaleChanged:self.fileView.zoomScale];
+    }
+}
+
+
 
 @end
