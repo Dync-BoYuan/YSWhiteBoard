@@ -8,9 +8,20 @@
 
 #import <UIKit/UIKit.h>
 
+#import "YSWBDrawViewManager.h"
+#import "YSWBWebViewManager.h"
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface YSWhiteBoardView : UIView
+
+/// web文档
+@property (nonatomic, strong, readonly) YSWBWebViewManager *webViewManager;
+/// 普通文档
+@property (nonatomic, strong, readonly) YSWBDrawViewManager *drawViewManager;
+
+
+- (void)userPropertyChanged:(NSDictionary *)message;
 
 @end
 

@@ -8,14 +8,21 @@
 
 #import "YSWhiteBoardView.h"
 
+@interface YSWhiteBoardView ()
+
+/// web文档
+@property (nonatomic, strong) YSWBWebViewManager *webViewManager;
+/// 普通文档
+@property (nonatomic, strong) YSWBDrawViewManager *drawViewManager;
+
+@end
+
 @implementation YSWhiteBoardView
 
-/*
-// Only override drawRect: if you perform custom drawing.
-// An empty implementation adversely affects performance during animation.
-- (void)drawRect:(CGRect)rect {
-    // Drawing code
+- (void)userPropertyChanged:(NSDictionary *)message
+{
+    
 }
-*/
+
 
 @end

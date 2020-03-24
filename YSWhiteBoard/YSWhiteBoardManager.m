@@ -9,8 +9,8 @@
 #import "YSWhiteBoardManager.h"
 #import <objc/message.h>
 
-#import "YSWBDrawViewManager.h"
-#import "YSWBWebViewManager.h"
+#import "YSWhiteBoardView.h"
+
 
 /// SDK版本
 static NSString *YSWhiteBoardSDKVersionString   = @"2.0.0.0";
@@ -48,11 +48,10 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 
 // UI
 
-/// web文档
-@property (nonatomic, strong) YSWBWebViewManager *documentBoard;
-/// 普通文档
-@property (nonatomic, strong) YSWBDrawViewManager *nativeWBController;
-
+/// 主白板
+@property (nonatomic, strong) YSWhiteBoardView *mainWhiteBoardView;
+/// 课件窗口列表
+@property (nonatomic, strong) NSMutableArray <YSWhiteBoardView *> *coursewareViewList;
 
 @end
 
@@ -201,18 +200,18 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 //- (UIView *)createWhiteBoardWithFrame:(CGRect)frame
 //                    loadFinishedBlock:(loadFinishedBlock)loadFinishedBlock
 //{
-//    
+//
 //    _contentView        = [[UIView alloc] initWithFrame:frame];
 //    _wbView             = [_documentBoard createWhiteBoardWithFrame:frame
 //                                                  loadComponentName:loadComponentName
 //                                                  loadFinishedBlock:loadFinishedBlock];
 //    [_contentView addSubview:_wbView];
-//    
+//
 //    _nativeWBController = [[YSWhiteBoardController alloc] initWithBackView:_contentView webView:_wbView];
 //    [_nativeWBController setConfiguration:_ysRoomProperty];
-//    
+//
 //    _nativeWBController.wkWebView = _wbView;
-//    
+//
 //    return _contentView;
 //}
 
@@ -290,8 +289,8 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 //        }
 //    }
 
-/*
-    if (message)
+#if 0
+    if ([message bm_isNotEmptyDictionary])
     {
         if (self.preloadingFished == YES)
         {
@@ -316,7 +315,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
             [self.preLoadingFileCacheMsgPool addObject:dic];
         }
     }
- */
+#endif
 }
 
 

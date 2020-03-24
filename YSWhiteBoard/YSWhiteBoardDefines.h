@@ -78,6 +78,7 @@ static  NSString *const sYSSignalOnJsPlay               = @"isPlayAudio";
 static  NSString *const sYSSignalShowPage               = @"ShowPage";
 /// ShowPage ID
 static  NSString *const sYSSignalDocumentFilePage_ShowPage = @"DocumentFilePage_ShowPage";
+static  NSString *const sYSSignalActionShow             = @"show";
 
 /// 更换画笔工具
 static  NSString *const sYSSignalSharpsChange           = @"SharpsChange";
@@ -113,5 +114,9 @@ static  NSString *const sYSSignalUpdateTime             = @"UpdateTime";
 /// 更新动态ppt大小
 #define WBChangeDynamicPptSize                     @"changeDynamicPptSize"
 
+
+#pragma - mark NSNotificationCenter
+
+static NSString *const YSWhiteSendTextDrawIfChooseMouseNotification = @"YSWhiteSendTextDrawIfChooseMouseNotification";
 
 #endif /* YSWhiteBoardDefines_h */

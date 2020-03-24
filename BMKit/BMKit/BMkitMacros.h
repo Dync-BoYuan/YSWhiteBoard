@@ -75,7 +75,7 @@
 #define UI_BM_BOLDFONT(fontSize)            [UIFont boldSystemFontOfSize:fontSize]
 
 // 颜色
-#define BMRGBColor(r,g,b,a)   [UIColor colorWithRed:r/255. green:g/255. blue:b/255. alpha:a]
+#define BMRGBColor(r,g,b,a)   [UIColor colorWithRed:(r)/255. green:(g)/255. blue:(b)/255. alpha:a]
 
 // 判断是否IPHONE
 #if TARGET_OS_IPHONE

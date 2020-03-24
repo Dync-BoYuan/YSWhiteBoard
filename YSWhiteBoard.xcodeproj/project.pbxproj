@@ -30,6 +30,74 @@
 		87AD16412428B68400EAE233 /* YSWKWebViewWeakDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 87AD163B2428B68400EAE233 /* YSWKWebViewWeakDelegate.m */; };
 		87AD16442428B6AB00EAE233 /* YSWhiteBoardView.h in Headers */ = {isa = PBXBuildFile; fileRef = 87AD16422428B6AB00EAE233 /* YSWhiteBoardView.h */; };
 		87AD16452428B6AB00EAE233 /* YSWhiteBoardView.m in Sources */ = {isa = PBXBuildFile; fileRef = 87AD16432428B6AB00EAE233 /* YSWhiteBoardView.m */; };
+		87C8B0862429B9150016848E /* YSWhiteBoardEnum.h in Headers */ = {isa = PBXBuildFile; fileRef = 87C8B0852429B9150016848E /* YSWhiteBoardEnum.h */; };
+		87C8B0B52429B9D20016848E /* VYSDWebImageDownloaderOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 87C8B08C2429B9D20016848E /* VYSDWebImageDownloaderOperation.m */; };
+		87C8B0B62429B9D20016848E /* VYSDImageCacheConfig.h in Headers */ = {isa = PBXBuildFile; fileRef = 87C8B08D2429B9D20016848E /* VYSDImageCacheConfig.h */; };
+		87C8B0B72429B9D20016848E /* VYSDWebImageCompat.h in Headers */ = {isa = PBXBuildFile; fileRef = 87C8B08E2429B9D20016848E /* VYSDWebImageCompat.h */; };
+		87C8B0B82429B9D20016848E /* MKAnnotationView+VYWebCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 87C8B08F2429B9D20016848E /* MKAnnotationView+VYWebCache.m */; };
+		87C8B0B92429B9D20016848E /* UIImage+VYMultiFormat.m in Sources */ = {isa = PBXBuildFile; fileRef = 87C8B0902429B9D20016848E /* UIImage+VYMultiFormat.m */; };
+		87C8B0BA2429B9D20016848E /* UIImageView+VYHighlightedWebCache.h in Headers */ = {isa = PBXBuildFile; fileRef = 87C8B0912429B9D20016848E /* UIImageView+VYHighlightedWebCache.h */; };
+		87C8B0BB2429B9D20016848E /* NSData+VYImageContentType.m in Sources */ = {isa = PBXBuildFile; fileRef = 87C8B0922429B9D20016848E /* NSData+VYImageContentType.m */; };
+		87C8B0BC2429B9D20016848E /* UIImageView+VYWebCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 87C8B0932429B9D20016848E /* UIImageView+VYWebCache.m */; };
+		87C8B0BD2429B9D20016848E /* UIButton+VYWebCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 87C8B0942429B9D20016848E /* UIButton+VYWebCache.m */; };
+		87C8B0BE2429B9D20016848E /* VYSDImageCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 87C8B0952429B9D20016848E /* VYSDImageCache.m */; };
+		87C8B0BF2429B9D20016848E /* VYSDWebImageDecoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 87C8B0962429B9D20016848E /* VYSDWebImageDecoder.m */; };
+		87C8B0C02429B9D20016848E /* VYSDWebImageManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 87C8B0972429B9D20016848E /* VYSDWebImageManager.m */; };
+		87C8B0C12429B9D20016848E /* UIView+VYWebCache.h in Headers */ = {isa = PBXBuildFile; fileRef = 87C8B0982429B9D20016848E /* UIView+VYWebCache.h */; };
+		87C8B0C22429B9D20016848E /* NSImage+VYWebCache.h in Headers */ = {isa = PBXBuildFile; fileRef = 87C8B0992429B9D20016848E /* NSImage+VYWebCache.h */; };
+		87C8B0C32429B9D20016848E /* VYSDWebImagePrefetcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 87C8B09A2429B9D20016848E /* VYSDWebImagePrefetcher.m */; };
+		87C8B0C42429B9D20016848E /* UIImage+VYWebP.h in Headers */ = {isa = PBXBuildFile; fileRef = 87C8B09B2429B9D20016848E /* UIImage+VYWebP.h */; };
+		87C8B0C52429B9D20016848E /* VYSDWebImageDownloader.m in Sources */ = {isa = PBXBuildFile; fileRef = 87C8B09C2429B9D20016848E /* VYSDWebImageDownloader.m */; };
+		87C8B0C62429B9D20016848E /* UIImage+VYGIF.m in Sources */ = {isa = PBXBuildFile; fileRef = 87C8B09D2429B9D20016848E /* UIImage+VYGIF.m */; };
+		87C8B0C72429B9D20016848E /* UIView+VYWebCacheOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 87C8B09E2429B9D20016848E /* UIView+VYWebCacheOperation.m */; };
+		87C8B0C82429B9D20016848E /* MKAnnotationView+VYWebCache.h in Headers */ = {isa = PBXBuildFile; fileRef = 87C8B09F2429B9D20016848E /* MKAnnotationView+VYWebCache.h */; };
+		87C8B0C92429B9D20016848E /* VYSDWebImageCompat.m in Sources */ = {isa = PBXBuildFile; fileRef = 87C8B0A02429B9D20016848E /* VYSDWebImageCompat.m */; };
+		87C8B0CA2429B9D20016848E /* VYSDImageCacheConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = 87C8B0A12429B9D20016848E /* VYSDImageCacheConfig.m */; };
+		87C8B0CB2429B9D20016848E /* VYSDWebImageDownloaderOperation.h in Headers */ = {isa = PBXBuildFile; fileRef = 87C8B0A22429B9D20016848E /* VYSDWebImageDownloaderOperation.h */; };
+		87C8B0CC2429B9D20016848E /* UIImageView+VYWebCache.h in Headers */ = {isa = PBXBuildFile; fileRef = 87C8B0A32429B9D20016848E /* UIImageView+VYWebCache.h */; };
+		87C8B0CD2429B9D20016848E /* NSData+VYImageContentType.h in Headers */ = {isa = PBXBuildFile; fileRef = 87C8B0A42429B9D20016848E /* NSData+VYImageContentType.h */; };
+		87C8B0CE2429B9D20016848E /* UIImageView+VYHighlightedWebCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 87C8B0A52429B9D20016848E /* UIImageView+VYHighlightedWebCache.m */; };
+		87C8B0CF2429B9D20016848E /* UIImage+VYMultiFormat.h in Headers */ = {isa = PBXBuildFile; fileRef = 87C8B0A62429B9D20016848E /* UIImage+VYMultiFormat.h */; };
+		87C8B0D02429B9D20016848E /* VYSDWebImagePrefetcher.h in Headers */ = {isa = PBXBuildFile; fileRef = 87C8B0A72429B9D20016848E /* VYSDWebImagePrefetcher.h */; };
+		87C8B0D12429B9D20016848E /* UIView+VYWebCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 87C8B0A82429B9D20016848E /* UIView+VYWebCache.m */; };
+		87C8B0D22429B9D20016848E /* NSImage+VYWebCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 87C8B0A92429B9D20016848E /* NSImage+VYWebCache.m */; };
+		87C8B0D32429B9D20016848E /* VYSDWebImageManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 87C8B0AA2429B9D20016848E /* VYSDWebImageManager.h */; };
+		87C8B0D42429B9D20016848E /* VYSDWebImageDecoder.h in Headers */ = {isa = PBXBuildFile; fileRef = 87C8B0AB2429B9D20016848E /* VYSDWebImageDecoder.h */; };
+		87C8B0D52429B9D20016848E /* VYSDImageCache.h in Headers */ = {isa = PBXBuildFile; fileRef = 87C8B0AC2429B9D20016848E /* VYSDImageCache.h */; };
+		87C8B0D62429B9D20016848E /* UIButton+VYWebCache.h in Headers */ = {isa = PBXBuildFile; fileRef = 87C8B0AD2429B9D20016848E /* UIButton+VYWebCache.h */; };
+		87C8B0D72429B9D20016848E /* UIView+VYWebCacheOperation.h in Headers */ = {isa = PBXBuildFile; fileRef = 87C8B0AE2429B9D20016848E /* UIView+VYWebCacheOperation.h */; };
+		87C8B0D82429B9D20016848E /* VYSDWebImageOperation.h in Headers */ = {isa = PBXBuildFile; fileRef = 87C8B0AF2429B9D20016848E /* VYSDWebImageOperation.h */; };
+		87C8B0D92429B9D20016848E /* UIImage+VYGIF.h in Headers */ = {isa = PBXBuildFile; fileRef = 87C8B0B02429B9D20016848E /* UIImage+VYGIF.h */; };
+		87C8B0DA2429B9D20016848E /* VYSDWebImageDownloader.h in Headers */ = {isa = PBXBuildFile; fileRef = 87C8B0B12429B9D20016848E /* VYSDWebImageDownloader.h */; };
+		87C8B0DB2429B9D20016848E /* UIImage+VYWebP.m in Sources */ = {isa = PBXBuildFile; fileRef = 87C8B0B22429B9D20016848E /* UIImage+VYWebP.m */; };
+		87C8B0E02429BB8B0016848E /* HSV.h in Headers */ = {isa = PBXBuildFile; fileRef = 87C8B0DE2429BB8B0016848E /* HSV.h */; };
+		87C8B0E22429BC8D0016848E /* HSV.mm in Sources */ = {isa = PBXBuildFile; fileRef = 87C8B0E12429BC8D0016848E /* HSV.mm */; };
+		87C8B1032429BCD20016848E /* YSDrawView.m in Sources */ = {isa = PBXBuildFile; fileRef = 87C8B0E42429BCD20016848E /* YSDrawView.m */; };
+		87C8B1042429BCD20016848E /* YSDrawView.h in Headers */ = {isa = PBXBuildFile; fileRef = 87C8B0E52429BCD20016848E /* YSDrawView.h */; };
+		87C8B1052429BCD20016848E /* YSFileModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 87C8B0E72429BCD20016848E /* YSFileModel.m */; };
+		87C8B1062429BCD20016848E /* YSFileModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 87C8B0E82429BCD20016848E /* YSFileModel.h */; };
+		87C8B1072429BCD20016848E /* DocShowView.h in Headers */ = {isa = PBXBuildFile; fileRef = 87C8B0EB2429BCD20016848E /* DocShowView.h */; };
+		87C8B1082429BCD20016848E /* LKPDFView.m in Sources */ = {isa = PBXBuildFile; fileRef = 87C8B0EC2429BCD20016848E /* LKPDFView.m */; };
+		87C8B1092429BCD20016848E /* DocUnderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 87C8B0ED2429BCD20016848E /* DocUnderView.m */; };
+		87C8B10A2429BCD20016848E /* DocShowView.m in Sources */ = {isa = PBXBuildFile; fileRef = 87C8B0EE2429BCD20016848E /* DocShowView.m */; };
+		87C8B10B2429BCD20016848E /* DrawView.h in Headers */ = {isa = PBXBuildFile; fileRef = 87C8B0EF2429BCD20016848E /* DrawView.h */; };
+		87C8B10C2429BCD20016848E /* DocUnderView.h in Headers */ = {isa = PBXBuildFile; fileRef = 87C8B0F02429BCD20016848E /* DocUnderView.h */; };
+		87C8B10D2429BCD20016848E /* LKPDFView.h in Headers */ = {isa = PBXBuildFile; fileRef = 87C8B0F12429BCD20016848E /* LKPDFView.h */; };
+		87C8B10E2429BCD20016848E /* DrawView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 87C8B0F22429BCD20016848E /* DrawView.mm */; };
+		87C8B10F2429BCD20016848E /* DrawLine.h in Headers */ = {isa = PBXBuildFile; fileRef = 87C8B0F42429BCD20016848E /* DrawLine.h */; };
+		87C8B1102429BCD20016848E /* DrawCircle.m in Sources */ = {isa = PBXBuildFile; fileRef = 87C8B0F52429BCD20016848E /* DrawCircle.m */; };
+		87C8B1112429BCD20016848E /* LaserPan.m in Sources */ = {isa = PBXBuildFile; fileRef = 87C8B0F62429BCD20016848E /* LaserPan.m */; };
+		87C8B1122429BCD20016848E /* DrawRectangle.m in Sources */ = {isa = PBXBuildFile; fileRef = 87C8B0F72429BCD20016848E /* DrawRectangle.m */; };
+		87C8B1132429BCD20016848E /* DrawText.m in Sources */ = {isa = PBXBuildFile; fileRef = 87C8B0F82429BCD20016848E /* DrawText.m */; };
+		87C8B1142429BCD20016848E /* DrawCircle.h in Headers */ = {isa = PBXBuildFile; fileRef = 87C8B0F92429BCD20016848E /* DrawCircle.h */; };
+		87C8B1152429BCD20016848E /* DrawPen.mm in Sources */ = {isa = PBXBuildFile; fileRef = 87C8B0FA2429BCD20016848E /* DrawPen.mm */; };
+		87C8B1162429BCD20016848E /* DrawLine.m in Sources */ = {isa = PBXBuildFile; fileRef = 87C8B0FB2429BCD20016848E /* DrawLine.m */; };
+		87C8B1172429BCD20016848E /* DrawText.h in Headers */ = {isa = PBXBuildFile; fileRef = 87C8B0FC2429BCD20016848E /* DrawText.h */; };
+		87C8B1182429BCD20016848E /* DrawRectangle.h in Headers */ = {isa = PBXBuildFile; fileRef = 87C8B0FD2429BCD20016848E /* DrawRectangle.h */; };
+		87C8B1192429BCD20016848E /* DrawPen.h in Headers */ = {isa = PBXBuildFile; fileRef = 87C8B0FE2429BCD20016848E /* DrawPen.h */; };
+		87C8B11A2429BCD20016848E /* LaserPan.h in Headers */ = {isa = PBXBuildFile; fileRef = 87C8B0FF2429BCD20016848E /* LaserPan.h */; };
+		87C8B11B2429BCD20016848E /* DrawBase.h in Headers */ = {isa = PBXBuildFile; fileRef = 87C8B1012429BCD20016848E /* DrawBase.h */; };
+		87C8B11C2429BCD20016848E /* DrawBase.m in Sources */ = {isa = PBXBuildFile; fileRef = 87C8B1022429BCD20016848E /* DrawBase.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -61,6 +129,74 @@
 		87AD163B2428B68400EAE233 /* YSWKWebViewWeakDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YSWKWebViewWeakDelegate.m; sourceTree = "<group>"; };
 		87AD16422428B6AB00EAE233 /* YSWhiteBoardView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YSWhiteBoardView.h; sourceTree = "<group>"; };
 		87AD16432428B6AB00EAE233 /* YSWhiteBoardView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YSWhiteBoardView.m; sourceTree = "<group>"; };
+		87C8B0852429B9150016848E /* YSWhiteBoardEnum.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YSWhiteBoardEnum.h; sourceTree = "<group>"; };
+		87C8B08C2429B9D20016848E /* VYSDWebImageDownloaderOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VYSDWebImageDownloaderOperation.m; sourceTree = "<group>"; };
+		87C8B08D2429B9D20016848E /* VYSDImageCacheConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VYSDImageCacheConfig.h; sourceTree = "<group>"; };
+		87C8B08E2429B9D20016848E /* VYSDWebImageCompat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VYSDWebImageCompat.h; sourceTree = "<group>"; };
+		87C8B08F2429B9D20016848E /* MKAnnotationView+VYWebCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "MKAnnotationView+VYWebCache.m"; sourceTree = "<group>"; };
+		87C8B0902429B9D20016848E /* UIImage+VYMultiFormat.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+VYMultiFormat.m"; sourceTree = "<group>"; };
+		87C8B0912429B9D20016848E /* UIImageView+VYHighlightedWebCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImageView+VYHighlightedWebCache.h"; sourceTree = "<group>"; };
+		87C8B0922429B9D20016848E /* NSData+VYImageContentType.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSData+VYImageContentType.m"; sourceTree = "<group>"; };
+		87C8B0932429B9D20016848E /* UIImageView+VYWebCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImageView+VYWebCache.m"; sourceTree = "<group>"; };
+		87C8B0942429B9D20016848E /* UIButton+VYWebCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIButton+VYWebCache.m"; sourceTree = "<group>"; };
+		87C8B0952429B9D20016848E /* VYSDImageCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VYSDImageCache.m; sourceTree = "<group>"; };
+		87C8B0962429B9D20016848E /* VYSDWebImageDecoder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VYSDWebImageDecoder.m; sourceTree = "<group>"; };
+		87C8B0972429B9D20016848E /* VYSDWebImageManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VYSDWebImageManager.m; sourceTree = "<group>"; };
+		87C8B0982429B9D20016848E /* UIView+VYWebCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+VYWebCache.h"; sourceTree = "<group>"; };
+		87C8B0992429B9D20016848E /* NSImage+VYWebCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSImage+VYWebCache.h"; sourceTree = "<group>"; };
+		87C8B09A2429B9D20016848E /* VYSDWebImagePrefetcher.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VYSDWebImagePrefetcher.m; sourceTree = "<group>"; };
+		87C8B09B2429B9D20016848E /* UIImage+VYWebP.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+VYWebP.h"; sourceTree = "<group>"; };
+		87C8B09C2429B9D20016848E /* VYSDWebImageDownloader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VYSDWebImageDownloader.m; sourceTree = "<group>"; };
+		87C8B09D2429B9D20016848E /* UIImage+VYGIF.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+VYGIF.m"; sourceTree = "<group>"; };
+		87C8B09E2429B9D20016848E /* UIView+VYWebCacheOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+VYWebCacheOperation.m"; sourceTree = "<group>"; };
+		87C8B09F2429B9D20016848E /* MKAnnotationView+VYWebCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "MKAnnotationView+VYWebCache.h"; sourceTree = "<group>"; };
+		87C8B0A02429B9D20016848E /* VYSDWebImageCompat.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VYSDWebImageCompat.m; sourceTree = "<group>"; };
+		87C8B0A12429B9D20016848E /* VYSDImageCacheConfig.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VYSDImageCacheConfig.m; sourceTree = "<group>"; };
+		87C8B0A22429B9D20016848E /* VYSDWebImageDownloaderOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VYSDWebImageDownloaderOperation.h; sourceTree = "<group>"; };
+		87C8B0A32429B9D20016848E /* UIImageView+VYWebCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImageView+VYWebCache.h"; sourceTree = "<group>"; };
+		87C8B0A42429B9D20016848E /* NSData+VYImageContentType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+VYImageContentType.h"; sourceTree = "<group>"; };
+		87C8B0A52429B9D20016848E /* UIImageView+VYHighlightedWebCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImageView+VYHighlightedWebCache.m"; sourceTree = "<group>"; };
+		87C8B0A62429B9D20016848E /* UIImage+VYMultiFormat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+VYMultiFormat.h"; sourceTree = "<group>"; };
+		87C8B0A72429B9D20016848E /* VYSDWebImagePrefetcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VYSDWebImagePrefetcher.h; sourceTree = "<group>"; };
+		87C8B0A82429B9D20016848E /* UIView+VYWebCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+VYWebCache.m"; sourceTree = "<group>"; };
+		87C8B0A92429B9D20016848E /* NSImage+VYWebCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSImage+VYWebCache.m"; sourceTree = "<group>"; };
+		87C8B0AA2429B9D20016848E /* VYSDWebImageManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VYSDWebImageManager.h; sourceTree = "<group>"; };
+		87C8B0AB2429B9D20016848E /* VYSDWebImageDecoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VYSDWebImageDecoder.h; sourceTree = "<group>"; };
+		87C8B0AC2429B9D20016848E /* VYSDImageCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VYSDImageCache.h; sourceTree = "<group>"; };
+		87C8B0AD2429B9D20016848E /* UIButton+VYWebCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIButton+VYWebCache.h"; sourceTree = "<group>"; };
+		87C8B0AE2429B9D20016848E /* UIView+VYWebCacheOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+VYWebCacheOperation.h"; sourceTree = "<group>"; };
+		87C8B0AF2429B9D20016848E /* VYSDWebImageOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VYSDWebImageOperation.h; sourceTree = "<group>"; };
+		87C8B0B02429B9D20016848E /* UIImage+VYGIF.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+VYGIF.h"; sourceTree = "<group>"; };
+		87C8B0B12429B9D20016848E /* VYSDWebImageDownloader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VYSDWebImageDownloader.h; sourceTree = "<group>"; };
+		87C8B0B22429B9D20016848E /* UIImage+VYWebP.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+VYWebP.m"; sourceTree = "<group>"; };
+		87C8B0DE2429BB8B0016848E /* HSV.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HSV.h; sourceTree = "<group>"; };
+		87C8B0E12429BC8D0016848E /* HSV.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = HSV.mm; sourceTree = "<group>"; };
+		87C8B0E42429BCD20016848E /* YSDrawView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YSDrawView.m; sourceTree = "<group>"; };
+		87C8B0E52429BCD20016848E /* YSDrawView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YSDrawView.h; sourceTree = "<group>"; };
+		87C8B0E72429BCD20016848E /* YSFileModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YSFileModel.m; sourceTree = "<group>"; };
+		87C8B0E82429BCD20016848E /* YSFileModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YSFileModel.h; sourceTree = "<group>"; };
+		87C8B0EB2429BCD20016848E /* DocShowView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DocShowView.h; sourceTree = "<group>"; };
+		87C8B0EC2429BCD20016848E /* LKPDFView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LKPDFView.m; sourceTree = "<group>"; };
+		87C8B0ED2429BCD20016848E /* DocUnderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DocUnderView.m; sourceTree = "<group>"; };
+		87C8B0EE2429BCD20016848E /* DocShowView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DocShowView.m; sourceTree = "<group>"; };
+		87C8B0EF2429BCD20016848E /* DrawView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DrawView.h; sourceTree = "<group>"; };
+		87C8B0F02429BCD20016848E /* DocUnderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DocUnderView.h; sourceTree = "<group>"; };
+		87C8B0F12429BCD20016848E /* LKPDFView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LKPDFView.h; sourceTree = "<group>"; };
+		87C8B0F22429BCD20016848E /* DrawView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DrawView.mm; sourceTree = "<group>"; };
+		87C8B0F42429BCD20016848E /* DrawLine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DrawLine.h; sourceTree = "<group>"; };
+		87C8B0F52429BCD20016848E /* DrawCircle.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DrawCircle.m; sourceTree = "<group>"; };
+		87C8B0F62429BCD20016848E /* LaserPan.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LaserPan.m; sourceTree = "<group>"; };
+		87C8B0F72429BCD20016848E /* DrawRectangle.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DrawRectangle.m; sourceTree = "<group>"; };
+		87C8B0F82429BCD20016848E /* DrawText.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DrawText.m; sourceTree = "<group>"; };
+		87C8B0F92429BCD20016848E /* DrawCircle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DrawCircle.h; sourceTree = "<group>"; };
+		87C8B0FA2429BCD20016848E /* DrawPen.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DrawPen.mm; sourceTree = "<group>"; };
+		87C8B0FB2429BCD20016848E /* DrawLine.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DrawLine.m; sourceTree = "<group>"; };
+		87C8B0FC2429BCD20016848E /* DrawText.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DrawText.h; sourceTree = "<group>"; };
+		87C8B0FD2429BCD20016848E /* DrawRectangle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DrawRectangle.h; sourceTree = "<group>"; };
+		87C8B0FE2429BCD20016848E /* DrawPen.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DrawPen.h; sourceTree = "<group>"; };
+		87C8B0FF2429BCD20016848E /* LaserPan.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LaserPan.h; sourceTree = "<group>"; };
+		87C8B1012429BCD20016848E /* DrawBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DrawBase.h; sourceTree = "<group>"; };
+		87C8B1022429BCD20016848E /* DrawBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DrawBase.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -96,11 +232,13 @@
 		8732B8D224270E18005BEB99 /* YSWhiteBoard */ = {
 			isa = PBXGroup;
 			children = (
+				87C8B0872429B9D20016848E /* Vendor */,
 				87AD16162427554900EAE233 /* YSRoomUtil */,
 				87AD16332428B68400EAE233 /* YSWhiteBoardView */,
 				8732B8D324270E18005BEB99 /* YSWhiteBoard.h */,
 				87AD1610242725EB00EAE233 /* YSWhiteBoardMacro.h */,
 				87AD161B2427586700EAE233 /* YSWhiteBoardDefines.h */,
+				87C8B0852429B9150016848E /* YSWhiteBoardEnum.h */,
 				87AD16262428449000EAE233 /* YSWhiteBoardManagerDelegate.h */,
 				87AD15FE242721F000EAE233 /* YSWhiteBoardManager.h */,
 				87AD15FF242721F000EAE233 /* YSWhiteBoardManager.m */,
@@ -157,6 +295,7 @@
 		87AD16342428B68400EAE233 /* YSWBDrawViewManager */ = {
 			isa = PBXGroup;
 			children = (
+				87C8B0E32429BCD20016848E /* YSDrawView */,
 				87AD16352428B68400EAE233 /* YSWBDrawViewManager.h */,
 				87AD16362428B68400EAE233 /* YSWBDrawViewManager.m */,
 			);
@@ -174,6 +313,143 @@
 			path = YSWBWebViewManager;
 			sourceTree = "<group>";
 		};
+		87C8B0872429B9D20016848E /* Vendor */ = {
+			isa = PBXGroup;
+			children = (
+				87C8B0DC2429BB8B0016848E /* ColorPicker */,
+				87C8B08B2429B9D20016848E /* SDWebImage */,
+			);
+			path = Vendor;
+			sourceTree = "<group>";
+		};
+		87C8B08B2429B9D20016848E /* SDWebImage */ = {
+			isa = PBXGroup;
+			children = (
+				87C8B09F2429B9D20016848E /* MKAnnotationView+VYWebCache.h */,
+				87C8B08F2429B9D20016848E /* MKAnnotationView+VYWebCache.m */,
+				87C8B0A42429B9D20016848E /* NSData+VYImageContentType.h */,
+				87C8B0922429B9D20016848E /* NSData+VYImageContentType.m */,
+				87C8B0992429B9D20016848E /* NSImage+VYWebCache.h */,
+				87C8B0A92429B9D20016848E /* NSImage+VYWebCache.m */,
+				87C8B0AD2429B9D20016848E /* UIButton+VYWebCache.h */,
+				87C8B0942429B9D20016848E /* UIButton+VYWebCache.m */,
+				87C8B0B02429B9D20016848E /* UIImage+VYGIF.h */,
+				87C8B09D2429B9D20016848E /* UIImage+VYGIF.m */,
+				87C8B0A62429B9D20016848E /* UIImage+VYMultiFormat.h */,
+				87C8B0902429B9D20016848E /* UIImage+VYMultiFormat.m */,
+				87C8B09B2429B9D20016848E /* UIImage+VYWebP.h */,
+				87C8B0B22429B9D20016848E /* UIImage+VYWebP.m */,
+				87C8B0912429B9D20016848E /* UIImageView+VYHighlightedWebCache.h */,
+				87C8B0A52429B9D20016848E /* UIImageView+VYHighlightedWebCache.m */,
+				87C8B0A32429B9D20016848E /* UIImageView+VYWebCache.h */,
+				87C8B0932429B9D20016848E /* UIImageView+VYWebCache.m */,
+				87C8B0982429B9D20016848E /* UIView+VYWebCache.h */,
+				87C8B0A82429B9D20016848E /* UIView+VYWebCache.m */,
+				87C8B0AE2429B9D20016848E /* UIView+VYWebCacheOperation.h */,
+				87C8B09E2429B9D20016848E /* UIView+VYWebCacheOperation.m */,
+				87C8B0AC2429B9D20016848E /* VYSDImageCache.h */,
+				87C8B0952429B9D20016848E /* VYSDImageCache.m */,
+				87C8B08D2429B9D20016848E /* VYSDImageCacheConfig.h */,
+				87C8B0A12429B9D20016848E /* VYSDImageCacheConfig.m */,
+				87C8B08E2429B9D20016848E /* VYSDWebImageCompat.h */,
+				87C8B0A02429B9D20016848E /* VYSDWebImageCompat.m */,
+				87C8B0AB2429B9D20016848E /* VYSDWebImageDecoder.h */,
+				87C8B0962429B9D20016848E /* VYSDWebImageDecoder.m */,
+				87C8B0B12429B9D20016848E /* VYSDWebImageDownloader.h */,
+				87C8B09C2429B9D20016848E /* VYSDWebImageDownloader.m */,
+				87C8B0A22429B9D20016848E /* VYSDWebImageDownloaderOperation.h */,
+				87C8B08C2429B9D20016848E /* VYSDWebImageDownloaderOperation.m */,
+				87C8B0AA2429B9D20016848E /* VYSDWebImageManager.h */,
+				87C8B0972429B9D20016848E /* VYSDWebImageManager.m */,
+				87C8B0AF2429B9D20016848E /* VYSDWebImageOperation.h */,
+				87C8B0A72429B9D20016848E /* VYSDWebImagePrefetcher.h */,
+				87C8B09A2429B9D20016848E /* VYSDWebImagePrefetcher.m */,
+			);
+			path = SDWebImage;
+			sourceTree = "<group>";
+		};
+		87C8B0DC2429BB8B0016848E /* ColorPicker */ = {
+			isa = PBXGroup;
+			children = (
+				87C8B0DE2429BB8B0016848E /* HSV.h */,
+				87C8B0E12429BC8D0016848E /* HSV.mm */,
+			);
+			path = ColorPicker;
+			sourceTree = "<group>";
+		};
+		87C8B0E32429BCD20016848E /* YSDrawView */ = {
+			isa = PBXGroup;
+			children = (
+				87C8B0E62429BCD20016848E /* Model */,
+				87C8B0E92429BCD20016848E /* Draw */,
+				87C8B0E52429BCD20016848E /* YSDrawView.h */,
+				87C8B0E42429BCD20016848E /* YSDrawView.m */,
+			);
+			path = YSDrawView;
+			sourceTree = "<group>";
+		};
+		87C8B0E62429BCD20016848E /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				87C8B0E82429BCD20016848E /* YSFileModel.h */,
+				87C8B0E72429BCD20016848E /* YSFileModel.m */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		87C8B0E92429BCD20016848E /* Draw */ = {
+			isa = PBXGroup;
+			children = (
+				87C8B1002429BCD20016848E /* Base */,
+				87C8B0F32429BCD20016848E /* SubClass */,
+				87C8B0EA2429BCD20016848E /* OtherClass */,
+			);
+			path = Draw;
+			sourceTree = "<group>";
+		};
+		87C8B0EA2429BCD20016848E /* OtherClass */ = {
+			isa = PBXGroup;
+			children = (
+				87C8B0EB2429BCD20016848E /* DocShowView.h */,
+				87C8B0EE2429BCD20016848E /* DocShowView.m */,
+				87C8B0F02429BCD20016848E /* DocUnderView.h */,
+				87C8B0ED2429BCD20016848E /* DocUnderView.m */,
+				87C8B0EF2429BCD20016848E /* DrawView.h */,
+				87C8B0F22429BCD20016848E /* DrawView.mm */,
+				87C8B0F12429BCD20016848E /* LKPDFView.h */,
+				87C8B0EC2429BCD20016848E /* LKPDFView.m */,
+			);
+			path = OtherClass;
+			sourceTree = "<group>";
+		};
+		87C8B0F32429BCD20016848E /* SubClass */ = {
+			isa = PBXGroup;
+			children = (
+				87C8B0F92429BCD20016848E /* DrawCircle.h */,
+				87C8B0F52429BCD20016848E /* DrawCircle.m */,
+				87C8B0F42429BCD20016848E /* DrawLine.h */,
+				87C8B0FB2429BCD20016848E /* DrawLine.m */,
+				87C8B0FE2429BCD20016848E /* DrawPen.h */,
+				87C8B0FA2429BCD20016848E /* DrawPen.mm */,
+				87C8B0FD2429BCD20016848E /* DrawRectangle.h */,
+				87C8B0F72429BCD20016848E /* DrawRectangle.m */,
+				87C8B0FC2429BCD20016848E /* DrawText.h */,
+				87C8B0F82429BCD20016848E /* DrawText.m */,
+				87C8B0FF2429BCD20016848E /* LaserPan.h */,
+				87C8B0F62429BCD20016848E /* LaserPan.m */,
+			);
+			path = SubClass;
+			sourceTree = "<group>";
+		};
+		87C8B1002429BCD20016848E /* Base */ = {
+			isa = PBXGroup;
+			children = (
+				87C8B1012429BCD20016848E /* DrawBase.h */,
+				87C8B1022429BCD20016848E /* DrawBase.m */,
+			);
+			path = Base;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -182,14 +458,49 @@
 			buildActionMask = 2147483647;
 			files = (
 				87AD163C2428B68400EAE233 /* YSWBDrawViewManager.h in Headers */,
+				87C8B0CF2429B9D20016848E /* UIImage+VYMultiFormat.h in Headers */,
+				87C8B0CC2429B9D20016848E /* UIImageView+VYWebCache.h in Headers */,
 				87AD163F2428B68400EAE233 /* YSWKWebViewWeakDelegate.h in Headers */,
+				87C8B0B62429B9D20016848E /* VYSDImageCacheConfig.h in Headers */,
+				87C8B0D02429B9D20016848E /* VYSDWebImagePrefetcher.h in Headers */,
+				87C8B1182429BCD20016848E /* DrawRectangle.h in Headers */,
+				87C8B0D82429B9D20016848E /* VYSDWebImageOperation.h in Headers */,
+				87C8B0CD2429B9D20016848E /* NSData+VYImageContentType.h in Headers */,
+				87C8B10D2429BCD20016848E /* LKPDFView.h in Headers */,
+				87C8B0D72429B9D20016848E /* UIView+VYWebCacheOperation.h in Headers */,
 				87AD163E2428B68400EAE233 /* YSWBWebViewManager.h in Headers */,
+				87C8B11A2429BCD20016848E /* LaserPan.h in Headers */,
 				87AD16192427554900EAE233 /* YSRoomConfiguration.h in Headers */,
+				87C8B0862429B9150016848E /* YSWhiteBoardEnum.h in Headers */,
+				87C8B0CB2429B9D20016848E /* VYSDWebImageDownloaderOperation.h in Headers */,
+				87C8B0B72429B9D20016848E /* VYSDWebImageCompat.h in Headers */,
+				87C8B1142429BCD20016848E /* DrawCircle.h in Headers */,
+				87C8B0D52429B9D20016848E /* VYSDImageCache.h in Headers */,
+				87C8B0DA2429B9D20016848E /* VYSDWebImageDownloader.h in Headers */,
+				87C8B0D32429B9D20016848E /* VYSDWebImageManager.h in Headers */,
+				87C8B1172429BCD20016848E /* DrawText.h in Headers */,
+				87C8B0BA2429B9D20016848E /* UIImageView+VYHighlightedWebCache.h in Headers */,
+				87C8B0D92429B9D20016848E /* UIImage+VYGIF.h in Headers */,
 				8732B8D524270E18005BEB99 /* YSWhiteBoard.h in Headers */,
+				87C8B0C22429B9D20016848E /* NSImage+VYWebCache.h in Headers */,
 				87AD162924284E8E00EAE233 /* YSRoomUtil.h in Headers */,
 				87AD1600242721F000EAE233 /* YSWhiteBoardManager.h in Headers */,
+				87C8B10F2429BCD20016848E /* DrawLine.h in Headers */,
+				87C8B1062429BCD20016848E /* YSFileModel.h in Headers */,
+				87C8B10B2429BCD20016848E /* DrawView.h in Headers */,
+				87C8B1042429BCD20016848E /* YSDrawView.h in Headers */,
+				87C8B0C42429B9D20016848E /* UIImage+VYWebP.h in Headers */,
+				87C8B11B2429BCD20016848E /* DrawBase.h in Headers */,
 				87AD1631242859A900EAE233 /* YSWBLogger.h in Headers */,
+				87C8B0D42429B9D20016848E /* VYSDWebImageDecoder.h in Headers */,
+				87C8B0D62429B9D20016848E /* UIButton+VYWebCache.h in Headers */,
+				87C8B1072429BCD20016848E /* DocShowView.h in Headers */,
+				87C8B10C2429BCD20016848E /* DocUnderView.h in Headers */,
+				87C8B0E02429BB8B0016848E /* HSV.h in Headers */,
+				87C8B1192429BCD20016848E /* DrawPen.h in Headers */,
+				87C8B0C12429B9D20016848E /* UIView+VYWebCache.h in Headers */,
 				87AD16442428B6AB00EAE233 /* YSWhiteBoardView.h in Headers */,
+				87C8B0C82429B9D20016848E /* MKAnnotationView+VYWebCache.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -265,14 +576,47 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				87C8B0D22429B9D20016848E /* NSImage+VYWebCache.m in Sources */,
 				87AD16402428B68400EAE233 /* YSWBWebViewManager.m in Sources */,
+				87C8B0C72429B9D20016848E /* UIView+VYWebCacheOperation.m in Sources */,
+				87C8B0C52429B9D20016848E /* VYSDWebImageDownloader.m in Sources */,
+				87C8B10A2429BCD20016848E /* DocShowView.m in Sources */,
+				87C8B0DB2429B9D20016848E /* UIImage+VYWebP.m in Sources */,
+				87C8B0B92429B9D20016848E /* UIImage+VYMultiFormat.m in Sources */,
+				87C8B1112429BCD20016848E /* LaserPan.m in Sources */,
+				87C8B0CA2429B9D20016848E /* VYSDImageCacheConfig.m in Sources */,
+				87C8B11C2429BCD20016848E /* DrawBase.m in Sources */,
 				87AD162A24284E8E00EAE233 /* YSRoomUtil.m in Sources */,
+				87C8B0BB2429B9D20016848E /* NSData+VYImageContentType.m in Sources */,
+				87C8B0C02429B9D20016848E /* VYSDWebImageManager.m in Sources */,
+				87C8B0B82429B9D20016848E /* MKAnnotationView+VYWebCache.m in Sources */,
+				87C8B1102429BCD20016848E /* DrawCircle.m in Sources */,
+				87C8B1132429BCD20016848E /* DrawText.m in Sources */,
 				87AD1601242721F000EAE233 /* YSWhiteBoardManager.m in Sources */,
+				87C8B1152429BCD20016848E /* DrawPen.mm in Sources */,
 				87AD161A2427554900EAE233 /* YSRoomConfiguration.m in Sources */,
+				87C8B0CE2429B9D20016848E /* UIImageView+VYHighlightedWebCache.m in Sources */,
+				87C8B1162429BCD20016848E /* DrawLine.m in Sources */,
+				87C8B1032429BCD20016848E /* YSDrawView.m in Sources */,
+				87C8B0BF2429B9D20016848E /* VYSDWebImageDecoder.m in Sources */,
+				87C8B0C32429B9D20016848E /* VYSDWebImagePrefetcher.m in Sources */,
+				87C8B1122429BCD20016848E /* DrawRectangle.m in Sources */,
+				87C8B1052429BCD20016848E /* YSFileModel.m in Sources */,
+				87C8B0D12429B9D20016848E /* UIView+VYWebCache.m in Sources */,
+				87C8B0C62429B9D20016848E /* UIImage+VYGIF.m in Sources */,
+				87C8B0BE2429B9D20016848E /* VYSDImageCache.m in Sources */,
 				87AD16412428B68400EAE233 /* YSWKWebViewWeakDelegate.m in Sources */,
 				87AD16452428B6AB00EAE233 /* YSWhiteBoardView.m in Sources */,
+				87C8B0B52429B9D20016848E /* VYSDWebImageDownloaderOperation.m in Sources */,
+				87C8B1092429BCD20016848E /* DocUnderView.m in Sources */,
+				87C8B0BD2429B9D20016848E /* UIButton+VYWebCache.m in Sources */,
+				87C8B0C92429B9D20016848E /* VYSDWebImageCompat.m in Sources */,
+				87C8B10E2429BCD20016848E /* DrawView.mm in Sources */,
+				87C8B0BC2429B9D20016848E /* UIImageView+VYWebCache.m in Sources */,
 				87AD1632242859A900EAE233 /* YSWBLogger.m in Sources */,
+				87C8B1082429BCD20016848E /* LKPDFView.m in Sources */,
 				87AD163D2428B68400EAE233 /* YSWBDrawViewManager.m in Sources */,
+				87C8B0E22429BC8D0016848E /* HSV.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -423,7 +767,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = YS.YSWhiteBoard;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
-				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MACCATALYST = YES;
 				SYSTEM_FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/YSLib",
@@ -460,7 +804,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = YS.YSWhiteBoard;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
-				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MACCATALYST = YES;
 				SYSTEM_FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/YSLib",
