@@ -22,7 +22,7 @@ NSString *const YSWhiteBoardRemoteSelectTool = @"YSWhiteBoardRemoteSelectTool"; 
 @property (nonatomic, weak) UIView *contentView;
 
 /// web课件通过YSWBWebViewManager创建的webView
-@property (nonatomic, strong) WKWebView *wkWebView;
+@property (nonatomic, weak) WKWebView *wkWebView;
 /// 普通课件视图
 @property (nonatomic, strong) DocShowView *fileView;
 

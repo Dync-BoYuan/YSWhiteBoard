@@ -15,13 +15,20 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface YSWhiteBoardView : UIView
 
+@property (nonatomic, strong, readonly) NSString *fileId;
+
 /// web文档
 @property (nonatomic, strong, readonly) YSWBWebViewManager *webViewManager;
 /// 普通文档
 @property (nonatomic, strong, readonly) YSWBDrawViewManager *drawViewManager;
 
+- (instancetype)initWithFrame:(CGRect)frame fileId:(NSString *)fileId loadFinishedBlock:(nullable  wbLoadFinishedBlock)loadFinishedBlock;
 
 - (void)userPropertyChanged:(NSDictionary *)message;
+
+
+// 页面刷新尺寸
+- (void)refreshWhiteBoardWithFrame:(CGRect)frame;
 
 @end
 

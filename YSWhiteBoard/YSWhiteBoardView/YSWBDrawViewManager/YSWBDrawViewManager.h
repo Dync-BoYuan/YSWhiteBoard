@@ -14,6 +14,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface YSWBDrawViewManager : NSObject
 
+- (instancetype)initWithBackView:(UIView *)view webView:(WKWebView *)webView;
+
 @end
 
 NS_ASSUME_NONNULL_END

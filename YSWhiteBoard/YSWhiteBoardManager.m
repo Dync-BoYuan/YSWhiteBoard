@@ -9,9 +9,6 @@
 #import "YSWhiteBoardManager.h"
 #import <objc/message.h>
 
-#import "YSWhiteBoardView.h"
-
-
 /// SDK版本
 static NSString *YSWhiteBoardSDKVersionString   = @"2.0.0.0";
 
@@ -45,6 +42,8 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 /// 信令缓存数据 预加载后页面加载完成前
 @property (nonatomic, strong) NSMutableArray *cacheMsgPool;
 
+/// 课件列表
+@property (nonatomic, strong) NSMutableArray <YSFileModel *> *docmentList;
 
 // UI
 
@@ -78,6 +77,12 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 {
     if (self = [super init])
     {
+        self.preloadingFished = NO;
+        
+        self.cacheMsgPool = [NSMutableArray array];
+        self.preLoadingFileCacheMsgPool = [NSMutableArray array];
+        
+        self.coursewareViewList = [NSMutableArray array];
 
 #if DEBUG
         NSString *sdkVersion = [NSString stringWithFormat:@"%@", YSWhiteBoardSDKVersionString];
@@ -197,23 +202,153 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     self.configration = config;
 }
 
-//- (UIView *)createWhiteBoardWithFrame:(CGRect)frame
-//                    loadFinishedBlock:(loadFinishedBlock)loadFinishedBlock
-//{
-//
-//    _contentView        = [[UIView alloc] initWithFrame:frame];
-//    _wbView             = [_documentBoard createWhiteBoardWithFrame:frame
-//                                                  loadComponentName:loadComponentName
-//                                                  loadFinishedBlock:loadFinishedBlock];
-//    [_contentView addSubview:_wbView];
-//
-//    _nativeWBController = [[YSWhiteBoardController alloc] initWithBackView:_contentView webView:_wbView];
-//    [_nativeWBController setConfiguration:_ysRoomProperty];
-//
-//    _nativeWBController.wkWebView = _wbView;
-//
-//    return _contentView;
-//}
+- (YSWhiteBoardView *)createMainWhiteBoardWithFrame:(CGRect)frame
+                        loadFinishedBlock:(wbLoadFinishedBlock)loadFinishedBlock
+{
+    self.mainWhiteBoardView = [[YSWhiteBoardView alloc] initWithFrame:frame fileId:@"0" loadFinishedBlock:loadFinishedBlock];
+    return self.mainWhiteBoardView;
+}
+
+- (YSWhiteBoardView *)createWhiteBoardWithFrame:(CGRect)frame fileId:(NSString *)fileId
+                        loadFinishedBlock:(wbLoadFinishedBlock)loadFinishedBlock
+{
+    if (![fileId bm_isNotEmpty] || [fileId isEqualToString:@"0"])
+    {
+        return nil;
+    }
+    
+    YSWhiteBoardView *whiteBoardView = [[YSWhiteBoardView alloc] initWithFrame:frame fileId:fileId loadFinishedBlock:loadFinishedBlock];
+    return whiteBoardView;
+}
+
+#pragma mark - 课件列表管理
+
+#pragma mark  添加课件
+- (void)addDocumentWithFile:(NSDictionary *)file
+{
+    NSNumber *isContentDocument = file[@"isContentDocument"];
+    
+    NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary:file];
+    [dict setValue:isContentDocument forKey:@"isContentDocument"];
+    
+    YSFileModel *model = [YSFileModel new];
+    if (dict[@"filedata"])
+    {
+        [model setValuesForKeysWithDictionary:dict];
+        [model setValuesForKeysWithDictionary:dict[@"filedata"]];
+    }
+    else
+    {
+        [model setValuesForKeysWithDictionary:dict];
+    }
+    [self.docmentList addObject:model];
+}
+
+#pragma mark  获取课件
+- (YSFileModel *)getDocumentWithFileID:(NSString *)fileId
+{
+    if (![fileId bm_isNotEmpty])
+    {
+        return nil;
+    }
+
+    YSFileModel *file = nil;
+    @synchronized (self.docmentList)
+    {
+        for (YSFileModel *model in self.docmentList)
+        {
+            if ([model.fileid isEqualToString:fileId])
+            {
+                file = model;
+                break;
+            }
+        }
+    }
+    
+    return file;
+}
+
+#pragma mark  删除课件
+- (void)deleteDocumentWithFileID:(NSString *)fileId
+{
+    if (![fileId bm_isNotEmpty])
+    {
+        return;
+    }
+    
+    @synchronized (self.docmentList)
+    {
+        NSArray *tmp = [self.docmentList copy];
+        for (int i = 0; i < tmp.count; i++)
+        {
+            YSFileModel *model = tmp[i];
+            if ([model.fileid isEqualToString:fileId])
+            {
+                [self.docmentList removeObjectAtIndex:i];
+                break;
+            }
+        }
+    }
+}
+
+#pragma mark - 课件窗口列表管理
+
+#pragma mark  添加课件窗口
+- (void)addWhiteBoardViewWithFileId:(NSString *)fileId
+{
+    YSWhiteBoardView *whiteBoardView = [self getWhiteBoardViewWithFileId:fileId];
+    if (whiteBoardView)
+    {
+        whiteBoardView;
+        return;
+    }
+    
+    CGRect frame = CGRectMake(0, 0, 100, 100);
+    whiteBoardView = [self createWhiteBoardWithFrame:frame fileId:fileId loadFinishedBlock:^{
+    }];
+    
+    [self.coursewareViewList addObject:whiteBoardView];
+    
+    return;
+}
+
+#pragma mark  获取课件窗口
+
+- (YSWhiteBoardView *)getWhiteBoardViewWithFileId:(NSString *)fileId
+{
+    for (YSWhiteBoardView *whiteBoardView in self.coursewareViewList)
+    {
+        if ([whiteBoardView.fileId isEqualToString:fileId])
+        {
+            return whiteBoardView;
+        }
+    }
+    return nil;
+}
+
+#pragma mark  删除课件窗口
+
+- (void)delWhiteBoardViewWithFileId:(NSString *)fileId
+{
+    YSWhiteBoardView *whiteBoardView = [self getWhiteBoardViewWithFileId:fileId];
+    if (whiteBoardView)
+    {
+        [self.coursewareViewList removeObject:whiteBoardView];
+    }
+}
+
+#pragma mark  删除所有课件窗口
+- (void)removeWhiteBoardView
+{
+    for (YSWhiteBoardView *whiteBoardView in self.coursewareViewList)
+    {
+        whiteBoardView;
+    }
+    
+    [self.coursewareViewList removeAllObjects];
+}
+
+
 
 #pragma mark - 监听课堂 底层通知消息
 

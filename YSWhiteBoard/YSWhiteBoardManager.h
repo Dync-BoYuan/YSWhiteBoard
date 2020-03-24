@@ -10,6 +10,9 @@
 #import "YSWhiteBoardManagerDelegate.h"
 #import "YSRoomConfiguration.h"
 
+#import "YSWhiteBoardView.h"
+#import "YSFileModel.h"
+
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -37,6 +40,9 @@ NS_ASSUME_NONNULL_BEGIN
 + (BOOL)supportPreload;
 
 - (void)doMsgCachePool;
+
+- (YSWhiteBoardView *)createMainWhiteBoardWithFrame:(CGRect)frame
+                        loadFinishedBlock:(wbLoadFinishedBlock)loadFinishedBlock;
 
 
 @end

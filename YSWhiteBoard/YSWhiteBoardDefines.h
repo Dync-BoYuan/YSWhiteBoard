@@ -10,6 +10,12 @@
 #define YSWhiteBoardDefines_h
 
 
+/// 白板创建完成
+typedef void(^wbLoadFinishedBlock) (void);
+/// webview崩溃回调
+typedef void(^wbWebViewTerminateBlock)(void);
+
+
 static NSString *const kYSMethodNameKey = @"YSCacheMsg_MethodName";
 static NSString *const kYSParameterKey = @"YSCacheMsg_Parameter";
 

@@ -12,10 +12,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-typedef void(^wbLoadFinishedBlock) (void);
-/// webview崩溃回调
-typedef void(^wbWebViewTerminateBlock)(void);
-
 @protocol YSWBWebViewManagerDelegate;
 
 @interface YSWBWebViewManager : NSObject

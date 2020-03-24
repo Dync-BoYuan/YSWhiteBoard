@@ -35,7 +35,7 @@
 
     [self createWKWebViewWithFrame:frame];
 
-    return _webView;
+    return self.webView;
 }
 
 - (void)createWKWebViewWithFrame:(CGRect)frame
