@@ -7,6 +7,8 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <WebKit/WebKit.h>
+#import "DocShowView.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
