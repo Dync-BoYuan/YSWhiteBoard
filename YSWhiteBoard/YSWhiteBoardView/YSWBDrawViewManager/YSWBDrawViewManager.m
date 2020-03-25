@@ -495,6 +495,16 @@ NSString *const YSWhiteBoardRemoteSelectTool = @"YSWhiteBoardRemoteSelectTool"; 
     }
 }
 
+// MARK: 设置工作模式
+- (void)setWorkMode:(YSWorkMode)mode
+{
+    [self.fileView.ysDrawView setWorkMode:mode];
+    if (![YSWhiteBoardManager shareInstance].isBeginClass)
+    {
+        [self.fileView.ysDrawView setWorkMode:YSWorkModeViewer];
+    }
+}
+
 // 激光笔
 - (void)laserPen:(NSDictionary *)dic
 {
@@ -590,6 +600,60 @@ NSString *const YSWhiteBoardRemoteSelectTool = @"YSWhiteBoardRemoteSelectTool"; 
     }
 }
 
+#pragma mark - 监听课堂 底层通知消息
+
+////MARK: 授权&&上台
+- (void)updateProperty:(NSDictionary *)dictionary
+{
+    if (![dictionary bm_isNotEmptyDictionary])
+    {
+        return;
+    }
+
+    NSString *toID = [dictionary bm_stringForKey:@"id"];
+    if (![toID isEqualToString:[YSRoomInterface instance].localUser.peerID])
+    {
+        return;
+    }
+    
+    NSDictionary *properties = [dictionary bm_dictionaryForKey:@"properties"];
+    if (![properties bm_isNotEmptyDictionary])
+    {
+        return;
+    }
+
+    if ([properties bm_containsObjectForKey:@"candraw"])
+    {
+        BOOL candraw = [properties bm_boolForKey:@"candraw"];
+        if ([YSRoomInterface instance].localUser.role == YSUserType_Student)
+        { // 学生
+            if (candraw)
+            {
+                // 授予画笔权限
+                [self setWorkMode:self.selectMouse ? YSWorkModeViewer : YSWorkModeControllor];
+
+            }
+            else
+            {
+                [self setWorkMode:YSWorkModeViewer];
+                self.fileView.ysDrawView.rtDrawView.draw = nil;
+            }
+            if (self.showOnWeb)
+            {
+                // 画笔穿透时在web课件上不隐藏
+                self.fileView.hidden = [YSWhiteBoardManager shareInstance].roomConfig.isPenCanPenetration ? NO : _selectMouse;
+            }
+        }
+        else if ([YSRoomInterface instance].localUser.role == YSUserType_Teacher)
+        { // 老师
+            [self setWorkMode:YSWorkModeControllor];
+        }
+        else
+        { // 巡课
+            [self setWorkMode:YSWorkModeViewer];
+        }
+    }
+}
 
 
 @end

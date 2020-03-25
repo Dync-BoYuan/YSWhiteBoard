@@ -16,6 +16,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithBackView:(UIView *)view webView:(WKWebView *)webView;
 
+- (void)updateProperty:(NSDictionary *)dictionary;
+
 @end
 
 NS_ASSUME_NONNULL_END

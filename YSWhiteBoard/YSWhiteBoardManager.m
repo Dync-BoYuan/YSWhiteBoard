@@ -299,6 +299,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     YSWhiteBoardView *whiteBoardView = [self getWhiteBoardViewWithFileId:fileId];
     if (whiteBoardView)
     {
+        [whiteBoardView bm_bringToFront];
         whiteBoardView;
         return;
     }
@@ -308,6 +309,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     }];
     
     [self.coursewareViewList addObject:whiteBoardView];
+    [self.mainWhiteBoardView addSubview:whiteBoardView];
     
     return;
 }

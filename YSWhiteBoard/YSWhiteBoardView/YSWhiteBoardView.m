@@ -45,6 +45,8 @@
     return self;
 }
 
+#pragma mark - 监听课堂 底层通知消息
+
 - (void)userPropertyChanged:(NSDictionary *)message
 {
     if (self.webViewManager)
@@ -54,7 +56,7 @@
     
     if (self.drawViewManager)
     {
-        //[self.drawViewManager updateProperty:message];
+        [self.drawViewManager updateProperty:message];
     }
 }
 
