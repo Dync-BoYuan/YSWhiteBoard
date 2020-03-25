@@ -24,7 +24,21 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithFrame:(CGRect)frame fileId:(NSString *)fileId loadFinishedBlock:(nullable  wbLoadFinishedBlock)loadFinishedBlock;
 
+/// 用户属性改变通知
 - (void)userPropertyChanged:(NSDictionary *)message;
+/// 用户离开通知
+- (void)participantLeaved:(NSDictionary *)message;
+/// 用户进入通知
+- (void)participantJoin:(NSDictionary *)message;
+/// 自己被踢出教室通知
+- (void)participantEvicted:(NSDictionary *)message;
+/// 收到远端pubMsg消息通知
+- (void)remotePubMsg:(NSDictionary *)message;
+
+
+
+
+
 
 
 // 页面刷新尺寸

@@ -34,6 +34,15 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 /// 房间配置项
 @property (nonatomic, strong) YSRoomConfiguration *roomConfig;
 
+// 关于获取白板 服务器地址、备份地址、web地址相关通知
+/// 文档服务器地址
+@property (nonatomic, strong) NSString *serverDocAddrKey;
+/// web地址
+@property (nonatomic, strong) NSString *serverWebAddrKey;
+/// 备份链路域名集合
+@property (nonatomic, strong) NSArray *serverAddrBackupKey;
+
+
 /// 记录UI层是否开始上课
 @property (nonatomic, assign) BOOL isBeginClass;
 
@@ -244,6 +253,79 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     [self.docmentList addObject:model];
 }
 
+- (void)addOrReplaceDocumentFile:(NSDictionary *)file
+{
+    NSString *fileid = [file bm_stringForKey:@"fileid"];
+    if (!fileid)
+    {
+        NSDictionary *filedata = [file bm_dictionaryForKey:@"filedata"];
+        
+        fileid = [filedata bm_stringForKey:@"fileid"];
+        if (!fileid)
+        {
+            return;
+        }
+    }
+    
+    YSFileModel *model = [self getDocumentWithFileID:fileid];
+    if (model)
+    {
+        [self.docmentList removeObject:model];
+    }
+    
+    NSNumber *isContentDocument = file[@"isContentDocument"];
+    
+    NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary:file];
+    [dict setValue:isContentDocument forKey:@"isContentDocument"];
+    
+    YSFileModel *fileModel = [YSFileModel new];
+    [fileModel setValuesForKeysWithDictionary:dict];
+    NSDictionary *fileData = dict[@"filedata"];
+    if (fileData.count > 0)
+    {
+        [fileModel setValuesForKeysWithDictionary:fileData];
+    }
+    
+    if ([[dict allKeys] containsObject:@"fileprop"])
+    {
+        fileModel.fileprop = dict[@"fileprop"];
+        fileModel.isGeneralFile = @"1";
+        if (fileModel.fileprop.integerValue == 1 || fileModel.fileprop.integerValue == 2)
+        {
+            fileModel.isDynamicPPT = @"1";
+            fileModel.isGeneralFile = @"0";
+        }
+        else
+        {
+            fileModel.isDynamicPPT = @"0";
+        }
+        if (fileModel.fileprop.integerValue == 3)
+        {
+            fileModel.isH5Document = @"1";
+            fileModel.isGeneralFile = @"0";
+        }
+        else
+        {
+            fileModel.isH5Document = @"0";
+        }
+    }
+    else
+    {
+        NSNumber *isDynamicPPT = dict[@"isDynamicPPT"];
+        NSNumber *isH5Document = dict[@"isH5Document"];
+        if (isDynamicPPT.intValue == 1)
+        {
+            fileModel.fileprop = @(1);
+        }
+        if (isH5Document.intValue == 1)
+        {
+            fileModel.fileprop = @(3);
+        }
+    }
+    
+    [self.docmentList addObject:fileModel];
+}
+
 #pragma mark  获取课件
 - (YSFileModel *)getDocumentWithFileID:(NSString *)fileId
 {
@@ -413,10 +495,10 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 // 用户属性改变通知
 - (void)roomWhiteBoardOnRoomUserPropertyChanged:(NSNotification *)notification
 {
-    // 用户属性改变通知，只接收自己的candraw属性
     NSDictionary *dict = notification.userInfo;
     NSDictionary *message = [dict bm_dictionaryForKey:YSWhiteBoardNotificationUserInfoKey];
     
+    // 用户属性改变通知，只接收自己的candraw属性
     if (![message bm_isNotEmptyDictionary])
     {
         return;
@@ -458,27 +540,194 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     }
 }
 
-- (void)roomWhiteBoardOnRoomParticipantLeaved:(NSNotification *)notification{
+- (void)roomWhiteBoardOnRoomParticipantLeaved:(NSNotification *)notification
+{
     NSDictionary *dict = notification.userInfo;
-    NSString *message = [dict objectForKey:YSWhiteBoardNotificationUserInfoKey];
+    NSDictionary *message = [dict objectForKey:YSWhiteBoardNotificationUserInfoKey];
     
-    if (self.preloadingFished == YES) {
-        if (self.documentBoard) {
-            
-            [self.documentBoard sendSignalMessageToJS:WBParticipantLeft message:message];
+    if (self.preloadingFished == YES)
+    {
+//        if (self.mainWhiteBoardView)
+//        {
+//            [self.mainWhiteBoardView participantLeaved:message];
+//        }
+        
+        for (YSWhiteBoardView *wWhiteBoardView in self.coursewareViewList)
+        {
+            [wWhiteBoardView participantLeaved:message];
         }
     }
-    else {
-        
+    else
+    {
         NSString *methodName = NSStringFromSelector(@selector(sendSignalMessageToJS:message:));
         
         NSMutableDictionary *dic = [NSMutableDictionary dictionary];
         [dic setValue:methodName forKey:kYSMethodNameKey];
-        [dic setValue:@[WBParticipantLeft,message] forKey:kYSParameterKey];
+        [dic setValue:@[WBParticipantLeft, message] forKey:kYSParameterKey];
         [self.preLoadingFileCacheMsgPool addObject:dic];
     }
-    
+}
 
+- (void)roomWhiteBoardOnRoomParticipantJoin:(NSNotification *)notification
+{
+    NSDictionary *dict = notification.userInfo;
+    NSDictionary *message = [dict objectForKey:YSWhiteBoardNotificationUserInfoKey];
+    
+    if (self.preloadingFished == YES)
+    {
+//        if (self.mainWhiteBoardView)
+//        {
+//            [self.mainWhiteBoardView participantJoin:message];
+//        }
+        
+        for (YSWhiteBoardView *wWhiteBoardView in self.coursewareViewList)
+        {
+            [wWhiteBoardView participantJoin:message];
+        }
+    }
+    else
+    {
+        NSString *methodName = NSStringFromSelector(@selector(sendSignalMessageToJS:message:));
+        
+        NSMutableDictionary *dic = [NSMutableDictionary dictionary];
+        [dic setValue:methodName forKey:kYSMethodNameKey];
+        [dic setValue:@[WBParticipantJoined, message] forKey:kYSParameterKey];
+        [self.preLoadingFileCacheMsgPool addObject:dic];
+    }
+}
+
+- (void)roomWhiteBoardOnParticipantEvicted:(NSNotification *)notification
+{
+    NSDictionary *dict = notification.userInfo;
+    NSDictionary *reason = [dict objectForKey:YSWhiteBoardNotificationUserInfoKey];
+    
+    if (self.preloadingFished == YES)
+    {
+//        if (self.mainWhiteBoardView)
+//        {
+//            [self.mainWhiteBoardView participantEvicted:reason];
+//        }
+        
+        for (YSWhiteBoardView *wWhiteBoardView in self.coursewareViewList)
+        {
+            [wWhiteBoardView participantEvicted:reason];
+        }
+    }
+    else
+    {
+        NSString *methodName = NSStringFromSelector(@selector(sendSignalMessageToJS:message:));
+        
+        NSMutableDictionary *dic = [NSMutableDictionary dictionary];
+        [dic setValue:methodName forKey:kYSMethodNameKey];
+        [dic setValue:@[WBParticipantEvicted, reason] forKey:kYSParameterKey];
+        [self.preLoadingFileCacheMsgPool addObject:dic];
+    }
+}
+
+- (void)roomWhiteBoardOnRemotePubMsg:(NSNotification *)notification
+{
+    NSDictionary *dict = notification.userInfo;
+    NSDictionary *message = [dict objectForKey:YSWhiteBoardNotificationUserInfoKey];
+    
+    if (![message bm_isNotEmptyDictionary])
+    {
+        return;
+    }
+    
+    NSString *msgName = [message bm_stringForKey:@"name"];
+    if ([msgName bm_isNotEmpty])
+    {
+        return;
+    }
+    NSString *msgId = [message bm_stringForKey:@"id"];
+    if ([msgId bm_isNotEmpty])
+    {
+        return;
+    }
+
+    if (![msgName isEqualToString:@"UpdateTime"])
+    {
+        WB_INFO(@"%s %@", __func__, message);
+    }
+    
+    // 不处理大房间
+    if ([msgName isEqualToString:sYSSignalNotice_BigRoom_Usernum])
+    {
+        return;
+    }
+
+    long ts = (long)[message bm_uintForKey:@"ts"];
+    NSString *fromId = [message objectForKey:@"fromID"];
+    NSObject *data = [message objectForKey:@"data"];
+    if (self.wbDelegate && [self.wbDelegate respondsToSelector:@selector(onWhiteBroadPubMsgWithMsgID:msgName:data:fromID:inList:ts:)])
+    {
+        [self.wbDelegate onWhiteBroadPubMsgWithMsgID:msgId msgName:msgName data:data fromID:fromId inList:YES ts:ts];
+    }
+    
+    NSDictionary *tDataDic = [YSRoomUtil convertWithData:data];
+    if (![tDataDic bm_isNotEmptyDictionary])
+    {
+        return;
+    }
+    
+    if ([msgName isEqualToString:sYSSignalDocumentChange])
+    {
+        BOOL isDelete = [tDataDic bm_boolForKey:@"isDel"];
+        if (isDelete)
+        {
+            NSString *fileid = [tDataDic bm_stringForKey:@"fileid"];
+            if (!fileid)
+            {
+                NSDictionary *filedata = [tDataDic bm_dictionaryForKey:@"filedata"];
+                fileid = [filedata bm_stringForKey:@"fileid"];
+            }
+
+            [self deleteDocumentWithFileID:fileid];
+        }
+        else
+        {
+            [self addOrReplaceDocumentFile:tDataDic];
+        }
+    }
+    else if ([msgName isEqualToString:sYSSignalShowPage])
+    {
+        NSString *fileid = [tDataDic bm_stringForKey:@"fileid"];
+        [self.docmentList enumerateObjectsUsingBlock:^(YSFileModel * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            if ([fileid isEqualToString:obj.fileid])
+            {
+                NSDictionary *filedata = [tDataDic bm_dictionaryForKey:@"filedata"];
+                obj.currpage = [filedata bm_stringForKey:@"currpage"];
+            }
+        }];
+        [self addOrReplaceDocumentFile:tDataDic];
+    }
+    
+    if (self.preloadingFished == NO)
+    {
+        NSString *methodName = NSStringFromSelector(@selector(sendSignalMessageToJS:message:));
+        NSMutableDictionary *dic = [NSMutableDictionary dictionary];
+        [dic setValue:methodName forKey:kYSMethodNameKey];
+        [dic setValue:@[WBPubMsg, message] forKey:kYSParameterKey];
+        [self.preLoadingFileCacheMsgPool addObject:dic];
+        
+        NSString *methorForNative = NSStringFromSelector(@selector(receiveWhiteBoardMessage:isDelMsg:));
+        NSMutableDictionary *dicForNative = [NSMutableDictionary dictionary];
+        [dicForNative setObject:methorForNative forKey:kYSMethodNameKey];
+        [dicForNative setObject:@[[NSMutableDictionary dictionaryWithDictionary:message], @(YES)] forKey:kYSParameterKey];
+        [self.preLoadingFileCacheMsgPool addObject:dicForNative];
+    }
+    else
+    {
+        if (self.mainWhiteBoardView)
+        {
+            [self.mainWhiteBoardView remotePubMsg:message];
+        }
+        
+        for (YSWhiteBoardView *wWhiteBoardView in self.coursewareViewList)
+        {
+            [wWhiteBoardView remotePubMsg:message];
+        }
+    }
 }
 
 @end

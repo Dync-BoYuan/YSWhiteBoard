@@ -52,6 +52,9 @@ static  NSString *const sYSSignalPubMsg                 = @"pubMsg";
 /// 删除消息
 static  NSString *const sYSSignalDelMsg                 = @"delMsg";
 
+/// 大房间
+static  NSString *const sYSSignalNotice_BigRoom_Usernum = @"Notice_BigRoom_Usernum";
+
 /// 白板加载完成回调
 static  NSString *const sYSSignalOnPageFinished         = @"onPageFinished";
 
@@ -82,6 +85,8 @@ static  NSString *const sYSSignalOnJsPlay               = @"isPlayAudio";
 
 /// 显示课件
 static  NSString *const sYSSignalShowPage               = @"ShowPage";
+static  NSString *const sYSSignalDocumentChange         = @"DocumentChange";
+
 /// ShowPage ID
 static  NSString *const sYSSignalDocumentFilePage_ShowPage = @"DocumentFilePage_ShowPage";
 static  NSString *const sYSSignalActionShow             = @"show";
@@ -112,6 +117,9 @@ static  NSString *const sYSSignalUpdateTime             = @"UpdateTime";
 #define WBPubMsg                                    @"pubMsg"
 #define WBDelMsg                                    @"delMsg"
 #define WBSetProperty                               @"setProperty"
+#define WBParticipantLeft                           @"participantLeft"
+#define WBParticipantJoined                         @"participantJoined"
+#define WBParticipantEvicted                        @"participantEvicted"
 
 #define WBUpdatePermission                          @"updatePermission"
 

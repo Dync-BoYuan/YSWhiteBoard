@@ -27,6 +27,11 @@ NS_ASSUME_NONNULL_BEGIN
 /// 房间配置项
 @property (nonatomic, strong, readonly) YSRoomConfiguration *roomConfig;
 
+// 关于获取白板 服务器地址、备份地址、web地址相关通知
+/// 文档服务器地址
+@property (nonatomic, strong, readonly) NSString *serverDocAddrKey;
+
+
 /// 记录UI层是否开始上课
 @property (nonatomic, assign, readonly) BOOL isBeginClass;
 
