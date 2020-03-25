@@ -152,6 +152,35 @@
     }
 }
 
+/// 收到远端delMsg消息的通知
+- (void)remoteDelMsg:(NSDictionary *)message
+{
+    if (self.webViewManager)
+    {
+        [self.webViewManager sendSignalMessageToJS:WBDelMsg message:message];
+    }
+
+    if (self.drawViewManager)
+    {
+        [self.drawViewManager receiveWhiteBoardMessage:[NSMutableDictionary dictionaryWithDictionary:message] isDelMsg:YES];
+    }
+}
+
+/// 连接教室成功的通知
+- (void)whiteBoardOnRoomConnectedUserlist:(NSNumber *)code response:(NSDictionary *)response
+{
+    if (self.webViewManager)
+    {
+        [self.webViewManager whiteBoardOnRoomConnectedUserlist:code response:response];
+    }
+
+    if (self.drawViewManager)
+    {
+        [self.drawViewManager whiteBoardOnRoomConnectedUserlist:code response:response];
+    }
+}
+
+
 
 #pragma -
 #pragma mark YSWBWebViewManagerDelegate

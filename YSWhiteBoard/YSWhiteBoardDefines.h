@@ -111,6 +111,8 @@ static  NSString *const sYSSignalUpdateTime             = @"UpdateTime";
 #define WBDocumentLoadSuccessOrFailure              @"documentLoadSuccessOrFailure"
 #define WBDocumentSlideLoadTimeout                  @"slideLoadTimeout"
 
+/// 预加载文档
+#define WBPreLoadingFile                            @"preLoadingFile"
 /// 预加载文档结束
 #define WBPreloadingFished                          @"preloadingFished"
 

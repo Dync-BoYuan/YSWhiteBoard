@@ -32,10 +32,15 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, readonly) NSString *serverDocAddrKey;
 
 
+/// 课件列表
+@property (nonatomic, strong, readonly) NSMutableArray <YSFileModel *> *docmentList;
+/// 课件Dic列表
+@property (nonatomic, strong, readonly) NSMutableArray <NSDictionary *> *docmentDicist;
+
 /// 记录UI层是否开始上课
 @property (nonatomic, assign, readonly) BOOL isBeginClass;
 
-// 预加载文档标识
+/// 预加载文档结束
 @property (nonatomic, assign) BOOL preloadingFished;
 
 

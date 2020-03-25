@@ -843,7 +843,7 @@
                }];
 }
 
-- (void)sendAction:(NSString *)action command:(nullable NSDictionary *)cmd
+- (void)sendAction:(NSString *)action command:(NSDictionary *)cmd
 {
     NSString *tJsonDataJsonString;
     NSString *jsReceivePhoneByTriggerEvent;

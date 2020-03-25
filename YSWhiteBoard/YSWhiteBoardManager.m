@@ -24,6 +24,17 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 <
     YSWBWebViewManagerDelegate
 >
+{
+    /// 课件加载成功
+    BOOL isLoadingFinish;
+    /// 页面加载完成, 是否需要缓存标识
+    BOOL UIDidAppear;
+
+    /// 预加载开始处理
+    BOOL preloadDispose;
+    /// 预加载失败
+    BOOL predownloadError;
+}
 
 @property (nonatomic, weak) id <YSWhiteBoardManagerDelegate> wbDelegate;
 /// 配置项
@@ -53,11 +64,15 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 
 /// 课件列表
 @property (nonatomic, strong) NSMutableArray <YSFileModel *> *docmentList;
+/// 课件Dic列表
+@property (nonatomic, strong) NSMutableArray <NSDictionary *> *docmentDicist;
 
 // UI
 
 /// 主白板
 @property (nonatomic, strong) YSWhiteBoardView *mainWhiteBoardView;
+/// 预加载课件
+@property (nonatomic, strong) YSWhiteBoardView *preLoadWhiteBoardView;
 /// 课件窗口列表
 @property (nonatomic, strong) NSMutableArray <YSWhiteBoardView *> *coursewareViewList;
 
@@ -86,6 +101,8 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 {
     if (self = [super init])
     {
+        isLoadingFinish = NO;
+        UIDidAppear = NO;
         self.preloadingFished = NO;
         
         self.cacheMsgPool = [NSMutableArray array];
@@ -396,6 +413,25 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     return;
 }
 
+- (void)addWhiteBoardViewWithWhiteBoardView:(YSWhiteBoardView *)whiteBoardView
+{
+    if (whiteBoardView)
+    {
+        [whiteBoardView bm_bringToFront];
+        whiteBoardView;
+    }
+    
+    if ([self.coursewareViewList containsObject:whiteBoardView])
+    {
+        return;
+    }
+        
+    [self.coursewareViewList addObject:whiteBoardView];
+    [self.mainWhiteBoardView addSubview:whiteBoardView];
+    
+    return;
+}
+
 #pragma mark  获取课件窗口
 
 - (YSWhiteBoardView *)getWhiteBoardViewWithFileId:(NSString *)fileId
@@ -433,6 +469,102 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 }
 
 
+
+
+#pragma -
+#pragma mark PreLoadingFile
+
+// 发送预加载的文档
+- (void)sendPreLoadingFile
+{
+    // 页面加载完成
+    if (UIDidAppear == NO)
+    {
+        return;
+    }
+    
+    // 是否有 需要加载的文件
+    YSFileModel *file = nil;
+    for (YSFileModel *model in _docmentList)
+    {
+        if (model.type.intValue == 1)
+        {
+            file = model;
+            break;
+        }
+    }
+    if (!file || ![YSWhiteBoardManager supportPreload])
+    {
+        // 不需要本地加载
+        self.preloadingFished = YES;
+        [self onWhiteBoardHandlePreloadingFished];
+        return;
+    }
+    
+    // 添加预加载课件
+    if (!self.preLoadWhiteBoardView && ![file.fileid isEqualToString:@"0"])
+    {
+        CGRect frame = CGRectMake(0, 0, 100, 100);
+        self.preLoadWhiteBoardView = [self createWhiteBoardWithFrame:frame fileId:file.fileid loadFinishedBlock:^{
+        }];
+
+        [self addWhiteBoardViewWithWhiteBoardView:self.preLoadWhiteBoardView];
+    }
+    
+    // 0:表示普通文档　１－２动态ppt(1: 第一版动态ppt 2: 新版动态ppt ）  3:h5文档
+    BOOL isPPT_H5 = [file.fileprop integerValue] == 1 || [file.fileprop integerValue] == 2 || [file.fileprop integerValue] == 3;
+    if (isPPT_H5)
+    {
+        if (self.roomConfig.coursewarePreload == YES && file.preloadingzip.length > 0)
+        {
+            if (predownloadError)
+            {
+                NSDictionary *dic = [YSFileModel fileDataDocDic:file predownloadError:predownloadError];
+                [self.preLoadWhiteBoardView.webViewManager sendAction:WBPreLoadingFile command:@{@"cmd":dic}];
+            }
+            else
+            {
+                if ([[NSFileManager defaultManager] fileExistsAtPath:[[NSTemporaryDirectory() stringByAppendingPathComponent:@"YSFile"] stringByAppendingPathComponent:file.fileid]])
+                {
+                    NSDictionary *dic = [YSFileModel fileDataDocDic:file predownloadError:predownloadError];
+                    [self.preLoadWhiteBoardView.webViewManager sendAction:WBPreLoadingFile command:@{@"cmd":dic}];
+                }
+            }
+        }
+        else
+        {
+            NSDictionary *dic = [YSFileModel fileDataDocDic:file predownloadError:predownloadError];
+            [self.preLoadWhiteBoardView.webViewManager sendAction:WBPreLoadingFile command:@{@"cmd":dic}];
+        }
+    }
+    else
+    {
+        if (self.preLoadWhiteBoardView)
+        {
+            [self.preLoadWhiteBoardView.webViewManager sendAction:WBPreLoadingFile command:@{@"cmd":@""}];
+        }
+        else
+        {
+            [self.mainWhiteBoardView.webViewManager sendAction:WBPreLoadingFile command:@{@"cmd":@""}];
+        }
+    }
+}
+
+- (void)onWhiteBoardHandlePreloadingFished
+{
+#warning afterConnectToRoomAndPreloadingFished
+//    if (self.documentBoard)
+//    {
+//        [self.documentBoard afterConnectToRoomAndPreloadingFished];
+//    }
+//    // 进教室复位
+//    if (_nativeWBController)
+//    {
+//        [_nativeWBController afterConnectToRoomAndPreloadingFished];
+//    }
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:YSWhiteBoardDocPreloadFinishNotification object:nil];
+}
 
 #pragma mark - 监听课堂 底层通知消息
 
@@ -492,6 +624,57 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     }
 }
 
+// 链接教室成功
+- (void)roomWhiteBoardOnRoomConnectedUserlist:(NSNotification *)notification
+{
+    NSDictionary *dict = notification.userInfo;
+    NSNumber *code = [dict objectForKey:YSWhiteBoardOnRoomConnectedCodeKey];
+    NSDictionary *response = [dict objectForKey:YSWhiteBoardOnRoomConnectedRoomMsgKey];
+    
+    if (isLoadingFinish == NO)
+    {
+        [self sendPreLoadingFile];
+    }
+    
+    [self roomWhiteBoardOnRoomConnectedUserlist:code response:response];
+}
+
+- (void)roomWhiteBoardOnRoomConnectedUserlist:(NSNumber *)code response:(NSDictionary *)response
+{
+    NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary:response];
+    
+    NSMutableDictionary *myselfDict = [NSMutableDictionary dictionary];
+    [myselfDict setValue:[YSRoomInterface instance].localUser.properties forKey:@"properties"];
+    [myselfDict setValue:[YSRoomInterface instance].localUser.peerID forKey:@"id"];
+    
+    [dict setValue:myselfDict forKey:@"myself"];
+    
+    if (self.preloadingFished == YES)
+    {
+        // 断线重连复位
+        if (self.mainWhiteBoardView)
+        {
+            [self.mainWhiteBoardView whiteBoardOnRoomConnectedUserlist:code response:dict];
+        }
+        
+        for (YSWhiteBoardView *whiteBoardView in self.coursewareViewList)
+        {
+            [whiteBoardView whiteBoardOnRoomConnectedUserlist:code response:dict];
+        }
+    }
+    else
+    {
+        NSString *methodName = NSStringFromSelector(@selector(whiteBoardOnRoomConnectedUserlist:response:));
+        NSMutableDictionary *dic = [NSMutableDictionary dictionary];
+        [dic setValue:methodName forKey:kYSMethodNameKey];
+        [dic setValue:@[code,dict] forKey:kYSParameterKey];
+        // 放在首位 于showpage前发送，动态ppt备注需要
+        //[self.preLoadingFileCacheMsgPool addObject:dic];
+        [self.preLoadingFileCacheMsgPool insertObject:dic atIndex:0];
+    }
+}
+
+
 // 用户属性改变通知
 - (void)roomWhiteBoardOnRoomUserPropertyChanged:(NSNotification *)notification
 {
@@ -523,9 +706,9 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
             [self.mainWhiteBoardView userPropertyChanged:message];
         }
         
-        for (YSWhiteBoardView *wWhiteBoardView in self.coursewareViewList)
+        for (YSWhiteBoardView *whiteBoardView in self.coursewareViewList)
         {
-            [wWhiteBoardView userPropertyChanged:message];
+            [whiteBoardView userPropertyChanged:message];
         }
     }
     else
@@ -552,9 +735,9 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 //            [self.mainWhiteBoardView participantLeaved:message];
 //        }
         
-        for (YSWhiteBoardView *wWhiteBoardView in self.coursewareViewList)
+        for (YSWhiteBoardView *whiteBoardView in self.coursewareViewList)
         {
-            [wWhiteBoardView participantLeaved:message];
+            [whiteBoardView participantLeaved:message];
         }
     }
     else
@@ -580,9 +763,9 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 //            [self.mainWhiteBoardView participantJoin:message];
 //        }
         
-        for (YSWhiteBoardView *wWhiteBoardView in self.coursewareViewList)
+        for (YSWhiteBoardView *whiteBoardView in self.coursewareViewList)
         {
-            [wWhiteBoardView participantJoin:message];
+            [whiteBoardView participantJoin:message];
         }
     }
     else
@@ -608,9 +791,9 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 //            [self.mainWhiteBoardView participantEvicted:reason];
 //        }
         
-        for (YSWhiteBoardView *wWhiteBoardView in self.coursewareViewList)
+        for (YSWhiteBoardView *whiteBoardView in self.coursewareViewList)
         {
-            [wWhiteBoardView participantEvicted:reason];
+            [whiteBoardView participantEvicted:reason];
         }
     }
     else
@@ -723,10 +906,43 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
             [self.mainWhiteBoardView remotePubMsg:message];
         }
         
-        for (YSWhiteBoardView *wWhiteBoardView in self.coursewareViewList)
+        for (YSWhiteBoardView *whiteBoardView in self.coursewareViewList)
         {
-            [wWhiteBoardView remotePubMsg:message];
+            [whiteBoardView remotePubMsg:message];
         }
+    }
+}
+
+- (void)roomWhiteBoardOnRemoteDelMsg:(NSNotification *)notification
+{
+    NSDictionary *dict = notification.userInfo;
+    NSDictionary *message = [dict objectForKey:YSWhiteBoardNotificationUserInfoKey];
+    
+    if (self.preloadingFished == NO)
+    {
+        NSString *methodName = NSStringFromSelector(@selector(sendSignalMessageToJS:message:));
+        NSMutableDictionary *dic = [NSMutableDictionary dictionary];
+        [dic setValue:methodName forKey:kYSMethodNameKey];
+        [dic setValue:@[WBDelMsg, message] forKey:kYSParameterKey];
+        [self.preLoadingFileCacheMsgPool addObject:dic];
+        
+        NSString *methorForNative = NSStringFromSelector(@selector(receiveWhiteBoardMessage:isDelMsg:));
+        NSMutableDictionary *dicForNative = [NSMutableDictionary dictionary];
+        [dicForNative setObject:methorForNative forKey:kYSMethodNameKey];
+        [dicForNative setObject:@[[NSMutableDictionary dictionaryWithDictionary:message], @(YES)] forKey:kYSParameterKey];
+        [self.preLoadingFileCacheMsgPool addObject:dicForNative];
+        
+        return;
+    }
+    
+    if (self.mainWhiteBoardView)
+    {
+        [self.mainWhiteBoardView remoteDelMsg:message];
+    }
+    
+    for (YSWhiteBoardView *whiteBoardView in self.coursewareViewList)
+    {
+        [whiteBoardView remoteDelMsg:message];
     }
 }
 

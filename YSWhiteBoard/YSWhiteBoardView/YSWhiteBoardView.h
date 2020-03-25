@@ -34,10 +34,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)participantEvicted:(NSDictionary *)message;
 /// 收到远端pubMsg消息通知
 - (void)remotePubMsg:(NSDictionary *)message;
+/// 收到远端delMsg消息的通知
+- (void)remoteDelMsg:(NSDictionary *)message;
 
-
-
-
+/// 连接教室成功的通知
+- (void)whiteBoardOnRoomConnectedUserlist:(NSNumber *)code response:(NSDictionary *)response;
 
 
 

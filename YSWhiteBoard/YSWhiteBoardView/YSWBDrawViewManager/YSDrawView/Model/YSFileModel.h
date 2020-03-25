@@ -57,6 +57,9 @@
 /// 是否播放中
 @property (nonatomic, assign) BOOL isPlaying;
 
--(void)dynamicpptUpdate;
+- (void)dynamicpptUpdate;
+
++ (NSDictionary *)fileDataDocDic:(YSFileModel *)aDefaultDocment predownloadError:(BOOL)predownloadError;
++ (NSDictionary *)fileDataDocDic:(YSFileModel *)aDefaultDocment currentPage:(NSNumber *)currentPage predownloadError:(BOOL)predownloadError;
 
 @end
