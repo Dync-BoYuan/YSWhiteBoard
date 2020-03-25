@@ -413,47 +413,72 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 // 用户属性改变通知
 - (void)roomWhiteBoardOnRoomUserPropertyChanged:(NSNotification *)notification
 {
+    // 用户属性改变通知，只接收自己的candraw属性
     NSDictionary *dict = notification.userInfo;
     NSDictionary *message = [dict bm_dictionaryForKey:YSWhiteBoardNotificationUserInfoKey];
     
-//    if ([message bm_containsObjectForKey:sYSUserProperties])
-//    {
-//        NSDictionary *userProperties = [message bm_dictionaryForKey:sYSUserProperties];
-//        
-//        if ([userProperties bm_containsObjectForKey:sYSUserCandraw])
-//        {
-//            
-//        }
-//    }
-
-#if 0
-    if ([message bm_isNotEmptyDictionary])
+    if (![message bm_isNotEmptyDictionary])
     {
-        if (self.preloadingFished == YES)
+        return;
+    }
+
+    NSString *toID = [message bm_stringForKey:@"id"];
+    if (![toID isEqualToString:[YSRoomInterface instance].localUser.peerID])
+    {
+        return;
+    }
+    
+    NSDictionary *properties = [message bm_dictionaryForKey:@"properties"];
+    if (![properties bm_containsObjectForKey:sYSUserCandraw])
+    {
+        return;
+    }
+
+    if (self.preloadingFished == YES)
+    {
+        if (self.mainWhiteBoardView)
         {
-            if (self.documentBoard)
-            {
-                [self.documentBoard sendSignalMessageToJS:WBSetProperty message:message];
-            }
-            
-            if (_nativeWBController)
-            {
-                [_nativeWBController updateProperty:message];
-            }
+            [self.mainWhiteBoardView userPropertyChanged:message];
         }
-        else
-        {
-            NSString *methodName = NSStringFromSelector(@selector(sendSignalMessageToJS:message:));
-            
-            NSMutableDictionary *dic = [NSMutableDictionary dictionary];
-            [dic setValue:methodName forKey:kYSMethodNameKey];
-            [dic setValue:@[WBSetProperty, message] forKey:kYSParameterKey];
         
-            [self.preLoadingFileCacheMsgPool addObject:dic];
+        for (YSWhiteBoardView *wWhiteBoardView in self.coursewareViewList)
+        {
+            [wWhiteBoardView userPropertyChanged:message];
         }
     }
-#endif
+    else
+    {
+        NSString *methodName = NSStringFromSelector(@selector(sendSignalMessageToJS:message:));
+        
+        NSMutableDictionary *dic = [NSMutableDictionary dictionary];
+        [dic setValue:methodName forKey:kYSMethodNameKey];
+        [dic setValue:@[WBSetProperty, message] forKey:kYSParameterKey];
+    
+        [self.preLoadingFileCacheMsgPool addObject:dic];
+    }
 }
 
+- (void)roomWhiteBoardOnRoomParticipantLeaved:(NSNotification *)notification{
+    NSDictionary *dict = notification.userInfo;
+    NSString *message = [dict objectForKey:YSWhiteBoardNotificationUserInfoKey];
+    
+    if (self.preloadingFished == YES) {
+        if (self.documentBoard) {
+            
+            [self.documentBoard sendSignalMessageToJS:WBParticipantLeft message:message];
+        }
+    }
+    else {
+        
+        NSString *methodName = NSStringFromSelector(@selector(sendSignalMessageToJS:message:));
+        
+        NSMutableDictionary *dic = [NSMutableDictionary dictionary];
+        [dic setValue:methodName forKey:kYSMethodNameKey];
+        [dic setValue:@[WBParticipantLeft,message] forKey:kYSParameterKey];
+        [self.preLoadingFileCacheMsgPool addObject:dic];
+    }
+    
+
+}
 
 @end
