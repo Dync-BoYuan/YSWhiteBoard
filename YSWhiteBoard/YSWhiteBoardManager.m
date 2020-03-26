@@ -624,6 +624,56 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     }
 }
 
+// 断开链接的通知
+- (void)roomWhiteBoardOnDisconnect:(NSNotification *)notification
+{
+    NSDictionary *dict = notification.userInfo;
+    NSString *reason = [dict objectForKey:YSWhiteBoardNotificationUserInfoKey];
+    
+    [self disconnect:reason];
+    
+//    [self.downloader cancelDownload];
+//
+//    if (_nativeWBController) {
+//        [_nativeWBController clearAfterClass];
+//    }
+}
+
+// 断开连接
+- (void)disconnect:(NSString *)reason
+{
+    NSMutableDictionary *dict = [NSMutableDictionary dictionary];
+    if (reason)
+    {
+        [dict setObject:reason forKey:@"reason"];
+    }
+    else
+    {
+        [dict setObject:@"" forKey:@"reason"];
+    }
+    
+    if (!UIDidAppear)
+    {
+        NSString *methodName = NSStringFromSelector(@selector(sendSignalMessageToJS:message:));
+        NSMutableDictionary *dic = [NSMutableDictionary dictionary];
+        [dic setValue:methodName forKey:kYSMethodNameKey];
+        [dic setValue:@[WBDisconnect, dict] forKey:kYSParameterKey];
+        [self.cacheMsgPool addObject:dic];
+        
+        return;
+    }
+    
+//    if (self.mainWhiteBoardView)
+//    {
+//        [self.mainWhiteBoardView disconnect:message];
+//    }
+    
+    for (YSWhiteBoardView *whiteBoardView in self.coursewareViewList)
+    {
+        [whiteBoardView disconnect:dict];
+    }
+}
+
 // 链接教室成功
 - (void)roomWhiteBoardOnRoomConnectedUserlist:(NSNotification *)notification
 {
@@ -945,5 +995,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         [whiteBoardView remoteDelMsg:message];
     }
 }
+
+
 
 @end

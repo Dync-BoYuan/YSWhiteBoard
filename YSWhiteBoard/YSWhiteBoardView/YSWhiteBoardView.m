@@ -48,6 +48,15 @@
 
 #pragma mark - 监听课堂 底层通知消息
 
+/// 断开连接
+- (void)disconnect:(NSDictionary *)message
+{
+    if (self.webViewManager)
+    {
+        [self.webViewManager sendSignalMessageToJS:WBDisconnect message:message];
+    }
+}
+
 /// 用户属性改变通知
 - (void)userPropertyChanged:(NSDictionary *)message
 {

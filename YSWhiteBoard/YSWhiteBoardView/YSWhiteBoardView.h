@@ -24,6 +24,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithFrame:(CGRect)frame fileId:(NSString *)fileId loadFinishedBlock:(nullable  wbLoadFinishedBlock)loadFinishedBlock;
 
+/// 断开连接
+- (void)disconnect:(NSDictionary *)message;
 /// 用户属性改变通知
 - (void)userPropertyChanged:(NSDictionary *)message;
 /// 用户离开通知

@@ -105,6 +105,8 @@ static  NSString *const sYSSignalUpdateTime             = @"UpdateTime";
 
 #pragma - mark js命令
 
+#define WBDisconnect                                @"disconnect"
+
 #define WBFakeJsSdkInitInfo                         @"updateFakeJsSdkInitInfo"
 /// 视图更新
 #define WBViewStateUpdate                           @"viewStateUpdate"
