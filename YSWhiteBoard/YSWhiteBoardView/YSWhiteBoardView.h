@@ -42,7 +42,11 @@ NS_ASSUME_NONNULL_BEGIN
 /// 连接教室成功的通知
 - (void)whiteBoardOnRoomConnectedUserlist:(NSNumber *)code response:(NSDictionary *)response;
 
+/// 大并发房间用户上台通知
+- (void)bigRoomUserPublished:(NSDictionary *)message;
 
+/// 更新服务器地址
+- (void)updateWebAddressInfo:(NSDictionary *)message;
 
 // 页面刷新尺寸
 - (void)refreshWhiteBoardWithFrame:(CGRect)frame;

@@ -47,6 +47,8 @@ static  NSString *const sYSUserGiftinfo             = @"giftinfo";
 
 #pragma - mark 信令
 
+static  NSString *const sYSSignalUpdateTime             = @"UpdateTime";
+
 /// 发送消息
 static  NSString *const sYSSignalPubMsg                 = @"pubMsg";
 /// 删除消息
@@ -99,7 +101,6 @@ static  NSString *const sYSSignalH5DocumentAction       = @"H5DocumentAction";
 static  NSString *const sYSSignalNewPptTriggerActionClick = @"NewPptTriggerActionClick";
 
 static  NSString *const sYSSignalClassBegin             = @"ClassBegin";
-static  NSString *const sYSSignalUpdateTime             = @"UpdateTime";
 
 
 
@@ -108,6 +109,12 @@ static  NSString *const sYSSignalUpdateTime             = @"UpdateTime";
 #define WBDisconnect                                @"disconnect"
 
 #define WBFakeJsSdkInitInfo                         @"updateFakeJsSdkInitInfo"
+/// 更新文档服务地址信令
+#define WBUpdateWebAddressInfo                      @"updateWebAddressInfo"
+
+/// 大房间刷新用户
+#define WBParticipantPublished                      @"participantPublished"
+
 /// 视图更新
 #define WBViewStateUpdate                           @"viewStateUpdate"
 #define WBDocumentLoadSuccessOrFailure              @"documentLoadSuccessOrFailure"
@@ -132,6 +139,18 @@ static  NSString *const sYSSignalUpdateTime             = @"UpdateTime";
 /// 更新动态ppt大小
 #define WBChangeDynamicPptSize                     @"changeDynamicPptSize"
 
+
+#pragma - mark Dictionary Key
+
+static NSString *const YSWhiteBoardDocProtocolKey = @"doc_protocol";
+static NSString *const YSWhiteBoardDocHostKey = @"doc_host";
+static NSString *const YSWhiteBoardDocPortKey = @"doc_port";
+
+static NSString *const YSWhiteBoardBackupDocProtocolKey = @"backup_doc_protocol";
+static NSString *const YSWhiteBoardBackupDocHostKey = @"backup_doc_host";
+static NSString *const YSWhiteBoardBackupDocPortKey = @"backup_doc_port";
+
+static NSString *const YSWhiteBoardBackupDocHostListKey = @"backup_doc_host_list";
 
 #pragma - mark NSNotificationCenter
 

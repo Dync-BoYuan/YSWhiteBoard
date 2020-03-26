@@ -55,6 +55,11 @@
     {
         [self.webViewManager sendSignalMessageToJS:WBDisconnect message:message];
     }
+    
+     if (self.drawViewManager)
+     {
+         [self.drawViewManager clearAfterClass];
+     }
 }
 
 /// 用户属性改变通知
@@ -189,6 +194,23 @@
     }
 }
 
+/// 大并发房间用户上台通知
+- (void)bigRoomUserPublished:(NSDictionary *)message
+{
+    if (self.webViewManager)
+    {
+        [self.webViewManager sendSignalMessageToJS:WBParticipantPublished message:message];
+    }
+}
+
+/// 更新服务器地址
+- (void)updateWebAddressInfo:(NSDictionary *)message
+{
+    if (self.webViewManager)
+    {
+        [self.webViewManager sendSignalMessageToJS:WBUpdateWebAddressInfo message:message];
+    }
+}
 
 
 #pragma -

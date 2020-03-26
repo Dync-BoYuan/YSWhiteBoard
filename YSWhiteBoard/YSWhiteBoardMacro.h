@@ -39,8 +39,15 @@ extern NSString *const YSWhiteBoardPlayBackKey;
 
 #if IS_LOAD_LOCAL_INDEX //读取本地时通常为发布版本需要设置成https端口443
 
+    #define YSWBHTTPS       @"https"
+    #define YSWBPort        @"443"
+
 #else
-    #define PointToHost @"192.168.1.149:9251"
+
+    #define YSWBHTTPS       @"http"
+    #define YSWBPort        @"80"
+    #define PointToHost     @"192.168.1.149:9251"
+
 #endif
 
 #define WBBUNDLE_NAME @"YSWhiteBoardResources.bundle"

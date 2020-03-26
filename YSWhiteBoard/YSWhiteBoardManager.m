@@ -8,6 +8,8 @@
 
 #import "YSWhiteBoardManager.h"
 #import <objc/message.h>
+#import "YSDownloader.h"
+#import "YSPreloadProgressView.h"
 
 /// SDK版本
 static NSString *YSWhiteBoardSDKVersionString   = @"2.0.0.0";
@@ -25,7 +27,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     YSWBWebViewManagerDelegate
 >
 {
-    /// 课件加载成功
+    /// 预加载课件加载成功
     BOOL isLoadingFinish;
     /// 页面加载完成, 是否需要缓存标识
     BOOL UIDidAppear;
@@ -52,6 +54,15 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 @property (nonatomic, strong) NSString *serverWebAddrKey;
 /// 备份链路域名集合
 @property (nonatomic, strong) NSArray *serverAddrBackupKey;
+/// 完成获取文档服务器地址，web地址，备份地址 上传
+@property (nonatomic, assign) BOOL isUpdateWebAddressInfo;
+
+/// 预加载文档
+@property (nonatomic, strong) NSDictionary *preloadFileDic;
+@property (nonatomic, strong) YSDownloader *downloader;
+
+// 消息列表
+@property (nonatomic, strong) NSMutableArray <NSDictionary *> *msgList;
 
 
 /// 记录UI层是否开始上课
@@ -66,6 +77,9 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 @property (nonatomic, strong) NSMutableArray <YSFileModel *> *docmentList;
 /// 课件Dic列表
 @property (nonatomic, strong) NSMutableArray <NSDictionary *> *docmentDicist;
+
+/// 当前激活文档id
+@property (nonatomic, strong) NSString *currentFileId;
 
 // UI
 
@@ -104,6 +118,9 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         isLoadingFinish = NO;
         UIDidAppear = NO;
         self.preloadingFished = NO;
+        self.isUpdateWebAddressInfo = NO;
+        
+        self.msgList = [NSMutableArray array];
         
         self.cacheMsgPool = [NSMutableArray array];
         self.preLoadingFileCacheMsgPool = [NSMutableArray array];
@@ -390,6 +407,32 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     }
 }
 
+- (void)setTheCurrentDocumentFileID:(NSString *)fileId
+{
+    self.currentFileId = fileId;
+}
+
+- (YSFileModel *)currentFile
+{
+    NSString *fileId = self.currentFileId;
+    if (!fileId)
+    {
+        fileId = @"0";
+    }
+    
+    YSFileModel *file = nil;
+    for (YSFileModel *model in self.docmentList)
+    {
+        if ([model.fileid isEqualToString:fileId])
+        {
+            file = model;
+            break;
+        }
+    }
+    
+    return file;
+}
+
 #pragma mark - 课件窗口列表管理
 
 #pragma mark  添加课件窗口
@@ -474,6 +517,23 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 #pragma -
 #pragma mark PreLoadingFile
 
+- (void)checkPreLoadingFile
+{
+    // 如果开启了课件预加载会先下载课件,在向白板发送预加载
+    if ([YSWhiteBoardManager shareInstance].roomConfig.coursewarePreload == YES)
+    {
+        return;
+    }
+
+    // 地址
+    if (self.isUpdateWebAddressInfo == NO)
+    {
+        return;
+    }
+    
+    [self sendPreLoadingFile];
+}
+
 // 发送预加载的文档
 - (void)sendPreLoadingFile
 {
@@ -485,7 +545,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     
     // 是否有 需要加载的文件
     YSFileModel *file = nil;
-    for (YSFileModel *model in _docmentList)
+    for (YSFileModel *model in self.docmentList)
     {
         if (model.type.intValue == 1)
         {
@@ -632,11 +692,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     
     [self disconnect:reason];
     
-//    [self.downloader cancelDownload];
-//
-//    if (_nativeWBController) {
-//        [_nativeWBController clearAfterClass];
-//    }
+    [self.downloader cancelDownload];
 }
 
 // 断开连接
@@ -671,6 +727,185 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     for (YSWhiteBoardView *whiteBoardView in self.coursewareViewList)
     {
         [whiteBoardView disconnect:dict];
+    }
+}
+
+- (void)resetWhiteBoard:(NSNotification *)notification
+{
+    [[YSRoomInterface instance] pubMsg:sYSSignalUpdateTime msgID:sYSSignalUpdateTime toID:[YSRoomInterface instance].localUser.peerID data:@"" save:NO associatedMsgID:nil associatedUserID:nil expires:0 completion:nil];
+    
+    NSDictionary *msgList = [notification.userInfo objectForKey:YSWhiteBoardNotificationUserInfoKey];
+    NSDictionary *roominfo = [[YSRoomInterface instance] getRoomProperty];
+    //NSMutableArray *userlist = _userListArray;
+    
+    NSMutableDictionary *dict = [NSMutableDictionary dictionary];
+    [dict setValue:msgList forKey:@"msglist"];
+    [dict setValue:roominfo forKey:@"roominfo"];
+    //[dict setValue:userlist forKey:@"userlist"];
+    
+    [self roomWhiteBoardOnRoomConnectedUserlist:@(0) response:dict];
+}
+
+// 获取服务器地址
+- (void)roomGetWhiteBoardOnServerAddrs:(NSNotification *) notification
+{
+    NSDictionary *dict = [notification.userInfo objectForKey:YSWhiteBoardNotificationUserInfoKey];
+    
+    self.serverDocAddrKey = [dict objectForKey:YSWhiteBoardGetServerAddrKey] ?: _serverDocAddrKey;
+    self.serverAddrBackupKey = [dict objectForKey:YSWhiteBoardGetServerAddrBackupKey] ?: _serverAddrBackupKey;
+    self.serverWebAddrKey = [dict objectForKey:YSWhiteBoardGetWebAddrKey] ?: _serverWebAddrKey;
+    
+    // 更新地址
+    [self updateWebAddressInfo];
+
+    // 预加载
+    [self checkPreLoadingFile];
+    
+    // 根据serverWebAddrKey下载备注
+    //[self loadCoursewareMarkData];
+}
+
+- (void)updateWebAddressInfo
+{
+    NSMutableDictionary *dic = [NSMutableDictionary dictionary];
+    
+    NSString *phpAddr = self.configration[YSWhiteBoardWebHostKey];
+    if (![phpAddr bm_isNotEmpty])
+    {
+        return;
+    }
+    
+    // 文档服务器地址
+    NSString *docServerAddr = self.serverDocAddrKey;
+    if(![docServerAddr bm_isNotEmpty])
+    {
+        docServerAddr = phpAddr;
+    }
+    
+    // 备份链路域名集合
+    NSArray *classDocServerAddrBackup = [self.serverAddrBackupKey mutableCopy];
+    NSString *docServerAddrBackup = classDocServerAddrBackup.firstObject;
+    // web地址
+    NSString *webServerAddr = self.serverWebAddrKey;
+    
+    [dic setValue:YSWBHTTPS forKey:YSWhiteBoardWebProtocolKey];
+    [dic setValue:webServerAddr forKey:YSWhiteBoardWebHostKey];
+    [dic setValue:YSWBPort forKey:YSWhiteBoardWebPortKey];
+    
+    [dic setValue:YSWBHTTPS forKey:YSWhiteBoardDocProtocolKey];
+    [dic setValue:docServerAddr forKey:YSWhiteBoardDocHostKey];
+    [dic setValue:YSWBPort forKey:YSWhiteBoardDocPortKey];
+    
+    [dic setValue:YSWBHTTPS forKey:YSWhiteBoardBackupDocProtocolKey];
+    [dic setValue:docServerAddrBackup forKey:YSWhiteBoardBackupDocHostKey];
+    [dic setValue:YSWBPort forKey:YSWhiteBoardBackupDocPortKey];
+    
+    [dic setValue:classDocServerAddrBackup forKey:YSWhiteBoardBackupDocHostListKey];
+    
+//    if (self.mainWhiteBoardView)
+//    {
+//        [self.mainWhiteBoardView updateWebAddressInfo:dic];
+//    }
+    
+    for (YSWhiteBoardView *whiteBoardView in self.coursewareViewList)
+    {
+        [whiteBoardView updateWebAddressInfo:dic];
+    }
+
+    self.isUpdateWebAddressInfo = YES;
+}
+
+// 教室文件列表的通知
+- (void)roomWhiteBoardFileList:(NSNotification *)notification
+{
+    NSDictionary *dict = notification.userInfo;
+    NSArray *fileList = [dict objectForKey:YSWhiteBoardNotificationUserInfoKey] ;
+    NSMutableArray *mFileList = [NSMutableArray arrayWithArray:fileList];
+    
+    self.preloadFileDic = nil;
+    
+    [self.docmentList removeAllObjects];
+    self.docmentDicist = [NSMutableArray arrayWithArray:fileList];
+
+    // 第一个课堂课件
+    NSString *firstClassModelFileId = nil;
+    // 第一个系统课件
+    NSString *firstSysModelFileId = nil;
+
+    for (NSDictionary *dic in mFileList)
+    {
+        [self addOrReplaceDocumentFile:dic];
+        NSNumber *type = [dic objectForKey:@"type"];
+        if (type.intValue == 1)
+        {
+            self.preloadFileDic = dic;
+        }
+        
+        NSString *filecategory = [dic objectForKey:@"filecategory"];
+        BOOL isSysFile = [filecategory isEqualToString:@"1"];
+        if (!firstClassModelFileId && filecategory && !isSysFile)
+        {
+            firstClassModelFileId = [dic objectForKey:@"fileid"];
+        }
+        if (!firstSysModelFileId && filecategory && isSysFile)
+        {
+            firstSysModelFileId = [dic objectForKey:@"fileid"];
+        }
+    }
+    
+    if (self.wbDelegate)
+    {
+        [self.wbDelegate onWhiteBroadFileList:mFileList];
+    }
+    
+    // 设置默认文档
+    //设置默认文档 （规则）
+    /* 1.先看是否有后台关联或接口设置过的默认文档，如果有，显示如果没有，
+     2.显示课堂文件夹里第一个上传的课件，如果再没有，
+     3.显示系统文件夹里第一个上传的课件；
+     4.都没有，则选择白板
+     */
+    NSString *fileId = nil;
+    if (self.preloadFileDic)
+    {
+        fileId = [self.preloadFileDic objectForKey:@"fileid"];
+    }
+    if (!fileId)
+    {
+        fileId = firstClassModelFileId;
+    }
+    if (!fileId)
+    {
+        fileId = firstSysModelFileId;
+    }
+    if (!fileId)
+    {
+        fileId = @"0";
+    }
+    [self setTheCurrentDocumentFileID:fileId];
+    
+    // 预加载
+    [self checkPreLoadingFile];
+}
+
+// 教室消息列表的通知
+- (void)roomWhiteBoardOnRemoteMsgList:(NSNotification *)notification
+{
+    NSDictionary *dict = notification.userInfo;
+    BOOL add = [[dict objectForKey:YSWhiteBoardOnRemoteMsgListAddKey] boolValue];
+    id params = [dict objectForKey:YSWhiteBoardOnRemoteMsgListKey];
+    
+    [self roomWhiteBoardOnRemoteMsgList:add params:params];
+}
+
+- (void)roomWhiteBoardOnRemoteMsgList:(BOOL)add params:(id)params
+{
+    WB_INFO(@"YSWB roomWhiteBoardOnRemoteMsgList-----%@", [NSString stringWithFormat:@"add:%@, params:%@",@(add), params]);
+
+    NSDictionary *tDataDic =[YSRoomUtil convertWithData:params];
+    if (tDataDic)
+    {
+        [self.msgList addObject:tDataDic];
     }
 }
 
@@ -724,6 +959,33 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     }
 }
 
+// 大并发房间用户上台通知
+- (void)roomWhiteBoardOnBigRoomUserPublished:(NSNotification *)notification
+{
+    NSDictionary *dict = notification.userInfo;
+    NSDictionary *message = [dict objectForKey:YSWhiteBoardNotificationUserInfoKey];
+    
+    if (self.preloadingFished == YES)
+    {
+        if (self.mainWhiteBoardView)
+        {
+            [self.mainWhiteBoardView bigRoomUserPublished:message];
+        }
+        
+        for (YSWhiteBoardView *whiteBoardView in self.coursewareViewList)
+        {
+            [whiteBoardView  bigRoomUserPublished:message];
+        }
+    }
+    else
+    {
+        NSString *methodName = NSStringFromSelector(@selector(sendSignalMessageToJS:message:));
+        NSMutableDictionary *dic = [NSMutableDictionary dictionary];
+        [dic setValue:methodName forKey:kYSMethodNameKey];
+        [dic setValue:@[WBParticipantPublished, message] forKey:kYSParameterKey];
+        [self.preLoadingFileCacheMsgPool addObject:dic];
+    }
+}
 
 // 用户属性改变通知
 - (void)roomWhiteBoardOnRoomUserPropertyChanged:(NSNotification *)notification
@@ -878,7 +1140,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         return;
     }
 
-    if (![msgName isEqualToString:@"UpdateTime"])
+    if (![msgName isEqualToString:sYSSignalUpdateTime])
     {
         WB_INFO(@"%s %@", __func__, message);
     }

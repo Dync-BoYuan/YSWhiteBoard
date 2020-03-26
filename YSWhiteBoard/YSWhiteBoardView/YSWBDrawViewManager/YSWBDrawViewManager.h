@@ -18,6 +18,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithBackView:(UIView *)view webView:(WKWebView *)webView;
 
+- (void)clearAfterClass;
+
 - (void)updateProperty:(NSDictionary *)dictionary;
 - (void)receiveWhiteBoardMessage:(NSMutableDictionary *)dictionary isDelMsg:(BOOL)isDel;
 - (void)whiteBoardOnRoomConnectedUserlist:(NSNumber *)code response:(NSDictionary *)response;

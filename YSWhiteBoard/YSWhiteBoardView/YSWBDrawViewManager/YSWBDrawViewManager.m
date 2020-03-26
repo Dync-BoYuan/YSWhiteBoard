@@ -599,6 +599,11 @@ NSString *const YSWhiteBoardRemoteSelectTool = @"YSWhiteBoardRemoteSelectTool"; 
     }];
 }
 
+- (void)clearAfterClass
+{
+    [self.fileView clearAfterClass];
+}
+
 
 #pragma -
 #pragma mark DocShowViewZoomScaleDelegate
