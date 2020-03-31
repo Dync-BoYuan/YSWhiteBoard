@@ -69,7 +69,9 @@
 
     // 是否可以使用键盘输入，默认YES
     self.useKeyBord = YES;
-    
+    // 使用键盘输入时，是否变更最大最小值，默认NO
+    self.autoChangeWhenUseKeyBord = NO;
+
     // 数字颜色
     self.numberColor = DefaultNumberColor;
     // 数字字体

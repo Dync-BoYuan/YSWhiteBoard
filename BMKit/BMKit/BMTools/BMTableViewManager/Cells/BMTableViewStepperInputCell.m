@@ -64,6 +64,8 @@
     
     // 是否可以使用键盘输入，默认YES
     self.stepperInputView.useKeyBord = self.item.useKeyBord;
+    // 使用键盘输入时，是否变更最大最小值，默认NO
+    self.stepperInputView.autoChangeWhenUseKeyBord = self.item.autoChangeWhenUseKeyBord;
     
     // 数字颜色
     self.stepperInputView.numberColor = self.item.numberColor;

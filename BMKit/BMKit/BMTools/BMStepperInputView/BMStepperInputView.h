@@ -37,6 +37,8 @@ typedef void(^BMStepperInputViewChangeBlock)(NSDecimalNumber *number, BMStepperI
 
 // 是否可以使用键盘输入，默认YES
 @property (nonatomic, assign) BOOL useKeyBord;
+// 使用键盘输入时，是否变更最大最小值，默认NO
+@property (nonatomic, assign) BOOL autoChangeWhenUseKeyBord;
 
 // 数字颜色
 @property (nonatomic, strong) UIColor *numberColor;
