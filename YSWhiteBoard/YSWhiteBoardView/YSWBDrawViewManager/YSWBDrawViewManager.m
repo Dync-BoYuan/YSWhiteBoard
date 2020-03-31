@@ -7,6 +7,7 @@
 //
 
 #import "YSWBDrawViewManager.h"
+#import "DocShowView.h"
 #import "DrawView.h"
 #import "LaserPan.h"
 
@@ -740,7 +741,7 @@ NSString *const YSWhiteBoardRemoteSelectTool = @"YSWhiteBoardRemoteSelectTool"; 
 }
 
 // MARK:-收到消息
-- (void)receiveWhiteBoardMessage:(NSMutableDictionary *)dictionary isDelMsg:(BOOL)isDel
+- (void)receiveWhiteBoardMessage:(NSDictionary *)dictionary isDelMsg:(BOOL)isDel
 {
 #if 0
     if (![dictionary bm_isNotEmptyDictionary])

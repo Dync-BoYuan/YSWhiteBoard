@@ -212,6 +212,13 @@
     }
 }
 
+- (void)receiveWhiteBoardMessage:(NSDictionary *)dictionary isDelMsg:(BOOL)isDel
+{
+    if (self.drawViewManager)
+    {
+        [self.drawViewManager receiveWhiteBoardMessage:dictionary isDelMsg:isDel];
+    }
+}
 
 #pragma -
 #pragma mark YSWBWebViewManagerDelegate

@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		8732B8D524270E18005BEB99 /* YSWhiteBoard.h in Headers */ = {isa = PBXBuildFile; fileRef = 8732B8D324270E18005BEB99 /* YSWhiteBoard.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		87AD1600242721F000EAE233 /* YSWhiteBoardManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 87AD15FE242721F000EAE233 /* YSWhiteBoardManager.h */; };
+		87AD1600242721F000EAE233 /* YSWhiteBoardManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 87AD15FE242721F000EAE233 /* YSWhiteBoardManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		87AD1601242721F000EAE233 /* YSWhiteBoardManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 87AD15FF242721F000EAE233 /* YSWhiteBoardManager.m */; };
 		87AD160A2427232000EAE233 /* BMKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 87AD16042427232000EAE233 /* BMKit.framework */; };
 		87AD160B2427232000EAE233 /* BMTZImagePickerController.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 87AD16052427232000EAE233 /* BMTZImagePickerController.bundle */; };
@@ -16,21 +16,21 @@
 		87AD160D2427232000EAE233 /* BMKitResources.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 87AD16072427232000EAE233 /* BMKitResources.bundle */; };
 		87AD160E2427232000EAE233 /* BMDatePicker.nib in Resources */ = {isa = PBXBuildFile; fileRef = 87AD16082427232000EAE233 /* BMDatePicker.nib */; };
 		87AD160F2427232000EAE233 /* YSRoomSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 87AD16092427232000EAE233 /* YSRoomSDK.framework */; };
-		87AD16192427554900EAE233 /* YSRoomConfiguration.h in Headers */ = {isa = PBXBuildFile; fileRef = 87AD16172427554900EAE233 /* YSRoomConfiguration.h */; };
+		87AD16192427554900EAE233 /* YSRoomConfiguration.h in Headers */ = {isa = PBXBuildFile; fileRef = 87AD16172427554900EAE233 /* YSRoomConfiguration.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		87AD161A2427554900EAE233 /* YSRoomConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = 87AD16182427554900EAE233 /* YSRoomConfiguration.m */; };
-		87AD162924284E8E00EAE233 /* YSRoomUtil.h in Headers */ = {isa = PBXBuildFile; fileRef = 87AD162724284E8E00EAE233 /* YSRoomUtil.h */; };
+		87AD162924284E8E00EAE233 /* YSRoomUtil.h in Headers */ = {isa = PBXBuildFile; fileRef = 87AD162724284E8E00EAE233 /* YSRoomUtil.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		87AD162A24284E8E00EAE233 /* YSRoomUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 87AD162824284E8E00EAE233 /* YSRoomUtil.m */; };
 		87AD1631242859A900EAE233 /* YSWBLogger.h in Headers */ = {isa = PBXBuildFile; fileRef = 87AD162F242859A900EAE233 /* YSWBLogger.h */; };
 		87AD1632242859A900EAE233 /* YSWBLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 87AD1630242859A900EAE233 /* YSWBLogger.m */; };
-		87AD163C2428B68400EAE233 /* YSWBDrawViewManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 87AD16352428B68400EAE233 /* YSWBDrawViewManager.h */; };
+		87AD163C2428B68400EAE233 /* YSWBDrawViewManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 87AD16352428B68400EAE233 /* YSWBDrawViewManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		87AD163D2428B68400EAE233 /* YSWBDrawViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 87AD16362428B68400EAE233 /* YSWBDrawViewManager.m */; };
-		87AD163E2428B68400EAE233 /* YSWBWebViewManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 87AD16382428B68400EAE233 /* YSWBWebViewManager.h */; };
+		87AD163E2428B68400EAE233 /* YSWBWebViewManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 87AD16382428B68400EAE233 /* YSWBWebViewManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		87AD163F2428B68400EAE233 /* YSWKWebViewWeakDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 87AD16392428B68400EAE233 /* YSWKWebViewWeakDelegate.h */; };
 		87AD16402428B68400EAE233 /* YSWBWebViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 87AD163A2428B68400EAE233 /* YSWBWebViewManager.m */; };
 		87AD16412428B68400EAE233 /* YSWKWebViewWeakDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 87AD163B2428B68400EAE233 /* YSWKWebViewWeakDelegate.m */; };
-		87AD16442428B6AB00EAE233 /* YSWhiteBoardView.h in Headers */ = {isa = PBXBuildFile; fileRef = 87AD16422428B6AB00EAE233 /* YSWhiteBoardView.h */; };
+		87AD16442428B6AB00EAE233 /* YSWhiteBoardView.h in Headers */ = {isa = PBXBuildFile; fileRef = 87AD16422428B6AB00EAE233 /* YSWhiteBoardView.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		87AD16452428B6AB00EAE233 /* YSWhiteBoardView.m in Sources */ = {isa = PBXBuildFile; fileRef = 87AD16432428B6AB00EAE233 /* YSWhiteBoardView.m */; };
-		87C8B0862429B9150016848E /* YSWhiteBoardEnum.h in Headers */ = {isa = PBXBuildFile; fileRef = 87C8B0852429B9150016848E /* YSWhiteBoardEnum.h */; };
+		87C8B0862429B9150016848E /* YSWhiteBoardEnum.h in Headers */ = {isa = PBXBuildFile; fileRef = 87C8B0852429B9150016848E /* YSWhiteBoardEnum.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		87C8B0B52429B9D20016848E /* VYSDWebImageDownloaderOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 87C8B08C2429B9D20016848E /* VYSDWebImageDownloaderOperation.m */; };
 		87C8B0B62429B9D20016848E /* VYSDImageCacheConfig.h in Headers */ = {isa = PBXBuildFile; fileRef = 87C8B08D2429B9D20016848E /* VYSDImageCacheConfig.h */; };
 		87C8B0B72429B9D20016848E /* VYSDWebImageCompat.h in Headers */ = {isa = PBXBuildFile; fileRef = 87C8B08E2429B9D20016848E /* VYSDWebImageCompat.h */; };
@@ -73,9 +73,9 @@
 		87C8B0E02429BB8B0016848E /* HSV.h in Headers */ = {isa = PBXBuildFile; fileRef = 87C8B0DE2429BB8B0016848E /* HSV.h */; };
 		87C8B0E22429BC8D0016848E /* HSV.mm in Sources */ = {isa = PBXBuildFile; fileRef = 87C8B0E12429BC8D0016848E /* HSV.mm */; };
 		87C8B1032429BCD20016848E /* YSDrawView.m in Sources */ = {isa = PBXBuildFile; fileRef = 87C8B0E42429BCD20016848E /* YSDrawView.m */; };
-		87C8B1042429BCD20016848E /* YSDrawView.h in Headers */ = {isa = PBXBuildFile; fileRef = 87C8B0E52429BCD20016848E /* YSDrawView.h */; };
+		87C8B1042429BCD20016848E /* YSDrawView.h in Headers */ = {isa = PBXBuildFile; fileRef = 87C8B0E52429BCD20016848E /* YSDrawView.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		87C8B1052429BCD20016848E /* YSFileModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 87C8B0E72429BCD20016848E /* YSFileModel.m */; };
-		87C8B1062429BCD20016848E /* YSFileModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 87C8B0E82429BCD20016848E /* YSFileModel.h */; };
+		87C8B1062429BCD20016848E /* YSFileModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 87C8B0E82429BCD20016848E /* YSFileModel.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		87C8B1072429BCD20016848E /* DocShowView.h in Headers */ = {isa = PBXBuildFile; fileRef = 87C8B0EB2429BCD20016848E /* DocShowView.h */; };
 		87C8B1082429BCD20016848E /* LKPDFView.m in Sources */ = {isa = PBXBuildFile; fileRef = 87C8B0EC2429BCD20016848E /* LKPDFView.m */; };
 		87C8B1092429BCD20016848E /* DocUnderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 87C8B0ED2429BCD20016848E /* DocUnderView.m */; };
@@ -102,6 +102,9 @@
 		87C8B123242C3ED00016848E /* YSDownloader.m in Sources */ = {isa = PBXBuildFile; fileRef = 87C8B11F242C3ED00016848E /* YSDownloader.m */; };
 		87C8B124242C3ED00016848E /* YSPreloadProgressView.h in Headers */ = {isa = PBXBuildFile; fileRef = 87C8B120242C3ED00016848E /* YSPreloadProgressView.h */; };
 		87C8B125242C3ED00016848E /* YSDownloader.h in Headers */ = {isa = PBXBuildFile; fileRef = 87C8B121242C3ED00016848E /* YSDownloader.h */; };
+		87C8B1502432F19E0016848E /* YSWhiteBoardMacro.h in Headers */ = {isa = PBXBuildFile; fileRef = 87AD1610242725EB00EAE233 /* YSWhiteBoardMacro.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		87C8B1512432F19E0016848E /* YSWhiteBoardDefines.h in Headers */ = {isa = PBXBuildFile; fileRef = 87AD161B2427586700EAE233 /* YSWhiteBoardDefines.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		87C8B1522432F19E0016848E /* YSWhiteBoardManagerDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 87AD16262428449000EAE233 /* YSWhiteBoardManagerDelegate.h */; settings = {ATTRIBUTES = (Public, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -577,6 +580,17 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				87C8B1522432F19E0016848E /* YSWhiteBoardManagerDelegate.h in Headers */,
+				87C8B1512432F19E0016848E /* YSWhiteBoardDefines.h in Headers */,
+				87C8B1502432F19E0016848E /* YSWhiteBoardMacro.h in Headers */,
+				87AD16192427554900EAE233 /* YSRoomConfiguration.h in Headers */,
+				87C8B1042429BCD20016848E /* YSDrawView.h in Headers */,
+				87AD16442428B6AB00EAE233 /* YSWhiteBoardView.h in Headers */,
+				87C8B1062429BCD20016848E /* YSFileModel.h in Headers */,
+				87AD1600242721F000EAE233 /* YSWhiteBoardManager.h in Headers */,
+				87AD162924284E8E00EAE233 /* YSRoomUtil.h in Headers */,
+				87C8B0862429B9150016848E /* YSWhiteBoardEnum.h in Headers */,
+				87AD163E2428B68400EAE233 /* YSWBWebViewManager.h in Headers */,
 				87AD163C2428B68400EAE233 /* YSWBDrawViewManager.h in Headers */,
 				87C8B125242C3ED00016848E /* YSDownloader.h in Headers */,
 				87C8B124242C3ED00016848E /* YSPreloadProgressView.h in Headers */,
@@ -590,10 +604,7 @@
 				87C8B0CD2429B9D20016848E /* NSData+VYImageContentType.h in Headers */,
 				87C8B10D2429BCD20016848E /* LKPDFView.h in Headers */,
 				87C8B0D72429B9D20016848E /* UIView+VYWebCacheOperation.h in Headers */,
-				87AD163E2428B68400EAE233 /* YSWBWebViewManager.h in Headers */,
 				87C8B11A2429BCD20016848E /* LaserPan.h in Headers */,
-				87AD16192427554900EAE233 /* YSRoomConfiguration.h in Headers */,
-				87C8B0862429B9150016848E /* YSWhiteBoardEnum.h in Headers */,
 				87C8B0CB2429B9D20016848E /* VYSDWebImageDownloaderOperation.h in Headers */,
 				87C8B0B72429B9D20016848E /* VYSDWebImageCompat.h in Headers */,
 				87C8B1142429BCD20016848E /* DrawCircle.h in Headers */,
@@ -605,12 +616,8 @@
 				87C8B0D92429B9D20016848E /* UIImage+VYGIF.h in Headers */,
 				8732B8D524270E18005BEB99 /* YSWhiteBoard.h in Headers */,
 				87C8B0C22429B9D20016848E /* NSImage+VYWebCache.h in Headers */,
-				87AD162924284E8E00EAE233 /* YSRoomUtil.h in Headers */,
-				87AD1600242721F000EAE233 /* YSWhiteBoardManager.h in Headers */,
 				87C8B10F2429BCD20016848E /* DrawLine.h in Headers */,
-				87C8B1062429BCD20016848E /* YSFileModel.h in Headers */,
 				87C8B10B2429BCD20016848E /* DrawView.h in Headers */,
-				87C8B1042429BCD20016848E /* YSDrawView.h in Headers */,
 				87C8B0C42429B9D20016848E /* UIImage+VYWebP.h in Headers */,
 				87C8B11B2429BCD20016848E /* DrawBase.h in Headers */,
 				87AD1631242859A900EAE233 /* YSWBLogger.h in Headers */,
@@ -621,7 +628,6 @@
 				87C8B0E02429BB8B0016848E /* HSV.h in Headers */,
 				87C8B1192429BCD20016848E /* DrawPen.h in Headers */,
 				87C8B0C12429B9D20016848E /* UIView+VYWebCache.h in Headers */,
-				87AD16442428B6AB00EAE233 /* YSWhiteBoardView.h in Headers */,
 				87C8B0C82429B9D20016848E /* MKAnnotationView+VYWebCache.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

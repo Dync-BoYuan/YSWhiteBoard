@@ -8,7 +8,6 @@
 
 #import <Foundation/Foundation.h>
 #import <WebKit/WebKit.h>
-#import "DocShowView.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -21,7 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)clearAfterClass;
 
 - (void)updateProperty:(NSDictionary *)dictionary;
-- (void)receiveWhiteBoardMessage:(NSMutableDictionary *)dictionary isDelMsg:(BOOL)isDel;
+- (void)receiveWhiteBoardMessage:(NSDictionary *)dictionary isDelMsg:(BOOL)isDel;
 - (void)whiteBoardOnRoomConnectedUserlist:(NSNumber *)code response:(NSDictionary *)response;
 
 @end

@@ -15,7 +15,7 @@ typedef void(^wbLoadFinishedBlock) (void);
 /// webview崩溃回调
 typedef void(^wbWebViewTerminateBlock)(void);
 
-
+/// 缓存数据key
 static NSString *const kYSMethodNameKey = @"YSCacheMsg_MethodName";
 static NSString *const kYSParameterKey = @"YSCacheMsg_Parameter";
 

@@ -603,10 +603,6 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         {
             [self.preLoadWhiteBoardView.webViewManager sendAction:WBPreLoadingFile command:@{@"cmd":@""}];
         }
-        else
-        {
-            [self.mainWhiteBoardView.webViewManager sendAction:WBPreLoadingFile command:@{@"cmd":@""}];
-        }
     }
 }
 
@@ -667,7 +663,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 
 /// checkRoom相关通知
 - (void)roomWhiteBoardOnCheckRoom:(NSNotification *)notification
-{
+{   // ok
     NSDictionary *dict = notification.userInfo;
     NSDictionary *message = [dict bm_dictionaryForKey:YSWhiteBoardNotificationUserInfoKey];
     
@@ -684,76 +680,15 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     }
 }
 
-// 断开链接的通知
-- (void)roomWhiteBoardOnDisconnect:(NSNotification *)notification
-{
-    NSDictionary *dict = notification.userInfo;
-    NSString *reason = [dict objectForKey:YSWhiteBoardNotificationUserInfoKey];
-    
-    [self disconnect:reason];
-    
-    [self.downloader cancelDownload];
-}
-
-// 断开连接
-- (void)disconnect:(NSString *)reason
-{
-    NSMutableDictionary *dict = [NSMutableDictionary dictionary];
-    if (reason)
-    {
-        [dict setObject:reason forKey:@"reason"];
-    }
-    else
-    {
-        [dict setObject:@"" forKey:@"reason"];
-    }
-    
-    if (!UIDidAppear)
-    {
-        NSString *methodName = NSStringFromSelector(@selector(sendSignalMessageToJS:message:));
-        NSMutableDictionary *dic = [NSMutableDictionary dictionary];
-        [dic setValue:methodName forKey:kYSMethodNameKey];
-        [dic setValue:@[WBDisconnect, dict] forKey:kYSParameterKey];
-        [self.cacheMsgPool addObject:dic];
-        
-        return;
-    }
-    
-//    if (self.mainWhiteBoardView)
-//    {
-//        [self.mainWhiteBoardView disconnect:message];
-//    }
-    
-    for (YSWhiteBoardView *whiteBoardView in self.coursewareViewList)
-    {
-        [whiteBoardView disconnect:dict];
-    }
-}
-
-- (void)resetWhiteBoard:(NSNotification *)notification
-{
-    [[YSRoomInterface instance] pubMsg:sYSSignalUpdateTime msgID:sYSSignalUpdateTime toID:[YSRoomInterface instance].localUser.peerID data:@"" save:NO associatedMsgID:nil associatedUserID:nil expires:0 completion:nil];
-    
-    NSDictionary *msgList = [notification.userInfo objectForKey:YSWhiteBoardNotificationUserInfoKey];
-    NSDictionary *roominfo = [[YSRoomInterface instance] getRoomProperty];
-    //NSMutableArray *userlist = _userListArray;
-    
-    NSMutableDictionary *dict = [NSMutableDictionary dictionary];
-    [dict setValue:msgList forKey:@"msglist"];
-    [dict setValue:roominfo forKey:@"roominfo"];
-    //[dict setValue:userlist forKey:@"userlist"];
-    
-    [self roomWhiteBoardOnRoomConnectedUserlist:@(0) response:dict];
-}
-
 // 获取服务器地址
 - (void)roomGetWhiteBoardOnServerAddrs:(NSNotification *) notification
 {
+    // 2
     NSDictionary *dict = [notification.userInfo objectForKey:YSWhiteBoardNotificationUserInfoKey];
     
-    self.serverDocAddrKey = [dict objectForKey:YSWhiteBoardGetServerAddrKey] ?: _serverDocAddrKey;
-    self.serverAddrBackupKey = [dict objectForKey:YSWhiteBoardGetServerAddrBackupKey] ?: _serverAddrBackupKey;
-    self.serverWebAddrKey = [dict objectForKey:YSWhiteBoardGetWebAddrKey] ?: _serverWebAddrKey;
+    self.serverDocAddrKey = [dict objectForKey:YSWhiteBoardGetServerAddrKey] ?: self.serverDocAddrKey;
+    self.serverAddrBackupKey = [dict objectForKey:YSWhiteBoardGetServerAddrBackupKey] ?: self.serverAddrBackupKey;
+    self.serverWebAddrKey = [dict objectForKey:YSWhiteBoardGetWebAddrKey] ?: self.serverWebAddrKey;
     
     // 更新地址
     [self updateWebAddressInfo];
@@ -818,6 +753,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 // 教室文件列表的通知
 - (void)roomWhiteBoardFileList:(NSNotification *)notification
 {
+    // 3
     NSDictionary *dict = notification.userInfo;
     NSArray *fileList = [dict objectForKey:YSWhiteBoardNotificationUserInfoKey] ;
     NSMutableArray *mFileList = [NSMutableArray arrayWithArray:fileList];
@@ -888,30 +824,10 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     [self checkPreLoadingFile];
 }
 
-// 教室消息列表的通知
-- (void)roomWhiteBoardOnRemoteMsgList:(NSNotification *)notification
-{
-    NSDictionary *dict = notification.userInfo;
-    BOOL add = [[dict objectForKey:YSWhiteBoardOnRemoteMsgListAddKey] boolValue];
-    id params = [dict objectForKey:YSWhiteBoardOnRemoteMsgListKey];
-    
-    [self roomWhiteBoardOnRemoteMsgList:add params:params];
-}
-
-- (void)roomWhiteBoardOnRemoteMsgList:(BOOL)add params:(id)params
-{
-    WB_INFO(@"YSWB roomWhiteBoardOnRemoteMsgList-----%@", [NSString stringWithFormat:@"add:%@, params:%@",@(add), params]);
-
-    NSDictionary *tDataDic =[YSRoomUtil convertWithData:params];
-    if (tDataDic)
-    {
-        [self.msgList addObject:tDataDic];
-    }
-}
-
 // 链接教室成功
 - (void)roomWhiteBoardOnRoomConnectedUserlist:(NSNotification *)notification
 {
+    // 4
     NSDictionary *dict = notification.userInfo;
     NSNumber *code = [dict objectForKey:YSWhiteBoardOnRoomConnectedCodeKey];
     NSDictionary *response = [dict objectForKey:YSWhiteBoardOnRoomConnectedRoomMsgKey];
@@ -956,6 +872,194 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         // 放在首位 于showpage前发送，动态ppt备注需要
         //[self.preLoadingFileCacheMsgPool addObject:dic];
         [self.preLoadingFileCacheMsgPool insertObject:dic atIndex:0];
+    }
+}
+
+// 断开链接的通知
+- (void)roomWhiteBoardOnDisconnect:(NSNotification *)notification
+{
+    NSDictionary *dict = notification.userInfo;
+    NSString *reason = [dict objectForKey:YSWhiteBoardNotificationUserInfoKey];
+    
+    [self disconnect:reason];
+    
+    [self.downloader cancelDownload];
+}
+
+// 断开连接
+- (void)disconnect:(NSString *)reason
+{
+    NSMutableDictionary *dict = [NSMutableDictionary dictionary];
+    if (reason)
+    {
+        [dict setObject:reason forKey:@"reason"];
+    }
+    else
+    {
+        [dict setObject:@"" forKey:@"reason"];
+    }
+    
+    if (!UIDidAppear)
+    {
+        NSString *methodName = NSStringFromSelector(@selector(sendSignalMessageToJS:message:));
+        NSMutableDictionary *dic = [NSMutableDictionary dictionary];
+        [dic setValue:methodName forKey:kYSMethodNameKey];
+        [dic setValue:@[WBDisconnect, dict] forKey:kYSParameterKey];
+        [self.cacheMsgPool addObject:dic];
+        
+        return;
+    }
+    
+    if (self.mainWhiteBoardView)
+    {
+        [self.mainWhiteBoardView disconnect:dict];
+    }
+    
+    for (YSWhiteBoardView *whiteBoardView in self.coursewareViewList)
+    {
+        [whiteBoardView disconnect:dict];
+    }
+}
+
+- (void)resetWhiteBoard:(NSNotification *)notification
+{
+    [[YSRoomInterface instance] pubMsg:sYSSignalUpdateTime msgID:sYSSignalUpdateTime toID:[YSRoomInterface instance].localUser.peerID data:@"" save:NO associatedMsgID:nil associatedUserID:nil expires:0 completion:nil];
+    
+    NSDictionary *msgList = [notification.userInfo objectForKey:YSWhiteBoardNotificationUserInfoKey];
+    NSDictionary *roominfo = [[YSRoomInterface instance] getRoomProperty];
+    //NSMutableArray *userlist = _userListArray;
+    
+    NSMutableDictionary *dict = [NSMutableDictionary dictionary];
+    [dict setValue:msgList forKey:@"msglist"];
+    [dict setValue:roominfo forKey:@"roominfo"];
+    //[dict setValue:userlist forKey:@"userlist"];
+    
+    [self roomWhiteBoardOnRoomConnectedUserlist:@(0) response:dict];
+}
+
+// 预加载
+- (void)roomWhitePreloadFile:(NSNotification *)noti
+{
+//#if DEBUG
+//    [[YSDownloader sharedInstance] removeLastPreloadFile];
+//#endif
+    BOOL isNeedPreload = [noti.userInfo[@"isNeedPreload"] boolValue];
+    if (![YSWhiteBoardManager supportPreload])
+    {
+        isNeedPreload = NO;
+        predownloadError = YES;
+        preloadDispose = YES;
+    }
+    
+    BMWeakSelf
+    // 预加载文档下载
+    NSString *downloadpath = [self.preloadFileDic objectForKey:@"preloadingzip"];
+    NSString *fileId = [self.preloadFileDic bm_stringForKey:@"fileid"];
+    if (downloadpath.length > 0 && isNeedPreload)
+    {
+        if (self.downloader.task && self.downloader.task.state == NSURLSessionTaskStateRunning)
+        {
+            return;
+        }
+        
+        // 需要本地加载
+        if (![[NSFileManager defaultManager] fileExistsAtPath:[[NSTemporaryDirectory() stringByAppendingPathComponent:@"YSFile"] stringByAppendingPathComponent:fileId]])
+        {
+            // 但是还未下载，开始下载
+            YSPreloadProgressView *progressView = [[YSPreloadProgressView alloc] initWithSkipBlock:^{
+                self->predownloadError = YES;
+                self->preloadDispose = YES;
+                [weakSelf sendPreLoadingFile];
+            }];
+            if (!self.downloader)
+            {
+                self.downloader = [[YSDownloader alloc] init];
+                
+                [[UIApplication sharedApplication].keyWindow addSubview:progressView];
+                [progressView bmmas_makeConstraints:^(BMMASConstraintMaker *make) {
+                    make.left.bmmas_equalTo([UIApplication sharedApplication].keyWindow.bmmas_left);
+                    make.right.bmmas_equalTo([UIApplication sharedApplication].keyWindow.bmmas_right);
+                    make.top.bmmas_equalTo([UIApplication sharedApplication].keyWindow.bmmas_top);
+                    make.bottom.bmmas_equalTo([UIApplication sharedApplication].keyWindow.bmmas_bottom);
+                }];
+            }
+            [self.downloader downloadWithURL:[NSURL URLWithString:downloadpath] fileID:fileId progressBlock:^(float downloadProgress, float unzipProgress, NSString *location, NSError *error) {
+//                NSLog(@"下载进度：%f  解压进度：%f  文档地址：%@  错误：%@",downloadProgress, unzipProgress, location, error);
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [progressView setDownloadProgress:downloadProgress unzipProgress:unzipProgress];
+                    if (location)
+                    {
+                        self->predownloadError = NO;
+                        self->preloadDispose = YES;
+                    }
+                    
+                    if (error)
+                    {
+                        self->predownloadError = YES;
+                        self->preloadDispose = YES;
+                    }
+                    
+                    [progressView removeFromSuperview];
+                    [weakSelf sendPreLoadingFile];
+                });
+            }];
+        }
+        else
+        {
+            // 本地已经解压好了文档
+            predownloadError = NO;
+            preloadDispose = YES;
+            [self sendPreLoadingFile];
+        }
+    }
+    else
+    {
+        preloadDispose = YES;
+        [self sendPreLoadingFile];
+    }
+}
+
+// 回放下消息列表
+ - (void)roomWhiteBoardOnMsgList:(NSNotification *)notification
+{
+    NSDictionary *dict = notification.userInfo;
+    NSArray *dicArray = [dict bm_arrayForKey:YSWhiteBoardNotificationUserInfoKey];
+    
+    for (NSDictionary *dic in dicArray)
+    {
+        if (dic && [dic isKindOfClass:NSDictionary.class])
+        {
+            if (self.mainWhiteBoardView)
+            {
+                [self.mainWhiteBoardView receiveWhiteBoardMessage:dic isDelMsg:NO];
+            }
+            
+            for (YSWhiteBoardView *whiteBoardView in self.coursewareViewList)
+            {
+                [whiteBoardView receiveWhiteBoardMessage:dic isDelMsg:NO];
+            }
+        }
+    }
+}
+
+// 教室消息列表的通知
+- (void)roomWhiteBoardOnRemoteMsgList:(NSNotification *)notification
+{
+    NSDictionary *dict = notification.userInfo;
+    BOOL add = [[dict objectForKey:YSWhiteBoardOnRemoteMsgListAddKey] boolValue];
+    id params = [dict objectForKey:YSWhiteBoardOnRemoteMsgListKey];
+    
+    [self roomWhiteBoardOnRemoteMsgList:add params:params];
+}
+
+- (void)roomWhiteBoardOnRemoteMsgList:(BOOL)add params:(id)params
+{
+    WB_INFO(@"YSWB roomWhiteBoardOnRemoteMsgList-----%@", [NSString stringWithFormat:@"add:%@, params:%@",@(add), params]);
+
+    NSDictionary *tDataDic =[YSRoomUtil convertWithData:params];
+    if (tDataDic)
+    {
+        [self.msgList addObject:tDataDic];
     }
 }
 

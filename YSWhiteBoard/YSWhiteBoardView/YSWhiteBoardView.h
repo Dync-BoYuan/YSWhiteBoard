@@ -51,6 +51,8 @@ NS_ASSUME_NONNULL_BEGIN
 // 页面刷新尺寸
 - (void)refreshWhiteBoardWithFrame:(CGRect)frame;
 
+- (void)receiveWhiteBoardMessage:(NSDictionary *)dictionary isDelMsg:(BOOL)isDel;
+
 @end
 
 NS_ASSUME_NONNULL_END
