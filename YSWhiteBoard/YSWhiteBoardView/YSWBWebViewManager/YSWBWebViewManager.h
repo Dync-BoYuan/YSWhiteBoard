@@ -89,6 +89,7 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol YSWBWebViewManagerDelegate <NSObject>
 
 @required
+//@optional
 
 /// 文档控制按钮状态更新
 - (void)onWBWebViewManagerStateUpdate:(NSDictionary *)message;

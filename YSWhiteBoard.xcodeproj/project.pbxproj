@@ -7,15 +7,19 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		040812622435873D00900963 /* YSRoomSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 040812612435873C00900963 /* YSRoomSDK.framework */; };
+		040812692435881000900963 /* BMKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 040812642435881000900963 /* BMKit.framework */; };
+		0408126A2435881000900963 /* BMTZImagePickerController.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 040812652435881000900963 /* BMTZImagePickerController.bundle */; };
+		0408126B2435881000900963 /* BMKitImage.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 040812662435881000900963 /* BMKitImage.xcassets */; };
+		0408126C2435881000900963 /* BMKitResources.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 040812672435881000900963 /* BMKitResources.bundle */; };
+		0408126D2435881000900963 /* BMDatePicker.nib in Resources */ = {isa = PBXBuildFile; fileRef = 040812682435881000900963 /* BMDatePicker.nib */; };
+		040812712435894A00900963 /* YSBrushToolsManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 0408126F2435894A00900963 /* YSBrushToolsManager.h */; };
+		040812722435894A00900963 /* YSBrushToolsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 040812702435894A00900963 /* YSBrushToolsManager.m */; };
+		042F2F922435BDEE00838154 /* YSBrushToolsConfigs.h in Headers */ = {isa = PBXBuildFile; fileRef = 042F2F902435BDEE00838154 /* YSBrushToolsConfigs.h */; };
+		042F2F932435BDEE00838154 /* YSBrushToolsConfigs.m in Sources */ = {isa = PBXBuildFile; fileRef = 042F2F912435BDEE00838154 /* YSBrushToolsConfigs.m */; };
 		8732B8D524270E18005BEB99 /* YSWhiteBoard.h in Headers */ = {isa = PBXBuildFile; fileRef = 8732B8D324270E18005BEB99 /* YSWhiteBoard.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		87AD1600242721F000EAE233 /* YSWhiteBoardManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 87AD15FE242721F000EAE233 /* YSWhiteBoardManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		87AD1601242721F000EAE233 /* YSWhiteBoardManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 87AD15FF242721F000EAE233 /* YSWhiteBoardManager.m */; };
-		87AD160A2427232000EAE233 /* BMKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 87AD16042427232000EAE233 /* BMKit.framework */; };
-		87AD160B2427232000EAE233 /* BMTZImagePickerController.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 87AD16052427232000EAE233 /* BMTZImagePickerController.bundle */; };
-		87AD160C2427232000EAE233 /* BMKitImage.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 87AD16062427232000EAE233 /* BMKitImage.xcassets */; };
-		87AD160D2427232000EAE233 /* BMKitResources.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 87AD16072427232000EAE233 /* BMKitResources.bundle */; };
-		87AD160E2427232000EAE233 /* BMDatePicker.nib in Resources */ = {isa = PBXBuildFile; fileRef = 87AD16082427232000EAE233 /* BMDatePicker.nib */; };
-		87AD160F2427232000EAE233 /* YSRoomSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 87AD16092427232000EAE233 /* YSRoomSDK.framework */; };
 		87AD16192427554900EAE233 /* YSRoomConfiguration.h in Headers */ = {isa = PBXBuildFile; fileRef = 87AD16172427554900EAE233 /* YSRoomConfiguration.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		87AD161A2427554900EAE233 /* YSRoomConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = 87AD16182427554900EAE233 /* YSRoomConfiguration.m */; };
 		87AD162924284E8E00EAE233 /* YSRoomUtil.h in Headers */ = {isa = PBXBuildFile; fileRef = 87AD162724284E8E00EAE233 /* YSRoomUtil.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -108,17 +112,21 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		040812612435873C00900963 /* YSRoomSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = YSRoomSDK.framework; sourceTree = "<group>"; };
+		040812642435881000900963 /* BMKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = BMKit.framework; sourceTree = "<group>"; };
+		040812652435881000900963 /* BMTZImagePickerController.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = BMTZImagePickerController.bundle; sourceTree = "<group>"; };
+		040812662435881000900963 /* BMKitImage.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = BMKitImage.xcassets; sourceTree = "<group>"; };
+		040812672435881000900963 /* BMKitResources.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = BMKitResources.bundle; sourceTree = "<group>"; };
+		040812682435881000900963 /* BMDatePicker.nib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; path = BMDatePicker.nib; sourceTree = "<group>"; };
+		0408126F2435894A00900963 /* YSBrushToolsManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YSBrushToolsManager.h; sourceTree = "<group>"; };
+		040812702435894A00900963 /* YSBrushToolsManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YSBrushToolsManager.m; sourceTree = "<group>"; };
+		042F2F902435BDEE00838154 /* YSBrushToolsConfigs.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YSBrushToolsConfigs.h; sourceTree = "<group>"; };
+		042F2F912435BDEE00838154 /* YSBrushToolsConfigs.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YSBrushToolsConfigs.m; sourceTree = "<group>"; };
 		8732B8D024270E18005BEB99 /* YSWhiteBoard.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = YSWhiteBoard.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		8732B8D324270E18005BEB99 /* YSWhiteBoard.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YSWhiteBoard.h; sourceTree = "<group>"; };
 		8732B8D424270E18005BEB99 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		87AD15FE242721F000EAE233 /* YSWhiteBoardManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YSWhiteBoardManager.h; sourceTree = "<group>"; };
 		87AD15FF242721F000EAE233 /* YSWhiteBoardManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YSWhiteBoardManager.m; sourceTree = "<group>"; };
-		87AD16042427232000EAE233 /* BMKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = BMKit.framework; sourceTree = "<group>"; };
-		87AD16052427232000EAE233 /* BMTZImagePickerController.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = BMTZImagePickerController.bundle; sourceTree = "<group>"; };
-		87AD16062427232000EAE233 /* BMKitImage.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = BMKitImage.xcassets; sourceTree = "<group>"; };
-		87AD16072427232000EAE233 /* BMKitResources.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = BMKitResources.bundle; sourceTree = "<group>"; };
-		87AD16082427232000EAE233 /* BMDatePicker.nib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; path = BMDatePicker.nib; sourceTree = "<group>"; };
-		87AD16092427232000EAE233 /* YSRoomSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = YSRoomSDK.framework; sourceTree = "<group>"; };
 		87AD1610242725EB00EAE233 /* YSWhiteBoardMacro.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YSWhiteBoardMacro.h; sourceTree = "<group>"; };
 		87AD16172427554900EAE233 /* YSRoomConfiguration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YSRoomConfiguration.h; sourceTree = "<group>"; };
 		87AD16182427554900EAE233 /* YSRoomConfiguration.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YSRoomConfiguration.m; sourceTree = "<group>"; };
@@ -253,14 +261,37 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				87AD160F2427232000EAE233 /* YSRoomSDK.framework in Frameworks */,
-				87AD160A2427232000EAE233 /* BMKit.framework in Frameworks */,
+				040812692435881000900963 /* BMKit.framework in Frameworks */,
+				040812622435873D00900963 /* YSRoomSDK.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		040812632435881000900963 /* BMKit */ = {
+			isa = PBXGroup;
+			children = (
+				040812642435881000900963 /* BMKit.framework */,
+				040812652435881000900963 /* BMTZImagePickerController.bundle */,
+				040812662435881000900963 /* BMKitImage.xcassets */,
+				040812672435881000900963 /* BMKitResources.bundle */,
+				040812682435881000900963 /* BMDatePicker.nib */,
+			);
+			path = BMKit;
+			sourceTree = "<group>";
+		};
+		0408126E243588EA00900963 /* YSBrushToolsManager */ = {
+			isa = PBXGroup;
+			children = (
+				0408126F2435894A00900963 /* YSBrushToolsManager.h */,
+				040812702435894A00900963 /* YSBrushToolsManager.m */,
+				042F2F902435BDEE00838154 /* YSBrushToolsConfigs.h */,
+				042F2F912435BDEE00838154 /* YSBrushToolsConfigs.m */,
+			);
+			path = YSBrushToolsManager;
+			sourceTree = "<group>";
+		};
 		8732B8C624270E18005BEB99 = {
 			isa = PBXGroup;
 			children = (
@@ -299,22 +330,10 @@
 		87AD16022427232000EAE233 /* YSLib */ = {
 			isa = PBXGroup;
 			children = (
-				87AD16032427232000EAE233 /* BMKit */,
-				87AD16092427232000EAE233 /* YSRoomSDK.framework */,
+				040812632435881000900963 /* BMKit */,
+				040812612435873C00900963 /* YSRoomSDK.framework */,
 			);
 			path = YSLib;
-			sourceTree = "<group>";
-		};
-		87AD16032427232000EAE233 /* BMKit */ = {
-			isa = PBXGroup;
-			children = (
-				87AD16042427232000EAE233 /* BMKit.framework */,
-				87AD16052427232000EAE233 /* BMTZImagePickerController.bundle */,
-				87AD16062427232000EAE233 /* BMKitImage.xcassets */,
-				87AD16072427232000EAE233 /* BMKitResources.bundle */,
-				87AD16082427232000EAE233 /* BMDatePicker.nib */,
-			);
-			path = BMKit;
 			sourceTree = "<group>";
 		};
 		87AD16162427554900EAE233 /* YSRoomUtil */ = {
@@ -333,6 +352,7 @@
 		87AD16332428B68400EAE233 /* YSWhiteBoardView */ = {
 			isa = PBXGroup;
 			children = (
+				0408126E243588EA00900963 /* YSBrushToolsManager */,
 				87AD16342428B68400EAE233 /* YSWBDrawViewManager */,
 				87AD16372428B68400EAE233 /* YSWBWebViewManager */,
 				87AD16422428B6AB00EAE233 /* YSWhiteBoardView.h */,
@@ -585,6 +605,7 @@
 				87C8B1502432F19E0016848E /* YSWhiteBoardMacro.h in Headers */,
 				87AD16192427554900EAE233 /* YSRoomConfiguration.h in Headers */,
 				87C8B1042429BCD20016848E /* YSDrawView.h in Headers */,
+				042F2F922435BDEE00838154 /* YSBrushToolsConfigs.h in Headers */,
 				87AD16442428B6AB00EAE233 /* YSWhiteBoardView.h in Headers */,
 				87C8B1062429BCD20016848E /* YSFileModel.h in Headers */,
 				87AD1600242721F000EAE233 /* YSWhiteBoardManager.h in Headers */,
@@ -595,6 +616,7 @@
 				87C8B125242C3ED00016848E /* YSDownloader.h in Headers */,
 				87C8B124242C3ED00016848E /* YSPreloadProgressView.h in Headers */,
 				87C8B0CF2429B9D20016848E /* UIImage+VYMultiFormat.h in Headers */,
+				040812712435894A00900963 /* YSBrushToolsManager.h in Headers */,
 				87C8B0CC2429B9D20016848E /* UIImageView+VYWebCache.h in Headers */,
 				87AD163F2428B68400EAE233 /* YSWKWebViewWeakDelegate.h in Headers */,
 				87C8B0B62429B9D20016848E /* VYSDImageCacheConfig.h in Headers */,
@@ -690,10 +712,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				87AD160B2427232000EAE233 /* BMTZImagePickerController.bundle in Resources */,
-				87AD160C2427232000EAE233 /* BMKitImage.xcassets in Resources */,
-				87AD160E2427232000EAE233 /* BMDatePicker.nib in Resources */,
-				87AD160D2427232000EAE233 /* BMKitResources.bundle in Resources */,
+				0408126A2435881000900963 /* BMTZImagePickerController.bundle in Resources */,
+				0408126B2435881000900963 /* BMKitImage.xcassets in Resources */,
+				0408126D2435881000900963 /* BMDatePicker.nib in Resources */,
+				0408126C2435881000900963 /* BMKitResources.bundle in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -712,6 +734,7 @@
 				87C8B0DB2429B9D20016848E /* UIImage+VYWebP.m in Sources */,
 				87C8B0B92429B9D20016848E /* UIImage+VYMultiFormat.m in Sources */,
 				87C8B1112429BCD20016848E /* LaserPan.m in Sources */,
+				042F2F932435BDEE00838154 /* YSBrushToolsConfigs.m in Sources */,
 				87C8B0CA2429B9D20016848E /* VYSDImageCacheConfig.m in Sources */,
 				87C8B11C2429BCD20016848E /* DrawBase.m in Sources */,
 				87AD162A24284E8E00EAE233 /* YSRoomUtil.m in Sources */,
@@ -744,6 +767,7 @@
 				87C8B10E2429BCD20016848E /* DrawView.mm in Sources */,
 				87C8B0BC2429B9D20016848E /* UIImageView+VYWebCache.m in Sources */,
 				87AD1632242859A900EAE233 /* YSWBLogger.m in Sources */,
+				040812722435894A00900963 /* YSBrushToolsManager.m in Sources */,
 				87C8B1082429BCD20016848E /* LKPDFView.m in Sources */,
 				87AD163D2428B68400EAE233 /* YSWBDrawViewManager.m in Sources */,
 				87C8B0E22429BC8D0016848E /* HSV.mm in Sources */,

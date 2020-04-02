@@ -8,6 +8,7 @@
 
 #import "YSWBWebViewManager.h"
 #import "YSWKWebViewWeakDelegate.h"
+#import "YSWBLogger.h"
 
 @interface YSWBWebViewManager ()
 <

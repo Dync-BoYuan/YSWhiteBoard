@@ -83,11 +83,12 @@ typedef NS_ENUM(NSInteger, YSDrawType)
 
 typedef NS_ENUM(NSInteger, YSBrushToolType)
 {
-    YSBrushToolTypeMouse   = 100,
-    YSBrushToolTypeLine    = 10,
-    YSBrushToolTypeText    = 20,
-    YSBrushToolTypeShape   = 30,
-    YSBrushToolTypeEraser  = 50,
+    YSBrushToolTypeMouse   = 100,//箭头
+    YSBrushToolTypeLine    = 10, //划线类型
+    YSBrushToolTypeText    = 20, //文字类型
+    YSBrushToolTypeShape   = 30, //框类型
+    YSBrushToolTypeEraser  = 50, //橡皮擦
+    YSBrushToolTypeClear  = 60,  //删除
 };
 
 typedef NS_ENUM(NSUInteger, YSWhiteBoardErrorCode)
