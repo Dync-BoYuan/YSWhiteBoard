@@ -18,6 +18,9 @@ NS_ASSUME_NONNULL_BEGIN
 /// 将数据转换成字典类型NSDictionary
 + (NSDictionary *)convertWithData:(id)data;
 
++ (NSString *)jsonStringWithDictionary:(NSDictionary *)dict;
++ (nullable NSDictionary *)dictionaryWithJsonString:(NSString *)jsonString;
+
 @end
 
 NS_ASSUME_NONNULL_END

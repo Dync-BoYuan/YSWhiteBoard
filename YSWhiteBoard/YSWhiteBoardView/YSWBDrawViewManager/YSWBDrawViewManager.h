@@ -15,6 +15,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, strong) NSMutableDictionary *fileDictionary;
 
+/// 课件使用 webView 加载
+@property (nonatomic, assign, readonly) BOOL showOnWeb;
+
+/// 当前页码
+@property (nonatomic, assign) NSInteger currentPage;
+/// 总页码
+@property (nonatomic, assign, readonly) NSInteger pagecount;
+
 - (instancetype)initWithBackView:(UIView *)view webView:(WKWebView *)webView;
 
 - (void)clearAfterClass;

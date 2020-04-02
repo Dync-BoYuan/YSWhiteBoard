@@ -49,7 +49,7 @@ NSString *const YSWhiteBoardRemoteSelectTool = @"YSWhiteBoardRemoteSelectTool"; 
 @property (nonatomic, strong) NSString *fileId;
 
 /// 当前页码
-@property (nonatomic, assign) NSInteger currentPage;
+//@property (nonatomic, assign) NSInteger currentPage;
 /// 总页码
 @property (nonatomic, assign) NSInteger pagecount;
 

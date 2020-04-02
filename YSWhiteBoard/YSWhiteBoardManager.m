@@ -1364,5 +1364,9 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 }
 
 
+- (BOOL)isPredownloadError
+{
+    return predownloadError;
+}
 
 @end
