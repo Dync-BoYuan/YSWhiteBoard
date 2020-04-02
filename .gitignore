@@ -52,8 +52,6 @@ Podfile.lock
 
 # End of https://www.gitignore.io/api/cocoapods
 
-
-contents.xcworkspacedata
 IDEFindNavigatorScopes.plist
 WorkspaceSettings.xcsettings
 UserInterfaceState.xcuserstate
@@ -64,5 +62,4 @@ xcdebugger/
 
 YSLib/BMKit/
 YSLib/YSRoomSDK.framework/
-
 

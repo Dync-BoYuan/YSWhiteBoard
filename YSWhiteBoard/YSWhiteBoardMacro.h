@@ -9,7 +9,7 @@
 #ifndef YSWhiteBoardMacro_h
 #define YSWhiteBoardMacro_h
 
-#define YSWBBUNDLE_NAME     @"YSResources.bundle"
+#define YSWBBUNDLE_NAME     @"YSWhiteBoardResources.bundle"
 #define YSWBBUNDLE          [NSBundle bundleWithPath: [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:YSWBBUNDLE_NAME]]
 #define YSWBLocalized(s)    [YSWBBUNDLE localizedStringForKey:s value:@"" table:nil]
 
