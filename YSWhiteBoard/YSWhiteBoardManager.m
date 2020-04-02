@@ -10,6 +10,7 @@
 #import <objc/message.h>
 #import "YSDownloader.h"
 #import "YSPreloadProgressView.h"
+#import "YSFileModel.h"
 #import "YSWBLogger.h"
 
 /// SDK版本
@@ -267,8 +268,23 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 
 #pragma mark - 课件列表管理
 
+/// 变更白板画板背景色
+- (void)changeFileViewBackgroudColor:(UIColor *)color
+{
+    
+}
+
+- (void)refreshWhiteBoard
+{
+}
+
+- (void)freshCurrentCourse
+{
+}
+
+
 #pragma mark  添加课件
-- (void)addDocumentWithFile:(NSDictionary *)file
+- (void)addDocumentWithFileDic:(NSDictionary *)file
 {
     NSNumber *isContentDocument = file[@"isContentDocument"];
     
@@ -421,18 +437,113 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         fileId = @"0";
     }
     
-    YSFileModel *file = nil;
-    for (YSFileModel *model in self.docmentList)
-    {
-        if ([model.fileid isEqualToString:fileId])
-        {
-            file = model;
-            break;
-        }
-    }
+    YSFileModel *file = [self getDocumentWithFileID:fileId];
     
     return file;
 }
+
+- (YSWhiteBoardErrorCode)showDocumentWithFileID:(NSString *)fileId isBeginClass:(BOOL)isBeginClass isPubMsg:(BOOL)isPubMsg
+{
+    if (![fileId bm_isNotEmpty])
+    {
+        fileId = @"0";
+    }
+    self.currentFileId = fileId;
+    
+    YSFileModel *file = [self getDocumentWithFileID:fileId];
+    if (file)
+    {
+        NSDictionary *jsDic = [YSFileModel fileDataDocDic:file predownloadError:predownloadError];
+        NSData *jsonData = [NSJSONSerialization dataWithJSONObject:jsDic options:NSJSONWritingPrettyPrinted error:nil];
+        NSString *jsonString = [[NSString alloc]initWithData:jsonData encoding:NSUTF8StringEncoding];
+        
+        if (self.isBeginClass && isPubMsg)
+        {
+            [[YSRoomInterface instance] pubMsg:sYSSignalShowPage msgID:sYSSignalDocumentFilePage_ShowPage toID:YSRoomPubMsgTellAll data:jsonString save:YES extensionData:nil associatedMsgID:nil associatedUserID:nil expires:0 completion:nil];
+        }
+        else
+        {
+            [self showDefaultDocment:file];
+        }
+        
+        return YSError_OK;
+    }
+    else
+    {
+        return YSError_Bad_Parameters;
+    }
+}
+
+- (void)showDefaultDocment:(YSFileModel *)documentModel
+{
+    NSDictionary *dic = [YSFileModel fileDataDocDic:documentModel predownloadError:predownloadError];
+    
+    NSDictionary *tParamDicDefault = @{
+                                       @"id":sYSSignalDocumentFilePage_ShowPage,
+                                       @"ts":@(0),
+                                       @"data":dic ? dic : [NSNull null],
+                                       @"name":sYSSignalShowPage
+                                       };
+    
+    if (self.preloadingFished == YES)
+    {
+        CGRect frame = CGRectMake(0, 0, 100, 100);
+        YSWhiteBoardView *whiteBoardView = [self createWhiteBoardWithFrame:frame fileId:documentModel.fileid loadFinishedBlock:^{
+        }];
+        [self addWhiteBoardViewWithWhiteBoardView:whiteBoardView];
+        
+        if ([YSWhiteBoardManager supportPreload] &&
+            [[NSFileManager defaultManager] fileExistsAtPath:[[NSTemporaryDirectory() stringByAppendingPathComponent:@"YSFile"] stringByAppendingPathComponent:documentModel.fileid]])
+        {
+            NSString *type = nil;
+            if (documentModel.fileprop.intValue > 0)
+            {
+                if (documentModel.fileprop.intValue == 3)
+                {
+                    type = @"/index.html";
+                }
+                else
+                {
+                    type = @"/newppt.html";
+                }
+            }
+            
+            NSMutableDictionary *newDic = [NSMutableDictionary dictionaryWithDictionary:tParamDicDefault];
+            NSMutableDictionary *newData = [NSMutableDictionary dictionaryWithDictionary:newDic[@"data"]];
+            NSMutableDictionary *fileData = [NSMutableDictionary dictionaryWithDictionary:newData[@"filedata"]];
+            NSString *baseURL = [NSURL fileURLWithPath:[[[NSTemporaryDirectory() stringByAppendingPathComponent:@"YSFile"] stringByAppendingPathComponent:documentModel.fileid] stringByAppendingPathComponent:type]].relativeString;
+            [fileData setObject:baseURL forKey:@"baseurl"];
+            [newData setObject:fileData forKey:@"filedata"];
+            [newDic setObject:newData forKey:@"data"];
+            if (whiteBoardView.webViewManager)
+            {
+                [whiteBoardView.webViewManager sendSignalMessageToJS:WBPubMsg message:newDic];
+            }
+        }
+        else
+        {
+            if (whiteBoardView.webViewManager)
+            {
+                [whiteBoardView.webViewManager sendSignalMessageToJS:WBPubMsg message:tParamDicDefault];
+            }
+        }
+        
+        if (whiteBoardView.drawViewManager)
+        {
+            [whiteBoardView.drawViewManager receiveWhiteBoardMessage:[NSMutableDictionary dictionaryWithDictionary:tParamDicDefault] isDelMsg:NO];
+        }
+    }
+    else
+    {
+        NSString *methodName = NSStringFromSelector(@selector(sendSignalMessageToJS:message:));
+        
+        NSMutableDictionary *dic = [NSMutableDictionary dictionary];
+        [dic setValue:methodName forKey:kYSMethodNameKey];
+        [dic setValue:@[WBPubMsg, tParamDicDefault] forKey:kYSParameterKey];
+        [self.preLoadingFileCacheMsgPool addObject:dic];
+    }
+}
+
 
 #pragma mark - 课件窗口列表管理
 
@@ -513,7 +624,147 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 }
 
 
+#pragma -
+#pragma mark 课件操作
 
+/// 刷新白板课件
+- (void)freshCurrentCourseWithFileId:(NSString *)fileId
+{
+    YSWhiteBoardView *whiteBoardView = [self getWhiteBoardViewWithFileId:fileId];
+    
+    if (whiteBoardView)
+    {
+        [whiteBoardView freshCurrentCourse];
+    }
+}
+
+/// 课件 上一页
+- (void)whiteBoardPrePage
+{
+    [self whiteBoardPrePageWithFileId:self.currentFileId];
+}
+
+- (void)whiteBoardPrePageWithFileId:(NSString *)fileId
+{
+    YSWhiteBoardView *whiteBoardView = [self getWhiteBoardViewWithFileId:fileId];
+    
+    if (whiteBoardView)
+    {
+        [whiteBoardView whiteBoardPrePage];
+    }
+}
+
+/// 课件 下一页
+- (void)whiteBoardNextPage
+{
+    [self whiteBoardNextPageWithFileId:self.currentFileId];
+}
+
+- (void)whiteBoardNextPageWithFileId:(NSString *)fileId
+{
+    YSWhiteBoardView *whiteBoardView = [self getWhiteBoardViewWithFileId:fileId];
+    
+    if (whiteBoardView)
+    {
+        [whiteBoardView whiteBoardNextPage];
+    }
+}
+
+/// 课件 跳转页
+- (void)whiteBoardTurnToPage:(NSUInteger)pageNum
+{
+    [self whiteBoardTurnToPage:pageNum withFileId:self.currentFileId];
+}
+
+- (void)whiteBoardTurnToPage:(NSUInteger)pageNum withFileId:(NSString *)fileId
+{
+    YSWhiteBoardView *whiteBoardView = [self getWhiteBoardViewWithFileId:fileId];
+    
+    if (whiteBoardView)
+    {
+        [whiteBoardView whiteBoardTurnToPage:pageNum];
+    }
+}
+
+/// 白板 放大
+- (void)whiteBoardEnlarge
+{
+    [self whiteBoardEnlargeWithFileId:self.currentFileId];
+}
+
+- (void)whiteBoardEnlargeWithFileId:(NSString *)fileId
+{
+    YSWhiteBoardView *whiteBoardView = [self getWhiteBoardViewWithFileId:fileId];
+    
+    if (whiteBoardView)
+    {
+        [whiteBoardView whiteBoardEnlarge];
+    }
+}
+
+/// 白板 缩小
+- (void)whiteBoardNarrow
+{
+    [self whiteBoardNarrowWithFileId:self.currentFileId];
+}
+
+- (void)whiteBoardNarrowWithFileId:(NSString *)fileId
+{
+    YSWhiteBoardView *whiteBoardView = [self getWhiteBoardViewWithFileId:fileId];
+    
+    if (whiteBoardView)
+    {
+        [whiteBoardView whiteBoardNarrow];
+    }
+}
+
+/// 白板 放大重置
+- (void)whiteBoardResetEnlarge
+{
+    [self whiteBoardResetEnlargeWithFileId:self.currentFileId];
+}
+
+- (void)whiteBoardResetEnlargeWithFileId:(NSString *)fileId
+{
+    YSWhiteBoardView *whiteBoardView = [self getWhiteBoardViewWithFileId:fileId];
+    
+    if (whiteBoardView)
+    {
+        [whiteBoardView whiteBoardResetEnlarge];
+    }
+}
+
+
+#pragma -
+#pragma mark 画笔控制
+
+- (void)brushToolsDidSelect:(YSBrushToolType)BrushToolType
+{
+    
+}
+
+- (void)didSelectDrawType:(YSDrawType)type color:(NSString *)hexColor widthProgress:(float)progress
+{
+    
+}
+
+// 恢复默认工具配置设置
+- (void)freshBrushToolConfig
+{
+    
+}
+
+// 获取当前工具配置设置 drawType: YSBrushToolType类型  colorHex: RGB颜色  progress: 值
+- (NSDictionary *)getBrushToolConfigWithToolType:(YSBrushToolType)BrushToolType
+{
+    return @{};
+}
+
+// 改变默认画笔颜色
+- (void)changeDefaultPrimaryColor:(NSString *)colorHex
+{
+    
+}
 
 #pragma -
 #pragma mark PreLoadingFile
@@ -1256,6 +1507,11 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         return;
     }
 
+    if ([msgName isEqualToString:sYSSignalClassBegin])
+    {
+        self.isBeginClass = YES;
+    }
+    
     long ts = (long)[message bm_uintForKey:@"ts"];
     NSString *fromId = [message objectForKey:@"fromID"];
     NSObject *data = [message objectForKey:@"data"];

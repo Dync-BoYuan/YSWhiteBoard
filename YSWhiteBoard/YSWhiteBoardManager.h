@@ -51,33 +51,71 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)doMsgCachePool;
 
+- (void)registerDelegate:(id <YSWhiteBoardManagerDelegate>)delegate configration:(NSDictionary *)config;
+
 - (YSWhiteBoardView *)createMainWhiteBoardWithFrame:(CGRect)frame
                         loadFinishedBlock:(wbLoadFinishedBlock)loadFinishedBlock;
 
 
 - (BOOL)isPredownloadError;
 
+
 #pragma -
 #pragma mark 课件操作
+/// 变更白板画板背景色
+- (void)changeFileViewBackgroudColor:(UIColor *)color;
+
+
+/// 刷新白板
+- (void)refreshWhiteBoard;
+
+/// 刷新当前白板课件数据
+- (void)freshCurrentCourse;
+
+/// 添加文档
+- (void)addDocumentWithFileDic:(NSDictionary *)file;
+/// 删除文档
+- (void)delDocumentFile:(NSDictionary *)file;
+
+- (YSFileModel *)currentFile;
 - (YSFileModel *)getDocumentWithFileID:(NSString *)fileId;
 
 /// 刷新白板课件
 - (void)freshCurrentCourseWithFileId:(NSString *)fileId;
 
 /// 课件 上一页
+- (void)whiteBoardPrePage;
 - (void)whiteBoardPrePageWithFileId:(NSString *)fileId;
 /// 课件 下一页
+- (void)whiteBoardNextPage;
 - (void)whiteBoardNextPageWithFileId:(NSString *)fileId;
 /// 课件 跳转页
-- (void)whiteBoardTurnToPage:(NSUInteger)pageNum withFileId:(NSString *)fileId;;
+- (void)whiteBoardTurnToPage:(NSUInteger)pageNum;
+- (void)whiteBoardTurnToPage:(NSUInteger)pageNum withFileId:(NSString *)fileId;
 
 /// 白板 放大
+- (void)whiteBoardEnlarge;
 - (void)whiteBoardEnlargeWithFileId:(NSString *)fileId;
 /// 白板 缩小
+- (void)whiteBoardNarrow;
 - (void)whiteBoardNarrowWithFileId:(NSString *)fileId;
 /// 白板 放大重置
+- (void)whiteBoardResetEnlarge;
 - (void)whiteBoardResetEnlargeWithFileId:(NSString *)fileId;
 
+- (YSWhiteBoardErrorCode)showDocumentWithFileID:(NSString *)fileId isBeginClass:(BOOL)isBeginClass isPubMsg:(BOOL)isPubMsg;
+
+#pragma -
+#pragma mark 画笔控制
+
+- (void)brushToolsDidSelect:(YSBrushToolType)BrushToolType;
+- (void)didSelectDrawType:(YSDrawType)type color:(NSString *)hexColor widthProgress:(float)progress;
+// 恢复默认工具配置设置
+- (void)freshBrushToolConfig;
+// 获取当前工具配置设置 drawType: YSBrushToolType类型  colorHex: RGB颜色  progress: 值
+- (NSDictionary *)getBrushToolConfigWithToolType:(YSBrushToolType)BrushToolType;
+// 改变默认画笔颜色
+- (void)changeDefaultPrimaryColor:(NSString *)colorHex;
 
 @end
 
