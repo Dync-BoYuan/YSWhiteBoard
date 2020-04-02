@@ -55,6 +55,30 @@ NS_ASSUME_NONNULL_BEGIN
                         loadFinishedBlock:(wbLoadFinishedBlock)loadFinishedBlock;
 
 
+- (BOOL)isPredownloadError;
+
+#pragma -
+#pragma mark 课件操作
+- (YSFileModel *)getDocumentWithFileID:(NSString *)fileId;
+
+/// 刷新白板课件
+- (void)freshCurrentCourseWithFileId:(NSString *)fileId;
+
+/// 课件 上一页
+- (void)whiteBoardPrePageWithFileId:(NSString *)fileId;
+/// 课件 下一页
+- (void)whiteBoardNextPageWithFileId:(NSString *)fileId;
+/// 课件 跳转页
+- (void)whiteBoardTurnToPage:(NSUInteger)pageNum withFileId:(NSString *)fileId;;
+
+/// 白板 放大
+- (void)whiteBoardEnlargeWithFileId:(NSString *)fileId;
+/// 白板 缩小
+- (void)whiteBoardNarrowWithFileId:(NSString *)fileId;
+/// 白板 放大重置
+- (void)whiteBoardResetEnlargeWithFileId:(NSString *)fileId;
+
+
 @end
 
 NS_ASSUME_NONNULL_END

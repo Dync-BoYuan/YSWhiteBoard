@@ -53,6 +53,33 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)receiveWhiteBoardMessage:(NSDictionary *)dictionary isDelMsg:(BOOL)isDel;
 
+
+
+
+
+
+
+#pragma -
+#pragma mark 课件操作
+
+/// 刷新当前白板课件
+- (void)freshCurrentCourse;
+
+/// 课件 上一页
+- (void)whiteBoardPrePage;
+/// 课件 下一页
+- (void)whiteBoardNextPage;
+/// 课件 跳转页
+- (void)whiteBoardTurnToPage:(NSUInteger)pageNum;
+
+/// 白板 放大
+- (void)whiteBoardEnlarge;
+/// 白板 缩小
+- (void)whiteBoardNarrow;
+/// 白板 放大重置
+- (void)whiteBoardResetEnlarge;
+
+
 @end
 
 NS_ASSUME_NONNULL_END

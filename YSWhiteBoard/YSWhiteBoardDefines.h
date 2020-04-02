@@ -88,6 +88,8 @@ static  NSString *const sYSSignalOnJsPlay               = @"isPlayAudio";
 /// 显示课件
 static  NSString *const sYSSignalShowPage               = @"ShowPage";
 static  NSString *const sYSSignalDocumentChange         = @"DocumentChange";
+static  NSString *const sYSSignalWBPageCount            = @"WBPageCount";
+
 
 /// ShowPage ID
 static  NSString *const sYSSignalDocumentFilePage_ShowPage = @"DocumentFilePage_ShowPage";
@@ -111,6 +113,9 @@ static  NSString *const sYSSignalClassBegin             = @"ClassBegin";
 #define WBFakeJsSdkInitInfo                         @"updateFakeJsSdkInitInfo"
 /// 更新文档服务地址信令
 #define WBUpdateWebAddressInfo                      @"updateWebAddressInfo"
+
+/// 刷新Web显示课件
+#define WBReloadCurrentCourse                       @"reloadCurrentCourse"
 
 /// 大房间刷新用户
 #define WBParticipantPublished                      @"participantPublished"
@@ -138,6 +143,17 @@ static  NSString *const sYSSignalClassBegin             = @"ClassBegin";
 
 /// 更新动态ppt大小
 #define WBChangeDynamicPptSize                     @"changeDynamicPptSize"
+
+#define WBAddPage                                  @"whiteboardSDK_addPage"//添加页
+/// 翻页 下一页、上一页、下一步上一步
+#define WBSlideOrStep                              @"slideOrStep"
+#define WBNextPage                                 @"whiteboardSDK_nextPage"//下一页
+#define WBPrevPage                                 @"whiteboardSDK_prevPage"//上一页
+#define WBNextStep                                 @"whiteboardSDK_nextStep"//下一步
+#define WBPrevStep                                 @"whiteboardSDK_prevStep"//上一步
+
+/// enlarge 放大 narrow 缩小 fullScreen 全屏 exitFullScreen 退出全屏
+#define WBDocResize                                @"docResize"
 
 
 #pragma - mark Dictionary Key

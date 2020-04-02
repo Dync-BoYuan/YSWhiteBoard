@@ -10,6 +10,7 @@
 #import <objc/message.h>
 #import "YSDownloader.h"
 #import "YSPreloadProgressView.h"
+#import "YSWBLogger.h"
 
 /// SDK版本
 static NSString *YSWhiteBoardSDKVersionString   = @"2.0.0.0";
@@ -1363,5 +1364,9 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 }
 
 
+- (BOOL)isPredownloadError
+{
+    return predownloadError;
+}
 
 @end
