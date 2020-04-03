@@ -11,19 +11,20 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @protocol YSCoursewareControlViewDelegate <NSObject>
+
 /// 全屏 复原 回调
-/// @param isAllScreen 是否全屏
-- (void)boardControlProxyfullScreen:(BOOL)isAllScreen;
+- (void)coursewarefullScreen:(BOOL)isAllScreen;
 /// 上一页
-- (void)boardControlProxyPrePage;
+- (void)coursewareTurnToPreviousPage;
 /// 下一页
-- (void)boardControlProxyNextPage;
+- (void)coursewareTurnToNextPage;
 /// 放大
-- (void)boardControlProxyEnlarge;
+- (void)coursewareToEnlarge;
 /// 缩小
-- (void)boardControlProxyNarrow;
+- (void)coursewareToNarrow;
 
 @end
+
 
 @interface YSCoursewareControlView : UIView
 
@@ -31,12 +32,25 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// 是否全屏
 @property (nonatomic, assign) BOOL isAllScreen;
-/// 是否可以缩放
-@property (nonatomic, assign) BOOL allowScaling;
+
 /// 是否可以翻页  (未开课前通过权限判断是否可以翻页  上课后永久不可以翻页)
 @property (nonatomic, assign) BOOL allowTurnPage;
+
+/// 是否可以缩放
+@property (nonatomic, assign) BOOL allowScaling;
+
 /// 缩放比例
 @property (nonatomic, assign, readonly) CGFloat zoomScale;
+
+
+/// 重置缩放按钮
+- (void)resetBtnStates;
+///
+- (void)changeZoomScale:(CGFloat)zoomScale;
+
+/// 初始化 当前页以及总页数
+- (void)sc_setTotalPage:(NSInteger)total currentPage:(NSInteger)currentPage isWhiteBoard:(BOOL)isWhiteBoard;
+- (void)sc_setTotalPage:(NSInteger)total currentPage:(NSInteger)currentPage canPrevPage:(BOOL)canPrevPage canNextPage:(BOOL)canNextPage isWhiteBoard:(BOOL)isWhiteBoard;
 
 
 @end

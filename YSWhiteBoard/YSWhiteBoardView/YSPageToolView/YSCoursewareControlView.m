@@ -62,13 +62,10 @@
     UIButton * allScreenBtn = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, 30, 30)];
     [allScreenBtn setImage:[UIImage imageNamed:@"sc_pagecontrol_allScreen_normal"] forState:UIControlStateNormal];
     [allScreenBtn setImage:[UIImage imageNamed:@"sc_pagecontrol_allScreen_highlighted"] forState:UIControlStateHighlighted];
-    [allScreenBtn addTarget:self action:@selector(allScreenBtnClicked:) forControlEvents:UIControlEventTouchUpInside];
+    [allScreenBtn addTarget:self action:@selector(buttonsClick:) forControlEvents:UIControlEventTouchUpInside];
     allScreenBtn.tag = 1;
     [self addSubview:allScreenBtn];
     self.allScreenBtn = allScreenBtn;
-    
-    [allScreenBtn setBackgroundColor:UIColor.redColor];
-    
     
     //左翻页按钮
     UIButton * leftTurnBtn = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, 17, 25)];
@@ -76,7 +73,7 @@
     [leftTurnBtn setImage:[UIImage imageNamed:@"sc_pagecontrol_leftTurn_highlighted"] forState:UIControlStateHighlighted];
     [leftTurnBtn setImage:[UIImage imageNamed:@"sc_pagecontrol_leftTurn_disabled"] forState:UIControlStateDisabled];
     leftTurnBtn.enabled = NO;
-    [leftTurnBtn addTarget:self action:@selector(leftTurnBtnClicked:) forControlEvents:UIControlEventTouchUpInside];
+    [leftTurnBtn addTarget:self action:@selector(buttonsClick:) forControlEvents:UIControlEventTouchUpInside];
     leftTurnBtn.tag = 2;
     [self addSubview:leftTurnBtn];
     self.leftTurnBtn = leftTurnBtn;
@@ -95,7 +92,7 @@
     [rightTurnBtn setImage:[UIImage imageNamed:@"sc_pagecontrol_rightTurn_highlighted"] forState:UIControlStateHighlighted];
     [rightTurnBtn setImage:[UIImage imageNamed:@"sc_pagecontrol_rightTurn_disabled"] forState:UIControlStateDisabled];
     rightTurnBtn.enabled = NO;
-    [rightTurnBtn addTarget:self action:@selector(rightTurnBtnClicked:) forControlEvents:UIControlEventTouchUpInside];
+    [rightTurnBtn addTarget:self action:@selector(buttonsClick:) forControlEvents:UIControlEventTouchUpInside];
     rightTurnBtn.tag = 3;
     [self addSubview:rightTurnBtn];
     self.rightTurnBtn = rightTurnBtn;
@@ -105,7 +102,7 @@
     [augmentBtn setImage:[UIImage imageNamed:@"sc_pagecontrol_augment_normal"] forState:UIControlStateNormal];
     [augmentBtn setImage:[UIImage imageNamed:@"sc_pagecontrol_augment_highlighted"] forState:UIControlStateHighlighted];
     [augmentBtn setImage:[UIImage imageNamed:@"sc_pagecontrol_augment_disabled"] forState:UIControlStateDisabled];
-    [augmentBtn addTarget:self action:@selector(augmentBtnClicked:) forControlEvents:UIControlEventTouchUpInside];
+    [augmentBtn addTarget:self action:@selector(buttonsClick:) forControlEvents:UIControlEventTouchUpInside];
     augmentBtn.tag = 4;
     [self addSubview:augmentBtn];
     self.augmentBtn = augmentBtn;
@@ -115,7 +112,7 @@
     [reduceBtn setImage:[UIImage imageNamed:@"sc_pagecontrol_reduce_normal"] forState:UIControlStateNormal];
     [reduceBtn setImage:[UIImage imageNamed:@"sc_pagecontrol_reduce_highlighted"] forState:UIControlStateHighlighted];
     [reduceBtn setImage:[UIImage imageNamed:@"sc_pagecontrol_reduce_disabled"] forState:UIControlStateDisabled];
-    [reduceBtn addTarget:self action:@selector(reduceBtnClicked:) forControlEvents:UIControlEventTouchUpInside];
+    [reduceBtn addTarget:self action:@selector(buttonsClick:) forControlEvents:UIControlEventTouchUpInside];
     reduceBtn.tag = 5;
     [self addSubview:reduceBtn];
     self.reduceBtn = reduceBtn;
@@ -129,48 +126,218 @@
     [super layoutSubviews];
     
     self.allScreenBtn.bm_left = 3;
-    self.allScreenBtn.bm_centerY = self.bm_height*0.5;
+    self.allScreenBtn.bm_centerY = self.bm_height * 0.5;
     
     self.leftTurnBtn.bm_left = self.allScreenBtn.bm_right + 8;
-    self.leftTurnBtn.bm_centerY = self.bm_height*0.5;
+    self.leftTurnBtn.bm_centerY = self.bm_height * 0.5;
     
     self.pageLabel.bm_left = self.leftTurnBtn.bm_right + 5;
-    self.pageLabel.bm_centerY = self.bm_height*0.5;
+    self.pageLabel.bm_centerY = self.bm_height * 0.5;
     
     self.rightTurnBtn.bm_left = self.pageLabel.bm_right + 5;
-    self.rightTurnBtn.bm_centerY = self.bm_height*0.5;
+    self.rightTurnBtn.bm_centerY = self.bm_height * 0.5;
     
     self.augmentBtn.bm_left = self.rightTurnBtn.bm_right + 8;
-    self.augmentBtn.bm_centerY = self.bm_height*0.5;
+    self.augmentBtn.bm_centerY = self.bm_height * 0.5;
     
-    self.reduceBtn.bm_right = self.augmentBtn.bm_right + 20;
-    self.reduceBtn.bm_centerY = self.bm_height*0.5;
+    self.reduceBtn.bm_left = self.augmentBtn.bm_right + 20;
+    self.reduceBtn.bm_centerY = self.bm_height * 0.5;
 }
 
-- (void)allScreenBtnClicked:(UIButton *)sender
+- (void)buttonsClick:(UIButton *)sender
 {
-    
+    switch (sender.tag)
+    {
+        case 1:
+        {//全屏
+            self.isAllScreen = !self.isAllScreen;
+            if ([self.delegate respondsToSelector:@selector(coursewarefullScreen:)])
+            {
+                [self.delegate coursewarefullScreen:self.isAllScreen];
+            }
+        }
+            break;
+        case 2:
+        {//左翻页
+            self.leftTurnBtn.enabled = (_currentPage > 1);
+            self.rightTurnBtn.enabled = _currentPage < _totalPage;
+            if ([self.delegate respondsToSelector:@selector(coursewareTurnToPreviousPage)])
+            {
+                [self.delegate coursewareTurnToPreviousPage];
+            }
+        }
+            break;
+        case 3:
+        {//右翻页
+            self.leftTurnBtn.enabled = (_currentPage > 1);
+            self.rightTurnBtn.enabled = _currentPage < _totalPage;
+            if ([self.delegate respondsToSelector:@selector(coursewareTurnToNextPage)])
+            {
+                [self.delegate coursewareTurnToNextPage];
+            }
+        }
+            break;
+        case 4:
+        {//放大
+            if ([self.delegate respondsToSelector:@selector(coursewareToEnlarge)])
+            {
+                [self.delegate coursewareToEnlarge];
+            }
+        }
+            break;
+        case 5:
+        {//缩小
+            if ([self.delegate respondsToSelector:@selector(coursewareToNarrow)])
+            {
+                [self.delegate coursewareToNarrow];
+            }
+        }
+            break;
+        default:
+            break;
+    }
 }
 
-- (void)leftTurnBtnClicked:(UIButton *)sender
+#pragma mark -setter
+
+- (void)sc_setTotalPage:(NSInteger)total currentPage:(NSInteger)currentPage isWhiteBoard:(BOOL)isWhiteBoard
 {
+    _totalPage = total;
+    if (_totalPage < 1)
+    {
+        _totalPage = 1;
+    }
     
+    _currentPage = currentPage;
+    if (_currentPage < 1)
+    {
+        _currentPage = 1;
+    }
+    _pageLabel.text = [NSString stringWithFormat:@"%ld / %ld",(long)_currentPage,(long)self.totalPage];
+    if (self.allowTurnPage)
+    {
+        self.leftTurnBtn.enabled = (_currentPage > 1);
+        if (isWhiteBoard)
+        {
+            self.rightTurnBtn.enabled = YES;
+        }
+        else
+        {
+            self.rightTurnBtn.enabled = _currentPage < _totalPage;
+        }
+    }
 }
 
-- (void)rightTurnBtnClicked:(UIButton *)sender
+- (void)sc_setTotalPage:(NSInteger)total currentPage:(NSInteger)currentPage canPrevPage:(BOOL)canPrevPage canNextPage:(BOOL)canNextPage isWhiteBoard:(BOOL)isWhiteBoard
 {
+    _totalPage = total;
+    if (_totalPage < 1)
+    {
+        _totalPage = 1;
+    }
     
+    _currentPage = currentPage;
+    if (_currentPage < 1)
+    {
+        _currentPage = 1;
+    }
+    _pageLabel.text = [NSString stringWithFormat:@"%ld / %ld",(long)_currentPage,(long)self.totalPage];
+    if (self.allowTurnPage)
+    {
+        self.leftTurnBtn.enabled = canPrevPage;
+        if (isWhiteBoard)
+        {
+            self.rightTurnBtn.enabled = YES;
+        }
+        else
+        {
+            self.rightTurnBtn.enabled = canNextPage;
+        }
+    }
 }
 
-- (void)augmentBtnClicked:(UIButton *)sender
+// 是否全屏
+- (void)setIsAllScreen:(BOOL)isAllScreen
 {
-    
+    _isAllScreen = isAllScreen;
+    if (isAllScreen)
+    {
+        [_allScreenBtn setImage:[UIImage imageNamed:@"sc_pagecontrol_normalScreen_normal"] forState:UIControlStateNormal];
+        [_allScreenBtn setImage:[UIImage imageNamed:@"sc_pagecontrol_normalScreen_highlighted"] forState:UIControlStateHighlighted];
+    }
+    else
+    {
+        [_allScreenBtn setImage:[UIImage imageNamed:@"sc_pagecontrol_allScreen_normal"] forState:UIControlStateNormal];
+        [_allScreenBtn setImage:[UIImage imageNamed:@"sc_pagecontrol_allScreen_highlighted"] forState:UIControlStateHighlighted];
+    }
 }
-
-- (void)reduceBtnClicked:(UIButton *)sender
+// 是否可以翻页  (未开课前通过权限判断是否可以翻页  上课后永久不可以翻页)
+- (void)setAllowTurnPage:(BOOL)allowTurnPage
 {
-    
+    _allowTurnPage = allowTurnPage;
+    if (allowTurnPage)
+    {
+        self.leftTurnBtn.enabled = (_currentPage > 1);
+        self.rightTurnBtn.enabled = _currentPage < _totalPage;
+    }
+    else
+    {
+        self.leftTurnBtn.enabled = NO;
+        self.rightTurnBtn.enabled = NO;
+    }
 }
 
+// 是否可以缩放
+- (void)setAllowScaling:(BOOL)allowScaling
+{
+    _allowScaling = allowScaling;
+    
+    if (allowScaling)
+    {
+        if (self.zoomScale >= YSWHITEBOARD_MAXZOOMSCALE)
+        {
+            self.zoomScale = YSWHITEBOARD_MAXZOOMSCALE;
+            self.augmentBtn.enabled = NO;
+            self.reduceBtn.enabled = YES;
+        }
+        else if (self.zoomScale <= YSWHITEBOARD_MINZOOMSCALE)
+        {
+            self.zoomScale = YSWHITEBOARD_MINZOOMSCALE;
+            self.augmentBtn.enabled = YES;
+            self.reduceBtn.enabled  = NO;
+        }
+        else
+        {
+            self.augmentBtn.enabled = YES;
+            self.reduceBtn.enabled = YES;
+        }
+    }
+    else
+    {
+        self.augmentBtn.enabled = NO;
+        self.reduceBtn.enabled = NO;
+    }
+}
+
+/// 重置缩放按钮
+- (void)resetBtnStates
+{
+    self.augmentBtn.enabled = YES;
+    self.reduceBtn.enabled = NO;
+    [self changeZoomScale:YSWHITEBOARD_MINZOOMSCALE];
+}
+
+
+- (void)changeZoomScale:(CGFloat)zoomScale
+{
+    if (!self.allowScaling)
+    {
+        return;
+    }
+    
+    self.zoomScale = zoomScale;
+
+    self.allowScaling = YES;
+}
 
 @end
