@@ -159,8 +159,8 @@
             break;
         case 2:
         {//左翻页
-            self.leftTurnBtn.enabled = (_currentPage > 1);
-            self.rightTurnBtn.enabled = _currentPage < _totalPage;
+            self.leftTurnBtn.enabled = (self.currentPage > 1);
+            self.rightTurnBtn.enabled = self.currentPage < self.totalPage;
             if ([self.delegate respondsToSelector:@selector(coursewareTurnToPreviousPage)])
             {
                 [self.delegate coursewareTurnToPreviousPage];
@@ -169,8 +169,8 @@
             break;
         case 3:
         {//右翻页
-            self.leftTurnBtn.enabled = (_currentPage > 1);
-            self.rightTurnBtn.enabled = _currentPage < _totalPage;
+            self.leftTurnBtn.enabled = (self.currentPage > 1);
+            self.rightTurnBtn.enabled = self.currentPage < self.totalPage;
             if ([self.delegate respondsToSelector:@selector(coursewareTurnToNextPage)])
             {
                 [self.delegate coursewareTurnToNextPage];
@@ -202,46 +202,46 @@
 
 - (void)sc_setTotalPage:(NSInteger)total currentPage:(NSInteger)currentPage isWhiteBoard:(BOOL)isWhiteBoard
 {
-    _totalPage = total;
-    if (_totalPage < 1)
+    self.totalPage = total;
+    if (self.totalPage < 1)
     {
-        _totalPage = 1;
+        self.totalPage = 1;
     }
     
-    _currentPage = currentPage;
-    if (_currentPage < 1)
+    self.currentPage = currentPage;
+    if (self.currentPage < 1)
     {
-        _currentPage = 1;
+        self.currentPage = 1;
     }
-    _pageLabel.text = [NSString stringWithFormat:@"%ld / %ld",(long)_currentPage,(long)self.totalPage];
+    self.pageLabel.text = [NSString stringWithFormat:@"%ld / %ld",(long)self.currentPage,(long)self.totalPage];
     if (self.allowTurnPage)
     {
-        self.leftTurnBtn.enabled = (_currentPage > 1);
+        self.leftTurnBtn.enabled = (self.currentPage > 1);
         if (isWhiteBoard)
         {
             self.rightTurnBtn.enabled = YES;
         }
         else
         {
-            self.rightTurnBtn.enabled = _currentPage < _totalPage;
+            self.rightTurnBtn.enabled = self.currentPage < self.totalPage;
         }
     }
 }
 
 - (void)sc_setTotalPage:(NSInteger)total currentPage:(NSInteger)currentPage canPrevPage:(BOOL)canPrevPage canNextPage:(BOOL)canNextPage isWhiteBoard:(BOOL)isWhiteBoard
 {
-    _totalPage = total;
-    if (_totalPage < 1)
+    self.totalPage = total;
+    if (self.totalPage < 1)
     {
-        _totalPage = 1;
+        self.totalPage = 1;
     }
     
-    _currentPage = currentPage;
-    if (_currentPage < 1)
+    self.currentPage = currentPage;
+    if (self.currentPage < 1)
     {
-        _currentPage = 1;
+        self.currentPage = 1;
     }
-    _pageLabel.text = [NSString stringWithFormat:@"%ld / %ld",(long)_currentPage,(long)self.totalPage];
+    self.pageLabel.text = [NSString stringWithFormat:@"%ld / %ld",(long)self.currentPage,(long)self.totalPage];
     if (self.allowTurnPage)
     {
         self.leftTurnBtn.enabled = canPrevPage;
@@ -262,13 +262,13 @@
     _isAllScreen = isAllScreen;
     if (isAllScreen)
     {
-        [_allScreenBtn setImage:[UIImage imageNamed:@"sc_pagecontrol_normalScreen_normal"] forState:UIControlStateNormal];
-        [_allScreenBtn setImage:[UIImage imageNamed:@"sc_pagecontrol_normalScreen_highlighted"] forState:UIControlStateHighlighted];
+        [self.allScreenBtn setImage:[UIImage imageNamed:@"sc_pagecontrol_normalScreen_normal"] forState:UIControlStateNormal];
+        [self.allScreenBtn setImage:[UIImage imageNamed:@"sc_pagecontrol_normalScreen_highlighted"] forState:UIControlStateHighlighted];
     }
     else
     {
-        [_allScreenBtn setImage:[UIImage imageNamed:@"sc_pagecontrol_allScreen_normal"] forState:UIControlStateNormal];
-        [_allScreenBtn setImage:[UIImage imageNamed:@"sc_pagecontrol_allScreen_highlighted"] forState:UIControlStateHighlighted];
+        [self.allScreenBtn setImage:[UIImage imageNamed:@"sc_pagecontrol_allScreen_normal"] forState:UIControlStateNormal];
+        [self.allScreenBtn setImage:[UIImage imageNamed:@"sc_pagecontrol_allScreen_highlighted"] forState:UIControlStateHighlighted];
     }
 }
 // 是否可以翻页  (未开课前通过权限判断是否可以翻页  上课后永久不可以翻页)
@@ -277,8 +277,8 @@
     _allowTurnPage = allowTurnPage;
     if (allowTurnPage)
     {
-        self.leftTurnBtn.enabled = (_currentPage > 1);
-        self.rightTurnBtn.enabled = _currentPage < _totalPage;
+        self.leftTurnBtn.enabled = (self.currentPage > 1);
+        self.rightTurnBtn.enabled = self.currentPage < self.totalPage;
     }
     else
     {
@@ -294,23 +294,7 @@
     
     if (allowScaling)
     {
-        if (self.zoomScale >= YSWHITEBOARD_MAXZOOMSCALE)
-        {
-            self.zoomScale = YSWHITEBOARD_MAXZOOMSCALE;
-            self.augmentBtn.enabled = NO;
-            self.reduceBtn.enabled = YES;
-        }
-        else if (self.zoomScale <= YSWHITEBOARD_MINZOOMSCALE)
-        {
-            self.zoomScale = YSWHITEBOARD_MINZOOMSCALE;
-            self.augmentBtn.enabled = YES;
-            self.reduceBtn.enabled  = NO;
-        }
-        else
-        {
-            self.augmentBtn.enabled = YES;
-            self.reduceBtn.enabled = YES;
-        }
+        [self changeZoomScale:self.zoomScale];
     }
     else
     {
@@ -337,7 +321,23 @@
     
     self.zoomScale = zoomScale;
 
-    self.allowScaling = YES;
+    if (self.zoomScale >= YSWHITEBOARD_MAXZOOMSCALE)
+    {
+        self.zoomScale = YSWHITEBOARD_MAXZOOMSCALE;
+        self.augmentBtn.enabled = NO;
+        self.reduceBtn.enabled = YES;
+    }
+    else if (self.zoomScale <= YSWHITEBOARD_MINZOOMSCALE)
+    {
+        self.zoomScale = YSWHITEBOARD_MINZOOMSCALE;
+        self.augmentBtn.enabled = YES;
+        self.reduceBtn.enabled  = NO;
+    }
+    else
+    {
+        self.augmentBtn.enabled = YES;
+        self.reduceBtn.enabled = YES;
+    }
 }
 
 @end
