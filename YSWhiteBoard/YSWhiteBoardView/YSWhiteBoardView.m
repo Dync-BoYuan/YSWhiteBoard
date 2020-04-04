@@ -13,7 +13,9 @@
 <
     YSWBWebViewManagerDelegate
 >
-
+{
+    BOOL isLoadingFinish;
+}
 @property (nonatomic, strong) NSString *fileId;
 
 /// web文档
@@ -22,7 +24,6 @@
 @property (nonatomic, strong) YSWBDrawViewManager *drawViewManager;
 
 @property (nonatomic, weak) WKWebView *wbView;
-
 
 @end
 
@@ -210,6 +211,11 @@
     {
         [self.webViewManager sendSignalMessageToJS:WBUpdateWebAddressInfo message:message];
     }
+    
+    if (self.drawViewManager)
+    {
+        self.drawViewManager.address = [message bm_stringForKey:YSWhiteBoardDocHostKey];
+    }
 }
 
 - (void)receiveWhiteBoardMessage:(NSDictionary *)dictionary isDelMsg:(BOOL)isDel
@@ -223,19 +229,204 @@
 #pragma -
 #pragma mark YSWBWebViewManagerDelegate
 
-///// 文档控制按钮状态更新
-//- (void)onWBWebViewManagerStateUpdate:(NSDictionary *)message;
-///// 课件加载成功回调
-//- (void)onWBWebViewManagerLoadSuccess:(NSDictionary *)dic;
-///// 翻页超时
-//- (void)onWBWebViewManagerSlideLoadTimeout:(NSDictionary *)dic;
-///// 房间链接成功msglist回调
-//- (void)onWBWebViewManagerOnRoomConnectedMsglist:(NSDictionary *)msgList;
-///// 教室加载状态
-//- (void)onWBWebViewManagerLoadedState:(NSDictionary *)message;
-///// 白板初始化完成
-//- (void)onWBWebViewManagerPageFinshed;
-///// 预加载文档结束
+/// 文档控制按钮状态更新
+- (void)onWBWebViewManagerStateUpdate:(NSDictionary *)dic
+{
+    NSLog(@"%s,message:%@", __func__, dic);
+    if (self.drawViewManager)
+    {
+        // 设置页码
+        if ([dic bm_containsObjectForKey:@"page"])
+        {
+             NSDictionary *dicPage = [dic bm_dictionaryForKey:@"page"];
+            if ([dicPage bm_containsObjectForKey:@"currentPage"] && [dicPage bm_containsObjectForKey:@"totalPage"])
+            {
+                NSUInteger currentPage = [dicPage bm_uintForKey:@"currentPage"];
+                NSUInteger totalPage   = [dicPage bm_uintForKey:@"totalPage"];
+                
+                NSString *fileId = self.fileId;
+                if (!fileId)
+                {
+                     fileId = @"0";
+                }
+                
+                YSFileModel *file = [[YSWhiteBoardManager shareInstance] getDocumentWithFileID:fileId];
+                file.currpage = [dicPage objectForKey:@"currentPage"];
+                file.pagenum = [dicPage objectForKey:@"totalPage"];
+
+                // 肯定是showOnWeb
+                if (self.drawViewManager.showOnWeb)
+                {
+                    if ([dicPage bm_containsObjectForKey:@"pptstep"])
+                    {
+                        file.pptstep = [dicPage bm_stringForKey:@"pptstep"];
+                    }
+                    if ([dicPage bm_containsObjectForKey:@"steptotal"])
+                    {
+                        file.steptotal = [dicPage bm_stringForKey:@"steptotal"];
+                    }
+                    #warning message
+                    //[self.drawViewManager setTotalPage:totalPage currentPage:currentPage];
+                }
+            }
+        }
+        
+        NSNumber *scale = [dic objectForKey:@"scale"];
+        if ([scale isEqual:[NSNull null]])
+        {
+            return;
+        }
+        float ratio = 0;
+        if (scale.intValue == 0)
+        {
+            ratio = 4.0f / 3;
+        }
+        else if (scale.intValue == 1)
+        {
+            ratio = 16.0f / 9;
+        }
+        else if (scale.intValue == 2)
+        {
+            NSNumber *irregular = [dic objectForKey:@"irregular"];
+            if ([irregular isEqual:[NSNull null]])
+            {
+                return;
+            }
+            ratio = irregular.floatValue;
+        }
+
+        if (self.drawViewManager.showOnWeb)
+        {
+#warning message
+            //[self.drawViewManager updateWBRatio:ratio];
+        }
+    }
+
+#warning 刷新课件页码
+    
+}
+
+/// 课件加载成功回调
+- (void)onWBWebViewManagerLoadedState:(NSDictionary *)dic
+{
+    isLoadingFinish = [dic[@"notice"] isEqualToString:@"loadSuccess"];
+
+    // 上报 课件加载成功失败
+    //[YSServersLog  uploadLogWithLevel:YSLogLevelInfo
+    //                             Text:[NSString stringWithFormat:@"WhiteBoard Loaded State: %@", dic[@"notice"]]];
+
+    // 通知刷新白板
+    [self refreshWhiteBoard];
+    
+    if (!isLoadingFinish && [dic objectForKey:@"data"] != nil)
+    {
+        [[NSNotificationCenter defaultCenter] postNotificationName:YSWhiteBoardEventLoadFileFail object:dic[@"data"]];
+    }
+    
+    if ([YSWhiteBoardManager shareInstance].wbDelegate && [[YSWhiteBoardManager shareInstance].wbDelegate respondsToSelector:@selector(onWhiteBoardLoadedState:)])
+    {
+        [[YSWhiteBoardManager shareInstance].wbDelegate onWhiteBoardLoadedState:dic];
+    }
+}
+
+/// 翻页超时
+- (void)onWBWebViewManagerSlideLoadTimeout:(NSDictionary *)dic
+{
+    if ([dic objectForKey:@"data"] == nil)
+    {
+        return;
+    }
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:YSWhiteBoardEventLoadSlideFail object:dic[@"data"]];
+}
+
+
+/// 房间链接成功msglist回调
+- (void)onWBWebViewManagerOnRoomConnectedMsglist:(NSDictionary *)msgList
+{
+    NSSortDescriptor *desc = [[NSSortDescriptor alloc] initWithKey:@"seq" ascending:YES];
+    // 历史msgList如果有ShowPage信令，需要主动发给H5去刷新当前课件
+    BOOL show = NO;
+    NSArray *msgArray = [[msgList allValues] sortedArrayUsingDescriptors:@[ desc ]];;
+    for (NSDictionary *msgDic in msgArray)
+    {
+        if ([[msgDic objectForKey:@"name"] isEqualToString:sYSSignalShowPage])
+        {
+            show = YES;
+            [self.webViewManager sendSignalMessageToJS:WBPubMsg message:msgDic];
+            
+            NSDictionary *filedata = [msgDic bm_dictionaryForKey:@"filedata"];
+            if (!filedata)
+            {
+                id dataObject = [msgDic objectForKey:@"data"];
+                NSDictionary *dataDic = [YSRoomUtil convertWithData:dataObject];
+                filedata = [dataDic bm_dictionaryForKey:@"filedata"];
+            }
+            NSString *fileid = [filedata bm_stringForKey:@"fileid"];
+            if (!fileid)
+            {
+                fileid = @"0";
+            }
+            [[YSWhiteBoardManager shareInstance] setTheCurrentDocumentFileID:fileid];
+            break;
+        }
+        else
+        {
+            [self.webViewManager sendSignalMessageToJS:WBPubMsg message:msgDic];
+        }
+    }
+    
+    if (!show)
+    {
+        [[YSWhiteBoardManager shareInstance] showDocumentWithFileID:[YSWhiteBoardManager shareInstance].currentFileId
+                                                       isBeginClass:[YSWhiteBoardManager shareInstance].isBeginClass
+                                                           isPubMsg:NO];
+    }
+
+    BOOL needShowDefault = NO;
+    // 查看默认课件是否是白板，因为原生课件刷新不做白板刷新
+    NSString *currentFileId = [YSWhiteBoardManager shareInstance].currentFileId;
+    if (!show && [currentFileId isEqualToString:@"0"])
+    {
+        needShowDefault = YES;
+    }
+
+    if (self.delegate && [self.delegate respondsToSelector:@selector(onWBWebViewManagerOnRoomConnectedMsglist:needShowDefault:)])
+    {
+        [self.delegate onWBWebViewManagerOnRoomConnectedMsglist:msgList needShowDefault:needShowDefault];
+    }
+}
+
+/// 白板初始化完成
+- (void)onWBWebViewManagerPageFinshed
+{
+    // 更新地址
+//    [[YSWhiteBoardManager shareInstance] updateWebAddressInfo];
+    
+    if (self.drawViewManager)
+    {
+        // 更新白板数据
+        self.drawViewManager.address = [YSWhiteBoardManager shareInstance].serverDocAddrKey;
+    }
+}
+
+/// 预加载白板初始化完成
+//- (void)onWBWebViewManagerPreloadPageFinshed
+//{
+//    [YSWhiteBoardManager shareInstance].UIDidAppear = YES;
+//
+//    // 预加载
+//    [[YSWhiteBoardManager shareInstance] trySendPreLoadingFile];
+//
+//    if (_preloadDispose == YES)
+//    {
+//        [[YSWhiteBoardManager shareInstance] sendPreLoadingFile];
+//    }
+//
+//    [self onWBWebViewManagerPageFinshed];
+//}
+
+/// 预加载文档结束
 //- (void)onWBWebViewManagerPreloadingFished;
 
 
@@ -244,6 +435,11 @@
 {
     self.frame = frame;
     [self.webViewManager refreshWhiteBoardWithFrame:frame];
+}
+
+- (void)refreshWhiteBoard
+{
+    [self refreshWhiteBoardWithFrame:self.frame];
 }
 
 #pragma -

@@ -35,9 +35,6 @@ NSString *const YSWhiteBoardRemoteSelectTool = @"YSWhiteBoardRemoteSelectTool"; 
 /// 普通课件视图
 @property (nonatomic, strong) DocShowView *fileView;
 
-/// 服务器地址
-@property (nonatomic, strong) NSString *address;
-
 /// 激光笔
 @property (nonatomic, strong) LaserPan *laserPan;
 

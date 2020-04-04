@@ -989,10 +989,10 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     
     [dic setValue:classDocServerAddrBackup forKey:YSWhiteBoardBackupDocHostListKey];
     
-//    if (self.mainWhiteBoardView)
-//    {
-//        [self.mainWhiteBoardView updateWebAddressInfo:dic];
-//    }
+    if (self.mainWhiteBoardView)
+    {
+        [self.mainWhiteBoardView updateWebAddressInfo:dic];
+    }
     
     for (YSWhiteBoardView *whiteBoardView in self.coursewareViewList)
     {
@@ -1297,11 +1297,11 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 // 教室消息列表的通知
 - (void)roomWhiteBoardOnRemoteMsgList:(NSNotification *)notification
 {
-    NSDictionary *dict = notification.userInfo;
-    BOOL add = [[dict objectForKey:YSWhiteBoardOnRemoteMsgListAddKey] boolValue];
-    id params = [dict objectForKey:YSWhiteBoardOnRemoteMsgListKey];
-    
-    [self roomWhiteBoardOnRemoteMsgList:add params:params];
+//    NSDictionary *dict = notification.userInfo;
+//    BOOL add = [[dict objectForKey:YSWhiteBoardOnRemoteMsgListAddKey] boolValue];
+//    id params = [dict objectForKey:YSWhiteBoardOnRemoteMsgListKey];
+//    
+//    [self roomWhiteBoardOnRemoteMsgList:add params:params];
 }
 
 - (void)roomWhiteBoardOnRemoteMsgList:(BOOL)add params:(id)params
@@ -1617,6 +1617,40 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     {
         [whiteBoardView remoteDelMsg:message];
     }
+}
+
+
+
+#pragma -
+#pragma mark YSWhiteBoardViewDelegate
+
+/// 房间链接成功msglist回调
+- (void)onWBWebViewManagerOnRoomConnectedMsglist:(NSDictionary *)msgList needShowDefault:(BOOL)needShowDefault
+{
+    if (self.wbDelegate && [self.wbDelegate respondsToSelector:@selector(onWhiteBoardOnRoomConnectedMsglist:)])
+    {
+        [self.wbDelegate onWhiteBoardOnRoomConnectedMsglist:msgList];
+    }
+
+    // 查看默认课件是否是白板，因为原生课件刷新不做白板刷新
+    if (needShowDefault)
+    {
+        NSDictionary *fileDic = [YSFileModel fileDataDocDic:self.currentFile predownloadError:predownloadError];
+        
+//        NSString *dataStr = @"{\"sourceInstanceId\":\"default\",\"isGeneralFile\":true,\"isMedia\":false,\"isDynamicPPT\":false,\"isH5Document\":false,\"action\":\"show\",\"mediaType\":\"\",\"filedata\":{\"currpage\":1,\"pptslide\":1,\"pptstep\":0,\"steptotal\":0,\"fileid\":0,\"pagenum\":1,\"filename\":\"whiteboard\",\"filetype\":\"whiteboard\",\"swfpath\":\"\"}}";
+
+        [[YSRoomInterface instance] pubMsg:sYSSignalShowPage
+                                     msgID:sYSSignalDocumentFilePage_ShowPage   //  @"DocumentFilePage_ShowPage"
+                                      toID:[YSRoomInterface instance].localUser.peerID
+                                      data:fileDic
+                                      save:NO
+                             extensionData:nil
+                           associatedMsgID:nil
+                          associatedUserID:nil
+                                   expires:0
+                                completion:nil];
+    }
+
 }
 
 

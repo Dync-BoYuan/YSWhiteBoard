@@ -16,6 +16,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface YSWBWebViewManager : NSObject
 
+@property (nonatomic, assign) BOOL isPreLoadFile;
+
 /// webview崩溃回调
 @property (nonatomic, copy, nullable) wbWebViewTerminateBlock webViewTerminateBlock;
 @property (nonatomic, weak, nullable) id <YSWBWebViewManagerDelegate> delegate;
@@ -71,6 +73,12 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)refreshWhiteBoardWithFrame:(CGRect)frame;
 
+
+/**
+ 链接房间 预加载 都成功之后 发送预加载缓存
+ */
+- (void)afterConnectToRoomAndPreloadingFished;
+
 /**
  销毁
  */
@@ -90,19 +98,23 @@ NS_ASSUME_NONNULL_BEGIN
 
 @required
 
-/// 文档控制按钮状态更新
-- (void)onWBWebViewManagerStateUpdate:(NSDictionary *)message;
-/// 课件加载成功回调
-- (void)onWBWebViewManagerLoadSuccess:(NSDictionary *)dic;
+/// 课件翻页结果
+- (void)onWBWebViewManagerStateUpdate:(NSDictionary *)dic;
 /// 翻页超时
 - (void)onWBWebViewManagerSlideLoadTimeout:(NSDictionary *)dic;
+
+/// 切换课件加载状态
+- (void)onWBWebViewManagerLoadedState:(NSDictionary *)dic;
+
 /// 房间链接成功msglist回调
 - (void)onWBWebViewManagerOnRoomConnectedMsglist:(NSDictionary *)msgList;
-/// 教室加载状态
-- (void)onWBWebViewManagerLoadedState:(NSDictionary *)message;
-/// 白板初始化完成
+
+/// 预加载白板初始化完成
+- (void)onWBWebViewManagerPreloadPageFinshed;
+/// 白板H5脚本初始化完成
 - (void)onWBWebViewManagerPageFinshed;
-/// 预加载文档结束
+
+/// 请求了预加载后返回预加载文档结束
 - (void)onWBWebViewManagerPreloadingFished;
 
 @end

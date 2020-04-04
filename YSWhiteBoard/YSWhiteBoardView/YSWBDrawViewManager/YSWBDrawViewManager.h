@@ -18,6 +18,9 @@ NS_ASSUME_NONNULL_BEGIN
 /// 课件使用 webView 加载
 @property (nonatomic, assign, readonly) BOOL showOnWeb;
 
+/// 服务器地址
+@property (nonatomic, strong) NSString *address;
+
 /// 当前页码
 @property (nonatomic, assign) NSInteger currentPage;
 /// 总页码

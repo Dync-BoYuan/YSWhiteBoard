@@ -13,7 +13,13 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@protocol YSWhiteBoardViewDelegate;
+
 @interface YSWhiteBoardView : UIView
+
+@property (nonatomic, weak) id <YSWhiteBoardViewDelegate> delegate;
+
+@property (nonatomic, assign) BOOL isPreLoadFile;
 
 @property (nonatomic, strong, readonly) NSString *fileId;
 
@@ -81,5 +87,30 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 @end
+
+
+@protocol YSWhiteBoardViewDelegate <NSObject>
+
+@required
+
+/// 房间链接成功msglist回调
+- (void)onWBWebViewManagerOnRoomConnectedMsglist:(NSDictionary *)msgList needShowDefault:(BOOL)needShowDefault;
+
+
+/// 教室加载状态
+- (void)onWBWebViewManagerLoadedState:(NSDictionary *)message;
+
+/// 预加载白板初始化完成
+- (void)onWBWebViewManagerPreloadPageFinshed;
+/// 白板初始化完成
+- (void)onWBWebViewManagerPageFinshed;
+
+/// 预加载文档结束
+- (void)onWBWebViewManagerPreloadingFished;
+
+@end
+
+
+
 
 NS_ASSUME_NONNULL_END

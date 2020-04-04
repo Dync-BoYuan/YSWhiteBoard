@@ -36,12 +36,16 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, readonly) NSMutableArray <YSFileModel *> *docmentList;
 /// 课件Dic列表
 @property (nonatomic, strong, readonly) NSMutableArray <NSDictionary *> *docmentDicist;
+/// 当前激活文档id
+@property (nonatomic, strong, readonly) NSString *currentFileId;
 
 /// 记录UI层是否开始上课
 @property (nonatomic, assign, readonly) BOOL isBeginClass;
 
 /// 预加载文档结束
 @property (nonatomic, assign) BOOL preloadingFished;
+/// 信令缓存数据 预加载完成前
+@property (nonatomic, strong, readonly) NSMutableArray *preLoadingFileCacheMsgPool;
 
 
 + (instancetype)shareInstance;
@@ -76,6 +80,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)addDocumentWithFileDic:(NSDictionary *)file;
 /// 删除文档
 - (void)delDocumentFile:(NSDictionary *)file;
+
+- (void)setTheCurrentDocumentFileID:(NSString *)fileId;
 
 - (YSFileModel *)currentFile;
 - (YSFileModel *)getDocumentWithFileID:(NSString *)fileId;

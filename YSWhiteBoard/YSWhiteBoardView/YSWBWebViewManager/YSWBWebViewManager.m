@@ -9,6 +9,7 @@
 #import "YSWBWebViewManager.h"
 #import "YSWKWebViewWeakDelegate.h"
 #import "YSWBLogger.h"
+#import <objc/message.h>
 
 @interface YSWBWebViewManager ()
 <
@@ -429,41 +430,22 @@
         [[YSWhiteBoardManager shareInstance] doMsgCachePool];
         
         // 尝试开始 预加载
-        if(weakSelf.delegate && [weakSelf.delegate respondsToSelector:@selector(onWBWebViewManagerPageFinshed)])
+        if (weakSelf.isPreLoadFile)
         {
-            [weakSelf.delegate onWBWebViewManagerPageFinshed];
+            if (weakSelf.delegate && [weakSelf.delegate respondsToSelector:@selector(onWBWebViewManagerPreloadPageFinshed)])
+            {
+                [weakSelf.delegate onWBWebViewManagerPreloadPageFinshed];
+            }
+        }
+        else
+        {
+            if (weakSelf.delegate && [weakSelf.delegate respondsToSelector:@selector(onWBWebViewManagerPageFinshed)])
+            {
+                [weakSelf.delegate onWBWebViewManagerPageFinshed];
+            }
         }
     }];
 }
-
-- (void)ChangeWebPageFullScreen:(id)messageName aMessageBody:(id)aMessageBody
-{
-//    if ([aMessageBody isKindOfClass:[NSDictionary class]]) {
-//
-//        NSString *tDataString = [aMessageBody objectForKey:@"data"];
-//        if (!tDataString) {
-//            return;
-//        }
-//        NSData *tJsData = [tDataString dataUsingEncoding:NSUTF8StringEncoding];
-//        NSDictionary *tDic = [NSJSONSerialization JSONObjectWithData:tJsData
-//        options:NSJSONReadingMutableContainers error:nil];
-//
-//        if ([[tDic allKeys] containsObject:@"fullScreen"]) {
-//
-//            BOOL fullScreen = [[tDic objectForKey:@"fullScreen"] boolValue];
-//
-//            [self sendAction:@"fullScreenChangeCallback"
-//            command:@{@"isFullScreen":@(fullScreen)}];
-//
-//            if (self.delegate && [self.delegate
-//            respondsToSelector:@selector(onWhiteBoardHandleFullScreen:)]) {
-//                [self.delegate onWhiteBoardHandleFullScreen:fullScreen];
-//            }
-//        }
-//
-//    }
-}
-
 /// app中play PPT中的media
 - (void)onPublishNetworkMedia:(NSDictionary *)videoData
 {
@@ -631,9 +613,9 @@
     else if ([action isEqualToString:WBDocumentLoadSuccessOrFailure])
     {
         if (self.delegate &&
-            [self.delegate respondsToSelector:@selector(onWBWebViewManagerLoadSuccess:)])
+            [self.delegate respondsToSelector:@selector(onWBWebViewManagerLoadedState:)])
         {
-            [self.delegate onWBWebViewManagerLoadSuccess:dic];
+            [self.delegate onWBWebViewManagerLoadedState:dic];
         }
     }
     else if ([action isEqualToString:WBDocumentSlideLoadTimeout])
@@ -652,8 +634,6 @@
     {
         WB_INFO(@"evaluateJS - preFinish - %@", msgDic);
         [YSWhiteBoardManager shareInstance].preloadingFished = YES;
-
-        //        [self afterConnectToRoomAndPreloadingFished];
 
         if (self.delegate &&
             [self.delegate respondsToSelector:@selector(onWBWebViewManagerPreloadingFished)])
@@ -1106,6 +1086,49 @@
     }
     
     [self.webView reload];
+}
+
+#pragma mark - 链接房间 预加载 都成功之后 发送预加载缓存
+
+- (void)afterConnectToRoomAndPreloadingFished
+{
+    // 执行所有缓存的信令消息
+    NSArray *array = [YSWhiteBoardManager shareInstance].preLoadingFileCacheMsgPool;
+
+    for (NSDictionary *dic in array)
+    {
+        NSString *func = dic[kYSMethodNameKey]; // YSCacheMsg_MethodName
+        SEL funcSel    = NSSelectorFromString(func);
+
+        NSMutableArray *params = [NSMutableArray array];
+
+        if ([[dic allKeys] containsObject:kYSParameterKey]) { params = dic[kYSParameterKey]; }
+
+        switch (params.count)
+        {
+            case 0:
+                ((void (*)(id, SEL))objc_msgSend)(self, funcSel);
+                break;
+                
+            case 1:
+                ((void (*)(id, SEL, id))objc_msgSend)(self, funcSel, params.firstObject);
+                break;
+                
+            case 2:
+                if (![NSStringFromSelector(funcSel)
+                        isEqualToString:NSStringFromSelector(
+                                            @selector(receiveWhiteBoardMessage:isDelMsg:))])
+                {
+                    ((void (*)(id, SEL, id, id))objc_msgSend)(self, funcSel, params.firstObject,
+                                                              params.lastObject);
+                }
+
+                break;
+
+            default:
+                break;
+        }
+    }
 }
 
 - (void)destory
