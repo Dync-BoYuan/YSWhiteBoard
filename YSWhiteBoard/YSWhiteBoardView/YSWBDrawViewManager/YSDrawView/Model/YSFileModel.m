@@ -51,12 +51,12 @@
     return [NSString stringWithFormat:@"%@---%@",self.fileid, self.filecategory];
 }
 
-+ (NSDictionary *)fileDataDocDic:(YSFileModel *)aDefaultDocment predownloadError:(BOOL)predownloadError
++ (NSDictionary *)fileDataDocDic:(YSFileModel *)aDefaultDocment isPredownload:(BOOL)isPredownload
 {
-    return [self fileDataDocDic:aDefaultDocment currentPage:nil predownloadError:(BOOL)predownloadError];
+    return [self fileDataDocDic:aDefaultDocment currentPage:nil isPredownload:(BOOL)isPredownload];
 }
 
-+ (NSDictionary *)fileDataDocDic:(YSFileModel *)aDefaultDocment currentPage:(NSNumber *)currentPage predownloadError:(BOOL)predownloadError
++ (NSDictionary *)fileDataDocDic:(YSFileModel *)aDefaultDocment currentPage:(NSNumber *)currentPage isPredownload:(BOOL)isPredownload
 {
     if (!aDefaultDocment)
     {
@@ -135,7 +135,7 @@
         type = @"/newppt.html";
     }
     
-    if(!predownloadError && [[NSFileManager defaultManager] fileExistsAtPath:[[NSTemporaryDirectory() stringByAppendingPathComponent:@"YSFile"] stringByAppendingPathComponent:aDefaultDocment.fileid]])
+    if(isPredownload && [[NSFileManager defaultManager] fileExistsAtPath:[[NSTemporaryDirectory() stringByAppendingPathComponent:@"YSFile"] stringByAppendingPathComponent:aDefaultDocment.fileid]])
     {
 
         [filedata setObject:[NSURL fileURLWithPath:[[[NSTemporaryDirectory() stringByAppendingPathComponent:@"YSFile"] stringByAppendingPathComponent:aDefaultDocment.fileid] stringByAppendingPathComponent:type]].absoluteString forKey:@"baseurl"];

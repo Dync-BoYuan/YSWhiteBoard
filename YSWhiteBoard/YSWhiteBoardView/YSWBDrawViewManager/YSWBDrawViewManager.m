@@ -1244,7 +1244,7 @@ NSString *const YSWhiteBoardRemoteSelectTool = @"YSWhiteBoardRemoteSelectTool"; 
                 NSString *realPath = [NSString stringWithFormat:@"https://%@%@", self.address, path];
                 
                 __block BOOL hasPDF = NO;
-                [[YSWhiteBoardManager shareInstance].docmentDicist
+                [[YSWhiteBoardManager shareInstance].docmentDicList
                     enumerateObjectsUsingBlock:^(NSDictionary *_Nonnull obj, NSUInteger idx,
                                                  BOOL *_Nonnull stop) {
 

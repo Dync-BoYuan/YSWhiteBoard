@@ -59,7 +59,7 @@
 
 - (void)dynamicpptUpdate;
 
-+ (NSDictionary *)fileDataDocDic:(YSFileModel *)aDefaultDocment predownloadError:(BOOL)predownloadError;
-+ (NSDictionary *)fileDataDocDic:(YSFileModel *)aDefaultDocment currentPage:(NSNumber *)currentPage predownloadError:(BOOL)predownloadError;
++ (NSDictionary *)fileDataDocDic:(YSFileModel *)aDefaultDocment isPredownload:(BOOL)isPredownload;
++ (NSDictionary *)fileDataDocDic:(YSFileModel *)aDefaultDocment currentPage:(NSNumber *)currentPage isPredownload:(BOOL)isPredownload;
 
 @end

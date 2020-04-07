@@ -8,10 +8,11 @@
 
 #import "YSWhiteBoardManager.h"
 #import <objc/message.h>
-#import "YSDownloader.h"
-#import "YSPreloadProgressView.h"
 #import "YSFileModel.h"
 #import "YSWBLogger.h"
+
+#define YSWhiteBoardDefaultFrame    CGRectMake(0, 0, 100, 100)
+
 
 /// SDK版本
 static NSString *YSWhiteBoardSDKVersionString   = @"2.0.0.0";
@@ -31,13 +32,13 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 {
     /// 预加载课件加载成功
     BOOL isLoadingFinish;
-    /// 页面加载完成, 是否需要缓存标识
-    BOOL UIDidAppear;
-
-    /// 预加载开始处理
-    BOOL preloadDispose;
-    /// 预加载失败
-    BOOL predownloadError;
+//    /// 页面加载完成, 是否需要缓存标识
+//    BOOL UIDidAppear;
+//
+//    /// 预加载开始处理
+//    BOOL preloadDispose;
+//    /// 预加载失败
+//    BOOL predownloadError;
 }
 
 @property (nonatomic, weak) id <YSWhiteBoardManagerDelegate> wbDelegate;
@@ -59,12 +60,8 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 /// 完成获取文档服务器地址，web地址，备份地址 上传
 @property (nonatomic, assign) BOOL isUpdateWebAddressInfo;
 
-/// 预加载文档
-@property (nonatomic, strong) NSDictionary *preloadFileDic;
-@property (nonatomic, strong) YSDownloader *downloader;
-
 // 消息列表
-@property (nonatomic, strong) NSMutableArray <NSDictionary *> *msgList;
+//@property (nonatomic, strong) NSMutableArray <NSDictionary *> *msgList;
 
 
 /// 记录UI层是否开始上课
@@ -78,7 +75,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 /// 课件列表
 @property (nonatomic, strong) NSMutableArray <YSFileModel *> *docmentList;
 /// 课件Dic列表
-@property (nonatomic, strong) NSMutableArray <NSDictionary *> *docmentDicist;
+@property (nonatomic, strong) NSMutableArray <NSDictionary *> *docmentDicList;
 
 /// 当前激活文档id
 @property (nonatomic, strong) NSString *currentFileId;
@@ -118,14 +115,16 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     if (self = [super init])
     {
         isLoadingFinish = NO;
-        UIDidAppear = NO;
+
         self.preloadingFished = NO;
         self.isUpdateWebAddressInfo = NO;
         
-        self.msgList = [NSMutableArray array];
+        //self.msgList = [NSMutableArray array];
         
         self.cacheMsgPool = [NSMutableArray array];
         self.preLoadingFileCacheMsgPool = [NSMutableArray array];
+        
+        self.serverAddrBackupKey = [NSMutableArray array];
         
         self.coursewareViewList = [NSMutableArray array];
 
@@ -251,6 +250,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
                         loadFinishedBlock:(wbLoadFinishedBlock)loadFinishedBlock
 {
     self.mainWhiteBoardView = [[YSWhiteBoardView alloc] initWithFrame:frame fileId:@"0" loadFinishedBlock:loadFinishedBlock];
+    self.mainWhiteBoardView.delegate = self;
     return self.mainWhiteBoardView;
 }
 
@@ -263,6 +263,8 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     }
     
     YSWhiteBoardView *whiteBoardView = [[YSWhiteBoardView alloc] initWithFrame:frame fileId:fileId loadFinishedBlock:loadFinishedBlock];
+    whiteBoardView.delegate = self;
+    [self addWhiteBoardViewWithWhiteBoardView:whiteBoardView];
     return whiteBoardView;
 }
 
@@ -282,6 +284,11 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 {
 }
 
+
+
+
+#pragma -
+#pragma mark 课件管理
 
 #pragma mark  添加课件
 - (void)addDocumentWithFileDic:(NSDictionary *)file
@@ -304,7 +311,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     [self.docmentList addObject:model];
 }
 
-- (void)addOrReplaceDocumentFile:(NSDictionary *)file
+- (BOOL)addOrReplaceDocumentFile:(NSDictionary *)file
 {
     NSString *fileid = [file bm_stringForKey:@"fileid"];
     if (!fileid)
@@ -314,7 +321,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         fileid = [filedata bm_stringForKey:@"fileid"];
         if (!fileid)
         {
-            return;
+            return NO;
         }
     }
     
@@ -375,6 +382,8 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     }
     
     [self.docmentList addObject:fileModel];
+
+    return YES;
 }
 
 #pragma mark  获取课件
@@ -453,7 +462,8 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     YSFileModel *file = [self getDocumentWithFileID:fileId];
     if (file)
     {
-        NSDictionary *jsDic = [YSFileModel fileDataDocDic:file predownloadError:predownloadError];
+        BOOL isPredownload = [self getWhiteBoardViewWithFileId:fileId].isPreLoadFile;
+        NSDictionary *jsDic = [YSFileModel fileDataDocDic:file isPredownload:isPredownload];
         NSData *jsonData = [NSJSONSerialization dataWithJSONObject:jsDic options:NSJSONWritingPrettyPrinted error:nil];
         NSString *jsonString = [[NSString alloc]initWithData:jsonData encoding:NSUTF8StringEncoding];
         
@@ -476,7 +486,8 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 
 - (void)showDefaultDocment:(YSFileModel *)documentModel
 {
-    NSDictionary *dic = [YSFileModel fileDataDocDic:documentModel predownloadError:predownloadError];
+    BOOL isPredownload = [[self getWhiteBoardViewWithFileId:documentModel.fileid] isPreLoadFile];
+    NSDictionary *dic = [YSFileModel fileDataDocDic:documentModel isPredownload:isPredownload];
     
     NSDictionary *tParamDicDefault = @{
                                        @"id":sYSSignalDocumentFilePage_ShowPage,
@@ -487,10 +498,8 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     
     if (self.preloadingFished == YES)
     {
-        CGRect frame = CGRectMake(0, 0, 100, 100);
-        YSWhiteBoardView *whiteBoardView = [self createWhiteBoardWithFrame:frame fileId:documentModel.fileid loadFinishedBlock:^{
+        YSWhiteBoardView *whiteBoardView = [self createWhiteBoardWithFrame:YSWhiteBoardDefaultFrame fileId:documentModel.fileid loadFinishedBlock:^{
         }];
-        [self addWhiteBoardViewWithWhiteBoardView:whiteBoardView];
         
         if ([YSWhiteBoardManager supportPreload] &&
             [[NSFileManager defaultManager] fileExistsAtPath:[[NSTemporaryDirectory() stringByAppendingPathComponent:@"YSFile"] stringByAppendingPathComponent:documentModel.fileid]])
@@ -548,6 +557,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 #pragma mark - 课件窗口列表管理
 
 #pragma mark  添加课件窗口
+/// 创建新窗口并添加
 - (void)addWhiteBoardViewWithFileId:(NSString *)fileId
 {
     YSWhiteBoardView *whiteBoardView = [self getWhiteBoardViewWithFileId:fileId];
@@ -558,8 +568,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         return;
     }
     
-    CGRect frame = CGRectMake(0, 0, 100, 100);
-    whiteBoardView = [self createWhiteBoardWithFrame:frame fileId:fileId loadFinishedBlock:^{
+    whiteBoardView = [self createWhiteBoardWithFrame:YSWhiteBoardDefaultFrame fileId:fileId loadFinishedBlock:^{
     }];
     
     [self.coursewareViewList addObject:whiteBoardView];
@@ -568,6 +577,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     return;
 }
 
+/// 添加新窗口不创建
 - (void)addWhiteBoardViewWithWhiteBoardView:(YSWhiteBoardView *)whiteBoardView
 {
     if (whiteBoardView)
@@ -766,99 +776,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     
 }
 
-#pragma -
-#pragma mark PreLoadingFile
-
-- (void)checkPreLoadingFile
-{
-    // 如果开启了课件预加载会先下载课件,在向白板发送预加载
-    if ([YSWhiteBoardManager shareInstance].roomConfig.coursewarePreload == YES)
-    {
-        return;
-    }
-
-    // 地址
-    if (self.isUpdateWebAddressInfo == NO)
-    {
-        return;
-    }
-    
-    [self sendPreLoadingFile];
-}
-
-// 发送预加载的文档
-- (void)sendPreLoadingFile
-{
-    // 页面加载完成
-    if (UIDidAppear == NO)
-    {
-        return;
-    }
-    
-    // 是否有 需要加载的文件
-    YSFileModel *file = nil;
-    for (YSFileModel *model in self.docmentList)
-    {
-        if (model.type.intValue == 1)
-        {
-            file = model;
-            break;
-        }
-    }
-    if (!file || ![YSWhiteBoardManager supportPreload])
-    {
-        // 不需要本地加载
-        self.preloadingFished = YES;
-        [self onWhiteBoardHandlePreloadingFished];
-        return;
-    }
-    
-    // 添加预加载课件
-    if (!self.preLoadWhiteBoardView && ![file.fileid isEqualToString:@"0"])
-    {
-        CGRect frame = CGRectMake(0, 0, 100, 100);
-        self.preLoadWhiteBoardView = [self createWhiteBoardWithFrame:frame fileId:file.fileid loadFinishedBlock:^{
-        }];
-
-        [self addWhiteBoardViewWithWhiteBoardView:self.preLoadWhiteBoardView];
-    }
-    
-    // 0:表示普通文档　１－２动态ppt(1: 第一版动态ppt 2: 新版动态ppt ）  3:h5文档
-    BOOL isPPT_H5 = [file.fileprop integerValue] == 1 || [file.fileprop integerValue] == 2 || [file.fileprop integerValue] == 3;
-    if (isPPT_H5)
-    {
-        if (self.roomConfig.coursewarePreload == YES && file.preloadingzip.length > 0)
-        {
-            if (predownloadError)
-            {
-                NSDictionary *dic = [YSFileModel fileDataDocDic:file predownloadError:predownloadError];
-                [self.preLoadWhiteBoardView.webViewManager sendAction:WBPreLoadingFile command:@{@"cmd":dic}];
-            }
-            else
-            {
-                if ([[NSFileManager defaultManager] fileExistsAtPath:[[NSTemporaryDirectory() stringByAppendingPathComponent:@"YSFile"] stringByAppendingPathComponent:file.fileid]])
-                {
-                    NSDictionary *dic = [YSFileModel fileDataDocDic:file predownloadError:predownloadError];
-                    [self.preLoadWhiteBoardView.webViewManager sendAction:WBPreLoadingFile command:@{@"cmd":dic}];
-                }
-            }
-        }
-        else
-        {
-            NSDictionary *dic = [YSFileModel fileDataDocDic:file predownloadError:predownloadError];
-            [self.preLoadWhiteBoardView.webViewManager sendAction:WBPreLoadingFile command:@{@"cmd":dic}];
-        }
-    }
-    else
-    {
-        if (self.preLoadWhiteBoardView)
-        {
-            [self.preLoadWhiteBoardView.webViewManager sendAction:WBPreLoadingFile command:@{@"cmd":@""}];
-        }
-    }
-}
-
-- (void)onWhiteBoardHandlePreloadingFished
+- (void)onWBWebViewManagerPreloadingFished
 {
 #warning afterConnectToRoomAndPreloadingFished
 //    if (self.documentBoard)
@@ -915,7 +833,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 
 /// checkRoom相关通知
 - (void)roomWhiteBoardOnCheckRoom:(NSNotification *)notification
-{   // ok
+{   // 1
     NSDictionary *dict = notification.userInfo;
     NSDictionary *message = [dict bm_dictionaryForKey:YSWhiteBoardNotificationUserInfoKey];
     
@@ -934,8 +852,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 
 // 获取服务器地址
 - (void)roomGetWhiteBoardOnServerAddrs:(NSNotification *) notification
-{
-    // 2
+{   // 2
     NSDictionary *dict = [notification.userInfo objectForKey:YSWhiteBoardNotificationUserInfoKey];
     
     self.serverDocAddrKey = [dict objectForKey:YSWhiteBoardGetServerAddrKey] ?: self.serverDocAddrKey;
@@ -946,7 +863,10 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     [self updateWebAddressInfo];
 
     // 预加载
-    [self checkPreLoadingFile];
+    if (self.preLoadWhiteBoardView)
+    {
+        [self.preLoadWhiteBoardView checkPreLoadingFile];
+    }
     
     // 根据serverWebAddrKey下载备注
     //[self loadCoursewareMarkData];
@@ -1004,16 +924,15 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 
 // 教室文件列表的通知
 - (void)roomWhiteBoardFileList:(NSNotification *)notification
-{
-    // 3
+{   // 3
     NSDictionary *dict = notification.userInfo;
     NSArray *fileList = [dict objectForKey:YSWhiteBoardNotificationUserInfoKey] ;
     NSMutableArray *mFileList = [NSMutableArray arrayWithArray:fileList];
     
-    self.preloadFileDic = nil;
+    NSDictionary *preloadFileDic = nil;
     
     [self.docmentList removeAllObjects];
-    self.docmentDicist = [NSMutableArray arrayWithArray:fileList];
+    self.docmentDicList = [NSMutableArray arrayWithArray:fileList];
 
     // 第一个课堂课件
     NSString *firstClassModelFileId = nil;
@@ -1022,22 +941,24 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 
     for (NSDictionary *dic in mFileList)
     {
-        [self addOrReplaceDocumentFile:dic];
-        NSNumber *type = [dic objectForKey:@"type"];
-        if (type.intValue == 1)
+        if ([self addOrReplaceDocumentFile:dic])
         {
-            self.preloadFileDic = dic;
-        }
-        
-        NSString *filecategory = [dic objectForKey:@"filecategory"];
-        BOOL isSysFile = [filecategory isEqualToString:@"1"];
-        if (!firstClassModelFileId && filecategory && !isSysFile)
-        {
-            firstClassModelFileId = [dic objectForKey:@"fileid"];
-        }
-        if (!firstSysModelFileId && filecategory && isSysFile)
-        {
-            firstSysModelFileId = [dic objectForKey:@"fileid"];
+            NSNumber *type = [dic objectForKey:@"type"];
+            if (type.intValue == 1)
+            {
+                preloadFileDic = dic;
+            }
+            
+            NSString *filecategory = [dic objectForKey:@"filecategory"];
+            BOOL isSysFile = [filecategory isEqualToString:@"1"];
+            if (!firstClassModelFileId && filecategory && !isSysFile)
+            {
+                firstClassModelFileId = [dic objectForKey:@"fileid"];
+            }
+            if (!firstSysModelFileId && filecategory && isSysFile)
+            {
+                firstSysModelFileId = [dic objectForKey:@"fileid"];
+            }
         }
     }
     
@@ -1054,9 +975,9 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
      4.都没有，则选择白板
      */
     NSString *fileId = nil;
-    if (self.preloadFileDic)
+    if (preloadFileDic)
     {
-        fileId = [self.preloadFileDic objectForKey:@"fileid"];
+        fileId = [preloadFileDic objectForKey:@"fileid"];
     }
     if (!fileId)
     {
@@ -1070,23 +991,57 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     {
         fileId = @"0";
     }
+    
+    self.preLoadWhiteBoardView = nil;
+    if (preloadFileDic)
+    {
+        // 添加预加载课件
+        self.preLoadWhiteBoardView = [self createWhiteBoardWithFrame:YSWhiteBoardDefaultFrame fileId:fileId loadFinishedBlock:nil];
+        self.preLoadWhiteBoardView.isPreLoadFile = YES;
+        self.preLoadWhiteBoardView.preloadFileDic = preloadFileDic;
+    }
+    else if (![fileId isEqualToString:@"0"])
+    {
+        [self createWhiteBoardWithFrame:YSWhiteBoardDefaultFrame fileId:fileId loadFinishedBlock:nil];
+    }
+    
     [self setTheCurrentDocumentFileID:fileId];
     
     // 预加载
-    [self checkPreLoadingFile];
+    if (self.preLoadWhiteBoardView)
+    {
+        [self.preLoadWhiteBoardView checkPreLoadingFile];
+    }
+}
+
+// 预加载
+- (void)roomWhitePreloadFile:(NSNotification *)noti
+{   // 4
+
+    BOOL isNeedPreload = [noti.userInfo[@"isNeedPreload"] boolValue];
+    if (isNeedPreload && self.preLoadWhiteBoardView)
+    {
+        [self.preLoadWhiteBoardView roomWhitePreloadFile:noti];
+    }
+    else
+    {
+        [self onWBWebViewManagerPreloadingFished];
+    }
 }
 
 // 链接教室成功
 - (void)roomWhiteBoardOnRoomConnectedUserlist:(NSNotification *)notification
-{
-    // 4
+{   // 5
     NSDictionary *dict = notification.userInfo;
     NSNumber *code = [dict objectForKey:YSWhiteBoardOnRoomConnectedCodeKey];
     NSDictionary *response = [dict objectForKey:YSWhiteBoardOnRoomConnectedRoomMsgKey];
     
     if (isLoadingFinish == NO)
     {
-        [self sendPreLoadingFile];
+        if (self.preLoadWhiteBoardView)
+        {
+            [self.preLoadWhiteBoardView sendPreLoadingFile];
+        }
     }
     
     [self roomWhiteBoardOnRoomConnectedUserlist:code response:response];
@@ -1135,7 +1090,10 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     
     [self disconnect:reason];
     
-    [self.downloader cancelDownload];
+    if (self.preLoadWhiteBoardView)
+    {
+        [self.preLoadWhiteBoardView cancelPreLoadingDownload];
+    }
 }
 
 // 断开连接
@@ -1149,17 +1107,6 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     else
     {
         [dict setObject:@"" forKey:@"reason"];
-    }
-    
-    if (!UIDidAppear)
-    {
-        NSString *methodName = NSStringFromSelector(@selector(sendSignalMessageToJS:message:));
-        NSMutableDictionary *dic = [NSMutableDictionary dictionary];
-        [dic setValue:methodName forKey:kYSMethodNameKey];
-        [dic setValue:@[WBDisconnect, dict] forKey:kYSParameterKey];
-        [self.cacheMsgPool addObject:dic];
-        
-        return;
     }
     
     if (self.mainWhiteBoardView)
@@ -1187,88 +1134,6 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     //[dict setValue:userlist forKey:@"userlist"];
     
     [self roomWhiteBoardOnRoomConnectedUserlist:@(0) response:dict];
-}
-
-// 预加载
-- (void)roomWhitePreloadFile:(NSNotification *)noti
-{
-//#if DEBUG
-//    [[YSDownloader sharedInstance] removeLastPreloadFile];
-//#endif
-    BOOL isNeedPreload = [noti.userInfo[@"isNeedPreload"] boolValue];
-    if (![YSWhiteBoardManager supportPreload])
-    {
-        isNeedPreload = NO;
-        predownloadError = YES;
-        preloadDispose = YES;
-    }
-    
-    BMWeakSelf
-    // 预加载文档下载
-    NSString *downloadpath = [self.preloadFileDic objectForKey:@"preloadingzip"];
-    NSString *fileId = [self.preloadFileDic bm_stringForKey:@"fileid"];
-    if (downloadpath.length > 0 && isNeedPreload)
-    {
-        if (self.downloader.task && self.downloader.task.state == NSURLSessionTaskStateRunning)
-        {
-            return;
-        }
-        
-        // 需要本地加载
-        if (![[NSFileManager defaultManager] fileExistsAtPath:[[NSTemporaryDirectory() stringByAppendingPathComponent:@"YSFile"] stringByAppendingPathComponent:fileId]])
-        {
-            // 但是还未下载，开始下载
-            YSPreloadProgressView *progressView = [[YSPreloadProgressView alloc] initWithSkipBlock:^{
-                self->predownloadError = YES;
-                self->preloadDispose = YES;
-                [weakSelf sendPreLoadingFile];
-            }];
-            if (!self.downloader)
-            {
-                self.downloader = [[YSDownloader alloc] init];
-                
-                [[UIApplication sharedApplication].keyWindow addSubview:progressView];
-                [progressView bmmas_makeConstraints:^(BMMASConstraintMaker *make) {
-                    make.left.bmmas_equalTo([UIApplication sharedApplication].keyWindow.bmmas_left);
-                    make.right.bmmas_equalTo([UIApplication sharedApplication].keyWindow.bmmas_right);
-                    make.top.bmmas_equalTo([UIApplication sharedApplication].keyWindow.bmmas_top);
-                    make.bottom.bmmas_equalTo([UIApplication sharedApplication].keyWindow.bmmas_bottom);
-                }];
-            }
-            [self.downloader downloadWithURL:[NSURL URLWithString:downloadpath] fileID:fileId progressBlock:^(float downloadProgress, float unzipProgress, NSString *location, NSError *error) {
-//                NSLog(@"下载进度：%f  解压进度：%f  文档地址：%@  错误：%@",downloadProgress, unzipProgress, location, error);
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [progressView setDownloadProgress:downloadProgress unzipProgress:unzipProgress];
-                    if (location)
-                    {
-                        self->predownloadError = NO;
-                        self->preloadDispose = YES;
-                    }
-                    
-                    if (error)
-                    {
-                        self->predownloadError = YES;
-                        self->preloadDispose = YES;
-                    }
-                    
-                    [progressView removeFromSuperview];
-                    [weakSelf sendPreLoadingFile];
-                });
-            }];
-        }
-        else
-        {
-            // 本地已经解压好了文档
-            predownloadError = NO;
-            preloadDispose = YES;
-            [self sendPreLoadingFile];
-        }
-    }
-    else
-    {
-        preloadDispose = YES;
-        [self sendPreLoadingFile];
-    }
 }
 
 // 回放下消息列表
@@ -1311,7 +1176,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     NSDictionary *tDataDic =[YSRoomUtil convertWithData:params];
     if (tDataDic)
     {
-        [self.msgList addObject:tDataDic];
+        //[self.msgList addObject:tDataDic];
     }
 }
 
@@ -1569,7 +1434,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         NSString *methorForNative = NSStringFromSelector(@selector(receiveWhiteBoardMessage:isDelMsg:));
         NSMutableDictionary *dicForNative = [NSMutableDictionary dictionary];
         [dicForNative setObject:methorForNative forKey:kYSMethodNameKey];
-        [dicForNative setObject:@[[NSMutableDictionary dictionaryWithDictionary:message], @(YES)] forKey:kYSParameterKey];
+        [dicForNative setObject:@[[NSMutableDictionary dictionaryWithDictionary:message], @(NO)] forKey:kYSParameterKey];
         [self.preLoadingFileCacheMsgPool addObject:dicForNative];
     }
     else
@@ -1635,7 +1500,8 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     // 查看默认课件是否是白板，因为原生课件刷新不做白板刷新
     if (needShowDefault)
     {
-        NSDictionary *fileDic = [YSFileModel fileDataDocDic:self.currentFile predownloadError:predownloadError];
+        BOOL isPredownload = [[self getWhiteBoardViewWithFileId:self.currentFile.fileid] isPreLoadFile];
+        NSDictionary *fileDic = [YSFileModel fileDataDocDic:self.currentFile isPredownload:isPredownload];
         
 //        NSString *dataStr = @"{\"sourceInstanceId\":\"default\",\"isGeneralFile\":true,\"isMedia\":false,\"isDynamicPPT\":false,\"isH5Document\":false,\"action\":\"show\",\"mediaType\":\"\",\"filedata\":{\"currpage\":1,\"pptslide\":1,\"pptstep\":0,\"steptotal\":0,\"fileid\":0,\"pagenum\":1,\"filename\":\"whiteboard\",\"filetype\":\"whiteboard\",\"swfpath\":\"\"}}";
 
@@ -1651,12 +1517,6 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
                                 completion:nil];
     }
 
-}
-
-
-- (BOOL)isPredownloadError
-{
-    return predownloadError;
 }
 
 @end

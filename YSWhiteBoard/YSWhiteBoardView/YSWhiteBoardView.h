@@ -20,6 +20,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, weak) id <YSWhiteBoardViewDelegate> delegate;
 
 @property (nonatomic, assign) BOOL isPreLoadFile;
+/// 预加载文档
+@property (nonatomic, strong) NSDictionary *preloadFileDic;
 
 @property (nonatomic, strong, readonly) NSString *fileId;
 
@@ -60,9 +62,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)receiveWhiteBoardMessage:(NSDictionary *)dictionary isDelMsg:(BOOL)isDel;
 
 
+// 预加载
+- (void)roomWhitePreloadFile:(NSNotification *)noti;
+- (void)checkPreLoadingFile;
+- (void)sendPreLoadingFile;
+- (void)cancelPreLoadingDownload;
 
-
-
+- (BOOL)isPredownload;
 
 
 #pragma -
@@ -100,8 +106,6 @@ NS_ASSUME_NONNULL_BEGIN
 /// 教室加载状态
 - (void)onWBWebViewManagerLoadedState:(NSDictionary *)message;
 
-/// 预加载白板初始化完成
-- (void)onWBWebViewManagerPreloadPageFinshed;
 /// 白板初始化完成
 - (void)onWBWebViewManagerPageFinshed;
 

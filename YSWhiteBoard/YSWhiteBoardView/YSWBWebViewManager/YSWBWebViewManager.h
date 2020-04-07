@@ -98,24 +98,22 @@ NS_ASSUME_NONNULL_BEGIN
 
 @required
 
-/// 课件翻页结果
-- (void)onWBWebViewManagerStateUpdate:(NSDictionary *)dic;
-/// 翻页超时
-- (void)onWBWebViewManagerSlideLoadTimeout:(NSDictionary *)dic;
-
-/// 切换课件加载状态
-- (void)onWBWebViewManagerLoadedState:(NSDictionary *)dic;
-
-/// 房间链接成功msglist回调
-- (void)onWBWebViewManagerOnRoomConnectedMsglist:(NSDictionary *)msgList;
-
-/// 预加载白板初始化完成
-- (void)onWBWebViewManagerPreloadPageFinshed;
-/// 白板H5脚本初始化完成
+/// H5脚本文件加载初始化完成
 - (void)onWBWebViewManagerPageFinshed;
 
 /// 请求了预加载后返回预加载文档结束
 - (void)onWBWebViewManagerPreloadingFished;
+
+/// 房间链接成功msglist回调
+- (void)onWBWebViewManagerOnRoomConnectedMsglist:(NSDictionary *)msgList;
+
+/// 切换Web课件加载状态
+- (void)onWBWebViewManagerLoadedState:(NSDictionary *)dic;
+
+/// Web课件翻页结果
+- (void)onWBWebViewManagerStateUpdate:(NSDictionary *)dic;
+/// 翻页超时
+- (void)onWBWebViewManagerSlideLoadTimeout:(NSDictionary *)dic;
 
 @end
 

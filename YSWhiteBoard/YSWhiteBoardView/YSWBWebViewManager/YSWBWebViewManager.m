@@ -430,19 +430,9 @@
         [[YSWhiteBoardManager shareInstance] doMsgCachePool];
         
         // 尝试开始 预加载
-        if (weakSelf.isPreLoadFile)
+        if (weakSelf.delegate && [weakSelf.delegate respondsToSelector:@selector(onWBWebViewManagerPageFinshed)])
         {
-            if (weakSelf.delegate && [weakSelf.delegate respondsToSelector:@selector(onWBWebViewManagerPreloadPageFinshed)])
-            {
-                [weakSelf.delegate onWBWebViewManagerPreloadPageFinshed];
-            }
-        }
-        else
-        {
-            if (weakSelf.delegate && [weakSelf.delegate respondsToSelector:@selector(onWBWebViewManagerPageFinshed)])
-            {
-                [weakSelf.delegate onWBWebViewManagerPageFinshed];
-            }
+            [weakSelf.delegate onWBWebViewManagerPageFinshed];
         }
     }];
 }
