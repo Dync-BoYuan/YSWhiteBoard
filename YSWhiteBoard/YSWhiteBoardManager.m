@@ -30,8 +30,6 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     YSWBWebViewManagerDelegate
 >
 {
-    /// 预加载课件加载成功
-    BOOL isLoadingFinish;
 //    /// 页面加载完成, 是否需要缓存标识
 //    BOOL UIDidAppear;
 //
@@ -114,8 +112,6 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 {
     if (self = [super init])
     {
-        isLoadingFinish = NO;
-
         self.preloadingFished = NO;
         self.isUpdateWebAddressInfo = NO;
         
@@ -123,6 +119,8 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         
         self.cacheMsgPool = [NSMutableArray array];
         self.preLoadingFileCacheMsgPool = [NSMutableArray array];
+        
+        self.docmentList = [NSMutableArray array];
         
         self.serverAddrBackupKey = [NSMutableArray array];
         
@@ -498,8 +496,12 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     
     if (self.preloadingFished == YES)
     {
-        YSWhiteBoardView *whiteBoardView = [self createWhiteBoardWithFrame:YSWhiteBoardDefaultFrame fileId:documentModel.fileid loadFinishedBlock:^{
-        }];
+        YSWhiteBoardView *whiteBoardView = [self getWhiteBoardViewWithFileId:documentModel.fileid];
+        if (!whiteBoardView)
+        {
+            whiteBoardView = [self createWhiteBoardWithFrame:YSWhiteBoardDefaultFrame fileId:documentModel.fileid loadFinishedBlock:^{
+            }];
+        }
         
         if ([YSWhiteBoardManager supportPreload] &&
             [[NSFileManager defaultManager] fileExistsAtPath:[[NSTemporaryDirectory() stringByAppendingPathComponent:@"YSFile"] stringByAppendingPathComponent:documentModel.fileid]])
@@ -778,6 +780,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 
 - (void)onWBWebViewManagerPreloadingFished
 {
+    self.preloadingFished = YES;
 #warning afterConnectToRoomAndPreloadingFished
 //    if (self.documentBoard)
 //    {
@@ -992,13 +995,15 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         fileId = @"0";
     }
     
-    self.preLoadWhiteBoardView = nil;
     if (preloadFileDic)
     {
-        // 添加预加载课件
-        self.preLoadWhiteBoardView = [self createWhiteBoardWithFrame:YSWhiteBoardDefaultFrame fileId:fileId loadFinishedBlock:nil];
-        self.preLoadWhiteBoardView.isPreLoadFile = YES;
-        self.preLoadWhiteBoardView.preloadFileDic = preloadFileDic;
+        if (!self.preLoadWhiteBoardView)
+        {
+            // 添加预加载课件
+            self.preLoadWhiteBoardView = [self createWhiteBoardWithFrame:YSWhiteBoardDefaultFrame fileId:fileId loadFinishedBlock:nil];
+            self.preLoadWhiteBoardView.isPreLoadFile = YES;
+            self.preLoadWhiteBoardView.preloadFileDic = preloadFileDic;
+        }
     }
     else if (![fileId isEqualToString:@"0"])
     {
@@ -1036,12 +1041,9 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     NSNumber *code = [dict objectForKey:YSWhiteBoardOnRoomConnectedCodeKey];
     NSDictionary *response = [dict objectForKey:YSWhiteBoardOnRoomConnectedRoomMsgKey];
     
-    if (isLoadingFinish == NO)
+    if (self.preLoadWhiteBoardView && !self.preLoadWhiteBoardView.isLoadingFinish)
     {
-        if (self.preLoadWhiteBoardView)
-        {
-            [self.preLoadWhiteBoardView sendPreLoadingFile];
-        }
+        [self.preLoadWhiteBoardView sendPreLoadingFile];
     }
     
     [self roomWhiteBoardOnRoomConnectedUserlist:code response:response];

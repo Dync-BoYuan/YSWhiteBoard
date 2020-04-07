@@ -25,6 +25,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, strong, readonly) NSString *fileId;
 
+/// 课件加载成功
+@property (nonatomic, assign, readonly) BOOL isLoadingFinish;
+
 /// web文档
 @property (nonatomic, strong, readonly) YSWBWebViewManager *webViewManager;
 /// 普通文档

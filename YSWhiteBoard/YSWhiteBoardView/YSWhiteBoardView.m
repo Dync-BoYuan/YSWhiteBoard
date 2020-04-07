@@ -17,8 +17,6 @@
     YSWBWebViewManagerDelegate
 >
 {
-    BOOL isLoadingFinish;
-    
     /// 预加载开始处理
     BOOL preloadDispose;
     /// 预加载失败
@@ -34,6 +32,9 @@
 @property (nonatomic, weak) WKWebView *wbView;
 
 @property (nonatomic, strong) YSDownloader *downloader;
+
+/// 课件加载成功
+@property (nonatomic, assign) BOOL isLoadingFinish;
 
 /// 加载H5脚本结束
 @property (nonatomic, assign) BOOL loadingH5Fished;
@@ -62,6 +63,8 @@
         self.cacheMsgPool = [NSMutableArray array];
         self.preLoadingFileCacheMsgPool = [NSMutableArray array];
 
+        self.isLoadingFinish = NO;
+        
         self.wbView = [self.webViewManager createWhiteBoardWithFrame:frame loadFinishedBlock:loadFinishedBlock];
         [self addSubview:self.wbView];
         
@@ -357,7 +360,7 @@
 /// 课件加载成功回调
 - (void)onWBWebViewManagerLoadedState:(NSDictionary *)dic
 {
-    isLoadingFinish = [dic[@"notice"] isEqualToString:@"loadSuccess"];
+    self.isLoadingFinish = [dic[@"notice"] isEqualToString:@"loadSuccess"];
 
     // 上报 课件加载成功失败
     //[YSServersLog  uploadLogWithLevel:YSLogLevelInfo
@@ -366,7 +369,7 @@
     // 通知刷新白板
     [self refreshWhiteBoard];
     
-    if (!isLoadingFinish && [dic objectForKey:@"data"] != nil)
+    if (!self.isLoadingFinish && [dic objectForKey:@"data"] != nil)
     {
         [[NSNotificationCenter defaultCenter] postNotificationName:YSWhiteBoardEventLoadFileFail object:dic[@"data"]];
     }
@@ -471,6 +474,7 @@
 /// 预加载文档结束
 - (void)onWBWebViewManagerPreloadingFished
 {
+    self.preloadingFished = YES;
     if (self.delegate && [self.delegate respondsToSelector:@selector(onWBWebViewManagerPreloadingFished)])
     {
         [self.delegate onWBWebViewManagerPreloadingFished];
@@ -585,6 +589,11 @@
         return;
     }
     
+    if (self.preloadingFished)
+    {
+        return;
+    }
+    
     // 是否有 需要加载的文件
     YSFileModel *file = [[YSWhiteBoardManager shareInstance] getDocumentWithFileID:self.fileId];
     if  (file.type.intValue != 1)
@@ -595,6 +604,7 @@
     {
         // 不需要本地加载
         self.preloadingFished = YES;
+        [YSWhiteBoardManager shareInstance].preloadingFished = YES;
         [self onWBWebViewManagerPreloadingFished];
         return;
     }
