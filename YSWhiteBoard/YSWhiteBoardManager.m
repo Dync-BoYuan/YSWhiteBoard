@@ -268,7 +268,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     
     YSWhiteBoardView *whiteBoardView = [[YSWhiteBoardView alloc] initWithFrame:frame fileId:fileId loadFinishedBlock:loadFinishedBlock];
     whiteBoardView.delegate = self;
-    [self addWhiteBoardViewWithWhiteBoardView:whiteBoardView];
+
     return whiteBoardView;
 }
 
@@ -516,6 +516,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         {
             whiteBoardView = [self createWhiteBoardWithFrame:YSWhiteBoardDefaultFrame fileId:documentModel.fileid loadFinishedBlock:^{
             }];
+            [self addWhiteBoardViewWithWhiteBoardView:whiteBoardView];
         }
         
         if ([YSWhiteBoardManager supportPreload] &&
@@ -591,6 +592,8 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     [self.coursewareViewList addObject:whiteBoardView];
     [self.mainWhiteBoardView addSubview:whiteBoardView];
     
+    whiteBoardView.backgroundColor = [UIColor bm_randomColor];
+    
     return;
 }
 
@@ -610,6 +613,8 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         
     [self.coursewareViewList addObject:whiteBoardView];
     [self.mainWhiteBoardView addSubview:whiteBoardView];
+    
+    whiteBoardView.backgroundColor = [UIColor bm_randomColor];
     
     return;
 }
@@ -1052,11 +1057,13 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
             self.preLoadWhiteBoardView = [self createWhiteBoardWithFrame:YSWhiteBoardDefaultFrame fileId:fileId loadFinishedBlock:nil];
             self.preLoadWhiteBoardView.isPreLoadFile = YES;
             self.preLoadWhiteBoardView.preloadFileDic = preloadFileDic;
+            [self addWhiteBoardViewWithWhiteBoardView:self.preLoadWhiteBoardView];
         }
     }
     else if (![fileId isEqualToString:@"0"])
     {
-        [self createWhiteBoardWithFrame:YSWhiteBoardDefaultFrame fileId:fileId loadFinishedBlock:nil];
+        YSWhiteBoardView *whiteBoardView = [self createWhiteBoardWithFrame:YSWhiteBoardDefaultFrame fileId:fileId loadFinishedBlock:nil];
+        [self addWhiteBoardViewWithWhiteBoardView:whiteBoardView];
     }
     
     [self setTheCurrentDocumentFileID:fileId];
@@ -1475,6 +1482,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         if (!whiteBoardView)
         {
             [self createWhiteBoardWithFrame:YSWhiteBoardDefaultFrame fileId:fileId loadFinishedBlock:nil];
+            [self addWhiteBoardViewWithWhiteBoardView:whiteBoardView];
         }
         [self setTheCurrentDocumentFileID:fileId];
     }

@@ -196,6 +196,49 @@
     return arrayArray;
 }
 
+- (nullable NSArray *)bm_divisionWithCount:(NSUInteger)count atIndex:(NSUInteger)index appoint:(BOOL)appoint
+{
+    if (count == 0)
+    {
+        return nil;
+    }
+    
+    NSMutableArray *arrayArray = [NSMutableArray arrayWithCapacity:0];
+    NSMutableArray *array = [NSMutableArray arrayWithCapacity:0];
+    
+    NSUInteger arrayIndex = 0;
+    for (NSUInteger aindex = 0; aindex < self.count; aindex++)
+    {
+        [array addObject:self[aindex]];
+        
+        if (((aindex+1) % count) == 0)
+        {
+            if (arrayIndex == index)
+            {
+                return array;
+            }
+            [arrayArray addObject:array];
+            array = [NSMutableArray array];
+            arrayIndex++;
+        }
+    }
+    
+    if (array.count > 0)
+    {
+        [arrayArray addObject:array];
+        if (arrayIndex == index)
+        {
+            return array;
+        }
+    }
+    
+    if (appoint)
+    {
+        return nil;
+    }
+    return arrayArray;
+}
+
 + (NSArray *)bm_reversedArray:(NSArray *)array
 {
     NSMutableArray *arrayTemp = [NSMutableArray arrayWithCapacity:[array count]];
