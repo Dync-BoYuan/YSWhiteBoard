@@ -11,8 +11,15 @@
 
 @interface YSBrushToolsManager ()
 
+/// 当前画笔工具
+@property (nonatomic, assign) YSBrushToolType currentBrushToolType;
+/// 当前工具的DrawType
+@property (nonatomic, assign) YSDrawType currentBrushDrawType;
+/// 画笔颜色
+@property (nonatomic, strong) NSString *primaryColorHex;
+
 ///默认颜色
-@property (nonatomic, copy) NSString *defaultPrimaryColor;
+@property (nonatomic, strong) NSString *defaultPrimaryColor;
 
 ///当前的配置
 @property (nonatomic, strong) YSBrushToolsConfigs *currentConfig;
@@ -24,34 +31,40 @@
 
 @end
 
+
 @implementation YSBrushToolsManager
 
-
 static YSBrushToolsManager *brushTools = nil;
-+(instancetype )shareInstance
++ (instancetype )shareInstance
 {
-    @synchronized(self)
+    if (!brushTools)
     {
-        if (!brushTools)
-        {
-            brushTools = [[YSBrushToolsManager alloc] init];
-        }
-        [brushTools makeDefaultToolConfigs];
+        brushTools = [[YSBrushToolsManager alloc] init];
+        //[brushTools makeDefaultToolConfigs];
+        [brushTools freshDefaultBrushToolConfigs];
     }
+    
     return brushTools;
 }
 
-///原始配置
-- (void)makeDefaultToolConfigs
+///// 原始配置
+//- (void)makeDefaultToolConfigs
+//{
+//    self.currentBrushToolType = YSBrushToolTypeMouse;
+//
+//    // 默认颜色 红
+//    self.defaultPrimaryColor = @"#FF0000";
+//    [self freshBrushToolConfigs];
+//}
+
+/// 画笔默认配置
+- (void)freshDefaultBrushToolConfigs
 {
+    self.currentBrushToolType = YSBrushToolTypeMouse;
+    
     // 默认颜色 红
     self.defaultPrimaryColor = @"#FF0000";
-    [self freshBrushToolConfigs];
-}
 
-///画笔默认配置
-- (void)freshBrushToolConfigs
-{
     // 画笔
     self.lineConfig = [[YSBrushToolsConfigs alloc]init];
     self.lineConfig.drawType = YSDrawTypePen;
@@ -82,6 +95,13 @@ static YSBrushToolsManager *brushTools = nil;
 ///选择画笔工具
 - (void)brushToolsDidSelect:(YSBrushToolType)BrushToolType
 {
+    if (BrushToolType == YSBrushToolTypeClear)
+    {
+        return;
+    }
+    
+    self.currentBrushToolType = BrushToolType;
+    
     switch (BrushToolType)
     {
         case YSBrushToolTypeLine:
@@ -112,32 +132,9 @@ static YSBrushToolsManager *brushTools = nil;
 #pragma mark - 选择画笔工具：类型 && 颜色  &&大小
 - (void)didSelectDrawType:(YSDrawType)type color:(NSString *)hexColor widthProgress:(float)progress
 {
-    NSUInteger toolType = 0;
-
-    if (type >= YSDrawTypeClear)
+    if (self.currentBrushToolType != YSBrushToolTypeMouse)
     {
-        toolType = YSBrushToolTypeClear;
-    }
-    else if (type >= YSDrawTypeEraser)
-    {
-        toolType = YSBrushToolTypeEraser;
-    }
-    else if (type >= YSDrawTypeEmptyRectangle)
-    {
-        toolType = YSBrushToolTypeShape;
-    }
-    else if (type >= YSDrawTypeTextMS)
-    {
-        toolType = YSBrushToolTypeText;
-    }
-    else if (type >= YSDrawTypePen)
-    {
-        toolType = YSBrushToolTypeLine;
-    }
-    
-    if (toolType)
-    {
-        [self changeToolConfigWithToolType:toolType drawType:type color:hexColor progress:progress];
+        [self changeToolConfigWithToolType:self.currentBrushToolType drawType:type color:hexColor progress:progress];
     }
 }
 
@@ -148,50 +145,26 @@ static YSBrushToolsManager *brushTools = nil;
     {
         hexColor = self.defaultPrimaryColor;
     }
-    YSBrushToolsConfigs * configs = nil;
-    switch (type)
-    {
-        case YSBrushToolTypeLine:
-        {
-            configs = self.lineConfig;
-            break;
-        }
-        case YSBrushToolTypeText:
-        {
-            configs = self.textConfig;
-        }
-            break;
-        case YSBrushToolTypeShape:
-        {
-            configs = self.sharpConfig;
-        }
-            break;
-        case YSBrushToolTypeEraser:
-        {
-            configs = self.eraserConfig;
-        }
-            break;
-        default:
-            break;
-    }
-    
-    if ([configs bm_isNotEmpty])
-    {
-        configs.drawType = drawType;
-        configs.colorHex = hexColor;
-        configs.progress = progress;
         
-        self.currentConfig = configs;
+    if ([self.currentConfig bm_isNotEmpty])
+    {
+        [self changePrimaryColor:hexColor];
+
+        self.currentConfig.drawType = drawType;
+        self.currentConfig.colorHex = self.primaryColorHex;
+        self.currentConfig.progress = progress;
     }
 }
 
 /// 改变默认画笔颜色
-- (void)changeDefaultPrimaryColor:(NSString *)colorHex
+- (void)changePrimaryColor:(NSString *)colorHex
 {
     if (!colorHex)
-       {
-           return;
-       }
+    {
+        self.primaryColorHex = self.defaultPrimaryColor;
+        return;
+    }
+    
     NSMutableArray *colorMuArr = [NSMutableArray arrayWithObjects:
                                   @"#000000", @"#9B9B9B", @"#FFFFFF", @"#FF87A3", @"#FF515F", @"#FF0000",
                                   @"#E18838", @"#AC6B00", @"#864706", @"#FF7E0B", @"#FFD33B", @"#FFF52B",
@@ -201,39 +174,8 @@ static YSBrushToolsManager *brushTools = nil;
     NSUInteger index = [colorMuArr indexOfObject:colorHex];
     if (index != NSNotFound)
     {
-        self.defaultPrimaryColor = colorHex;
+        self.primaryColorHex = colorHex;
     }
 }
-
-/// 获取当前工具配置设置
-//- (YSBrushToolsConfigs *)getWbToolConfigWithToolType:(YSBrushToolType)type
-//{
-//    switch (type)
-//    {
-//        case YSBrushToolTypeLine:
-//        {
-//            return self.lineConfig;
-//            break;
-//        }
-//        case YSBrushToolTypeText:
-//        {
-//            return self.textConfig;
-//        }
-//            break;
-//        case YSBrushToolTypeShape:
-//        {
-//            return self.sharpConfig;
-//        }
-//            break;
-//        case YSBrushToolTypeEraser:
-//        {
-//            return self.eraserConfig;
-//        }
-//            break;
-//        default:
-//            return nil;
-//            break;
-//    }
-//}
 
 @end

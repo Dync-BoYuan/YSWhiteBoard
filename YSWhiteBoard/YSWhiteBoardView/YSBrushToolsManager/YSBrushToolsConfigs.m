@@ -10,11 +10,10 @@
 
 @implementation YSBrushToolsConfigs
 
-
 - (void)setColorHex:(NSString *)colorHex
 {
     _colorHex = colorHex;
-    if ([colorHex bm_isNotEmpty])
+    if (!colorHex)
     {
         colorHex = @"";
     }

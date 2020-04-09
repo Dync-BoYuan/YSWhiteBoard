@@ -13,6 +13,8 @@
 #import "YSWhiteBoardView.h"
 #import "YSFileModel.h"
 
+#import "YSBrushToolsManager.h"
+
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -44,8 +46,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// 预加载文档结束
 @property (nonatomic, assign) BOOL preloadingFished;
-/// 信令缓存数据 预加载完成前
-@property (nonatomic, strong, readonly) NSMutableArray *preLoadingFileCacheMsgPool;
 
 @property (nonatomic, assign, readonly) BOOL isUpdateWebAddressInfo;
 
@@ -112,6 +112,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (YSWhiteBoardErrorCode)showDocumentWithFileID:(NSString *)fileId isBeginClass:(BOOL)isBeginClass isPubMsg:(BOOL)isPubMsg;
 
 #pragma -
+#pragma mark 画笔权限
+
+- (BOOL)isUserCanDraw;
+
+#pragma -
 #pragma mark 画笔控制
 
 - (void)brushToolsDidSelect:(YSBrushToolType)BrushToolType;
@@ -119,9 +124,9 @@ NS_ASSUME_NONNULL_BEGIN
 // 恢复默认工具配置设置
 - (void)freshBrushToolConfig;
 // 获取当前工具配置设置 drawType: YSBrushToolType类型  colorHex: RGB颜色  progress: 值
-- (NSDictionary *)getBrushToolConfigWithToolType:(YSBrushToolType)BrushToolType;
+- (YSBrushToolsConfigs *)getCurrentBrushToolConfig;
 // 改变默认画笔颜色
-- (void)changeDefaultPrimaryColor:(NSString *)colorHex;
+- (void)changePrimaryColor:(NSString *)colorHex;
 
 @end
 

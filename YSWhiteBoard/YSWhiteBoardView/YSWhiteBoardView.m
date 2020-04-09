@@ -33,19 +33,18 @@
 
 @property (nonatomic, strong) YSDownloader *downloader;
 
-/// 课件加载成功
-@property (nonatomic, assign) BOOL isLoadingFinish;
-
 /// 加载H5脚本结束
 @property (nonatomic, assign) BOOL loadingH5Fished;
 /// 预加载文档结束
 @property (nonatomic, assign) BOOL preloadingFished;
 
-/// 信令缓存数据 预加载完成前
-@property (nonatomic, strong) NSMutableArray *preLoadingFileCacheMsgPool;
+/// 课件加载成功
+@property (nonatomic, assign) BOOL isLoadingFinish;
+
 /// 信令缓存数据 H5脚本加载完成前，之后开始预加载
 @property (nonatomic, strong) NSMutableArray *cacheMsgPool;
-
+/// 信令缓存数据 预加载完成前
+@property (nonatomic, strong) NSMutableArray *preLoadingFileCacheMsgPool;
 
 @end
 
@@ -165,50 +164,52 @@
 
     if (self.webViewManager)
     {
-        BOOL isMedia = [tDataDic bm_boolForKey:@"isMedia"];
-        
-        // 关联媒体课件不响应
-        if ([msgName isEqualToString:sYSSignalDocumentChange])
+        BOOL remotePub = YES;
+        if (![msgName isEqualToString:sYSSignalShowPage] && ![msgName isEqualToString:sYSSignalH5DocumentAction] && ![msgName isEqualToString:sYSSignalNewPptTriggerActionClick] && ![msgName isEqualToString:sYSSignalClassBegin])
         {
-            if (!isMedia)
+            remotePub = NO;
+        }
+
+        if (remotePub)
+        {
+            // 关联媒体课件不响应
+            if ([msgName isEqualToString:sYSSignalShowPage])
+            {
+                BOOL isMedia = [tDataDic bm_boolForKey:@"isMedia"];
+                
+                if (!isMedia)
+                {
+                    NSString *fileID = [[tDataDic bm_dictionaryForKey:@"filedata"] bm_stringForKey:@"fileid"];
+                    
+                    //[self uploadLogWithText:[NSString stringWithFormat:@"WhiteBoard Loading Fileid:%@, DocAddress:%@", fileID, self.serverDocAddrKey]];
+                    
+                    //如果本地已经存在预加载文档则参数塞入  baseurl:file:///本地文档
+                    
+                    if ([YSWhiteBoardManager supportPreload] &&
+                        [[NSFileManager defaultManager] fileExistsAtPath:[[NSTemporaryDirectory() stringByAppendingPathComponent:@"YSFile"] stringByAppendingPathComponent:fileID]])
+                    {
+                        NSMutableDictionary *urlDic = [NSMutableDictionary dictionaryWithDictionary:tDataDic];
+                        NSMutableDictionary *filedata = [NSMutableDictionary dictionaryWithDictionary:[urlDic objectForKey:@"filedata"]];
+                        
+                        NSString *baseurl = [NSURL fileURLWithPath:[[[NSTemporaryDirectory() stringByAppendingPathComponent:@"YSFile"] stringByAppendingPathComponent:fileID] stringByAppendingPathComponent:@"newppt.html"]].relativeString;
+                        [filedata setObject:baseurl forKey:@"baseurl"];
+                        [urlDic setObject:filedata forKey:@"filedata"];
+                        NSMutableDictionary *newMessage = [NSMutableDictionary dictionaryWithDictionary:message];
+                        NSString *dataString = [[NSString alloc] initWithData:[NSJSONSerialization dataWithJSONObject:urlDic options:NSJSONWritingPrettyPrinted error:nil] encoding:NSUTF8StringEncoding];
+                        dataString = [dataString stringByReplacingOccurrencesOfString:@"\n" withString:@""];
+                        [newMessage setObject:dataString forKey:@"data"];
+                        [self.webViewManager sendSignalMessageToJS:WBPubMsg message:newMessage];
+                    }
+                    else
+                    {
+                        [self.webViewManager sendSignalMessageToJS:WBPubMsg message:message];
+                    }
+                }
+            }
+            else
             {
                 [self.webViewManager sendSignalMessageToJS:WBPubMsg message:message];
             }
-        }
-        else if ([msgName isEqualToString:sYSSignalShowPage])
-        {
-            if (!isMedia)
-            {
-                NSString *fileID = [[tDataDic bm_dictionaryForKey:@"filedata"] bm_stringForKey:@"fileid"];
-                
-                //[self uploadLogWithText:[NSString stringWithFormat:@"WhiteBoard Loading Fileid:%@, DocAddress:%@", fileID, self.serverDocAddrKey]];
-                
-                //如果本地已经存在预加载文档则参数塞入  baseurl:file:///本地文档
-                
-                if ([YSWhiteBoardManager supportPreload] &&
-                    [[NSFileManager defaultManager] fileExistsAtPath:[[NSTemporaryDirectory() stringByAppendingPathComponent:@"YSFile"] stringByAppendingPathComponent:fileID]])
-                {
-                    NSMutableDictionary *urlDic = [NSMutableDictionary dictionaryWithDictionary:tDataDic];
-                    NSMutableDictionary *filedata = [NSMutableDictionary dictionaryWithDictionary:[urlDic objectForKey:@"filedata"]];
-                    
-                    NSString *baseurl = [NSURL fileURLWithPath:[[[NSTemporaryDirectory() stringByAppendingPathComponent:@"YSFile"] stringByAppendingPathComponent:fileID] stringByAppendingPathComponent:@"newppt.html"]].relativeString;
-                    [filedata setObject:baseurl forKey:@"baseurl"];
-                    [urlDic setObject:filedata forKey:@"filedata"];
-                    NSMutableDictionary *newMessage = [NSMutableDictionary dictionaryWithDictionary:message];
-                    NSString *dataString = [[NSString alloc] initWithData:[NSJSONSerialization dataWithJSONObject:urlDic options:NSJSONWritingPrettyPrinted error:nil] encoding:NSUTF8StringEncoding];
-                    dataString = [dataString stringByReplacingOccurrencesOfString:@"\n" withString:@""];
-                    [newMessage setObject:dataString forKey:@"data"];
-                    [self.webViewManager sendSignalMessageToJS:WBPubMsg message:newMessage];
-                }
-                else
-                {
-                    [self.webViewManager sendSignalMessageToJS:WBPubMsg message:message];
-                }
-            }
-        }
-        else
-        {
-            [self.webViewManager sendSignalMessageToJS:WBPubMsg message:message];
         }
     }
         
@@ -221,9 +222,20 @@
 /// 收到远端delMsg消息的通知
 - (void)remoteDelMsg:(NSDictionary *)message
 {
+    NSString *msgName = [message bm_stringForKey:@"name"];
+
     if (self.webViewManager)
     {
-        [self.webViewManager sendSignalMessageToJS:WBDelMsg message:message];
+        BOOL remotePub = YES;
+        if (![msgName isEqualToString:sYSSignalClassBegin])
+        {
+            remotePub = NO;
+        }
+        
+        if (remotePub)
+        {
+            [self.webViewManager sendSignalMessageToJS:WBDelMsg message:message];
+        }
     }
 
     if (self.drawViewManager)
@@ -475,6 +487,7 @@
 - (void)onWBWebViewManagerPreloadingFished
 {
     self.preloadingFished = YES;
+    
     if (self.delegate && [self.delegate respondsToSelector:@selector(onWBWebViewManagerPreloadingFished)])
     {
         [self.delegate onWBWebViewManagerPreloadingFished];

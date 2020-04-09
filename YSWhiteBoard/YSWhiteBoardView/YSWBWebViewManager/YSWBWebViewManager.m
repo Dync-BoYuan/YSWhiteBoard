@@ -1083,42 +1083,42 @@
 - (void)afterConnectToRoomAndPreloadingFished
 {
     // 执行所有缓存的信令消息
-    NSArray *array = [YSWhiteBoardManager shareInstance].preLoadingFileCacheMsgPool;
-
-    for (NSDictionary *dic in array)
-    {
-        NSString *func = dic[kYSMethodNameKey]; // YSCacheMsg_MethodName
-        SEL funcSel    = NSSelectorFromString(func);
-
-        NSMutableArray *params = [NSMutableArray array];
-
-        if ([[dic allKeys] containsObject:kYSParameterKey]) { params = dic[kYSParameterKey]; }
-
-        switch (params.count)
-        {
-            case 0:
-                ((void (*)(id, SEL))objc_msgSend)(self, funcSel);
-                break;
-                
-            case 1:
-                ((void (*)(id, SEL, id))objc_msgSend)(self, funcSel, params.firstObject);
-                break;
-                
-            case 2:
-                if (![NSStringFromSelector(funcSel)
-                        isEqualToString:NSStringFromSelector(
-                                            @selector(receiveWhiteBoardMessage:isDelMsg:))])
-                {
-                    ((void (*)(id, SEL, id, id))objc_msgSend)(self, funcSel, params.firstObject,
-                                                              params.lastObject);
-                }
-
-                break;
-
-            default:
-                break;
-        }
-    }
+//    NSArray *array = [YSWhiteBoardManager shareInstance].preLoadingFileCacheMsgPool;
+//
+//    for (NSDictionary *dic in array)
+//    {
+//        NSString *func = dic[kYSMethodNameKey]; // YSCacheMsg_MethodName
+//        SEL funcSel    = NSSelectorFromString(func);
+//
+//        NSMutableArray *params = [NSMutableArray array];
+//
+//        if ([[dic allKeys] containsObject:kYSParameterKey]) { params = dic[kYSParameterKey]; }
+//
+//        switch (params.count)
+//        {
+//            case 0:
+//                ((void (*)(id, SEL))objc_msgSend)(self, funcSel);
+//                break;
+//                
+//            case 1:
+//                ((void (*)(id, SEL, id))objc_msgSend)(self, funcSel, params.firstObject);
+//                break;
+//                
+//            case 2:
+//                if (![NSStringFromSelector(funcSel)
+//                        isEqualToString:NSStringFromSelector(
+//                                            @selector(receiveWhiteBoardMessage:isDelMsg:))])
+//                {
+//                    ((void (*)(id, SEL, id, id))objc_msgSend)(self, funcSel, params.firstObject,
+//                                                              params.lastObject);
+//                }
+//
+//                break;
+//
+//            default:
+//                break;
+//        }
+//    }
 }
 
 - (void)destory

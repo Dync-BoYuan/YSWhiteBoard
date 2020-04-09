@@ -27,7 +27,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 
 @interface YSWhiteBoardManager ()
 <
-    YSWBWebViewManagerDelegate
+    YSWhiteBoardViewDelegate
 >
 {
 //    /// 页面加载完成, 是否需要缓存标识
@@ -76,7 +76,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 @property (nonatomic, strong) NSMutableArray <NSDictionary *> *docmentDicList;
 
 /// 当前激活文档id
-@property (nonatomic, strong) NSString *currentFileId;
+@property (nonatomic, strong, setter=setTheCurrentDocumentFileID:) NSString *currentFileId;
 
 // UI
 
@@ -86,6 +86,10 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 @property (nonatomic, strong) YSWhiteBoardView *preLoadWhiteBoardView;
 /// 课件窗口列表
 @property (nonatomic, strong) NSMutableArray <YSWhiteBoardView *> *coursewareViewList;
+
+// 画笔控制
+
+@property (nonatomic, strong) YSBrushToolsManager *brushToolsManager;
 
 @end
 
@@ -125,6 +129,8 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         self.serverAddrBackupKey = [NSMutableArray array];
         
         self.coursewareViewList = [NSMutableArray array];
+        
+        self.brushToolsManager = [YSBrushToolsManager shareInstance];
 
 #if DEBUG
         NSString *sdkVersion = [NSString stringWithFormat:@"%@", YSWhiteBoardSDKVersionString];
@@ -433,7 +439,16 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 
 - (void)setTheCurrentDocumentFileID:(NSString *)fileId
 {
-    self.currentFileId = fileId;
+    _currentFileId = fileId;
+    
+    if (![fileId isEqualToString:@"0"])
+    {
+        YSWhiteBoardView *whiteBoardView = [self getWhiteBoardViewWithFileId:fileId];
+        if (whiteBoardView)
+        {
+            [whiteBoardView bm_bringToFront];
+        }
+    }
 }
 
 - (YSFileModel *)currentFile
@@ -748,35 +763,72 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 
 
 #pragma -
+#pragma mark 画笔权限
+
+- (BOOL)isUserCanDraw
+{
+    YSRoomUser *localUser = [YSRoomInterface instance].localUser;
+    
+    if (localUser.role == YSUserType_Student)
+    {
+        BOOL canDraw = localUser.canDraw;
+        if (canDraw)
+        {
+            if (self.isBeginClass)
+            {
+                if (self.brushToolsManager.currentBrushToolType != YSBrushToolTypeMouse)
+                {
+                    return YES;
+                }
+            }
+        }
+
+        return NO;
+    }
+    else if (localUser.role == YSUserType_Teacher)
+    {
+        return YES;
+    }
+    else
+    { // 巡课
+        return NO;
+    }
+}
+
+
+#pragma -
 #pragma mark 画笔控制
 
 - (void)brushToolsDidSelect:(YSBrushToolType)BrushToolType
 {
-    
+    [self.brushToolsManager brushToolsDidSelect:BrushToolType];
 }
 
 - (void)didSelectDrawType:(YSDrawType)type color:(NSString *)hexColor widthProgress:(float)progress
 {
-    
+    [self.brushToolsManager didSelectDrawType:type color:hexColor widthProgress:progress];
 }
 
 // 恢复默认工具配置设置
 - (void)freshBrushToolConfig
 {
-    
+    [self.brushToolsManager freshBrushToolConfigs];
 }
 
 // 获取当前工具配置设置 drawType: YSBrushToolType类型  colorHex: RGB颜色  progress: 值
-- (NSDictionary *)getBrushToolConfigWithToolType:(YSBrushToolType)BrushToolType
+- (YSBrushToolsConfigs *)getCurrentBrushToolConfig
 {
-    return @{};
+    return self.brushToolsManager.currentConfig;
 }
 
 // 改变默认画笔颜色
-- (void)changeDefaultPrimaryColor:(NSString *)colorHex
+- (void)changePrimaryColor:(NSString *)colorHex
 {
-    
+    [self.brushToolsManager changePrimaryColor:colorHex];
 }
+
+
+
 
 - (void)onWBWebViewManagerPreloadingFished
 {
@@ -870,9 +922,6 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     {
         [self.preLoadWhiteBoardView checkPreLoadingFile];
     }
-    
-    // 根据serverWebAddrKey下载备注
-    //[self loadCoursewareMarkData];
 }
 
 - (void)updateWebAddressInfo
@@ -1022,7 +1071,6 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 // 预加载
 - (void)roomWhitePreloadFile:(NSNotification *)noti
 {   // 4
-
     BOOL isNeedPreload = [noti.userInfo[@"isNeedPreload"] boolValue];
     if (isNeedPreload && self.preLoadWhiteBoardView)
     {
@@ -1059,28 +1107,17 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     
     [dict setValue:myselfDict forKey:@"myself"];
     
-    if (self.preloadingFished == YES)
+    if (![response bm_isNotEmptyDictionary])
     {
-        // 断线重连复位
-        if (self.mainWhiteBoardView)
-        {
-            [self.mainWhiteBoardView whiteBoardOnRoomConnectedUserlist:code response:dict];
-        }
-        
-        for (YSWhiteBoardView *whiteBoardView in self.coursewareViewList)
-        {
-            [whiteBoardView whiteBoardOnRoomConnectedUserlist:code response:dict];
-        }
+        return;
     }
-    else
+    NSDictionary *msglist = [dict objectForKey:@"msglist"];
+
+    for (NSString *key in msglist.allKeys)
     {
-        NSString *methodName = NSStringFromSelector(@selector(whiteBoardOnRoomConnectedUserlist:response:));
-        NSMutableDictionary *dic = [NSMutableDictionary dictionary];
-        [dic setValue:methodName forKey:kYSMethodNameKey];
-        [dic setValue:@[code,dict] forKey:kYSParameterKey];
-        // 放在首位 于showpage前发送，动态ppt备注需要
-        //[self.preLoadingFileCacheMsgPool addObject:dic];
-        [self.preLoadingFileCacheMsgPool insertObject:dic atIndex:0];
+        NSDictionary *msgDic = [msglist bm_dictionaryForKey:key];
+
+        [self roomWhiteBoardOnRemotePubMsgWithMessage:msgDic];
     }
 }
 
@@ -1352,13 +1389,23 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         return;
     }
     
+    [self roomWhiteBoardOnRemotePubMsgWithMessage:message];
+}
+
+- (void)roomWhiteBoardOnRemotePubMsgWithMessage:(NSDictionary *)message
+{
+    if (![message bm_isNotEmptyDictionary])
+    {
+        return;
+    }
+    
     NSString *msgName = [message bm_stringForKey:@"name"];
-    if ([msgName bm_isNotEmpty])
+    if (![msgName bm_isNotEmpty])
     {
         return;
     }
     NSString *msgId = [message bm_stringForKey:@"id"];
-    if ([msgId bm_isNotEmpty])
+    if (![msgId bm_isNotEmpty])
     {
         return;
     }
@@ -1398,14 +1445,14 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         BOOL isDelete = [tDataDic bm_boolForKey:@"isDel"];
         if (isDelete)
         {
-            NSString *fileid = [tDataDic bm_stringForKey:@"fileid"];
-            if (!fileid)
+            NSString *fileId = [tDataDic bm_stringForKey:@"fileid"];
+            if (!fileId)
             {
                 NSDictionary *filedata = [tDataDic bm_dictionaryForKey:@"filedata"];
-                fileid = [filedata bm_stringForKey:@"fileid"];
+                fileId = [filedata bm_stringForKey:@"fileid"];
             }
 
-            [self deleteDocumentWithFileID:fileid];
+            [self deleteDocumentWithFileID:fileId];
         }
         else
         {
@@ -1414,15 +1461,22 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     }
     else if ([msgName isEqualToString:sYSSignalShowPage])
     {
-        NSString *fileid = [tDataDic bm_stringForKey:@"fileid"];
+        NSString *fileId = [tDataDic bm_stringForKey:@"fileid"];
         [self.docmentList enumerateObjectsUsingBlock:^(YSFileModel * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-            if ([fileid isEqualToString:obj.fileid])
+            if ([fileId isEqualToString:obj.fileid])
             {
                 NSDictionary *filedata = [tDataDic bm_dictionaryForKey:@"filedata"];
                 obj.currpage = [filedata bm_stringForKey:@"currpage"];
             }
         }];
         [self addOrReplaceDocumentFile:tDataDic];
+        
+        YSWhiteBoardView *whiteBoardView = [self getWhiteBoardViewWithFileId:fileId];
+        if (!whiteBoardView)
+        {
+            [self createWhiteBoardWithFrame:YSWhiteBoardDefaultFrame fileId:fileId loadFinishedBlock:nil];
+        }
+        [self setTheCurrentDocumentFileID:fileId];
     }
     
     if (self.preloadingFished == NO)
