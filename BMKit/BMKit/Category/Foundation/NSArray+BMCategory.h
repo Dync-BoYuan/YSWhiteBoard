@@ -73,6 +73,8 @@
 - (nullable NSMutableArray *)bm_divisionWithCount:(NSUInteger)count;
 - (nullable NSMutableArray *)bm_divisionWithCount:(NSUInteger)count1 andCount:(NSUInteger)count2;
 
+- (nullable NSArray *)bm_divisionWithCount:(NSUInteger)count atIndex:(NSUInteger)index appoint:(BOOL)appoint;
+
 /**
  *  Create a reversed array from the given array
  *
