@@ -72,6 +72,13 @@
     self.titleLabel = titleLabel;
 }
 
+- (void)setTitleString:(NSString *)titleString
+{
+    _titleString = titleString;
+    self.titleLabel.text = titleString;
+}
+
+
 - (void)buttonsClick:(UIButton *)sender
 {
     if (_barButtonsClick)
