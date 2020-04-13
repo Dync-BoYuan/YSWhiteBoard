@@ -11,7 +11,12 @@
 #import "YSFileModel.h"
 #import "YSWBLogger.h"
 
-#define YSWhiteBoardDefaultFrame    CGRectMake(0, 0, 100, 100)
+#define YSWhiteBoardDefaultFrame        CGRectMake(0, 0, 100, 100)
+#define YSWhiteBoardDefaultLeft         10.0f
+#define YSWhiteBoardDefaultTop          10.0f
+#define YSWhiteBoardDefaultSOffset      10.0f
+#define YSWhiteBoardDefaultLeftOffset   50.0f
+#define YSWhiteBoardDefaultTopOffset    40.0f
 
 
 /// SDK版本
@@ -37,6 +42,9 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 //    BOOL preloadDispose;
 //    /// 预加载失败
 //    BOOL predownloadError;
+    
+    CGFloat whiteBoardViewCurrentLeft;
+    CGFloat whiteBoardViewCurrentTop;
 }
 
 @property (nonatomic, weak) id <YSWhiteBoardManagerDelegate> wbDelegate;
@@ -79,6 +87,8 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 @property (nonatomic, strong, setter=setTheCurrentDocumentFileID:) NSString *currentFileId;
 
 // UI
+
+@property (nonatomic, assign) CGSize whiteBoardViewDefaultSize;
 
 /// 主白板
 @property (nonatomic, strong) YSWhiteBoardView *mainWhiteBoardView;
@@ -131,6 +141,9 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         self.coursewareViewList = [NSMutableArray array];
         
         self.brushToolsManager = [YSBrushToolsManager shareInstance];
+        
+        whiteBoardViewCurrentLeft = YSWhiteBoardDefaultLeft;
+        whiteBoardViewCurrentTop = YSWhiteBoardDefaultTop;
 
 #if DEBUG
         NSString *sdkVersion = [NSString stringWithFormat:@"%@", YSWhiteBoardSDKVersionString];
@@ -253,23 +266,66 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 - (YSWhiteBoardView *)createMainWhiteBoardWithFrame:(CGRect)frame
                         loadFinishedBlock:(wbLoadFinishedBlock)loadFinishedBlock
 {
+    CGFloat width = frame.size.width * 0.3f;
+    CGFloat height = width * 0.6f;
+    self.whiteBoardViewDefaultSize = CGSizeMake(width, height);
+    
     self.mainWhiteBoardView = [[YSWhiteBoardView alloc] initWithFrame:frame fileId:@"0" loadFinishedBlock:loadFinishedBlock];
     self.mainWhiteBoardView.delegate = self;
+    
+//    for (int i=1; i<100; i++)
+//    {
+//        YSWhiteBoardView *whiteBoardView= [self createWhiteBoardWithFileId:[NSString stringWithFormat:@"%@", @(i)] loadFinishedBlock:nil];
+//        whiteBoardView.backgroundColor = [UIColor bm_randomColor];
+//        [self.mainWhiteBoardView addSubview:whiteBoardView];
+//    }
     return self.mainWhiteBoardView;
 }
 
-- (YSWhiteBoardView *)createWhiteBoardWithFrame:(CGRect)frame fileId:(NSString *)fileId
-                        loadFinishedBlock:(wbLoadFinishedBlock)loadFinishedBlock
+- (YSWhiteBoardView *)createWhiteBoardWithFileId:(NSString *)fileId
+                               loadFinishedBlock:(wbLoadFinishedBlock)loadFinishedBlock
 {
     if (![fileId bm_isNotEmpty] || [fileId isEqualToString:@"0"])
     {
         return nil;
     }
+    CGRect frame = CGRectMake(whiteBoardViewCurrentLeft, whiteBoardViewCurrentTop, self.whiteBoardViewDefaultSize.width, self.whiteBoardViewDefaultSize.height);
     
     YSWhiteBoardView *whiteBoardView = [[YSWhiteBoardView alloc] initWithFrame:frame fileId:fileId loadFinishedBlock:loadFinishedBlock];
     whiteBoardView.delegate = self;
 
+    [self makeCurrentWhiteBoardViewPoint];
+    
     return whiteBoardView;
+}
+
+- (void)makeCurrentWhiteBoardViewPoint
+{
+    static loopCount = 0;
+    static lineCount = 0;
+
+    whiteBoardViewCurrentTop += YSWhiteBoardDefaultTopOffset;
+
+    CGSize size = self.whiteBoardViewDefaultSize;
+    CGFloat height = self.mainWhiteBoardView.bm_height;
+    
+    if ((whiteBoardViewCurrentTop + self.whiteBoardViewDefaultSize.height) >= self.mainWhiteBoardView.bm_height)
+    {
+        lineCount++;
+        whiteBoardViewCurrentLeft += YSWhiteBoardDefaultLeftOffset;
+        whiteBoardViewCurrentTop = YSWhiteBoardDefaultTop*lineCount;
+    }
+    else
+    {
+        whiteBoardViewCurrentLeft += YSWhiteBoardDefaultSOffset;
+    }
+
+    if ((whiteBoardViewCurrentLeft + self.whiteBoardViewDefaultSize.width) >= self.mainWhiteBoardView.bm_width)
+    {
+        loopCount++;
+        whiteBoardViewCurrentLeft = YSWhiteBoardDefaultLeft;
+        whiteBoardViewCurrentTop = YSWhiteBoardDefaultTop*(loopCount+0.5);
+    }
 }
 
 #pragma mark - 课件列表管理
@@ -512,12 +568,12 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     if (self.preloadingFished == YES)
     {
         YSWhiteBoardView *whiteBoardView = [self getWhiteBoardViewWithFileId:documentModel.fileid];
-        if (!whiteBoardView)
-        {
-            whiteBoardView = [self createWhiteBoardWithFrame:YSWhiteBoardDefaultFrame fileId:documentModel.fileid loadFinishedBlock:^{
-            }];
-            [self addWhiteBoardViewWithWhiteBoardView:whiteBoardView];
-        }
+//        if (!whiteBoardView)
+//        {
+//            whiteBoardView = [self createWhiteBoardWithFileId:documentModel.fileid loadFinishedBlock:^{
+//            }];
+//            [self addWhiteBoardViewWithWhiteBoardView:whiteBoardView];
+//        }
         
         if ([YSWhiteBoardManager supportPreload] &&
             [[NSFileManager defaultManager] fileExistsAtPath:[[NSTemporaryDirectory() stringByAppendingPathComponent:@"YSFile"] stringByAppendingPathComponent:documentModel.fileid]])
@@ -576,26 +632,26 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 
 #pragma mark  添加课件窗口
 /// 创建新窗口并添加
-- (void)addWhiteBoardViewWithFileId:(NSString *)fileId
-{
-    YSWhiteBoardView *whiteBoardView = [self getWhiteBoardViewWithFileId:fileId];
-    if (whiteBoardView)
-    {
-        [whiteBoardView bm_bringToFront];
-        whiteBoardView;
-        return;
-    }
-    
-    whiteBoardView = [self createWhiteBoardWithFrame:YSWhiteBoardDefaultFrame fileId:fileId loadFinishedBlock:^{
-    }];
-    
-    [self.coursewareViewList addObject:whiteBoardView];
-    [self.mainWhiteBoardView addSubview:whiteBoardView];
-    
-    whiteBoardView.backgroundColor = [UIColor bm_randomColor];
-    
-    return;
-}
+//- (void)addWhiteBoardViewWithFileId:(NSString *)fileId
+//{
+//    YSWhiteBoardView *whiteBoardView = [self getWhiteBoardViewWithFileId:fileId];
+//    if (whiteBoardView)
+//    {
+//        [whiteBoardView bm_bringToFront];
+//        whiteBoardView;
+//        return;
+//    }
+//
+//    whiteBoardView = [self createWhiteBoardWithFileId:fileId loadFinishedBlock:^{
+//    }];
+//
+//    [self.coursewareViewList addObject:whiteBoardView];
+//    [self.mainWhiteBoardView addSubview:whiteBoardView];
+//
+//    whiteBoardView.backgroundColor = [UIColor bm_randomColor];
+//
+//    return;
+//}
 
 /// 添加新窗口不创建
 - (void)addWhiteBoardViewWithWhiteBoardView:(YSWhiteBoardView *)whiteBoardView
@@ -1048,24 +1104,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     {
         fileId = @"0";
     }
-    
-    if (preloadFileDic)
-    {
-        if (!self.preLoadWhiteBoardView)
-        {
-            // 添加预加载课件
-            self.preLoadWhiteBoardView = [self createWhiteBoardWithFrame:YSWhiteBoardDefaultFrame fileId:fileId loadFinishedBlock:nil];
-            self.preLoadWhiteBoardView.isPreLoadFile = YES;
-            self.preLoadWhiteBoardView.preloadFileDic = preloadFileDic;
-            [self addWhiteBoardViewWithWhiteBoardView:self.preLoadWhiteBoardView];
-        }
-    }
-    else if (![fileId isEqualToString:@"0"])
-    {
-        YSWhiteBoardView *whiteBoardView = [self createWhiteBoardWithFrame:YSWhiteBoardDefaultFrame fileId:fileId loadFinishedBlock:nil];
-        [self addWhiteBoardViewWithWhiteBoardView:whiteBoardView];
-    }
-    
+        
     [self setTheCurrentDocumentFileID:fileId];
     
     // 预加载
@@ -1478,12 +1517,12 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         }];
         [self addOrReplaceDocumentFile:tDataDic];
         
-        YSWhiteBoardView *whiteBoardView = [self getWhiteBoardViewWithFileId:fileId];
-        if (!whiteBoardView)
-        {
-            [self createWhiteBoardWithFrame:YSWhiteBoardDefaultFrame fileId:fileId loadFinishedBlock:nil];
-            [self addWhiteBoardViewWithWhiteBoardView:whiteBoardView];
-        }
+//        YSWhiteBoardView *whiteBoardView = [self getWhiteBoardViewWithFileId:fileId];
+//        if (!whiteBoardView)
+//        {
+//            [self createWhiteBoardWithFrame:YSWhiteBoardDefaultFrame fileId:fileId loadFinishedBlock:nil];
+//            [self addWhiteBoardViewWithWhiteBoardView:whiteBoardView];
+//        }
         [self setTheCurrentDocumentFileID:fileId];
     }
     
