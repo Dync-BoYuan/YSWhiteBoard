@@ -8,7 +8,6 @@
 
 #import <UIKit/UIKit.h>
 #import "YSWhiteBoardEnum.h"
-
 @class DrawView;
 
 NS_ASSUME_NONNULL_BEGIN

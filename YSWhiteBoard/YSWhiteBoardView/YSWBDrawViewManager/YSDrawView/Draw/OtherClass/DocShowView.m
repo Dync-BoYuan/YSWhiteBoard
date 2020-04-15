@@ -160,7 +160,7 @@
                           didFinishLoad:block];
 }
 
-- (void)showImage:(NSURL *)url finishBlock:(FinishBlock)block
+- (void)showImage:(NSURL *)url host:(NSString *)host finishBlock:(FinishBlock)block
 {
     _pdfView.hidden = YES;
     _imageView.hidden = NO;
@@ -171,7 +171,7 @@
     VYSDWebImageDownloader *downloader = [VYSDWebImageDownloader sharedDownloader];
     downloader.maxConcurrentDownloads = 1;
     //    [downloader cancelAllDownloads];
-    [downloader downloadImageWithURL:url options:VYSDWebImageDownloaderHighPriority | VYSDWebImageDownloaderUseNSURLCache progress:nil completed:^(UIImage * _Nullable image, NSData * _Nullable data, NSError * _Nullable error, BOOL finished) {
+    [downloader downloadImageWithURL:url host:host options:VYSDWebImageDownloaderHighPriority | VYSDWebImageDownloaderUseNSURLCache progress:nil completed:^(UIImage * _Nullable image, NSData * _Nullable data, NSError * _Nullable error, BOOL finished) {
         
         dispatch_async(dispatch_get_main_queue(), ^{
             if (image) {
@@ -179,6 +179,16 @@
                     block(image.size.width / image.size.height);
                 }
                 self->_imageView.image = image;
+            }
+            if (error)
+            {
+                NSString *log = [NSString stringWithFormat:@"图片文件读取失败 url_%@  host_%@", url, host];
+                [[YSRoomInterface instance] serverLog:log];
+            }
+            else
+            {
+                NSString *log = [NSString stringWithFormat:@"图片文件读取成功 url_%@  host_%@", url, host];
+                [[YSRoomInterface instance] serverLog:log];
             }
         });
     }];

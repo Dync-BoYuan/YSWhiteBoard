@@ -1388,8 +1388,10 @@ NSString *const YSWhiteBoardRemoteSelectTool = @"YSWhiteBoardRemoteSelectTool"; 
                             self.wkWebView.hidden          = YES;
                             self.fileView.hidden           = NO;
                             BMWeakSelf
-                            [self.fileView showImage:[NSURL URLWithString:realPath]
-                                     finishBlock:^(float ratio) { [weakSelf updateWBRatio:ratio]; }];
+                            NSString *host = [NSURL URLWithString:realPath].host;
+                            [self.fileView showImage:[NSURL URLWithString:realPath] host:host finishBlock:^(float ratio) {
+                                [weakSelf updateWBRatio:ratio];
+                            }];
                         }
                     }
                 }

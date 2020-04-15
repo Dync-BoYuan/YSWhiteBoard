@@ -115,20 +115,20 @@
     return _serializedData;
 }
 
-+(CGColorRef) getColorFromRed:(int)red Green:(int)green Blue:(int)blue Alpha:(int)alpha
-{
-    CGFloat r = (CGFloat) red/255.0;
-    CGFloat g = (CGFloat) green/255.0;
-    CGFloat b = (CGFloat) blue/255.0;
-    CGFloat a = (CGFloat) alpha/255.0;
-    CGFloat components[4] = {r,g,b,a};
-    CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
-    
-    CGColorRef color = CGColorCreate(colorSpace, components);
-    CGColorSpaceRelease(colorSpace);
-    
-    return color;
-}
+//+(CGColorRef) getColorFromRed:(int)red Green:(int)green Blue:(int)blue Alpha:(int)alpha
+//{
+//    CGFloat r = (CGFloat) red/255.0;
+//    CGFloat g = (CGFloat) green/255.0;
+//    CGFloat b = (CGFloat) blue/255.0;
+//    CGFloat a = (CGFloat) alpha/255.0;
+//    CGFloat components[4] = {r,g,b,a};
+//    CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
+//    
+//    CGColorRef color = CGColorCreate(colorSpace, components);
+//    CGColorSpaceRelease(colorSpace);
+//    
+//    return color;
+//}
 
 - (UInt32)rgbaHex:(RGBAType) color {
     return (((int)roundf(color.r * 255)) << 24)

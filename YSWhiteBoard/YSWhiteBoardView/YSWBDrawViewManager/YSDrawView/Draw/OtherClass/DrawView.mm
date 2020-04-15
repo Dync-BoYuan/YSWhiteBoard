@@ -357,9 +357,10 @@ struct CompareNSString: public std::binary_function<NSString*, NSString*, bool> 
 
 -(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
-    if (![YSRoomInterface instance].localUser.canDraw)
+    if (_mode == YSWorkModeControllor && ![YSRoomInterface instance].localUser.canDraw)
     {
-        _mode = YSWorkModeViewer;
+        [super touchesBegan:touches withEvent:event];
+        return;
     }
 
     if (_mode == YSWorkModeViewer || self.hidden)
@@ -409,6 +410,13 @@ struct CompareNSString: public std::binary_function<NSString*, NSString*, bool> 
     UITouch *touch = [touches anyObject];
     
     CGPoint point = [touch locationInView:self];
+    
+    if (_mode == YSWorkModeControllor && ![YSRoomInterface instance].localUser.canDraw)
+    {
+        [super touchesBegan:touches withEvent:event];
+        return;
+    }
+
     if (_mode == YSWorkModeViewer || self.hidden)
     {
         [super touchesMoved:touches withEvent:event];
@@ -433,6 +441,11 @@ struct CompareNSString: public std::binary_function<NSString*, NSString*, bool> 
 
 - (void)realTimeDrawOnViewWithPoint:(CGPoint)point
 {
+    if (!_realTimeDraw)
+    {
+        return;
+    }
+    
     //    //实时绘制
     [_realTimeDraw touchesMoved:point];
     
@@ -473,6 +486,13 @@ struct CompareNSString: public std::binary_function<NSString*, NSString*, bool> 
 {
     UITouch *touch = [touches anyObject];
     CGPoint point = [touch locationInView:self];
+    
+    if (_mode == YSWorkModeControllor && ![YSRoomInterface instance].localUser.canDraw)
+    {
+        [super touchesBegan:touches withEvent:event];
+        return;
+    }
+
     if (_mode == YSWorkModeViewer || self.hidden)
     {
         [super touchesBegan:touches withEvent:event];
@@ -764,13 +784,23 @@ struct CompareNSString: public std::binary_function<NSString*, NSString*, bool> 
 //重置绘制，只有不需要redo而是add的时候才返回NO
 - (BOOL)redoDrawMapByClearID:(NSString *)redoID
 {
+    if (![redoID bm_isNotEmpty])
+    {
+        return NO;
+    }
     //如果本地没有redo数据远端直接redo相当于add数据
     BOOL has = NO;
     for (NSDictionary *dic in _drawBackArray) {
-        NSString *key = dic.allKeys.firstObject;
-        if ([key isEqualToString:redoID]) {
-            has = YES;
-            break;
+        if ([dic bm_isNotEmptyDictionary])
+        {
+            NSString *key = dic.allKeys.firstObject;
+            if ([key bm_isNotEmpty])
+            {
+                if ([key isEqualToString:redoID]) {
+                    has = YES;
+                    break;
+                }
+            }
         }
     }
     
