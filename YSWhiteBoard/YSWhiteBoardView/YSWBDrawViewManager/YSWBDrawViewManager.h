@@ -34,6 +34,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)receiveWhiteBoardMessage:(NSDictionary *)dictionary isDelMsg:(BOOL)isDel;
 - (void)whiteBoardOnRoomConnectedUserlist:(NSNumber *)code response:(NSDictionary *)response;
 
+- (void)updateFrame;
+
 @end
 
 NS_ASSUME_NONNULL_END

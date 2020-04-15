@@ -266,14 +266,14 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 - (YSWhiteBoardView *)createMainWhiteBoardWithFrame:(CGRect)frame
                         loadFinishedBlock:(wbLoadFinishedBlock)loadFinishedBlock
 {
-    CGFloat width = frame.size.width * 0.3f;
-    CGFloat height = width * 0.6f;
+    CGFloat height = frame.size.height * 0.6f;
+    CGFloat width = height / 3.0f * 5.0f;
     self.whiteBoardViewDefaultSize = CGSizeMake(width, height);
     
     self.mainWhiteBoardView = [[YSWhiteBoardView alloc] initWithFrame:frame fileId:@"0" loadFinishedBlock:loadFinishedBlock];
     self.mainWhiteBoardView.delegate = self;
     
-//    for (int i=1; i<100; i++)
+//    for (int i=1; i<10; i++)
 //    {
 //        YSWhiteBoardView *whiteBoardView= [self createWhiteBoardWithFileId:[NSString stringWithFormat:@"%@", @(i)] loadFinishedBlock:nil];
 //        whiteBoardView.backgroundColor = [UIColor bm_randomColor];
@@ -301,15 +301,14 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 
 - (void)makeCurrentWhiteBoardViewPoint
 {
-    static loopCount = 0;
-    static lineCount = 0;
+    static NSUInteger loopCount = 0;
+    static NSUInteger lineCount = 0;
 
     whiteBoardViewCurrentTop += YSWhiteBoardDefaultTopOffset;
 
     CGSize size = self.whiteBoardViewDefaultSize;
-    CGFloat height = self.mainWhiteBoardView.bm_height;
     
-    if ((whiteBoardViewCurrentTop + self.whiteBoardViewDefaultSize.height) >= self.mainWhiteBoardView.bm_height)
+    if ((whiteBoardViewCurrentTop + size.height) >= self.mainWhiteBoardView.bm_height)
     {
         lineCount++;
         whiteBoardViewCurrentLeft += YSWhiteBoardDefaultLeftOffset;
@@ -320,9 +319,10 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         whiteBoardViewCurrentLeft += YSWhiteBoardDefaultSOffset;
     }
 
-    if ((whiteBoardViewCurrentLeft + self.whiteBoardViewDefaultSize.width) >= self.mainWhiteBoardView.bm_width)
+    if ((whiteBoardViewCurrentLeft + size.width) >= self.mainWhiteBoardView.bm_width)
     {
         loopCount++;
+        lineCount = 0;
         whiteBoardViewCurrentLeft = YSWhiteBoardDefaultLeft;
         whiteBoardViewCurrentTop = YSWhiteBoardDefaultTop*(loopCount+0.5);
     }
@@ -338,6 +338,11 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 
 - (void)refreshWhiteBoard
 {
+    CGFloat height = self.mainWhiteBoardView.bm_size.height * 0.6f;
+    CGFloat width = height / 3.0f * 5.0f;
+    self.whiteBoardViewDefaultSize = CGSizeMake(width, height);
+
+    [self.mainWhiteBoardView refreshWhiteBoard];
 }
 
 - (void)freshCurrentCourse
@@ -345,10 +350,50 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 }
 
 
-
-
 #pragma -
 #pragma mark 课件管理
+
+- (NSDictionary *)createWhiteBoard:(NSString *)companyid
+{
+    //创建白板
+    NSNumber * fileprop = @(0);
+    NSNumber * size =@(0);
+    NSNumber * status = @(1);
+    NSString * type = @"0";
+    NSString * uploadtime = @"2017-08-31 16:41:23";
+    NSString * uploaduserid = [YSRoomInterface instance].localUser.peerID;
+    NSString * uploadusername = [YSRoomInterface instance].localUser.nickName;
+    
+    NSDictionary *tDic =  @{
+                            @"active" :@(1),
+                            @"companyid":companyid,
+                            @"fileprop" :fileprop,
+                            @"size" :(size != nil) ? size : @(0),
+                            @"status":(status != nil) ? status : @(1),
+                            @"type":type?type:@"0",
+                            @"uploadtime":uploadtime,
+                            @"uploaduserid" :uploaduserid?uploaduserid:@"",
+                            @"uploadusername" :uploadusername?uploadusername:@"",
+                            @"downloadpath":@"",
+                            @"dynamicppt" :@(false),
+                            @"fileid" :@"0",
+                            @"filename":@"whiteboard",//@"白板",
+                            @"filepath":@"",
+                            @"fileserverid":@(0),
+                            @"filetype" :@"whiteboard",//MTLocalized(@"Title.whiteBoard"),//@"whiteboard",
+                            @"isconvert" :@(1),
+                            @"newfilename":@"whiteboard",//@"白板",
+                            @"pagenum" :@(1),
+                            @"pdfpath":@"",
+                            @"swfpath" :@"",
+                            @"isContentDocument":@(0),
+                            @"currpage":@(1)
+                            };
+    
+    [self addOrReplaceDocumentFile:tDic];
+    
+    return tDic;
+}
 
 #pragma mark  添加课件
 - (void)addDocumentWithFileDic:(NSDictionary *)file
@@ -385,10 +430,12 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         }
     }
     
+    BOOL findFile = NO;
     YSFileModel *model = [self getDocumentWithFileID:fileid];
     if (model)
     {
-        [self.docmentList removeObject:model];
+        findFile = YES;
+        //[self.docmentList removeObject:model];
     }
     
     NSNumber *isContentDocument = file[@"isContentDocument"];
@@ -396,7 +443,16 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary:file];
     [dict setValue:isContentDocument forKey:@"isContentDocument"];
     
-    YSFileModel *fileModel = [YSFileModel new];
+    YSFileModel *fileModel = nil;
+    if (findFile)
+    {
+        fileModel = model;
+    }
+    else
+    {
+        fileModel = [[YSFileModel alloc] init];
+    }
+    
     [fileModel setValuesForKeysWithDictionary:dict];
     NSDictionary *fileData = dict[@"filedata"];
     if (fileData.count > 0)
@@ -441,7 +497,10 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         }
     }
     
-    [self.docmentList addObject:fileModel];
+    if (!findFile)
+    {
+        [self.docmentList addObject:fileModel];
+    }
 
     return YES;
 }
@@ -1075,6 +1134,13 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         }
     }
     
+    //if ([YSRoomInterface instance].localUser.role == YSUserType_Teacher)
+    {
+        NSDictionary *roomDic = [[YSRoomInterface instance] getRoomProperty];
+        NSString *companyid = [roomDic bm_stringTrimForKey:@"companyid"];
+        [self createWhiteBoard:companyid];
+    }
+
     if (self.wbDelegate)
     {
         [self.wbDelegate onWhiteBroadFileList:mFileList];
@@ -1140,6 +1206,16 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         [self.preLoadWhiteBoardView sendPreLoadingFile];
     }
     
+    [[YSRoomInterface instance] pubMsg:sYSSignalUpdateTime
+                               msgID:sYSSignalUpdateTime
+                                toID:[YSRoomInterface instance].localUser.peerID
+                                data:@""
+                                save:NO
+                     associatedMsgID:nil
+                    associatedUserID:nil
+                             expires:0
+                          completion:nil];
+    
     [self roomWhiteBoardOnRoomConnectedUserlist:code response:response];
 }
 
@@ -1165,6 +1241,8 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 
         [self roomWhiteBoardOnRemotePubMsgWithMessage:msgDic];
     }
+    
+    
 }
 
 // 断开链接的通知

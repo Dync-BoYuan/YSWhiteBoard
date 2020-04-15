@@ -98,11 +98,11 @@ NSString *const YSWhiteBoardRemoteSelectTool = @"YSWhiteBoardRemoteSelectTool"; 
             make.bottom.bmmas_equalTo(self.contentView.bmmas_bottom);
         }];
 
-        // 监听_contentView.frame更新布局
-        [self.contentView addObserver:self
-                       forKeyPath:@"frame"
-                          options:NSKeyValueObservingOptionNew
-                          context:nil];
+//        // 监听_contentView.frame更新布局
+//        [self.contentView addObserver:self
+//                       forKeyPath:@"frame"
+//                          options:NSKeyValueObservingOptionNew
+//                          context:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(remoteSelectorTool:)
                                                      name:YSWhiteBoardRemoteSelectTool
@@ -283,51 +283,90 @@ NSString *const YSWhiteBoardRemoteSelectTool = @"YSWhiteBoardRemoteSelectTool"; 
     }
 }
 
-- (void)observeValueForKeyPath:(NSString *)keyPath
-                      ofObject:(id)object
-                        change:(NSDictionary<NSKeyValueChangeKey, id> *)change
-                       context:(void *)context
+//- (void)observeValueForKeyPath:(NSString *)keyPath
+//                      ofObject:(id)object
+//                        change:(NSDictionary<NSKeyValueChangeKey, id> *)change
+//                       context:(void *)context
+//{
+//    if ([keyPath isEqualToString:@"frame"])
+//    {
+//        if (self.fileView.zoomScale > YSWHITEBOARD_MINZOOMSCALE)
+//        {
+//            float zoomScale = self.fileView.zoomScale;
+//            CGPoint offset = self.fileView.contentOffset;
+//            
+//            [self resetEnlargeValue:YSWHITEBOARD_MINZOOMSCALE animated:NO];
+//            
+//            [self.fileView setContentOffset:CGPointZero];
+//            [self updateWBRatio:self.ratio];
+//            [self.fileView setNeedsLayout];
+//            [self.fileView layoutIfNeeded];
+//            
+//            [self resetEnlargeValue:zoomScale animated:NO];
+//            
+//            if (offset.x < 0)
+//            {
+//                offset.x = 0;
+//            }
+//            if (offset.x > (self.fileView.contentSize.width - self.fileView.frame.size.width))
+//            {
+//                offset.x = (self.fileView.contentSize.width - self.fileView.frame.size.width);
+//            }
+//            if (offset.y < 0)
+//            {
+//                offset.y = 0;
+//            }
+//            if (offset.y > (self.fileView.contentSize.height - self.fileView.frame.size.height))
+//            {
+//                offset.y = (self.fileView.contentSize.height - self.fileView.frame.size.height);
+//            }
+//            [self.fileView setContentOffset:offset];
+//        }
+//        else
+//        {
+//            [self updateWBRatio:self.ratio];
+//            [self.fileView setNeedsLayout];
+//            [self.fileView layoutIfNeeded];
+//        }
+//    }
+//}
+
+- (void)updateFrame
 {
-    if ([keyPath isEqualToString:@"frame"])
+    DocShowView *fileView = self.fileView;
+    if (fileView.zoomScale > YSWHITEBOARD_MINZOOMSCALE)
     {
-        if (self.fileView.zoomScale > YSWHITEBOARD_MINZOOMSCALE)
+        float zoomScale = fileView.zoomScale;
+        CGPoint offset = fileView.contentOffset;
+        [self resetEnlargeValue:YSWHITEBOARD_MINZOOMSCALE animated:NO];
+        [fileView setContentOffset:CGPointZero];
+        [self updateWBRatio:_ratio];
+        [fileView setNeedsLayout];
+        [fileView layoutIfNeeded];
+        [self resetEnlargeValue:zoomScale animated:NO];
+        if (offset.x < 0)
         {
-            float zoomScale = self.fileView.zoomScale;
-            CGPoint offset = self.fileView.contentOffset;
-            
-            [self resetEnlargeValue:YSWHITEBOARD_MINZOOMSCALE animated:NO];
-            
-            [self.fileView setContentOffset:CGPointZero];
-            [self updateWBRatio:self.ratio];
-            [self.fileView setNeedsLayout];
-            [self.fileView layoutIfNeeded];
-            
-            [self resetEnlargeValue:zoomScale animated:NO];
-            
-            if (offset.x < 0)
-            {
-                offset.x = 0;
-            }
-            if (offset.x > (self.fileView.contentSize.width - self.fileView.frame.size.width))
-            {
-                offset.x = (self.fileView.contentSize.width - self.fileView.frame.size.width);
-            }
-            if (offset.y < 0)
-            {
-                offset.y = 0;
-            }
-            if (offset.y > (self.fileView.contentSize.height - self.fileView.frame.size.height))
-            {
-                offset.y = (self.fileView.contentSize.height - self.fileView.frame.size.height);
-            }
-            [self.fileView setContentOffset:offset];
+            offset.x = 0;
         }
-        else
+        if (offset.x > (fileView.contentSize.width - fileView.frame.size.width))
         {
-            [self updateWBRatio:self.ratio];
-            [self.fileView setNeedsLayout];
-            [self.fileView layoutIfNeeded];
+            offset.x = (fileView.contentSize.width - fileView.frame.size.width);
         }
+        if (offset.y < 0)
+        {
+            offset.y = 0;
+        }
+        if (offset.y > (fileView.contentSize.height - fileView.frame.size.height))
+        {
+            offset.y = (fileView.contentSize.height - fileView.frame.size.height);
+        }
+        [fileView setContentOffset:offset];
+    }
+    else
+    {
+        [self updateWBRatio:_ratio];
+        [fileView setNeedsLayout];
+        [fileView layoutIfNeeded];
     }
 }
 
@@ -348,6 +387,11 @@ NSString *const YSWhiteBoardRemoteSelectTool = @"YSWhiteBoardRemoteSelectTool"; 
     }
 
     [self setDragFileEnabled:self.selectMouse];
+}
+
+- (CGFloat)getRatio
+{
+    return self.ratio;
 }
 
 - (void)updateWBRatio:(CGFloat)ratio

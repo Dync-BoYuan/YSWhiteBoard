@@ -12,6 +12,10 @@
 #import "YSPreloadProgressView.h"
 #import "YSFileModel.h"
 
+
+#define YSWhiteBoardId_Header   @"docModule_"
+
+
 @interface YSWhiteBoardView ()
 <
     YSWBWebViewManagerDelegate
@@ -22,6 +26,8 @@
     /// 预加载失败
     BOOL predownloadError;
 }
+
+@property (nonatomic, strong) NSString *whiteBoardId;
 @property (nonatomic, strong) NSString *fileId;
 
 /// web文档
@@ -56,6 +62,8 @@
     if (self)
     {
         self.fileId = fileId;
+        self.whiteBoardId = [NSString stringWithFormat:@"%@%@", YSWhiteBoardId_Header, fileId];
+        
         self.webViewManager = [[YSWBWebViewManager alloc] init];
         self.webViewManager.delegate = self;
         
@@ -71,6 +79,13 @@
     }
     
     return self;
+}
+
+- (void)setFrame:(CGRect)frame
+{
+    [super setFrame:frame];
+    
+    [self.drawViewManager updateFrame];
 }
 
 - (BOOL)isPredownload

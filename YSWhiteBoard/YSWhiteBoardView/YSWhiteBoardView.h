@@ -23,6 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
 /// 预加载文档
 @property (nonatomic, strong) NSDictionary *preloadFileDic;
 
+@property (nonatomic, strong, readonly) NSString *whiteBoardId;
 @property (nonatomic, strong, readonly) NSString *fileId;
 
 /// 课件加载成功
@@ -60,6 +61,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)updateWebAddressInfo:(NSDictionary *)message;
 
 // 页面刷新尺寸
+- (void)refreshWhiteBoard;
 - (void)refreshWhiteBoardWithFrame:(CGRect)frame;
 
 - (void)receiveWhiteBoardMessage:(NSDictionary *)dictionary isDelMsg:(BOOL)isDel;
