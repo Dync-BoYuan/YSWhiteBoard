@@ -105,7 +105,7 @@ typedef struct {
 + (DrawBase *)deserializeData:(NSDictionary *)data;
 - (NSMutableDictionary *)serializedData;
 
-+(CGColorRef) getColorFromRed:(int)red Green:(int)green Blue:(int)blue Alpha:(int)alpha;
+//+(CGColorRef) getColorFromRed:(int)red Green:(int)green Blue:(int)blue Alpha:(int)alpha;
 -(id)initWithVersion:(int)version eventType:(YSEvent)type fileID:(NSString *)fileId pageID:(int)pageid ScreenScale:(ScreenScale)sacle drawId:(NSString*)drawId;
 
 - (UInt32)rgbaHex:(RGBAType) color ;

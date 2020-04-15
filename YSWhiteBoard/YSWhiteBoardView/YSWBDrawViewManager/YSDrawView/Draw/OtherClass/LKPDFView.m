@@ -9,14 +9,20 @@
 
 #import "LKPDFView.h"
 #import "VYSDWebImageDownloader.h"
+#import "YSWhiteBordHttpDNSUtil.h"
+#import <YSRoomSDK/YSRoomSDK.h>
 
 @implementation LKPDFView
 {
     NSInteger _currentPage;
     NSInteger _totalPage;
     NSString *_swfPath;
+    NSString *_fileId;
+    
+    VYSDWebImageDownloadToken *_downloadToken;
     
     CGRect _drawRect;
+    CGPDFDocumentRef _pdfRef;
     CGPDFPageRef _pageRef;
     
     NSString *_doc_host;
@@ -27,6 +33,7 @@
     pdfDidLoadBlock _block;
     CGSize _originSize;
 }
+
 - (instancetype)initWithFrame:(CGRect)frame
 {
     if (self = [super initWithFrame:frame]) {
@@ -49,6 +56,7 @@
     _currentPage    = ((NSNumber *)[filedata objectForKey:@"currpage"]).integerValue;
     _totalPage      = ((NSNumber *)[filedata objectForKey:@"pagenum"]).integerValue;
     _swfPath        = [filedata objectForKey:@"swfpath"];
+    _fileId         = [[dictionary objectForKey:@"filedata"] bm_stringForKey:@"fileid"];
     
     _doc_host       = doc_host;
     _doc_protocol   = doc_protocol;
@@ -94,19 +102,34 @@
     [urlString appendString:@"."];
     [urlString appendString:@"pdf"];//
     
+    urlString = [NSMutableString stringWithString:[YSWhiteBordHttpDNSUtil getIpUrlPathWithPath:urlString fileId:_fileId currentPage:_currentPage]];
+
     return [NSURL URLWithString:urlString];
 }
 
 - (void)getPDFData
 {
     NSURL *url = [self getURLByCurrentPage];
-    
+
+    NSString *host = _doc_host;
+
+    BMWeakSelf
     VYSDWebImageDownloader *downloader = [VYSDWebImageDownloader sharedDownloader];
     downloader.maxConcurrentDownloads = 1;
     //    [downloader cancelAllDownloads];
-    [downloader downloadImageWithURL:url options:VYSDWebImageDownloaderHighPriority | VYSDWebImageDownloaderUseNSURLCache progress:nil completed:^(UIImage * _Nullable image, NSData * _Nullable data, NSError * _Nullable error, BOOL finished) {
+    _downloadToken = [downloader downloadImageWithURL:url host:host options:VYSDWebImageDownloaderHighPriority | VYSDWebImageDownloaderUseNSURLCache progress:nil completed:^(UIImage * _Nullable image, NSData * _Nullable data, NSError * _Nullable error, BOOL finished) {
         dispatch_async(dispatch_get_main_queue(), ^{
-            [self analyzeData:data];
+            [weakSelf analyzeData:data];
+            if (error)
+            {
+                NSString *log = [NSString stringWithFormat:@"PDF文件读取失败 fileId_%@  currentPage_%@", self->_fileId, @(self->_currentPage)];
+                [[YSRoomInterface instance] serverLog:log];
+            }
+            else
+            {
+                NSString *log = [NSString stringWithFormat:@"PDF文件读取成功 fileId_%@  currentPage_%@", self->_fileId, @(self->_currentPage)];
+                [[YSRoomInterface instance] serverLog:log];
+            }
         });
     }];
 }
@@ -122,14 +145,14 @@
     CGDataProviderRef providerRef = CGDataProviderCreateWithCFData(dataRef);
     CFRelease(dataRef);
     
-    CGPDFDocumentRef pdfRef = CGPDFDocumentCreateWithProvider(providerRef);
+    _pdfRef = CGPDFDocumentCreateWithProvider(providerRef);
     CFRelease(providerRef);
     
     //获取总页数. 总是一次下发一页，暂时没用
     //    size_t totalPage = CGPDFDocumentGetNumberOfPages(pdfRef);
     
     //页码起始值为1
-    _pageRef = CGPDFDocumentGetPage(pdfRef, 1);
+    _pageRef = CGPDFDocumentGetPage(_pdfRef, 1);
     _drawRect = CGPDFPageGetBoxRect(_pageRef, kCGPDFCropBox);
     
     //    _block(_drawRect.size.width / _drawRect.size.height);
@@ -218,6 +241,19 @@
 
 -(void)clearAfterClass
 {
+    if (_downloadToken)
+    {
+        VYSDWebImageDownloader *downloader = [VYSDWebImageDownloader sharedDownloader];
+        [downloader cancel:_downloadToken];
+        _downloadToken = nil;
+    }
+    
+    if (_pdfRef)
+    {
+        CGPDFDocumentRelease(_pdfRef);
+        _pdfRef = nil;
+    }
+    
     _pageRef = nil;
     [self setNeedsDisplay];
 }

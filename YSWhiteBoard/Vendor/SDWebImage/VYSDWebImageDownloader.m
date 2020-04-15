@@ -143,8 +143,18 @@
                                                    options:(VYSDWebImageDownloaderOptions)options
                                                   progress:(nullable VYSDWebImageDownloaderProgressBlock)progressBlock
                                                  completed:(nullable VYSDWebImageDownloaderCompletedBlock)completedBlock {
-    __weak VYSDWebImageDownloader *wself = self;
+    
+    return [self downloadImageWithURL:url host:nil options:options progress:progressBlock completed:completedBlock];
+}
 
+
+- (nullable VYSDWebImageDownloadToken *)downloadImageWithURL:(nullable NSURL *)url
+                                                        host:(NSString *)host
+                                                     options:(VYSDWebImageDownloaderOptions)options
+                                                    progress:(nullable VYSDWebImageDownloaderProgressBlock)progressBlock
+                                                   completed:(nullable VYSDWebImageDownloaderCompletedBlock)completedBlock {
+    __weak VYSDWebImageDownloader *wself = self;
+    
     return [self addProgressCallback:progressBlock completedBlock:completedBlock forURL:url createCallback:^VYSDWebImageDownloaderOperation *{
         __strong __typeof (wself) sself = wself;
         NSTimeInterval timeoutInterval = sself.downloadTimeout;
@@ -154,6 +164,10 @@
 
         // In order to prevent from potential duplicate caching (NSURLCache + SDImageCache) we disable the cache for image requests if told otherwise
         NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:url cachePolicy:(options & VYSDWebImageDownloaderUseNSURLCache ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData) timeoutInterval:timeoutInterval];
+        if ([host bm_isNotEmpty])
+        {
+            [request setValue:host forHTTPHeaderField:@"host"];
+        }
         request.HTTPShouldHandleCookies = (options & VYSDWebImageDownloaderHandleCookies);
         request.HTTPShouldUsePipelining = YES;
         if (sself.headersFilter) {

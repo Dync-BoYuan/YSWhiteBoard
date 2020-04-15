@@ -41,7 +41,7 @@ typedef void(^FinishBlock)(float ratio);
                      Doc_Protocol:(NSString *)doc_protocol
                     didFinishLoad:(pdfDidLoadBlock)block;
 
-- (void)showImage:(NSURL *)url finishBlock:(FinishBlock)block;
+- (void)showImage:(NSURL *)url host:(NSString *)host finishBlock:(FinishBlock)block;
 
 - (void)showOnWeb;
 

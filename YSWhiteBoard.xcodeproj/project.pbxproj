@@ -18,6 +18,15 @@
 		0455F11D243EFA1900468853 /* YSWhiteBoardTopBar.h in Headers */ = {isa = PBXBuildFile; fileRef = 0455F11B243EFA1900468853 /* YSWhiteBoardTopBar.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		0455F11E243EFA1900468853 /* YSWhiteBoardTopBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 0455F11C243EFA1900468853 /* YSWhiteBoardTopBar.m */; };
 		0455F120243EFC8C00468853 /* YSWhiteBoardImage.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0455F11F243EFC8C00468853 /* YSWhiteBoardImage.xcassets */; };
+		26ACB4BB2446F3E300C8B149 /* YSRoomSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 26ACB4BA2446F3E300C8B149 /* YSRoomSDK.framework */; };
+		26ACB4C52446F7C500C8B149 /* NSURLProtocol+YSWhiteBoard.m in Sources */ = {isa = PBXBuildFile; fileRef = 26ACB4BD2446F7C500C8B149 /* NSURLProtocol+YSWhiteBoard.m */; };
+		26ACB4C62446F7C500C8B149 /* YSWhiteBordNSURLProtocol.h in Headers */ = {isa = PBXBuildFile; fileRef = 26ACB4BE2446F7C500C8B149 /* YSWhiteBordNSURLProtocol.h */; };
+		26ACB4C72446F7C500C8B149 /* YSWhiteBordHttpDNSUtil.h in Headers */ = {isa = PBXBuildFile; fileRef = 26ACB4BF2446F7C500C8B149 /* YSWhiteBordHttpDNSUtil.h */; };
+		26ACB4C82446F7C500C8B149 /* NSURLRequest+YSWhiteBoard.m in Sources */ = {isa = PBXBuildFile; fileRef = 26ACB4C02446F7C500C8B149 /* NSURLRequest+YSWhiteBoard.m */; };
+		26ACB4C92446F7C500C8B149 /* YSWhiteBordNSURLProtocol.m in Sources */ = {isa = PBXBuildFile; fileRef = 26ACB4C12446F7C500C8B149 /* YSWhiteBordNSURLProtocol.m */; };
+		26ACB4CA2446F7C500C8B149 /* NSURLProtocol+YSWhiteBoard.h in Headers */ = {isa = PBXBuildFile; fileRef = 26ACB4C22446F7C500C8B149 /* NSURLProtocol+YSWhiteBoard.h */; };
+		26ACB4CB2446F7C500C8B149 /* NSURLRequest+YSWhiteBoard.h in Headers */ = {isa = PBXBuildFile; fileRef = 26ACB4C32446F7C500C8B149 /* NSURLRequest+YSWhiteBoard.h */; };
+		26ACB4CC2446F7C500C8B149 /* YSWhiteBordHttpDNSUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 26ACB4C42446F7C500C8B149 /* YSWhiteBordHttpDNSUtil.m */; };
 		8732B8D524270E18005BEB99 /* YSWhiteBoard.h in Headers */ = {isa = PBXBuildFile; fileRef = 8732B8D324270E18005BEB99 /* YSWhiteBoard.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		87AD1600242721F000EAE233 /* YSWhiteBoardManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 87AD15FE242721F000EAE233 /* YSWhiteBoardManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		87AD1601242721F000EAE233 /* YSWhiteBoardManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 87AD15FF242721F000EAE233 /* YSWhiteBoardManager.m */; };
@@ -128,6 +137,15 @@
 		0455F11B243EFA1900468853 /* YSWhiteBoardTopBar.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YSWhiteBoardTopBar.h; sourceTree = "<group>"; };
 		0455F11C243EFA1900468853 /* YSWhiteBoardTopBar.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YSWhiteBoardTopBar.m; sourceTree = "<group>"; };
 		0455F11F243EFC8C00468853 /* YSWhiteBoardImage.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = YSWhiteBoardImage.xcassets; sourceTree = "<group>"; };
+		26ACB4BA2446F3E300C8B149 /* YSRoomSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = YSRoomSDK.framework; path = YSWhiteBoard/YSRoomSDK.framework; sourceTree = SOURCE_ROOT; };
+		26ACB4BD2446F7C500C8B149 /* NSURLProtocol+YSWhiteBoard.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSURLProtocol+YSWhiteBoard.m"; sourceTree = "<group>"; };
+		26ACB4BE2446F7C500C8B149 /* YSWhiteBordNSURLProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YSWhiteBordNSURLProtocol.h; sourceTree = "<group>"; };
+		26ACB4BF2446F7C500C8B149 /* YSWhiteBordHttpDNSUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YSWhiteBordHttpDNSUtil.h; sourceTree = "<group>"; };
+		26ACB4C02446F7C500C8B149 /* NSURLRequest+YSWhiteBoard.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSURLRequest+YSWhiteBoard.m"; sourceTree = "<group>"; };
+		26ACB4C12446F7C500C8B149 /* YSWhiteBordNSURLProtocol.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YSWhiteBordNSURLProtocol.m; sourceTree = "<group>"; };
+		26ACB4C22446F7C500C8B149 /* NSURLProtocol+YSWhiteBoard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSURLProtocol+YSWhiteBoard.h"; sourceTree = "<group>"; };
+		26ACB4C32446F7C500C8B149 /* NSURLRequest+YSWhiteBoard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSURLRequest+YSWhiteBoard.h"; sourceTree = "<group>"; };
+		26ACB4C42446F7C500C8B149 /* YSWhiteBordHttpDNSUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YSWhiteBordHttpDNSUtil.m; sourceTree = "<group>"; };
 		8732B8D024270E18005BEB99 /* YSWhiteBoard.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = YSWhiteBoard.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		8732B8D324270E18005BEB99 /* YSWhiteBoard.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YSWhiteBoard.h; sourceTree = "<group>"; };
 		8732B8D424270E18005BEB99 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -269,6 +287,7 @@
 			files = (
 				040812692435881000900963 /* BMKit.framework in Frameworks */,
 				040812622435873D00900963 /* YSRoomSDK.framework in Frameworks */,
+				26ACB4BB2446F3E300C8B149 /* YSRoomSDK.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -278,6 +297,7 @@
 		040812632435881000900963 /* BMKit */ = {
 			isa = PBXGroup;
 			children = (
+				26ACB4BA2446F3E300C8B149 /* YSRoomSDK.framework */,
 				040812642435881000900963 /* BMKit.framework */,
 				040812652435881000900963 /* BMTZImagePickerController.bundle */,
 				040812662435881000900963 /* BMKitImage.xcassets */,
@@ -316,6 +336,21 @@
 			path = YSSplitScreen;
 			sourceTree = "<group>";
 		};
+		26ACB4BC2446F7C500C8B149 /* YSWhiteBordNSURLProtocol */ = {
+			isa = PBXGroup;
+			children = (
+				26ACB4C22446F7C500C8B149 /* NSURLProtocol+YSWhiteBoard.h */,
+				26ACB4BD2446F7C500C8B149 /* NSURLProtocol+YSWhiteBoard.m */,
+				26ACB4C32446F7C500C8B149 /* NSURLRequest+YSWhiteBoard.h */,
+				26ACB4C02446F7C500C8B149 /* NSURLRequest+YSWhiteBoard.m */,
+				26ACB4BF2446F7C500C8B149 /* YSWhiteBordHttpDNSUtil.h */,
+				26ACB4C42446F7C500C8B149 /* YSWhiteBordHttpDNSUtil.m */,
+				26ACB4BE2446F7C500C8B149 /* YSWhiteBordNSURLProtocol.h */,
+				26ACB4C12446F7C500C8B149 /* YSWhiteBordNSURLProtocol.m */,
+			);
+			path = YSWhiteBordNSURLProtocol;
+			sourceTree = "<group>";
+		};
 		8732B8C624270E18005BEB99 = {
 			isa = PBXGroup;
 			children = (
@@ -336,6 +371,7 @@
 		8732B8D224270E18005BEB99 /* YSWhiteBoard */ = {
 			isa = PBXGroup;
 			children = (
+				26ACB4BC2446F7C500C8B149 /* YSWhiteBordNSURLProtocol */,
 				87C8B0872429B9D20016848E /* Vendor */,
 				87AD16162427554900EAE233 /* YSRoomUtil */,
 				87AD16332428B68400EAE233 /* YSWhiteBoardView */,
@@ -643,6 +679,7 @@
 				87C8B0862429B9150016848E /* YSWhiteBoardEnum.h in Headers */,
 				87AD163E2428B68400EAE233 /* YSWBWebViewManager.h in Headers */,
 				87AD163C2428B68400EAE233 /* YSWBDrawViewManager.h in Headers */,
+				26ACB4CA2446F7C500C8B149 /* NSURLProtocol+YSWhiteBoard.h in Headers */,
 				87C8B125242C3ED00016848E /* YSDownloader.h in Headers */,
 				87C8B124242C3ED00016848E /* YSPreloadProgressView.h in Headers */,
 				87C8B0CF2429B9D20016848E /* UIImage+VYMultiFormat.h in Headers */,
@@ -662,7 +699,9 @@
 				87C8B0D52429B9D20016848E /* VYSDImageCache.h in Headers */,
 				87C8B0DA2429B9D20016848E /* VYSDWebImageDownloader.h in Headers */,
 				87C8B0D32429B9D20016848E /* VYSDWebImageManager.h in Headers */,
+				26ACB4CB2446F7C500C8B149 /* NSURLRequest+YSWhiteBoard.h in Headers */,
 				87C8B1172429BCD20016848E /* DrawText.h in Headers */,
+				26ACB4C72446F7C500C8B149 /* YSWhiteBordHttpDNSUtil.h in Headers */,
 				87C8B0BA2429B9D20016848E /* UIImageView+VYHighlightedWebCache.h in Headers */,
 				87C8B0D92429B9D20016848E /* UIImage+VYGIF.h in Headers */,
 				8732B8D524270E18005BEB99 /* YSWhiteBoard.h in Headers */,
@@ -673,6 +712,7 @@
 				87C8B11B2429BCD20016848E /* DrawBase.h in Headers */,
 				87AD1631242859A900EAE233 /* YSWBLogger.h in Headers */,
 				87C8B0D42429B9D20016848E /* VYSDWebImageDecoder.h in Headers */,
+				26ACB4C62446F7C500C8B149 /* YSWhiteBordNSURLProtocol.h in Headers */,
 				87C8B0D62429B9D20016848E /* UIButton+VYWebCache.h in Headers */,
 				87C8B1072429BCD20016848E /* DocShowView.h in Headers */,
 				87C8B10C2429BCD20016848E /* DocUnderView.h in Headers */,
@@ -762,9 +802,11 @@
 				87C8B0B92429B9D20016848E /* UIImage+VYMultiFormat.m in Sources */,
 				87C8B1112429BCD20016848E /* LaserPan.m in Sources */,
 				042F2F932435BDEE00838154 /* YSBrushToolsConfigs.m in Sources */,
+				26ACB4C82446F7C500C8B149 /* NSURLRequest+YSWhiteBoard.m in Sources */,
 				87C8B0CA2429B9D20016848E /* VYSDImageCacheConfig.m in Sources */,
 				87C8B11C2429BCD20016848E /* DrawBase.m in Sources */,
 				87AD162A24284E8E00EAE233 /* YSRoomUtil.m in Sources */,
+				26ACB4C52446F7C500C8B149 /* NSURLProtocol+YSWhiteBoard.m in Sources */,
 				87C8B0BB2429B9D20016848E /* NSData+VYImageContentType.m in Sources */,
 				87C8B0C02429B9D20016848E /* VYSDWebImageManager.m in Sources */,
 				87C8B0B82429B9D20016848E /* MKAnnotationView+VYWebCache.m in Sources */,
@@ -779,7 +821,9 @@
 				87C8B1032429BCD20016848E /* YSDrawView.m in Sources */,
 				87C8B0BF2429B9D20016848E /* VYSDWebImageDecoder.m in Sources */,
 				87C8B0C32429B9D20016848E /* VYSDWebImagePrefetcher.m in Sources */,
+				26ACB4C92446F7C500C8B149 /* YSWhiteBordNSURLProtocol.m in Sources */,
 				87C8B1122429BCD20016848E /* DrawRectangle.m in Sources */,
+				26ACB4CC2446F7C500C8B149 /* YSWhiteBordHttpDNSUtil.m in Sources */,
 				87C8B1052429BCD20016848E /* YSFileModel.m in Sources */,
 				87C8B0D12429B9D20016848E /* UIView+VYWebCache.m in Sources */,
 				87C8B0C62429B9D20016848E /* UIImage+VYGIF.m in Sources */,
@@ -930,6 +974,10 @@
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				ENABLE_BITCODE = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/YSWhiteBoard",
+				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "$(PROJECT_DIR)/YSWhiteBoard/YSWhiteBoard.h";
 				INFOPLIST_FILE = YSWhiteBoard/Info.plist;
@@ -968,6 +1016,10 @@
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				ENABLE_BITCODE = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/YSWhiteBoard",
+				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "$(PROJECT_DIR)/YSWhiteBoard/YSWhiteBoard.h";
 				INFOPLIST_FILE = YSWhiteBoard/Info.plist;

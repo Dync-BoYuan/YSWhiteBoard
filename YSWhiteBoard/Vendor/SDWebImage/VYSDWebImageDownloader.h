@@ -212,6 +212,11 @@ typedef VYSDHTTPHeadersDictionary * _Nullable (^VYSDWebImageDownloaderHeadersFil
                                                    options:(VYSDWebImageDownloaderOptions)options
                                                   progress:(nullable VYSDWebImageDownloaderProgressBlock)progressBlock
                                                  completed:(nullable VYSDWebImageDownloaderCompletedBlock)completedBlock;
+- (nullable VYSDWebImageDownloadToken *)downloadImageWithURL:(nullable NSURL *)url
+                                                        host:(nullable NSString *)host
+                                                     options:(VYSDWebImageDownloaderOptions)options
+                                                    progress:(nullable VYSDWebImageDownloaderProgressBlock)progressBlock
+                                                   completed:(nullable VYSDWebImageDownloaderCompletedBlock)completedBlock;
 
 /**
  * Cancels a download that was previously queued using -downloadImageWithURL:options:progress:completed:
