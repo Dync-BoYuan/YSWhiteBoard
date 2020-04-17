@@ -82,6 +82,7 @@
 {
     // 执行所有缓存的信令消息
     NSArray *array = self.cacheMsgPool;
+    
     for (NSDictionary *dic in array)
     {
         NSString *func = dic[kYSMethodNameKey];
@@ -95,19 +96,10 @@
         
         switch (params.count)
         {
-            case 0:
-                ((void (*)(id, SEL))objc_msgSend)(self, funcSel);
-                break;
-                
             case 1:
                 ((void (*)(id, SEL, id))objc_msgSend)(self, funcSel, params.firstObject);
                 break;
                 
-            case 2:
-                ((void (*)(id, SEL, id, id))objc_msgSend)(
-                    self, funcSel, params.firstObject, params.lastObject);
-                break;
-
             default:
                 break;
         }
@@ -118,6 +110,20 @@
 
 
 #pragma mark - 监听课堂 底层通知消息
+
+/// 更新服务器地址
+- (void)updateWebAddressInfo:(NSDictionary *)message
+{
+    if (self.webViewManager)
+    {
+        [self.webViewManager sendSignalMessageToJS:WBUpdateWebAddressInfo message:message];
+    }
+    
+    if (self.drawViewManager)
+    {
+        self.drawViewManager.address = [message bm_stringForKey:YSWhiteBoardDocHostKey];
+    }
+}
 
 /// 断开连接
 - (void)disconnect:(NSDictionary *)message
@@ -147,6 +153,17 @@
 /// 用户属性改变通知
 - (void)userPropertyChanged:(NSDictionary *)message
 {
+    if (!self.loadingH5Fished)
+    {
+        NSString *methodName = NSStringFromSelector(@selector(userPropertyChanged:));
+        NSMutableDictionary *dic = [NSMutableDictionary dictionary];
+        [dic setValue:methodName forKey:kYSMethodNameKey];
+        [dic setValue:@[message] forKey:kYSParameterKey];
+        [self.cacheMsgPool addObject:dic];
+        
+        return;
+    }
+
     if (self.webViewManager)
     {
         [self.webViewManager sendSignalMessageToJS:WBSetProperty message:message];
@@ -158,36 +175,20 @@
     }
 }
 
-/// 用户离开通知
-- (void)participantLeaved:(NSDictionary *)message
-{
-    if (self.webViewManager)
-    {
-        [self.webViewManager sendSignalMessageToJS:WBParticipantLeft message:message];
-    }
-}
-
-/// 用户进入通知
-- (void)participantJoin:(NSDictionary *)message
-{
-    if (self.webViewManager)
-    {
-        [self.webViewManager sendSignalMessageToJS:WBParticipantJoined message:message];
-    }
-}
-
-/// 自己被踢出教室通知
-- (void)participantEvicted:(NSDictionary *)message
-{
-    if (self.webViewManager)
-    {
-        [self.webViewManager sendSignalMessageToJS:WBParticipantEvicted message:message];
-    }
-}
-
 /// 收到远端pubMsg消息通知
 - (void)remotePubMsg:(NSDictionary *)message
 {
+    if (!self.loadingH5Fished)
+    {
+        NSString *methodName = NSStringFromSelector(@selector(remotePubMsg:));
+        NSMutableDictionary *dic = [NSMutableDictionary dictionary];
+        [dic setValue:methodName forKey:kYSMethodNameKey];
+        [dic setValue:@[message] forKey:kYSParameterKey];
+        [self.cacheMsgPool addObject:dic];
+        
+        return;
+    }
+
     NSString *msgName = [message bm_stringForKey:@"name"];
     NSString *msgId = [message bm_stringForKey:@"id"];
     NSString *fromId = [message objectForKey:@"fromID"];
@@ -235,6 +236,17 @@
 /// 收到远端delMsg消息的通知
 - (void)remoteDelMsg:(NSDictionary *)message
 {
+    if (!self.loadingH5Fished)
+    {
+        NSString *methodName = NSStringFromSelector(@selector(remoteDelMsg:));
+        NSMutableDictionary *dic = [NSMutableDictionary dictionary];
+        [dic setValue:methodName forKey:kYSMethodNameKey];
+        [dic setValue:@[message] forKey:kYSParameterKey];
+        [self.cacheMsgPool addObject:dic];
+        
+        return;
+    }
+
     NSString *msgName = [message bm_stringForKey:@"name"];
 
     if (self.webViewManager)
@@ -257,37 +269,6 @@
     }
 }
 
-/// 大并发房间用户上台通知
-- (void)bigRoomUserPublished:(NSDictionary *)message
-{
-    if (self.webViewManager)
-    {
-        [self.webViewManager sendSignalMessageToJS:WBParticipantPublished message:message];
-    }
-}
-
-/// 更新服务器地址
-- (void)updateWebAddressInfo:(NSDictionary *)message
-{
-    if (self.webViewManager)
-    {
-        [self.webViewManager sendSignalMessageToJS:WBUpdateWebAddressInfo message:message];
-    }
-    
-    if (self.drawViewManager)
-    {
-        self.drawViewManager.address = [message bm_stringForKey:YSWhiteBoardDocHostKey];
-    }
-}
-
-- (void)receiveWhiteBoardMessage:(NSDictionary *)dictionary isDelMsg:(BOOL)isDel
-{
-    if (self.drawViewManager)
-    {
-        [self.drawViewManager receiveWhiteBoardMessage:dictionary isDelMsg:isDel];
-    }
-}
-
 
 #pragma -
 #pragma mark YSWBWebViewManagerDelegate
@@ -305,6 +286,8 @@
 //        // 更新白板数据
 //        self.drawViewManager.address = [YSWhiteBoardManager shareInstance].serverDocAddrKey;
 //    }
+    
+    [self doMsgCachePool];
 }
 
 /// Web课件翻页结果

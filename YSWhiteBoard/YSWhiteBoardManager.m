@@ -754,7 +754,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     // 教室消息列表的通知
 //    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(roomWhiteBoardOnRemoteMsgList:) name:YSWhiteBoardOnRemoteMsgListNotification object:nil];
     // 大并发房间用户上台通知
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(roomWhiteBoardOnBigRoomUserPublished:) name:YSWhiteBoardOnBigRoomUserPublishedNotification object:nil];
+//    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(roomWhiteBoardOnBigRoomUserPublished:) name:YSWhiteBoardOnBigRoomUserPublishedNotification object:nil];
     // 白板崩溃 重新加载 重新获取msgList
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(resetWhiteBoard:) name:YSWhiteBoardMsgListACKNotification object:nil];
     // 获取服务器地址
@@ -1101,16 +1101,6 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 {
     NSDictionary *dict = notification.userInfo;
     NSDictionary *message = [dict objectForKey:YSWhiteBoardNotificationUserInfoKey];
-    
-    if (self.mainWhiteBoardView)
-    {
-        [self.mainWhiteBoardView bigRoomUserPublished:message];
-    }
-    
-    for (YSWhiteBoardView *whiteBoardView in self.coursewareViewList)
-    {
-        [whiteBoardView  bigRoomUserPublished:message];
-    }
 }
 
 // 用户属性改变通知
@@ -1119,7 +1109,6 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     NSDictionary *dict = notification.userInfo;
     NSDictionary *message = [dict bm_dictionaryForKey:YSWhiteBoardNotificationUserInfoKey];
     
-    // 用户属性改变通知，只接收自己的candraw属性
     if (![message bm_isNotEmptyDictionary])
     {
         return;
@@ -1132,7 +1121,8 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     }
     
     NSDictionary *properties = [message bm_dictionaryForKey:@"properties"];
-    if (![properties bm_containsObjectForKey:sYSUserCandraw])
+    // 用户属性改变通知，只接收自己的candraw属性，PrimaryColor画笔颜色属性
+    if (![properties bm_containsObjectForKey:sYSUserCandraw] && ![properties bm_containsObjectForKey:sYSUserPrimaryColor])
     {
         return;
     }
