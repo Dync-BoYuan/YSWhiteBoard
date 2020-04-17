@@ -623,7 +623,6 @@
     else if ([action isEqualToString:WBPreloadingFished])
     {
         WB_INFO(@"evaluateJS - preFinish - %@", msgDic);
-        [YSWhiteBoardManager shareInstance].preloadingFished = YES;
 
         if (self.delegate &&
             [self.delegate respondsToSelector:@selector(onWBWebViewManagerPreloadingFished)])
@@ -844,101 +843,101 @@
                }];
 }
 
-- (void)whiteBoardOnRoomConnectedUserlist:(NSNumber *)code response:(NSDictionary *)response
-{
-    NSMutableDictionary *newDic = [NSMutableDictionary dictionaryWithDictionary:response];
-    [newDic enumerateKeysAndObjectsUsingBlock:^(id _Nonnull key, NSDictionary *_Nonnull obj,
-                                                BOOL *_Nonnull stop) {
-        if ([key isEqualToString:@"msglist"])
-        {
-            NSMutableDictionary *msglist = [NSMutableDictionary dictionaryWithDictionary:obj];
-            [msglist enumerateKeysAndObjectsUsingBlock:^(
-                         NSString *_Nonnull key, NSDictionary *_Nonnull obj, BOOL *_Nonnull stop) {
-                if ([key isEqualToString:sYSSignalDocumentFilePage_ShowPage])
-                {
-                    NSMutableDictionary *bigGuy =
-                        [NSMutableDictionary dictionaryWithDictionary:obj];
-                    NSMutableDictionary *tDic = nil;
-                    id data = [obj objectForKey:@"data"];
-                    tDic = [NSMutableDictionary dictionaryWithDictionary:[YSRoomUtil convertWithData:data]];
-
-                    NSMutableDictionary *filedata =
-                        [NSMutableDictionary dictionaryWithDictionary:[tDic bm_dictionaryForKey:@"filedata"]];
-                    NSString *fileid = [NSString stringWithFormat:@"%@", [filedata bm_stringForKey:@"fileid"]];
-                    
-                    if ([YSWhiteBoardManager supportPreload] &&
-                        [[NSFileManager defaultManager] fileExistsAtPath:[[NSTemporaryDirectory() stringByAppendingPathComponent:@"YSFile"] stringByAppendingPathComponent:fileid]])
-                    {
-                        NSString *type         = nil;
-                        BOOL isH5Document = [tDic bm_boolForKey:@"isH5Document"];
-                        BOOL isDynamicPPT = [tDic bm_boolForKey:@"isDynamicPPT"];
-                        if (isH5Document) { type = @"/index.html"; }
-                        if (isDynamicPPT) { type = @"/newppt.html"; }
-
-                        NSString *baseurl =
-                        [NSURL fileURLWithPath:[[[NSTemporaryDirectory() stringByAppendingPathComponent:@"YSFile"]
-                                                 stringByAppendingPathComponent:fileid]
-                                                stringByAppendingPathComponent:type]]
-                        .relativeString;
-                        [filedata setObject:baseurl forKey:@"baseurl"];
-                        [tDic setObject:filedata forKey:@"filedata"];
-                        NSString *dataString = [[NSString alloc]
-                            initWithData:[NSJSONSerialization
-                                             dataWithJSONObject:tDic
-                                                        options:NSJSONWritingPrettyPrinted
-                                                          error:nil]
-                                encoding:NSUTF8StringEncoding];
-                        dataString =
-                            [dataString stringByReplacingOccurrencesOfString:@"\n" withString:@""];
-                        [bigGuy setObject:dataString forKey:@"data"];
-                        [msglist setObject:bigGuy forKey:key];
-                        [newDic setObject:msglist forKey:@"msglist"];
-                    }
-
-                    BOOL isMedia = [tDic bm_boolForKey:@"isMedia"];
-                    if (isMedia) { [newDic removeObjectForKey:key]; }
-                }
-            }];
-        }
-    }];
-
-    NSString *tJsonDataJsonString;
-    if (response)
-    {
-        NSData *tJsonData = [NSJSONSerialization dataWithJSONObject:newDic
-                                                            options:NSJSONWritingPrettyPrinted
-                                                              error:nil];
-        tJsonDataJsonString =
-            [[NSString alloc] initWithData:tJsonData encoding:NSUTF8StringEncoding];
-    }
-    else
-    {
-        tJsonDataJsonString = @"";
-    }
-
-    NSString *jsReceivePhoneByTriggerEvent = [NSString
-        stringWithFormat:@"JsSocket.%@(%@,%@)", WBRoomConnected, code, tJsonDataJsonString];
-
-    [self sendMessageToJS:jsReceivePhoneByTriggerEvent];
-
-    [[YSRoomInterface instance] pubMsg:sYSSignalUpdateTime
-                               msgID:sYSSignalUpdateTime
-                                toID:[YSRoomInterface instance].localUser.peerID
-                                data:@""
-                                save:NO
-                     associatedMsgID:nil
-                    associatedUserID:nil
-                             expires:0
-                          completion:nil];
-
-    // Get msgList from "msglist"
-    NSDictionary *msgDic = [response bm_dictionaryForKey:@"msglist"];
-    if (self.delegate &&
-        [self.delegate respondsToSelector:@selector(onWBWebViewManagerOnRoomConnectedMsglist:)])
-    {
-        [self.delegate onWBWebViewManagerOnRoomConnectedMsglist:msgDic];
-    }
-}
+//- (void)whiteBoardOnRoomConnectedUserlist:(NSNumber *)code response:(NSDictionary *)response
+//{
+//    NSMutableDictionary *newDic = [NSMutableDictionary dictionaryWithDictionary:response];
+//    [newDic enumerateKeysAndObjectsUsingBlock:^(id _Nonnull key, NSDictionary *_Nonnull obj,
+//                                                BOOL *_Nonnull stop) {
+//        if ([key isEqualToString:@"msglist"])
+//        {
+//            NSMutableDictionary *msglist = [NSMutableDictionary dictionaryWithDictionary:obj];
+//            [msglist enumerateKeysAndObjectsUsingBlock:^(
+//                         NSString *_Nonnull key, NSDictionary *_Nonnull obj, BOOL *_Nonnull stop) {
+//                if ([key isEqualToString:sYSSignalDocumentFilePage_ShowPage])
+//                {
+//                    NSMutableDictionary *bigGuy =
+//                        [NSMutableDictionary dictionaryWithDictionary:obj];
+//                    NSMutableDictionary *tDic = nil;
+//                    id data = [obj objectForKey:@"data"];
+//                    tDic = [NSMutableDictionary dictionaryWithDictionary:[YSRoomUtil convertWithData:data]];
+//
+//                    NSMutableDictionary *filedata =
+//                        [NSMutableDictionary dictionaryWithDictionary:[tDic bm_dictionaryForKey:@"filedata"]];
+//                    NSString *fileid = [NSString stringWithFormat:@"%@", [filedata bm_stringForKey:@"fileid"]];
+//                    
+//                    if ([YSWhiteBoardManager supportPreload] &&
+//                        [[NSFileManager defaultManager] fileExistsAtPath:[[NSTemporaryDirectory() stringByAppendingPathComponent:@"YSFile"] stringByAppendingPathComponent:fileid]])
+//                    {
+//                        NSString *type         = nil;
+//                        BOOL isH5Document = [tDic bm_boolForKey:@"isH5Document"];
+//                        BOOL isDynamicPPT = [tDic bm_boolForKey:@"isDynamicPPT"];
+//                        if (isH5Document) { type = @"/index.html"; }
+//                        if (isDynamicPPT) { type = @"/newppt.html"; }
+//
+//                        NSString *baseurl =
+//                        [NSURL fileURLWithPath:[[[NSTemporaryDirectory() stringByAppendingPathComponent:@"YSFile"]
+//                                                 stringByAppendingPathComponent:fileid]
+//                                                stringByAppendingPathComponent:type]]
+//                        .relativeString;
+//                        [filedata setObject:baseurl forKey:@"baseurl"];
+//                        [tDic setObject:filedata forKey:@"filedata"];
+//                        NSString *dataString = [[NSString alloc]
+//                            initWithData:[NSJSONSerialization
+//                                             dataWithJSONObject:tDic
+//                                                        options:NSJSONWritingPrettyPrinted
+//                                                          error:nil]
+//                                encoding:NSUTF8StringEncoding];
+//                        dataString =
+//                            [dataString stringByReplacingOccurrencesOfString:@"\n" withString:@""];
+//                        [bigGuy setObject:dataString forKey:@"data"];
+//                        [msglist setObject:bigGuy forKey:key];
+//                        [newDic setObject:msglist forKey:@"msglist"];
+//                    }
+//
+//                    BOOL isMedia = [tDic bm_boolForKey:@"isMedia"];
+//                    if (isMedia) { [newDic removeObjectForKey:key]; }
+//                }
+//            }];
+//        }
+//    }];
+//
+//    NSString *tJsonDataJsonString;
+//    if (response)
+//    {
+//        NSData *tJsonData = [NSJSONSerialization dataWithJSONObject:newDic
+//                                                            options:NSJSONWritingPrettyPrinted
+//                                                              error:nil];
+//        tJsonDataJsonString =
+//            [[NSString alloc] initWithData:tJsonData encoding:NSUTF8StringEncoding];
+//    }
+//    else
+//    {
+//        tJsonDataJsonString = @"";
+//    }
+//
+//    NSString *jsReceivePhoneByTriggerEvent = [NSString
+//        stringWithFormat:@"JsSocket.%@(%@,%@)", WBRoomConnected, code, tJsonDataJsonString];
+//
+//    [self sendMessageToJS:jsReceivePhoneByTriggerEvent];
+//
+//    [[YSRoomInterface instance] pubMsg:sYSSignalUpdateTime
+//                               msgID:sYSSignalUpdateTime
+//                                toID:[YSRoomInterface instance].localUser.peerID
+//                                data:@""
+//                                save:NO
+//                     associatedMsgID:nil
+//                    associatedUserID:nil
+//                             expires:0
+//                          completion:nil];
+//
+//    // Get msgList from "msglist"
+//    NSDictionary *msgDic = [response bm_dictionaryForKey:@"msglist"];
+//    if (self.delegate &&
+//        [self.delegate respondsToSelector:@selector(onWBWebViewManagerOnRoomConnectedMsglist:)])
+//    {
+//        [self.delegate onWBWebViewManagerOnRoomConnectedMsglist:msgDic];
+//    }
+//}
 
 
 #pragma mark - WKNavigationDelegate

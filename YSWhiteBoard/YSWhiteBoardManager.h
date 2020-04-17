@@ -44,16 +44,12 @@ NS_ASSUME_NONNULL_BEGIN
 /// 记录UI层是否开始上课
 @property (nonatomic, assign, readonly) BOOL isBeginClass;
 
-/// 预加载文档结束
-@property (nonatomic, assign) BOOL preloadingFished;
-
+/// 更新服务器地址
 @property (nonatomic, assign, readonly) BOOL isUpdateWebAddressInfo;
 
 
 + (instancetype)shareInstance;
 + (NSString *)whiteBoardVersion;
-
-+ (BOOL)supportPreload;
 
 - (void)doMsgCachePool;
 
@@ -108,8 +104,6 @@ NS_ASSUME_NONNULL_BEGIN
 /// 白板 放大重置
 - (void)whiteBoardResetEnlarge;
 - (void)whiteBoardResetEnlargeWithFileId:(NSString *)fileId;
-
-- (YSWhiteBoardErrorCode)showDocumentWithFileID:(NSString *)fileId isBeginClass:(BOOL)isBeginClass isPubMsg:(BOOL)isPubMsg;
 
 #pragma -
 #pragma mark 画笔权限
