@@ -91,18 +91,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 @required
 
-/// 房间链接成功msglist回调
-- (void)onWBWebViewManagerOnRoomConnectedMsglist:(NSDictionary *)msgList;
+/// H5脚本文件加载初始化完成
+- (void)onWBViewWebViewManagerPageFinshed:(YSWhiteBoardView *)whiteBoardView;
 
+/// 切换Web课件加载状态
+- (void)onWBViewWebViewManagerLoadedState:(YSWhiteBoardView *)whiteBoardView withState:(NSDictionary *)dic;
 
-/// 教室加载状态
-- (void)onWBWebViewManagerLoadedState:(NSDictionary *)message;
-
-/// 白板初始化完成
-- (void)onWBWebViewManagerPageFinshed;
-
-/// 预加载文档结束
-- (void)onWBWebViewManagerPreloadingFished;
+/// Web课件翻页结果
+- (void)onWBViewWebViewManagerStateUpdate:(YSWhiteBoardView *)whiteBoardView withState:(NSDictionary *)dic;
+/// 翻页超时
+- (void)onWBViewWebViewManagerSlideLoadTimeout:(YSWhiteBoardView *)whiteBoardView withState:(NSDictionary *)dic;
 
 @end
 

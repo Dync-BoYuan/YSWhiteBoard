@@ -9,6 +9,7 @@
 #import "YSWhiteBoardView.h"
 #import "YSRoomUtil.h"
 #import "YSFileModel.h"
+#import <objc/message.h>
 
 #define YSWhiteBoardId_Header   @"docModule_"
 
@@ -77,6 +78,44 @@
     [self.drawViewManager updateFrame];
 }
 
+- (void)doMsgCachePool
+{
+    // 执行所有缓存的信令消息
+    NSArray *array = self.cacheMsgPool;
+    for (NSDictionary *dic in array)
+    {
+        NSString *func = dic[kYSMethodNameKey];
+        SEL funcSel = NSSelectorFromString(func);
+
+        NSMutableArray *params = [NSMutableArray array];
+        if ([[dic allKeys] containsObject:kYSParameterKey])
+        {
+            params = dic[kYSParameterKey];
+        }
+        
+        switch (params.count)
+        {
+            case 0:
+                ((void (*)(id, SEL))objc_msgSend)(self, funcSel);
+                break;
+                
+            case 1:
+                ((void (*)(id, SEL, id))objc_msgSend)(self, funcSel, params.firstObject);
+                break;
+                
+            case 2:
+                ((void (*)(id, SEL, id, id))objc_msgSend)(
+                    self, funcSel, params.firstObject, params.lastObject);
+                break;
+
+            default:
+                break;
+        }
+    }
+    
+    [self.cacheMsgPool removeAllObjects];
+}
+
 
 #pragma mark - 监听课堂 底层通知消息
 
@@ -85,10 +124,10 @@
 {
     if (!self.loadingH5Fished)
     {
-        NSString *methodName = NSStringFromSelector(@selector(sendSignalMessageToJS:message:));
+        NSString *methodName = NSStringFromSelector(@selector(disconnect:));
         NSMutableDictionary *dic = [NSMutableDictionary dictionary];
         [dic setValue:methodName forKey:kYSMethodNameKey];
-        [dic setValue:@[WBDisconnect, message] forKey:kYSParameterKey];
+        [dic setValue:@[message] forKey:kYSParameterKey];
         [self.cacheMsgPool addObject:dic];
         
         return;
@@ -249,8 +288,24 @@
     }
 }
 
+
 #pragma -
 #pragma mark YSWBWebViewManagerDelegate
+
+/// H5脚本文件加载初始化完成
+- (void)onWBWebViewManagerPageFinshed
+{
+    self.loadingH5Fished = YES;
+    
+    // 更新地址
+    [[YSWhiteBoardManager shareInstance] updateWebAddressInfo];
+        
+//    if (self.drawViewManager)
+//    {
+//        // 更新白板数据
+//        self.drawViewManager.address = [YSWhiteBoardManager shareInstance].serverDocAddrKey;
+//    }
+}
 
 /// Web课件翻页结果
 - (void)onWBWebViewManagerStateUpdate:(NSDictionary *)dic
@@ -334,10 +389,6 @@
 {
     self.isLoadingFinish = [dic[@"notice"] isEqualToString:@"loadSuccess"];
 
-    // 上报 课件加载成功失败
-    //[YSServersLog  uploadLogWithLevel:YSLogLevelInfo
-    //                             Text:[NSString stringWithFormat:@"WhiteBoard Loaded State: %@", dic[@"notice"]]];
-
     // 通知刷新白板
     [self refreshWhiteBoard];
     
@@ -361,88 +412,6 @@
     }
     
     [[NSNotificationCenter defaultCenter] postNotificationName:YSWhiteBoardEventLoadSlideFail object:dic[@"data"]];
-}
-
-
-/// 房间链接成功msglist回调
-- (void)onWBWebViewManagerOnRoomConnectedMsglist:(NSDictionary *)msgList
-{
-    NSSortDescriptor *desc = [[NSSortDescriptor alloc] initWithKey:@"seq" ascending:YES];
-    // 历史msgList如果有ShowPage信令，需要主动发给H5去刷新当前课件
-    BOOL show = NO;
-    NSArray *msgArray = [[msgList allValues] sortedArrayUsingDescriptors:@[ desc ]];;
-    for (NSDictionary *msgDic in msgArray)
-    {
-        if ([[msgDic objectForKey:@"name"] isEqualToString:sYSSignalShowPage])
-        {
-            show = YES;
-            [self.webViewManager sendSignalMessageToJS:WBPubMsg message:msgDic];
-            
-            NSDictionary *filedata = [msgDic bm_dictionaryForKey:@"filedata"];
-            if (!filedata)
-            {
-                id dataObject = [msgDic objectForKey:@"data"];
-                NSDictionary *dataDic = [YSRoomUtil convertWithData:dataObject];
-                filedata = [dataDic bm_dictionaryForKey:@"filedata"];
-            }
-            NSString *fileid = [filedata bm_stringForKey:@"fileid"];
-            if (!fileid)
-            {
-                fileid = @"0";
-            }
-            [[YSWhiteBoardManager shareInstance] setTheCurrentDocumentFileID:fileid];
-            break;
-        }
-        else
-        {
-            [self.webViewManager sendSignalMessageToJS:WBPubMsg message:msgDic];
-        }
-    }
-    
-    if (!show)
-    {
-           NSDictionary *fileDic = [YSFileModel fileDataDocDic:[YSWhiteBoardManager shareInstance].currentFile];
-            
-            [[YSRoomInterface instance] pubMsg:sYSSignalShowPage
-                                         msgID:sYSSignalDocumentFilePage_ShowPage
-                                          toID:[YSRoomInterface instance].localUser.peerID
-                                          data:fileDic
-                                          save:NO
-                                 extensionData:nil
-                               associatedMsgID:nil
-                              associatedUserID:nil
-                                       expires:0
-                                    completion:nil];
-    }
-    
-    if (self.delegate && [self.delegate respondsToSelector:@selector(onWBWebViewManagerOnRoomConnectedMsglist:)])
-    {
-        [self.delegate onWBWebViewManagerOnRoomConnectedMsglist:msgList];
-    }
-}
-
-/// H5脚本文件加载初始化完成
-- (void)onWBWebViewManagerPageFinshed
-{
-    self.loadingH5Fished = YES;
-    
-    // 更新地址
-    [[YSWhiteBoardManager shareInstance] updateWebAddressInfo];
-        
-    if (self.drawViewManager)
-    {
-        // 更新白板数据
-        self.drawViewManager.address = [YSWhiteBoardManager shareInstance].serverDocAddrKey;
-    }
-}
-
-/// 预加载文档结束
-- (void)onWBWebViewManagerPreloadingFished
-{
-    if (self.delegate && [self.delegate respondsToSelector:@selector(onWBWebViewManagerPreloadingFished)])
-    {
-        [self.delegate onWBWebViewManagerPreloadingFished];
-    }
 }
 
 // 页面刷新尺寸
