@@ -65,10 +65,25 @@
         [self addSubview:self.wbView];
         
         self.drawViewManager = [[YSWBDrawViewManager alloc] initWithBackView:self webView:self.wbView];
+        
+        UIPanGestureRecognizer * panGesture = [[UIPanGestureRecognizer alloc]initWithTarget:self action:@selector(panGestureToMoveView:)];
+        [self addGestureRecognizer:panGesture];
+        
     }
     
     return self;
 }
+
+///课件拖拽事件
+- (void)panGestureToMoveView:(UIPanGestureRecognizer *)pan
+{
+    
+    if ([self.delegate respondsToSelector:@selector(panToMoveWhiteBoardView:withGestureRecognizer:)])
+    {
+        [self.delegate panToMoveWhiteBoardView:self withGestureRecognizer:pan];
+    }
+}
+
 
 - (void)setFrame:(CGRect)frame
 {

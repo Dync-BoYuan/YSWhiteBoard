@@ -104,6 +104,9 @@ NS_ASSUME_NONNULL_BEGIN
 /// 预加载文档结束
 - (void)onWBWebViewManagerPreloadingFished;
 
+///拖拽手势事件
+- (void)panToMoveWhiteBoardView:(YSWhiteBoardView *)whiteBoard withGestureRecognizer:(UIPanGestureRecognizer *)pan;
+
 @end
 
 
