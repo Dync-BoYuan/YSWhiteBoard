@@ -59,7 +59,7 @@ NS_ASSUME_NONNULL_BEGIN
 /*
  房间链接成功
  */
-- (void)whiteBoardOnRoomConnectedUserlist:(NSNumber *)code response:(NSDictionary *)response;
+//- (void)whiteBoardOnRoomConnectedUserlist:(NSNumber *)code response:(NSDictionary *)response;
 
 /**
  发送缓存消息

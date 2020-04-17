@@ -66,6 +66,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 @property (nonatomic, strong) NSArray *serverAddrBackupKey;
 /// 完成获取文档服务器地址，web地址，备份地址 上传
 @property (nonatomic, assign) BOOL isUpdateWebAddressInfo;
+@property (nonatomic, strong) NSDictionary *serverAddressInfoDic;
 
 // 消息列表
 //@property (nonatomic, strong) NSMutableArray <NSDictionary *> *msgList;
@@ -74,9 +75,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 /// 记录UI层是否开始上课
 @property (nonatomic, assign) BOOL isBeginClass;
 
-/// 信令缓存数据 预加载完成前
-@property (nonatomic, strong) NSMutableArray *preLoadingFileCacheMsgPool;
-/// 信令缓存数据 预加载后页面加载完成前
+/// 信令缓存数据
 @property (nonatomic, strong) NSMutableArray *cacheMsgPool;
 
 /// 课件列表
@@ -127,13 +126,9 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 {
     if (self = [super init])
     {
-        self.preloadingFished = NO;
         self.isUpdateWebAddressInfo = NO;
         
-        //self.msgList = [NSMutableArray array];
-        
         self.cacheMsgPool = [NSMutableArray array];
-        self.preLoadingFileCacheMsgPool = [NSMutableArray array];
         
         self.docmentList = [NSMutableArray array];
         
@@ -205,53 +200,6 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     }
     
     [self.cacheMsgPool removeAllObjects];
-}
-
-- (void)doPreLoadingFileCacheMsgPool:(BOOL)removeAll
-{
-    // 执行所有缓存的信令消息
-    NSArray *array = self.preLoadingFileCacheMsgPool;
-
-    for (NSDictionary *dic in array)
-    {
-        NSString *func = dic[kYSMethodNameKey]; // YSCacheMsg_MethodName
-        SEL funcSel    = NSSelectorFromString(func);
-
-        NSMutableArray *params = [NSMutableArray array];
-        if ([[dic allKeys] containsObject:kYSParameterKey])
-        {
-            params = dic[kYSParameterKey];
-        }
-
-        switch (params.count)
-        {
-            case 0:
-                ((void (*)(id, SEL))objc_msgSend)(self, funcSel);
-                break;
-
-            case 1:
-                ((void (*)(id, SEL, id))objc_msgSend)(self, funcSel, params.firstObject);
-                break;
-
-            case 2:
-                if (![NSStringFromSelector(funcSel)
-                        isEqualToString:NSStringFromSelector(
-                                            @selector(receiveWhiteBoardMessage:isDelMsg:))])
-                {
-                    ((void (*)(id, SEL, id, id))objc_msgSend)(self, funcSel, params.firstObject,
-                                                              params.lastObject);
-                }
-                break;
-
-            default:
-                break;
-        }
-    }
-
-    if (removeAll)
-    {
-        [self.preLoadingFileCacheMsgPool removeAllObjects];
-    }
 }
 
 
@@ -438,27 +386,18 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         }
     }
     
-    BOOL findFile = NO;
     YSFileModel *model = [self getDocumentWithFileID:fileid];
-    if (model)
-    {
-        findFile = YES;
-        //[self.docmentList removeObject:model];
-    }
     
     NSNumber *isContentDocument = file[@"isContentDocument"];
     
     NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary:file];
     [dict setValue:isContentDocument forKey:@"isContentDocument"];
     
-    YSFileModel *fileModel = nil;
-    if (findFile)
-    {
-        fileModel = model;
-    }
-    else
+    YSFileModel *fileModel = model;
+    if (!model)
     {
         fileModel = [[YSFileModel alloc] init];
+        [self.docmentList addObject:fileModel];
     }
     
     [fileModel setValuesForKeysWithDictionary:dict];
@@ -503,11 +442,6 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         {
             fileModel.fileprop = @(3);
         }
-    }
-    
-    if (!findFile)
-    {
-        [self.docmentList addObject:fileModel];
     }
 
     return YES;
@@ -585,113 +519,6 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     YSFileModel *file = [self getDocumentWithFileID:fileId];
     
     return file;
-}
-
-- (YSWhiteBoardErrorCode)showDocumentWithFileID:(NSString *)fileId isBeginClass:(BOOL)isBeginClass isPubMsg:(BOOL)isPubMsg
-{
-    if (![fileId bm_isNotEmpty])
-    {
-        fileId = @"0";
-    }
-    self.currentFileId = fileId;
-    
-    YSFileModel *file = [self getDocumentWithFileID:fileId];
-    if (file)
-    {
-        BOOL isPredownload = [self getWhiteBoardViewWithFileId:fileId].isPreLoadFile;
-        NSDictionary *jsDic = [YSFileModel fileDataDocDic:file isPredownload:isPredownload];
-        NSData *jsonData = [NSJSONSerialization dataWithJSONObject:jsDic options:NSJSONWritingPrettyPrinted error:nil];
-        NSString *jsonString = [[NSString alloc]initWithData:jsonData encoding:NSUTF8StringEncoding];
-        
-        if (self.isBeginClass && isPubMsg)
-        {
-            [[YSRoomInterface instance] pubMsg:sYSSignalShowPage msgID:sYSSignalDocumentFilePage_ShowPage toID:YSRoomPubMsgTellAll data:jsonString save:YES extensionData:nil associatedMsgID:nil associatedUserID:nil expires:0 completion:nil];
-        }
-        else
-        {
-            [self showDefaultDocment:file];
-        }
-        
-        return YSError_OK;
-    }
-    else
-    {
-        return YSError_Bad_Parameters;
-    }
-}
-
-- (void)showDefaultDocment:(YSFileModel *)documentModel
-{
-    BOOL isPredownload = [[self getWhiteBoardViewWithFileId:documentModel.fileid] isPreLoadFile];
-    NSDictionary *dic = [YSFileModel fileDataDocDic:documentModel isPredownload:isPredownload];
-    
-    NSDictionary *tParamDicDefault = @{
-                                       @"id":sYSSignalDocumentFilePage_ShowPage,
-                                       @"ts":@(0),
-                                       @"data":dic ? dic : [NSNull null],
-                                       @"name":sYSSignalShowPage
-                                       };
-    
-    if (self.preloadingFished == YES)
-    {
-        YSWhiteBoardView *whiteBoardView = [self getWhiteBoardViewWithFileId:documentModel.fileid];
-//        if (!whiteBoardView)
-//        {
-//            whiteBoardView = [self createWhiteBoardWithFileId:documentModel.fileid loadFinishedBlock:^{
-//            }];
-//            [self addWhiteBoardViewWithWhiteBoardView:whiteBoardView];
-//        }
-        
-        if ([YSWhiteBoardManager supportPreload] &&
-            [[NSFileManager defaultManager] fileExistsAtPath:[[NSTemporaryDirectory() stringByAppendingPathComponent:@"YSFile"] stringByAppendingPathComponent:documentModel.fileid]])
-        {
-            NSString *type = nil;
-            if (documentModel.fileprop.intValue > 0)
-            {
-                if (documentModel.fileprop.intValue == 3)
-                {
-                    type = @"/index.html";
-                }
-                else
-                {
-                    type = @"/newppt.html";
-                }
-            }
-            
-            NSMutableDictionary *newDic = [NSMutableDictionary dictionaryWithDictionary:tParamDicDefault];
-            NSMutableDictionary *newData = [NSMutableDictionary dictionaryWithDictionary:newDic[@"data"]];
-            NSMutableDictionary *fileData = [NSMutableDictionary dictionaryWithDictionary:newData[@"filedata"]];
-            NSString *baseURL = [NSURL fileURLWithPath:[[[NSTemporaryDirectory() stringByAppendingPathComponent:@"YSFile"] stringByAppendingPathComponent:documentModel.fileid] stringByAppendingPathComponent:type]].relativeString;
-            [fileData setObject:baseURL forKey:@"baseurl"];
-            [newData setObject:fileData forKey:@"filedata"];
-            [newDic setObject:newData forKey:@"data"];
-            if (whiteBoardView.webViewManager)
-            {
-                [whiteBoardView.webViewManager sendSignalMessageToJS:WBPubMsg message:newDic];
-            }
-        }
-        else
-        {
-            if (whiteBoardView.webViewManager)
-            {
-                [whiteBoardView.webViewManager sendSignalMessageToJS:WBPubMsg message:tParamDicDefault];
-            }
-        }
-        
-        if (whiteBoardView.drawViewManager)
-        {
-            [whiteBoardView.drawViewManager receiveWhiteBoardMessage:[NSMutableDictionary dictionaryWithDictionary:tParamDicDefault] isDelMsg:NO];
-        }
-    }
-    else
-    {
-        NSString *methodName = NSStringFromSelector(@selector(sendSignalMessageToJS:message:));
-        
-        NSMutableDictionary *dic = [NSMutableDictionary dictionary];
-        [dic setValue:methodName forKey:kYSMethodNameKey];
-        [dic setValue:@[WBPubMsg, tParamDicDefault] forKey:kYSParameterKey];
-        [self.preLoadingFileCacheMsgPool addObject:dic];
-    }
 }
 
 
@@ -956,25 +783,6 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 }
 
 
-
-
-- (void)onWBWebViewManagerPreloadingFished
-{
-    self.preloadingFished = YES;
-#warning afterConnectToRoomAndPreloadingFished
-//    if (self.documentBoard)
-//    {
-//        [self.documentBoard afterConnectToRoomAndPreloadingFished];
-//    }
-//    // 进教室复位
-//    if (_nativeWBController)
-//    {
-//        [_nativeWBController afterConnectToRoomAndPreloadingFished];
-//    }
-    
-    [[NSNotificationCenter defaultCenter] postNotificationName:YSWhiteBoardDocPreloadFinishNotification object:nil];
-}
-
 #pragma mark - 监听课堂 底层通知消息
 
 - (void)loadNotifiction
@@ -1000,7 +808,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     // 教室文件列表的通知
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(roomWhiteBoardFileList:) name:YSWhiteBoardFileListNotification object:nil];
     // 教室消息列表的通知
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(roomWhiteBoardOnRemoteMsgList:) name:YSWhiteBoardOnRemoteMsgListNotification object:nil];
+//    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(roomWhiteBoardOnRemoteMsgList:) name:YSWhiteBoardOnRemoteMsgListNotification object:nil];
     // 大并发房间用户上台通知
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(roomWhiteBoardOnBigRoomUserPublished:) name:YSWhiteBoardOnBigRoomUserPublishedNotification object:nil];
     // 白板崩溃 重新加载 重新获取msgList
@@ -1044,12 +852,6 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     
     // 更新地址
     [self updateWebAddressInfo];
-
-    // 预加载
-    if (self.preLoadWhiteBoardView)
-    {
-        [self.preLoadWhiteBoardView checkPreLoadingFile];
-    }
 }
 
 - (void)updateWebAddressInfo
@@ -1099,6 +901,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         [whiteBoardView updateWebAddressInfo:dic];
     }
 
+    self.serverAddressInfoDic = dic;
     self.isUpdateWebAddressInfo = YES;
 }
 
@@ -1181,24 +984,16 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         
     [self setTheCurrentDocumentFileID:fileId];
     
-    // 预加载
-    if (self.preLoadWhiteBoardView)
-    {
-        [self.preLoadWhiteBoardView checkPreLoadingFile];
-    }
+    [[NSNotificationCenter defaultCenter] postNotificationName:YSWhiteBoardDocPreloadFinishNotification object:nil];
 }
 
 // 预加载
 - (void)roomWhitePreloadFile:(NSNotification *)noti
 {   // 4
     BOOL isNeedPreload = [noti.userInfo[@"isNeedPreload"] boolValue];
-    if (isNeedPreload && self.preLoadWhiteBoardView)
+    if (isNeedPreload)
     {
-        [self.preLoadWhiteBoardView roomWhitePreloadFile:noti];
-    }
-    else
-    {
-        [self onWBWebViewManagerPreloadingFished];
+        [[NSNotificationCenter defaultCenter] postNotificationName:YSWhiteBoardDocPreloadFinishNotification object:nil];
     }
 }
 
@@ -1208,11 +1003,6 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     NSDictionary *dict = notification.userInfo;
     NSNumber *code = [dict objectForKey:YSWhiteBoardOnRoomConnectedCodeKey];
     NSDictionary *response = [dict objectForKey:YSWhiteBoardOnRoomConnectedRoomMsgKey];
-    
-    if (self.preLoadWhiteBoardView && !self.preLoadWhiteBoardView.isLoadingFinish)
-    {
-        [self.preLoadWhiteBoardView sendPreLoadingFile];
-    }
     
     [[YSRoomInterface instance] pubMsg:sYSSignalUpdateTime
                                msgID:sYSSignalUpdateTime
@@ -1229,28 +1019,68 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 
 - (void)roomWhiteBoardOnRoomConnectedUserlist:(NSNumber *)code response:(NSDictionary *)response
 {
+    if (![response bm_isNotEmptyDictionary])
+    {
+        return;
+    }
+
     NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary:response];
-    
+
     NSMutableDictionary *myselfDict = [NSMutableDictionary dictionary];
     [myselfDict setValue:[YSRoomInterface instance].localUser.properties forKey:@"properties"];
     [myselfDict setValue:[YSRoomInterface instance].localUser.peerID forKey:@"id"];
     
     [dict setValue:myselfDict forKey:@"myself"];
     
-    if (![response bm_isNotEmptyDictionary])
+    NSDictionary *msgList = [dict objectForKey:@"msglist"];
+    for (NSString *key in msgList.allKeys)
     {
-        return;
-    }
-    NSDictionary *msglist = [dict objectForKey:@"msglist"];
-
-    for (NSString *key in msglist.allKeys)
-    {
-        NSDictionary *msgDic = [msglist bm_dictionaryForKey:key];
+        NSDictionary *msgDic = [msgList bm_dictionaryForKey:key];
 
         [self roomWhiteBoardOnRemotePubMsgWithMessage:msgDic];
     }
+
+    NSSortDescriptor *desc = [[NSSortDescriptor alloc] initWithKey:@"seq" ascending:YES];
+    // 历史msgList如果有ShowPage信令，需要主动发给H5去刷新当前课件
+    BOOL show = NO;
+    NSArray *msgArray = [[msgList allValues] sortedArrayUsingDescriptors:@[ desc ]];;
+    for (NSDictionary *msgDic in msgArray)
+    {
+        if ([[msgDic objectForKey:@"name"] isEqualToString:sYSSignalShowPage])
+        {
+            show = YES;
+            NSDictionary *filedata = [msgDic bm_dictionaryForKey:@"filedata"];
+            if (!filedata)
+            {
+                id dataObject = [msgDic objectForKey:@"data"];
+                NSDictionary *dataDic = [YSRoomUtil convertWithData:dataObject];
+                filedata = [dataDic bm_dictionaryForKey:@"filedata"];
+            }
+            NSString *fileid = [filedata bm_stringForKey:@"fileid"];
+            if (!fileid)
+            {
+                fileid = @"0";
+            }
+            [self setTheCurrentDocumentFileID:fileid];
+            break;
+        }
+    }
     
-    
+    if (!show)
+    {
+        NSDictionary *fileDic = [YSFileModel fileDataDocDic:self.currentFile];
+            
+            [[YSRoomInterface instance] pubMsg:sYSSignalShowPage
+                                         msgID:sYSSignalDocumentFilePage_ShowPage
+                                          toID:[YSRoomInterface instance].localUser.peerID
+                                          data:fileDic
+                                          save:NO
+                                 extensionData:nil
+                               associatedMsgID:nil
+                              associatedUserID:nil
+                                       expires:0
+                                    completion:nil];
+    }
 }
 
 // 断开链接的通知
@@ -1260,11 +1090,6 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     NSString *reason = [dict objectForKey:YSWhiteBoardNotificationUserInfoKey];
     
     [self disconnect:reason];
-    
-    if (self.preLoadWhiteBoardView)
-    {
-        [self.preLoadWhiteBoardView cancelPreLoadingDownload];
-    }
 }
 
 // 断开连接
@@ -1331,25 +1156,9 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 }
 
 // 教室消息列表的通知
-- (void)roomWhiteBoardOnRemoteMsgList:(NSNotification *)notification
-{
-//    NSDictionary *dict = notification.userInfo;
-//    BOOL add = [[dict objectForKey:YSWhiteBoardOnRemoteMsgListAddKey] boolValue];
-//    id params = [dict objectForKey:YSWhiteBoardOnRemoteMsgListKey];
-//    
-//    [self roomWhiteBoardOnRemoteMsgList:add params:params];
-}
-
-- (void)roomWhiteBoardOnRemoteMsgList:(BOOL)add params:(id)params
-{
-    WB_INFO(@"YSWB roomWhiteBoardOnRemoteMsgList-----%@", [NSString stringWithFormat:@"add:%@, params:%@",@(add), params]);
-
-    NSDictionary *tDataDic =[YSRoomUtil convertWithData:params];
-    if (tDataDic)
-    {
-        //[self.msgList addObject:tDataDic];
-    }
-}
+//- (void)roomWhiteBoardOnRemoteMsgList:(NSNotification *)notification
+//{
+//}
 
 // 大并发房间用户上台通知
 - (void)roomWhiteBoardOnBigRoomUserPublished:(NSNotification *)notification
@@ -1357,7 +1166,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     NSDictionary *dict = notification.userInfo;
     NSDictionary *message = [dict objectForKey:YSWhiteBoardNotificationUserInfoKey];
     
-    if (self.preloadingFished == YES)
+    //if (self.preloadingFished == YES)
     {
         if (self.mainWhiteBoardView)
         {
@@ -1369,13 +1178,13 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
             [whiteBoardView  bigRoomUserPublished:message];
         }
     }
-    else
+    //else
     {
         NSString *methodName = NSStringFromSelector(@selector(sendSignalMessageToJS:message:));
         NSMutableDictionary *dic = [NSMutableDictionary dictionary];
         [dic setValue:methodName forKey:kYSMethodNameKey];
         [dic setValue:@[WBParticipantPublished, message] forKey:kYSParameterKey];
-        [self.preLoadingFileCacheMsgPool addObject:dic];
+        [self.cacheMsgPool addObject:dic];
     }
 }
 
@@ -1403,7 +1212,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         return;
     }
 
-    if (self.preloadingFished == YES)
+    //if (self.preloadingFished == YES)
     {
         if (self.mainWhiteBoardView)
         {
@@ -1415,7 +1224,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
             [whiteBoardView userPropertyChanged:message];
         }
     }
-    else
+    //else
     {
         NSString *methodName = NSStringFromSelector(@selector(sendSignalMessageToJS:message:));
         
@@ -1423,7 +1232,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         [dic setValue:methodName forKey:kYSMethodNameKey];
         [dic setValue:@[WBSetProperty, message] forKey:kYSParameterKey];
     
-        [self.preLoadingFileCacheMsgPool addObject:dic];
+        [self.cacheMsgPool addObject:dic];
     }
 }
 
@@ -1432,7 +1241,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     NSDictionary *dict = notification.userInfo;
     NSDictionary *message = [dict objectForKey:YSWhiteBoardNotificationUserInfoKey];
     
-    if (self.preloadingFished == YES)
+    //if (self.preloadingFished == YES)
     {
 //        if (self.mainWhiteBoardView)
 //        {
@@ -1444,14 +1253,14 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
             [whiteBoardView participantLeaved:message];
         }
     }
-    else
+    //else
     {
         NSString *methodName = NSStringFromSelector(@selector(sendSignalMessageToJS:message:));
         
         NSMutableDictionary *dic = [NSMutableDictionary dictionary];
         [dic setValue:methodName forKey:kYSMethodNameKey];
         [dic setValue:@[WBParticipantLeft, message] forKey:kYSParameterKey];
-        [self.preLoadingFileCacheMsgPool addObject:dic];
+        [self.cacheMsgPool addObject:dic];
     }
 }
 
@@ -1460,7 +1269,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     NSDictionary *dict = notification.userInfo;
     NSDictionary *message = [dict objectForKey:YSWhiteBoardNotificationUserInfoKey];
     
-    if (self.preloadingFished == YES)
+    //if (self.preloadingFished == YES)
     {
 //        if (self.mainWhiteBoardView)
 //        {
@@ -1472,14 +1281,14 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
             [whiteBoardView participantJoin:message];
         }
     }
-    else
+    //else
     {
         NSString *methodName = NSStringFromSelector(@selector(sendSignalMessageToJS:message:));
         
         NSMutableDictionary *dic = [NSMutableDictionary dictionary];
         [dic setValue:methodName forKey:kYSMethodNameKey];
         [dic setValue:@[WBParticipantJoined, message] forKey:kYSParameterKey];
-        [self.preLoadingFileCacheMsgPool addObject:dic];
+        [self.cacheMsgPool addObject:dic];
     }
 }
 
@@ -1488,7 +1297,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     NSDictionary *dict = notification.userInfo;
     NSDictionary *reason = [dict objectForKey:YSWhiteBoardNotificationUserInfoKey];
     
-    if (self.preloadingFished == YES)
+    //if (self.preloadingFished == YES)
     {
 //        if (self.mainWhiteBoardView)
 //        {
@@ -1500,14 +1309,14 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
             [whiteBoardView participantEvicted:reason];
         }
     }
-    else
+    //else
     {
         NSString *methodName = NSStringFromSelector(@selector(sendSignalMessageToJS:message:));
         
         NSMutableDictionary *dic = [NSMutableDictionary dictionary];
         [dic setValue:methodName forKey:kYSMethodNameKey];
         [dic setValue:@[WBParticipantEvicted, reason] forKey:kYSParameterKey];
-        [self.preLoadingFileCacheMsgPool addObject:dic];
+        [self.cacheMsgPool addObject:dic];
     }
 }
 
@@ -1602,40 +1411,30 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
             }
         }];
         [self addOrReplaceDocumentFile:tDataDic];
-        
-//        YSWhiteBoardView *whiteBoardView = [self getWhiteBoardViewWithFileId:fileId];
-//        if (!whiteBoardView)
-//        {
-//            [self createWhiteBoardWithFrame:YSWhiteBoardDefaultFrame fileId:fileId loadFinishedBlock:nil];
-//            [self addWhiteBoardViewWithWhiteBoardView:whiteBoardView];
-//        }
         [self setTheCurrentDocumentFileID:fileId];
     }
     
-    if (self.preloadingFished == NO)
+    //if (self.preloadingFished == NO)
     {
-        NSString *methodName = NSStringFromSelector(@selector(sendSignalMessageToJS:message:));
-        NSMutableDictionary *dic = [NSMutableDictionary dictionary];
-        [dic setValue:methodName forKey:kYSMethodNameKey];
-        [dic setValue:@[WBPubMsg, message] forKey:kYSParameterKey];
-        [self.preLoadingFileCacheMsgPool addObject:dic];
-        
         NSString *methorForNative = NSStringFromSelector(@selector(receiveWhiteBoardMessage:isDelMsg:));
         NSMutableDictionary *dicForNative = [NSMutableDictionary dictionary];
         [dicForNative setObject:methorForNative forKey:kYSMethodNameKey];
         [dicForNative setObject:@[[NSMutableDictionary dictionaryWithDictionary:message], @(NO)] forKey:kYSParameterKey];
-        [self.preLoadingFileCacheMsgPool addObject:dicForNative];
+        [self.cacheMsgPool addObject:dicForNative];
     }
-    else
+    //else
     {
         if (self.mainWhiteBoardView)
         {
             [self.mainWhiteBoardView remotePubMsg:message];
         }
         
-        for (YSWhiteBoardView *whiteBoardView in self.coursewareViewList)
+        if (![msgName isEqualToString:sYSSignalShowPage])
         {
-            [whiteBoardView remotePubMsg:message];
+            for (YSWhiteBoardView *whiteBoardView in self.coursewareViewList)
+            {
+                [whiteBoardView remotePubMsg:message];
+            }
         }
     }
 }
@@ -1645,19 +1444,13 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     NSDictionary *dict = notification.userInfo;
     NSDictionary *message = [dict objectForKey:YSWhiteBoardNotificationUserInfoKey];
     
-    if (self.preloadingFished == NO)
+    //if (self.preloadingFished == NO)
     {
-        NSString *methodName = NSStringFromSelector(@selector(sendSignalMessageToJS:message:));
-        NSMutableDictionary *dic = [NSMutableDictionary dictionary];
-        [dic setValue:methodName forKey:kYSMethodNameKey];
-        [dic setValue:@[WBDelMsg, message] forKey:kYSParameterKey];
-        [self.preLoadingFileCacheMsgPool addObject:dic];
-        
         NSString *methorForNative = NSStringFromSelector(@selector(receiveWhiteBoardMessage:isDelMsg:));
         NSMutableDictionary *dicForNative = [NSMutableDictionary dictionary];
         [dicForNative setObject:methorForNative forKey:kYSMethodNameKey];
         [dicForNative setObject:@[[NSMutableDictionary dictionaryWithDictionary:message], @(YES)] forKey:kYSParameterKey];
-        [self.preLoadingFileCacheMsgPool addObject:dicForNative];
+        [self.cacheMsgPool addObject:dicForNative];
         
         return;
     }
@@ -1678,34 +1471,5 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 #pragma -
 #pragma mark YSWhiteBoardViewDelegate
 
-/// 房间链接成功msglist回调
-- (void)onWBWebViewManagerOnRoomConnectedMsglist:(NSDictionary *)msgList needShowDefault:(BOOL)needShowDefault
-{
-    if (self.wbDelegate && [self.wbDelegate respondsToSelector:@selector(onWhiteBoardOnRoomConnectedMsglist:)])
-    {
-        [self.wbDelegate onWhiteBoardOnRoomConnectedMsglist:msgList];
-    }
-
-    // 查看默认课件是否是白板，因为原生课件刷新不做白板刷新
-    if (needShowDefault)
-    {
-        BOOL isPredownload = [[self getWhiteBoardViewWithFileId:self.currentFile.fileid] isPreLoadFile];
-        NSDictionary *fileDic = [YSFileModel fileDataDocDic:self.currentFile isPredownload:isPredownload];
-        
-//        NSString *dataStr = @"{\"sourceInstanceId\":\"default\",\"isGeneralFile\":true,\"isMedia\":false,\"isDynamicPPT\":false,\"isH5Document\":false,\"action\":\"show\",\"mediaType\":\"\",\"filedata\":{\"currpage\":1,\"pptslide\":1,\"pptstep\":0,\"steptotal\":0,\"fileid\":0,\"pagenum\":1,\"filename\":\"whiteboard\",\"filetype\":\"whiteboard\",\"swfpath\":\"\"}}";
-
-        [[YSRoomInterface instance] pubMsg:sYSSignalShowPage
-                                     msgID:sYSSignalDocumentFilePage_ShowPage   //  @"DocumentFilePage_ShowPage"
-                                      toID:[YSRoomInterface instance].localUser.peerID
-                                      data:fileDic
-                                      save:NO
-                             extensionData:nil
-                           associatedMsgID:nil
-                          associatedUserID:nil
-                                   expires:0
-                                completion:nil];
-    }
-
-}
 
 @end

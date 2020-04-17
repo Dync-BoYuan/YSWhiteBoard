@@ -19,10 +19,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, weak) id <YSWhiteBoardViewDelegate> delegate;
 
-@property (nonatomic, assign) BOOL isPreLoadFile;
-/// 预加载文档
-@property (nonatomic, strong) NSDictionary *preloadFileDic;
-
 @property (nonatomic, strong, readonly) NSString *whiteBoardId;
 @property (nonatomic, strong, readonly) NSString *fileId;
 
@@ -52,7 +48,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)remoteDelMsg:(NSDictionary *)message;
 
 /// 连接教室成功的通知
-- (void)whiteBoardOnRoomConnectedUserlist:(NSNumber *)code response:(NSDictionary *)response;
+//- (void)whiteBoardOnRoomConnectedUserlist:(NSNumber *)code response:(NSDictionary *)response;
 
 /// 大并发房间用户上台通知
 - (void)bigRoomUserPublished:(NSDictionary *)message;
@@ -65,15 +61,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)refreshWhiteBoardWithFrame:(CGRect)frame;
 
 - (void)receiveWhiteBoardMessage:(NSDictionary *)dictionary isDelMsg:(BOOL)isDel;
-
-
-// 预加载
-- (void)roomWhitePreloadFile:(NSNotification *)noti;
-- (void)checkPreLoadingFile;
-- (void)sendPreLoadingFile;
-- (void)cancelPreLoadingDownload;
-
-- (BOOL)isPredownload;
 
 
 #pragma -
@@ -105,7 +92,7 @@ NS_ASSUME_NONNULL_BEGIN
 @required
 
 /// 房间链接成功msglist回调
-- (void)onWBWebViewManagerOnRoomConnectedMsglist:(NSDictionary *)msgList needShowDefault:(BOOL)needShowDefault;
+- (void)onWBWebViewManagerOnRoomConnectedMsglist:(NSDictionary *)msgList;
 
 
 /// 教室加载状态

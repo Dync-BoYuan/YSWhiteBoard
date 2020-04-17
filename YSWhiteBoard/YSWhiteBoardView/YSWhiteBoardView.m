@@ -8,13 +8,9 @@
 
 #import "YSWhiteBoardView.h"
 #import "YSRoomUtil.h"
-#import "YSDownloader.h"
-#import "YSPreloadProgressView.h"
 #import "YSFileModel.h"
 
-
 #define YSWhiteBoardId_Header   @"docModule_"
-
 
 @interface YSWhiteBoardView ()
 <
@@ -37,20 +33,14 @@
 
 @property (nonatomic, weak) WKWebView *wbView;
 
-@property (nonatomic, strong) YSDownloader *downloader;
-
 /// 加载H5脚本结束
 @property (nonatomic, assign) BOOL loadingH5Fished;
-/// 预加载文档结束
-@property (nonatomic, assign) BOOL preloadingFished;
 
 /// 课件加载成功
 @property (nonatomic, assign) BOOL isLoadingFinish;
 
 /// 信令缓存数据 H5脚本加载完成前，之后开始预加载
 @property (nonatomic, strong) NSMutableArray *cacheMsgPool;
-/// 信令缓存数据 预加载完成前
-@property (nonatomic, strong) NSMutableArray *preLoadingFileCacheMsgPool;
 
 @end
 
@@ -68,7 +58,6 @@
         self.webViewManager.delegate = self;
         
         self.cacheMsgPool = [NSMutableArray array];
-        self.preLoadingFileCacheMsgPool = [NSMutableArray array];
 
         self.isLoadingFinish = NO;
         
@@ -88,18 +77,6 @@
     [self.drawViewManager updateFrame];
 }
 
-- (BOOL)isPredownload
-{
-    if (self.isPreLoadFile)
-    {
-        if (!predownloadError)
-        {
-            return YES;
-        }
-    }
-    
-    return NO;
-}
 
 #pragma mark - 监听课堂 底层通知消息
 
@@ -174,6 +151,7 @@
 {
     NSString *msgName = [message bm_stringForKey:@"name"];
     NSString *msgId = [message bm_stringForKey:@"id"];
+    NSString *fromId = [message objectForKey:@"fromID"];
     NSObject *data = [message objectForKey:@"data"];
     NSDictionary *tDataDic = [YSRoomUtil convertWithData:data];
 
@@ -194,37 +172,18 @@
                 
                 if (!isMedia)
                 {
-                    NSString *fileID = [[tDataDic bm_dictionaryForKey:@"filedata"] bm_stringForKey:@"fileid"];
-                    
-                    //[self uploadLogWithText:[NSString stringWithFormat:@"WhiteBoard Loading Fileid:%@, DocAddress:%@", fileID, self.serverDocAddrKey]];
-                    
-                    //如果本地已经存在预加载文档则参数塞入  baseurl:file:///本地文档
-                    
-                    if ([YSWhiteBoardManager supportPreload] &&
-                        [[NSFileManager defaultManager] fileExistsAtPath:[[NSTemporaryDirectory() stringByAppendingPathComponent:@"YSFile"] stringByAppendingPathComponent:fileID]])
-                    {
-                        NSMutableDictionary *urlDic = [NSMutableDictionary dictionaryWithDictionary:tDataDic];
-                        NSMutableDictionary *filedata = [NSMutableDictionary dictionaryWithDictionary:[urlDic objectForKey:@"filedata"]];
-                        
-                        NSString *baseurl = [NSURL fileURLWithPath:[[[NSTemporaryDirectory() stringByAppendingPathComponent:@"YSFile"] stringByAppendingPathComponent:fileID] stringByAppendingPathComponent:@"newppt.html"]].relativeString;
-                        [filedata setObject:baseurl forKey:@"baseurl"];
-                        [urlDic setObject:filedata forKey:@"filedata"];
-                        NSMutableDictionary *newMessage = [NSMutableDictionary dictionaryWithDictionary:message];
-                        NSString *dataString = [[NSString alloc] initWithData:[NSJSONSerialization dataWithJSONObject:urlDic options:NSJSONWritingPrettyPrinted error:nil] encoding:NSUTF8StringEncoding];
-                        dataString = [dataString stringByReplacingOccurrencesOfString:@"\n" withString:@""];
-                        [newMessage setObject:dataString forKey:@"data"];
-                        [self.webViewManager sendSignalMessageToJS:WBPubMsg message:newMessage];
-                    }
-                    else
-                    {
-                        [self.webViewManager sendSignalMessageToJS:WBPubMsg message:message];
-                    }
+                    [self.webViewManager sendSignalMessageToJS:WBPubMsg message:message];
                 }
             }
             else
             {
                 [self.webViewManager sendSignalMessageToJS:WBPubMsg message:message];
             }
+        }
+        
+        if ([msgName isEqualToString:sYSSignalShowPage] && ![fromId isEqualToString:[YSRoomInterface instance].localUser.peerID])
+        {
+            [self.webViewManager stopPlayMp3];
         }
     }
         
@@ -256,20 +215,6 @@
     if (self.drawViewManager)
     {
         [self.drawViewManager receiveWhiteBoardMessage:[NSMutableDictionary dictionaryWithDictionary:message] isDelMsg:YES];
-    }
-}
-
-/// 连接教室成功的通知
-- (void)whiteBoardOnRoomConnectedUserlist:(NSNumber *)code response:(NSDictionary *)response
-{
-    if (self.webViewManager)
-    {
-        [self.webViewManager whiteBoardOnRoomConnectedUserlist:code response:response];
-    }
-
-    if (self.drawViewManager)
-    {
-        [self.drawViewManager whiteBoardOnRoomConnectedUserlist:code response:response];
     }
 }
 
@@ -456,22 +401,23 @@
     
     if (!show)
     {
-        [[YSWhiteBoardManager shareInstance] showDocumentWithFileID:[YSWhiteBoardManager shareInstance].currentFileId
-                                                       isBeginClass:[YSWhiteBoardManager shareInstance].isBeginClass
-                                                           isPubMsg:NO];
+           NSDictionary *fileDic = [YSFileModel fileDataDocDic:[YSWhiteBoardManager shareInstance].currentFile];
+            
+            [[YSRoomInterface instance] pubMsg:sYSSignalShowPage
+                                         msgID:sYSSignalDocumentFilePage_ShowPage
+                                          toID:[YSRoomInterface instance].localUser.peerID
+                                          data:fileDic
+                                          save:NO
+                                 extensionData:nil
+                               associatedMsgID:nil
+                              associatedUserID:nil
+                                       expires:0
+                                    completion:nil];
     }
-
-    BOOL needShowDefault = NO;
-    // 查看默认课件是否是白板，因为原生课件刷新不做白板刷新
-    NSString *currentFileId = [YSWhiteBoardManager shareInstance].currentFileId;
-    if (!show && [currentFileId isEqualToString:@"0"])
+    
+    if (self.delegate && [self.delegate respondsToSelector:@selector(onWBWebViewManagerOnRoomConnectedMsglist:)])
     {
-        needShowDefault = YES;
-    }
-
-    if (self.delegate && [self.delegate respondsToSelector:@selector(onWBWebViewManagerOnRoomConnectedMsglist:needShowDefault:)])
-    {
-        [self.delegate onWBWebViewManagerOnRoomConnectedMsglist:msgList needShowDefault:needShowDefault];
+        [self.delegate onWBWebViewManagerOnRoomConnectedMsglist:msgList];
     }
 }
 
@@ -480,14 +426,6 @@
 {
     self.loadingH5Fished = YES;
     
-    // 预加载
-    [self checkPreLoadingFile];
-
-    if (preloadDispose == YES)
-    {
-        [self sendPreLoadingFile];
-    }
-
     // 更新地址
     [[YSWhiteBoardManager shareInstance] updateWebAddressInfo];
         
@@ -501,179 +439,11 @@
 /// 预加载文档结束
 - (void)onWBWebViewManagerPreloadingFished
 {
-    self.preloadingFished = YES;
-    
     if (self.delegate && [self.delegate respondsToSelector:@selector(onWBWebViewManagerPreloadingFished)])
     {
         [self.delegate onWBWebViewManagerPreloadingFished];
     }
 }
-
-#pragma -
-#pragma mark PreLoadingFile
-
-// 预加载
-- (void)roomWhitePreloadFile:(NSNotification *)noti
-{
-    BOOL isNeedPreload = [noti.userInfo[@"isNeedPreload"] boolValue];
-    if (![YSWhiteBoardManager supportPreload])
-    {
-        isNeedPreload = NO;
-        predownloadError = YES;
-        preloadDispose = YES;
-    }
-    
-    BMWeakSelf
-    // 预加载文档下载
-    NSString *downloadpath = [self.preloadFileDic objectForKey:@"preloadingzip"];
-    NSString *fileId = [self.preloadFileDic bm_stringForKey:@"fileid"];
-    if (downloadpath.length > 0 && isNeedPreload)
-    {
-        if (self.downloader.task && self.downloader.task.state == NSURLSessionTaskStateRunning)
-        {
-            return;
-        }
-        
-        // 需要本地加载
-        if (![[NSFileManager defaultManager] fileExistsAtPath:[[NSTemporaryDirectory() stringByAppendingPathComponent:@"YSFile"] stringByAppendingPathComponent:fileId]])
-        {
-            // 但是还未下载，开始下载
-            YSPreloadProgressView *progressView = [[YSPreloadProgressView alloc] initWithSkipBlock:^{
-                self->predownloadError = YES;
-                self->preloadDispose = YES;
-                [weakSelf sendPreLoadingFile];
-            }];
-            if (!self.downloader)
-            {
-                self.downloader = [[YSDownloader alloc] init];
-                
-                [[UIApplication sharedApplication].keyWindow addSubview:progressView];
-                [progressView bmmas_makeConstraints:^(BMMASConstraintMaker *make) {
-                    make.left.bmmas_equalTo([UIApplication sharedApplication].keyWindow.bmmas_left);
-                    make.right.bmmas_equalTo([UIApplication sharedApplication].keyWindow.bmmas_right);
-                    make.top.bmmas_equalTo([UIApplication sharedApplication].keyWindow.bmmas_top);
-                    make.bottom.bmmas_equalTo([UIApplication sharedApplication].keyWindow.bmmas_bottom);
-                }];
-            }
-            [self.downloader downloadWithURL:[NSURL URLWithString:downloadpath] fileID:fileId progressBlock:^(float downloadProgress, float unzipProgress, NSString *location, NSError *error) {
-//                NSLog(@"下载进度：%f  解压进度：%f  文档地址：%@  错误：%@",downloadProgress, unzipProgress, location, error);
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [progressView setDownloadProgress:downloadProgress unzipProgress:unzipProgress];
-                    if (location)
-                    {
-                        self->predownloadError = NO;
-                        self->preloadDispose = YES;
-                    }
-                    
-                    if (error)
-                    {
-                        self->predownloadError = YES;
-                        self->preloadDispose = YES;
-                    }
-                    
-                    [progressView removeFromSuperview];
-                    [weakSelf sendPreLoadingFile];
-                });
-            }];
-        }
-        else
-        {
-            // 本地已经解压好了文档
-            predownloadError = NO;
-            preloadDispose = YES;
-            [self sendPreLoadingFile];
-        }
-    }
-    else
-    {
-        preloadDispose = YES;
-        [self sendPreLoadingFile];
-    }
-}
-
-- (void)checkPreLoadingFile
-{
-    // 如果开启了课件预加载会先下载课件,在向白板发送预加载
-    if ([YSWhiteBoardManager shareInstance].roomConfig.coursewarePreload == YES)
-    {
-        return;
-    }
-
-    // 地址
-    if ([YSWhiteBoardManager shareInstance].isUpdateWebAddressInfo == NO)
-    {
-        return;
-    }
-    
-    [self sendPreLoadingFile];
-}
-
-// 发送预加载的文档
-- (void)sendPreLoadingFile
-{
-    // 页面加载完成
-    if (self.loadingH5Fished == NO)
-    {
-        return;
-    }
-    
-    if (self.preloadingFished)
-    {
-        return;
-    }
-    
-    // 是否有 需要加载的文件
-    YSFileModel *file = [[YSWhiteBoardManager shareInstance] getDocumentWithFileID:self.fileId];
-    if  (file.type.intValue != 1)
-    {
-        file = nil;
-    }
-    if (!file || ![YSWhiteBoardManager supportPreload])
-    {
-        // 不需要本地加载
-        self.preloadingFished = YES;
-        [YSWhiteBoardManager shareInstance].preloadingFished = YES;
-        [self onWBWebViewManagerPreloadingFished];
-        return;
-    }
-    
-    // 0:表示普通文档　１－２动态ppt(1: 第一版动态ppt 2: 新版动态ppt ）  3:h5文档
-    BOOL isPPT_H5 = [file.fileprop integerValue] == 1 || [file.fileprop integerValue] == 2 || [file.fileprop integerValue] == 3;
-    if (isPPT_H5)
-    {
-        if ([YSWhiteBoardManager shareInstance].roomConfig.coursewarePreload == YES && file.preloadingzip.length > 0)
-        {
-            if (predownloadError)
-            {
-                NSDictionary *dic = [YSFileModel fileDataDocDic:file isPredownload:[self isPredownload]];
-                [self.webViewManager sendAction:WBPreLoadingFile command:@{@"cmd":dic}];
-            }
-            else
-            {
-                if ([[NSFileManager defaultManager] fileExistsAtPath:[[NSTemporaryDirectory() stringByAppendingPathComponent:@"YSFile"] stringByAppendingPathComponent:file.fileid]])
-                {
-                    NSDictionary *dic = [YSFileModel fileDataDocDic:file isPredownload:[self isPredownload]];
-                    [self.webViewManager sendAction:WBPreLoadingFile command:@{@"cmd":dic}];
-                }
-            }
-        }
-        else
-        {
-            NSDictionary *dic = [YSFileModel fileDataDocDic:file isPredownload:[self isPredownload]];
-            [self.webViewManager sendAction:WBPreLoadingFile command:@{@"cmd":dic}];
-        }
-    }
-    else
-    {
-        [self.webViewManager sendAction:WBPreLoadingFile command:@{@"cmd":@""}];
-    }
-}
-
-- (void)cancelPreLoadingDownload
-{
-    [self.downloader cancelDownload];
-}
-
 
 // 页面刷新尺寸
 - (void)refreshWhiteBoardWithFrame:(CGRect)frame;
@@ -1030,10 +800,10 @@
     {
         type = @"/newppt.html";
     }
-    if([self isPredownload] && [[NSFileManager defaultManager] fileExistsAtPath:[[NSTemporaryDirectory() stringByAppendingPathComponent:@"YSFile"] stringByAppendingPathComponent:aDefaultDocment.fileid]])
-    {
-        [filedata setObject:[NSURL fileURLWithPath:[[[NSTemporaryDirectory() stringByAppendingPathComponent:@"YSFile"] stringByAppendingPathComponent:aDefaultDocment.fileid] stringByAppendingPathComponent:type]].absoluteString forKey:@"baseurl"];
-    }
+//    if([self isPredownload] && [[NSFileManager defaultManager] fileExistsAtPath:[[NSTemporaryDirectory() stringByAppendingPathComponent:@"YSFile"] stringByAppendingPathComponent:aDefaultDocment.fileid]])
+//    {
+//        [filedata setObject:[NSURL fileURLWithPath:[[[NSTemporaryDirectory() stringByAppendingPathComponent:@"YSFile"] stringByAppendingPathComponent:aDefaultDocment.fileid] stringByAppendingPathComponent:type]].absoluteString forKey:@"baseurl"];
+//    }
     
     NSDictionary *tDataDic = @{
                                @"isGeneralFile":@(isGeneralFile),

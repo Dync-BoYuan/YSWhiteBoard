@@ -51,12 +51,12 @@
     return [NSString stringWithFormat:@"%@---%@",self.fileid, self.filecategory];
 }
 
-+ (NSDictionary *)fileDataDocDic:(YSFileModel *)aDefaultDocment isPredownload:(BOOL)isPredownload
++ (NSDictionary *)fileDataDocDic:(YSFileModel *)aDefaultDocment
 {
-    return [self fileDataDocDic:aDefaultDocment currentPage:nil isPredownload:(BOOL)isPredownload];
+    return [self fileDataDocDic:aDefaultDocment currentPage:nil];
 }
 
-+ (NSDictionary *)fileDataDocDic:(YSFileModel *)aDefaultDocment currentPage:(NSNumber *)currentPage isPredownload:(BOOL)isPredownload
++ (NSDictionary *)fileDataDocDic:(YSFileModel *)aDefaultDocment currentPage:(NSNumber *)currentPage
 {
     if (!aDefaultDocment)
     {
@@ -125,21 +125,21 @@
         [filedata setObject:currentPage forKey:@"pptslide"];
     }
     
-    NSString *type = nil;
-    if (isH5Document)
-    {
-        type = @"/index.html";
-    }
-    else if (isDynamicPPT)
-    {
-        type = @"/newppt.html";
-    }
-    
-    if(isPredownload && [[NSFileManager defaultManager] fileExistsAtPath:[[NSTemporaryDirectory() stringByAppendingPathComponent:@"YSFile"] stringByAppendingPathComponent:aDefaultDocment.fileid]])
-    {
-
-        [filedata setObject:[NSURL fileURLWithPath:[[[NSTemporaryDirectory() stringByAppendingPathComponent:@"YSFile"] stringByAppendingPathComponent:aDefaultDocment.fileid] stringByAppendingPathComponent:type]].absoluteString forKey:@"baseurl"];
-    }
+//    NSString *type = nil;
+//    if (isH5Document)
+//    {
+//        type = @"/index.html";
+//    }
+//    else if (isDynamicPPT)
+//    {
+//        type = @"/newppt.html";
+//    }
+//    
+//    if(isPredownload && [[NSFileManager defaultManager] fileExistsAtPath:[[NSTemporaryDirectory() stringByAppendingPathComponent:@"YSFile"] stringByAppendingPathComponent:aDefaultDocment.fileid]])
+//    {
+//
+//        [filedata setObject:[NSURL fileURLWithPath:[[[NSTemporaryDirectory() stringByAppendingPathComponent:@"YSFile"] stringByAppendingPathComponent:aDefaultDocment.fileid] stringByAppendingPathComponent:type]].absoluteString forKey:@"baseurl"];
+//    }
     
     NSDictionary *tDataDic = @{
                                @"isGeneralFile":@(isGeneralFile),
