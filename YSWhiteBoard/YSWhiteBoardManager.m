@@ -9,6 +9,7 @@
 #import "YSWhiteBoardManager.h"
 #import "YSFileModel.h"
 #import "YSWBLogger.h"
+#import "YSWhiteBoardTopBar.h"
 
 #define YSWhiteBoardDefaultFrame        CGRectMake(0, 0, 100, 100)
 #define YSWhiteBoardDefaultLeft         10.0f
@@ -165,12 +166,16 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     self.mainWhiteBoardView = [[YSWhiteBoardView alloc] initWithFrame:frame fileId:@"0" loadFinishedBlock:loadFinishedBlock];
     self.mainWhiteBoardView.delegate = self;
     
-//    for (int i=1; i<10; i++)
-//    {
-//        YSWhiteBoardView *whiteBoardView= [self createWhiteBoardWithFileId:[NSString stringWithFormat:@"%@", @(i)] loadFinishedBlock:nil];
-//        whiteBoardView.backgroundColor = [UIColor bm_randomColor];
-//        [self.mainWhiteBoardView addSubview:whiteBoardView];
-//    }
+    for (int i=1; i<4; i++)
+    {
+        YSWhiteBoardView *whiteBoardView= [self createWhiteBoardWithFileId:[NSString stringWithFormat:@"%@", @(i)] loadFinishedBlock:nil];
+        whiteBoardView.backgroundColor = [UIColor bm_randomColor];
+        [self.mainWhiteBoardView addSubview:whiteBoardView];
+        
+        YSWhiteBoardTopBar * topBar = [[YSWhiteBoardTopBar alloc]initWithFrame:CGRectMake(0, 0, whiteBoardView.bm_width, 30)];
+        [whiteBoardView addSubview:topBar];
+        
+    }
     return self.mainWhiteBoardView;
 }
 
@@ -199,6 +204,9 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     whiteBoardViewCurrentTop += YSWhiteBoardDefaultTopOffset;
 
     CGSize size = self.whiteBoardViewDefaultSize;
+
+    CGFloat top1 = whiteBoardViewCurrentTop + size.height;
+    CGFloat top2 = self.mainWhiteBoardView.bm_height;
     
     if ((whiteBoardViewCurrentTop + size.height) >= self.mainWhiteBoardView.bm_height)
     {
