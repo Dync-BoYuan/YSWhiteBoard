@@ -32,35 +32,22 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithFrame:(CGRect)frame fileId:(NSString *)fileId loadFinishedBlock:(nullable  wbLoadFinishedBlock)loadFinishedBlock;
 
+/// 更新服务器地址
+- (void)updateWebAddressInfo:(NSDictionary *)message;
 /// 断开连接
 - (void)disconnect:(NSDictionary *)message;
 /// 用户属性改变通知
 - (void)userPropertyChanged:(NSDictionary *)message;
-/// 用户离开通知
-- (void)participantLeaved:(NSDictionary *)message;
-/// 用户进入通知
-- (void)participantJoin:(NSDictionary *)message;
-/// 自己被踢出教室通知
-- (void)participantEvicted:(NSDictionary *)message;
+
 /// 收到远端pubMsg消息通知
 - (void)remotePubMsg:(NSDictionary *)message;
 /// 收到远端delMsg消息的通知
 - (void)remoteDelMsg:(NSDictionary *)message;
 
-/// 连接教室成功的通知
-//- (void)whiteBoardOnRoomConnectedUserlist:(NSNumber *)code response:(NSDictionary *)response;
-
-/// 大并发房间用户上台通知
-- (void)bigRoomUserPublished:(NSDictionary *)message;
-
-/// 更新服务器地址
-- (void)updateWebAddressInfo:(NSDictionary *)message;
 
 // 页面刷新尺寸
 - (void)refreshWhiteBoard;
 - (void)refreshWhiteBoardWithFrame:(CGRect)frame;
-
-- (void)receiveWhiteBoardMessage:(NSDictionary *)dictionary isDelMsg:(BOOL)isDel;
 
 
 #pragma -
@@ -91,18 +78,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 @required
 
-/// 房间链接成功msglist回调
-- (void)onWBWebViewManagerOnRoomConnectedMsglist:(NSDictionary *)msgList;
+/// H5脚本文件加载初始化完成
+- (void)onWBViewWebViewManagerPageFinshed:(YSWhiteBoardView *)whiteBoardView;
 
+/// 切换Web课件加载状态
+- (void)onWBViewWebViewManagerLoadedState:(YSWhiteBoardView *)whiteBoardView withState:(NSDictionary *)dic;
 
-/// 教室加载状态
-- (void)onWBWebViewManagerLoadedState:(NSDictionary *)message;
-
-/// 白板初始化完成
-- (void)onWBWebViewManagerPageFinshed;
-
-/// 预加载文档结束
-- (void)onWBWebViewManagerPreloadingFished;
+/// Web课件翻页结果
+- (void)onWBViewWebViewManagerStateUpdate:(YSWhiteBoardView *)whiteBoardView withState:(NSDictionary *)dic;
+/// 翻页超时
+- (void)onWBViewWebViewManagerSlideLoadTimeout:(YSWhiteBoardView *)whiteBoardView withState:(NSDictionary *)dic;
 
 ///拖拽手势事件
 - (void)panToMoveWhiteBoardView:(YSWhiteBoardView *)whiteBoard withGestureRecognizer:(UIPanGestureRecognizer *)pan;

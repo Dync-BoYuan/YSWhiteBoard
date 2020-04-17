@@ -102,10 +102,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)onWBWebViewManagerPageFinshed;
 
 /// 请求了预加载后返回预加载文档结束
-- (void)onWBWebViewManagerPreloadingFished;
+//- (void)onWBWebViewManagerPreloadingFished;
 
 /// 房间链接成功msglist回调
-- (void)onWBWebViewManagerOnRoomConnectedMsglist:(NSDictionary *)msgList;
+//- (void)onWBWebViewManagerOnRoomConnectedMsglist:(NSDictionary *)msgList;
 
 /// 切换Web课件加载状态
 - (void)onWBWebViewManagerLoadedState:(NSDictionary *)dic;

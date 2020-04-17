@@ -7,7 +7,6 @@
 //
 
 #import "YSWhiteBoardManager.h"
-#import <objc/message.h>
 #import "YSFileModel.h"
 #import "YSWBLogger.h"
 #import "YSWhiteBoardTopBar.h"
@@ -76,9 +75,6 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 /// 记录UI层是否开始上课
 @property (nonatomic, assign) BOOL isBeginClass;
 
-/// 信令缓存数据
-@property (nonatomic, strong) NSMutableArray *cacheMsgPool;
-
 /// 课件列表
 @property (nonatomic, strong) NSMutableArray <YSFileModel *> *docmentList;
 /// 课件Dic列表
@@ -135,8 +131,6 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     {
         self.isUpdateWebAddressInfo = NO;
         
-        self.cacheMsgPool = [NSMutableArray array];
-        
         self.docmentList = [NSMutableArray array];
         
         self.serverAddrBackupKey = [NSMutableArray array];
@@ -157,56 +151,6 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     }
     
     return self;
-}
-
-/// 是否支持预加载 iOS13以上不支持
-+ (BOOL)supportPreload
-{
-    if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 13.0)
-    {
-    //if (@available(iOS 13, *)){
-        return NO;
-    }
-    
-    return YES;
-}
-
-- (void)doMsgCachePool
-{
-    // 执行所有缓存的信令消息
-    NSArray *array = self.cacheMsgPool;
-    for (NSDictionary *dic in array)
-    {
-        NSString *func = dic[kYSMethodNameKey];
-        SEL funcSel = NSSelectorFromString(func);
-
-        NSMutableArray *params = [NSMutableArray array];
-        if ([[dic allKeys] containsObject:kYSParameterKey])
-        {
-            params = dic[kYSParameterKey];
-        }
-        
-        switch (params.count)
-        {
-            case 0:
-                ((void (*)(id, SEL))objc_msgSend)(self, funcSel);
-                break;
-                
-            case 1:
-                ((void (*)(id, SEL, id))objc_msgSend)(self, funcSel, params.firstObject);
-                break;
-                
-            case 2:
-                ((void (*)(id, SEL, id, id))objc_msgSend)(
-                    self, funcSel, params.firstObject, params.lastObject);
-                break;
-
-            default:
-                break;
-        }
-    }
-    
-    [self.cacheMsgPool removeAllObjects];
 }
 
 
@@ -856,12 +800,12 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(roomWhiteBoardOnCheckRoom:) name:YSWhiteBoardOnCheckRoomNotification object:nil];
     // 用户属性改变通知
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(roomWhiteBoardOnRoomUserPropertyChanged:) name:YSWhiteBoardOnRoomUserPropertyChangedNotification object:nil];
-    // 用户离开通知
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(roomWhiteBoardOnRoomParticipantLeaved:) name:YSWhiteBoardOnRoomUserLeavedNotification object:nil];
-    // 用户进入通知
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(roomWhiteBoardOnRoomParticipantJoin:) name:YSWhiteBoardOnRoomUserJoinedNotification object:nil];
-    // 自己被踢出教室通知
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(roomWhiteBoardOnParticipantEvicted:) name:YSWhiteBoardOnSelfEvictedNotification object:nil];
+//    // 用户离开通知
+//    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(roomWhiteBoardOnRoomParticipantLeaved:) name:YSWhiteBoardOnRoomUserLeavedNotification object:nil];
+//    // 用户进入通知
+//    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(roomWhiteBoardOnRoomParticipantJoin:) name:YSWhiteBoardOnRoomUserJoinedNotification object:nil];
+//    // 自己被踢出教室通知
+//    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(roomWhiteBoardOnParticipantEvicted:) name:YSWhiteBoardOnSelfEvictedNotification object:nil];
     // 收到远端pubMsg消息通知
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(roomWhiteBoardOnRemotePubMsg:) name:YSWhiteBoardOnRemotePubMsgNotification object:nil];
     // 收到远端delMsg消息的通知
@@ -875,7 +819,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     // 教室消息列表的通知
 //    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(roomWhiteBoardOnRemoteMsgList:) name:YSWhiteBoardOnRemoteMsgListNotification object:nil];
     // 大并发房间用户上台通知
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(roomWhiteBoardOnBigRoomUserPublished:) name:YSWhiteBoardOnBigRoomUserPublishedNotification object:nil];
+//    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(roomWhiteBoardOnBigRoomUserPublished:) name:YSWhiteBoardOnBigRoomUserPublishedNotification object:nil];
     // 白板崩溃 重新加载 重新获取msgList
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(resetWhiteBoard:) name:YSWhiteBoardMsgListACKNotification object:nil];
     // 获取服务器地址
@@ -1134,17 +1078,17 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     if (!show)
     {
         NSDictionary *fileDic = [YSFileModel fileDataDocDic:self.currentFile];
-            
-            [[YSRoomInterface instance] pubMsg:sYSSignalShowPage
-                                         msgID:sYSSignalDocumentFilePage_ShowPage
-                                          toID:[YSRoomInterface instance].localUser.peerID
-                                          data:fileDic
-                                          save:NO
-                                 extensionData:nil
-                               associatedMsgID:nil
-                              associatedUserID:nil
-                                       expires:0
-                                    completion:nil];
+        
+        [[YSRoomInterface instance] pubMsg:sYSSignalShowPage
+                                     msgID:sYSSignalDocumentFilePage_ShowPage
+                                      toID:[YSRoomInterface instance].localUser.peerID
+                                      data:fileDic
+                                      save:NO
+                             extensionData:nil
+                           associatedMsgID:nil
+                          associatedUserID:nil
+                                   expires:0
+                                completion:nil];
     }
 }
 
@@ -1207,15 +1151,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     {
         if (dic && [dic isKindOfClass:NSDictionary.class])
         {
-            if (self.mainWhiteBoardView)
-            {
-                [self.mainWhiteBoardView receiveWhiteBoardMessage:dic isDelMsg:NO];
-            }
-            
-            for (YSWhiteBoardView *whiteBoardView in self.coursewareViewList)
-            {
-                [whiteBoardView receiveWhiteBoardMessage:dic isDelMsg:NO];
-            }
+            [self roomWhiteBoardOnRemotePubMsgWithMessage:dic];
         }
     }
 }
@@ -1230,27 +1166,6 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 {
     NSDictionary *dict = notification.userInfo;
     NSDictionary *message = [dict objectForKey:YSWhiteBoardNotificationUserInfoKey];
-    
-    //if (self.preloadingFished == YES)
-    {
-        if (self.mainWhiteBoardView)
-        {
-            [self.mainWhiteBoardView bigRoomUserPublished:message];
-        }
-        
-        for (YSWhiteBoardView *whiteBoardView in self.coursewareViewList)
-        {
-            [whiteBoardView  bigRoomUserPublished:message];
-        }
-    }
-    //else
-    {
-        NSString *methodName = NSStringFromSelector(@selector(sendSignalMessageToJS:message:));
-        NSMutableDictionary *dic = [NSMutableDictionary dictionary];
-        [dic setValue:methodName forKey:kYSMethodNameKey];
-        [dic setValue:@[WBParticipantPublished, message] forKey:kYSParameterKey];
-        [self.cacheMsgPool addObject:dic];
-    }
 }
 
 // 用户属性改变通知
@@ -1259,7 +1174,6 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     NSDictionary *dict = notification.userInfo;
     NSDictionary *message = [dict bm_dictionaryForKey:YSWhiteBoardNotificationUserInfoKey];
     
-    // 用户属性改变通知，只接收自己的candraw属性
     if (![message bm_isNotEmptyDictionary])
     {
         return;
@@ -1272,60 +1186,37 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     }
     
     NSDictionary *properties = [message bm_dictionaryForKey:@"properties"];
-    if (![properties bm_containsObjectForKey:sYSUserCandraw])
+    // 用户属性改变通知，只接收自己的candraw属性，PrimaryColor画笔颜色属性
+    if (![properties bm_containsObjectForKey:sYSUserCandraw] && ![properties bm_containsObjectForKey:sYSUserPrimaryColor])
     {
         return;
     }
 
-    //if (self.preloadingFished == YES)
+    if (self.mainWhiteBoardView)
     {
-        if (self.mainWhiteBoardView)
-        {
-            [self.mainWhiteBoardView userPropertyChanged:message];
-        }
-        
-        for (YSWhiteBoardView *whiteBoardView in self.coursewareViewList)
-        {
-            [whiteBoardView userPropertyChanged:message];
-        }
+        [self.mainWhiteBoardView userPropertyChanged:message];
     }
-    //else
-    {
-        NSString *methodName = NSStringFromSelector(@selector(sendSignalMessageToJS:message:));
-        
-        NSMutableDictionary *dic = [NSMutableDictionary dictionary];
-        [dic setValue:methodName forKey:kYSMethodNameKey];
-        [dic setValue:@[WBSetProperty, message] forKey:kYSParameterKey];
     
-        [self.cacheMsgPool addObject:dic];
+    for (YSWhiteBoardView *whiteBoardView in self.coursewareViewList)
+    {
+        [whiteBoardView userPropertyChanged:message];
     }
 }
 
+#if 0
 - (void)roomWhiteBoardOnRoomParticipantLeaved:(NSNotification *)notification
 {
     NSDictionary *dict = notification.userInfo;
     NSDictionary *message = [dict objectForKey:YSWhiteBoardNotificationUserInfoKey];
     
-    //if (self.preloadingFished == YES)
+    if (self.mainWhiteBoardView)
     {
-//        if (self.mainWhiteBoardView)
-//        {
-//            [self.mainWhiteBoardView participantLeaved:message];
-//        }
-        
-        for (YSWhiteBoardView *whiteBoardView in self.coursewareViewList)
-        {
-            [whiteBoardView participantLeaved:message];
-        }
+        [self.mainWhiteBoardView participantLeaved:message];
     }
-    //else
+    
+    for (YSWhiteBoardView *whiteBoardView in self.coursewareViewList)
     {
-        NSString *methodName = NSStringFromSelector(@selector(sendSignalMessageToJS:message:));
-        
-        NSMutableDictionary *dic = [NSMutableDictionary dictionary];
-        [dic setValue:methodName forKey:kYSMethodNameKey];
-        [dic setValue:@[WBParticipantLeft, message] forKey:kYSParameterKey];
-        [self.cacheMsgPool addObject:dic];
+        [whiteBoardView participantLeaved:message];
     }
 }
 
@@ -1334,26 +1225,14 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     NSDictionary *dict = notification.userInfo;
     NSDictionary *message = [dict objectForKey:YSWhiteBoardNotificationUserInfoKey];
     
-    //if (self.preloadingFished == YES)
+    if (self.mainWhiteBoardView)
     {
-//        if (self.mainWhiteBoardView)
-//        {
-//            [self.mainWhiteBoardView participantJoin:message];
-//        }
-        
-        for (YSWhiteBoardView *whiteBoardView in self.coursewareViewList)
-        {
-            [whiteBoardView participantJoin:message];
-        }
+        [self.mainWhiteBoardView participantJoin:message];
     }
-    //else
+    
+    for (YSWhiteBoardView *whiteBoardView in self.coursewareViewList)
     {
-        NSString *methodName = NSStringFromSelector(@selector(sendSignalMessageToJS:message:));
-        
-        NSMutableDictionary *dic = [NSMutableDictionary dictionary];
-        [dic setValue:methodName forKey:kYSMethodNameKey];
-        [dic setValue:@[WBParticipantJoined, message] forKey:kYSParameterKey];
-        [self.cacheMsgPool addObject:dic];
+        [whiteBoardView participantJoin:message];
     }
 }
 
@@ -1362,28 +1241,17 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     NSDictionary *dict = notification.userInfo;
     NSDictionary *reason = [dict objectForKey:YSWhiteBoardNotificationUserInfoKey];
     
-    //if (self.preloadingFished == YES)
+    if (self.mainWhiteBoardView)
     {
-//        if (self.mainWhiteBoardView)
-//        {
-//            [self.mainWhiteBoardView participantEvicted:reason];
-//        }
-        
-        for (YSWhiteBoardView *whiteBoardView in self.coursewareViewList)
-        {
-            [whiteBoardView participantEvicted:reason];
-        }
+        [self.mainWhiteBoardView participantEvicted:reason];
     }
-    //else
+    
+    for (YSWhiteBoardView *whiteBoardView in self.coursewareViewList)
     {
-        NSString *methodName = NSStringFromSelector(@selector(sendSignalMessageToJS:message:));
-        
-        NSMutableDictionary *dic = [NSMutableDictionary dictionary];
-        [dic setValue:methodName forKey:kYSMethodNameKey];
-        [dic setValue:@[WBParticipantEvicted, reason] forKey:kYSParameterKey];
-        [self.cacheMsgPool addObject:dic];
+        [whiteBoardView participantEvicted:reason];
     }
 }
+#endif
 
 - (void)roomWhiteBoardOnRemotePubMsg:(NSNotification *)notification
 {
@@ -1479,28 +1347,14 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         [self setTheCurrentDocumentFileID:fileId];
     }
     
-    //if (self.preloadingFished == NO)
+    if (self.mainWhiteBoardView)
     {
-        NSString *methorForNative = NSStringFromSelector(@selector(receiveWhiteBoardMessage:isDelMsg:));
-        NSMutableDictionary *dicForNative = [NSMutableDictionary dictionary];
-        [dicForNative setObject:methorForNative forKey:kYSMethodNameKey];
-        [dicForNative setObject:@[[NSMutableDictionary dictionaryWithDictionary:message], @(NO)] forKey:kYSParameterKey];
-        [self.cacheMsgPool addObject:dicForNative];
+        [self.mainWhiteBoardView remotePubMsg:message];
     }
-    //else
+    
+    for (YSWhiteBoardView *whiteBoardView in self.coursewareViewList)
     {
-        if (self.mainWhiteBoardView)
-        {
-            [self.mainWhiteBoardView remotePubMsg:message];
-        }
-        
-        if (![msgName isEqualToString:sYSSignalShowPage])
-        {
-            for (YSWhiteBoardView *whiteBoardView in self.coursewareViewList)
-            {
-                [whiteBoardView remotePubMsg:message];
-            }
-        }
+        [whiteBoardView remotePubMsg:message];
     }
 }
 
@@ -1508,17 +1362,6 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 {
     NSDictionary *dict = notification.userInfo;
     NSDictionary *message = [dict objectForKey:YSWhiteBoardNotificationUserInfoKey];
-    
-    //if (self.preloadingFished == NO)
-    {
-        NSString *methorForNative = NSStringFromSelector(@selector(receiveWhiteBoardMessage:isDelMsg:));
-        NSMutableDictionary *dicForNative = [NSMutableDictionary dictionary];
-        [dicForNative setObject:methorForNative forKey:kYSMethodNameKey];
-        [dicForNative setObject:@[[NSMutableDictionary dictionaryWithDictionary:message], @(YES)] forKey:kYSParameterKey];
-        [self.cacheMsgPool addObject:dicForNative];
-        
-        return;
-    }
     
     if (self.mainWhiteBoardView)
     {
@@ -1530,7 +1373,6 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         [whiteBoardView remoteDelMsg:message];
     }
 }
-
 
 
 #pragma -

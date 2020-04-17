@@ -624,11 +624,11 @@
     {
         WB_INFO(@"evaluateJS - preFinish - %@", msgDic);
 
-        if (self.delegate &&
-            [self.delegate respondsToSelector:@selector(onWBWebViewManagerPreloadingFished)])
-        {
-            [self.delegate onWBWebViewManagerPreloadingFished];
-        }
+//        if (self.delegate &&
+//            [self.delegate respondsToSelector:@selector(onWBWebViewManagerPreloadingFished)])
+//        {
+//            [self.delegate onWBWebViewManagerPreloadingFished];
+//        }
     }
 }
 
