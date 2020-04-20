@@ -615,6 +615,10 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
             return whiteBoardView;
         }
     }
+    if ([self.mainWhiteBoardView.fileId isEqualToString:fileId])
+    {
+        return self.mainWhiteBoardView;
+    }
     return nil;
 }
 
@@ -1362,6 +1366,11 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     else if ([msgName isEqualToString:sYSSignalShowPage])
     {
         NSString *fileId = [tDataDic bm_stringForKey:@"fileid"];
+        if (!fileId)
+        {
+            NSDictionary *filedata = [tDataDic bm_dictionaryForKey:@"filedata"];
+            fileId = [filedata bm_stringForKey:@"fileid"];
+        }
         [self.docmentList enumerateObjectsUsingBlock:^(YSFileModel * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             if ([fileId isEqualToString:obj.fileid])
             {
@@ -1404,6 +1413,33 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 
 #pragma -
 #pragma mark YSWhiteBoardViewDelegate
+
+/// H5脚本文件加载初始化完成
+- (void)onWBViewWebViewManagerPageFinshed:(YSWhiteBoardView *)whiteBoardView
+{
+    
+}
+
+/// 切换Web课件加载状态
+- (void)onWBViewWebViewManagerLoadedState:(YSWhiteBoardView *)whiteBoardView withState:(NSDictionary *)dic
+{
+    
+}
+
+/// Web课件翻页结果
+- (void)onWBViewWebViewManagerStateUpdate:(YSWhiteBoardView *)whiteBoardView withState:(NSDictionary *)dic
+{
+    if (self.wbDelegate && [self.wbDelegate respondsToSelector:@selector(onWhiteBoardViewStateUpdate:)])
+    {
+        [self.wbDelegate onWhiteBoardViewStateUpdate:dic];
+    }
+}
+
+/// 翻页超时
+- (void)onWBViewWebViewManagerSlideLoadTimeout:(YSWhiteBoardView *)whiteBoardView withState:(NSDictionary *)dic
+{
+    
+}
 
 
 @end
