@@ -30,10 +30,10 @@ NS_ASSUME_NONNULL_BEGIN
 /// 画笔默认配置
 - (void)freshBrushToolConfigs;
 
-/// 选择画笔工具
+/// 选择画笔工具条中的某个工具时的方法
 - (void)brushToolsDidSelect:(YSBrushToolType)BrushToolType;
 
-/// 选择画笔工具的：类型 && 颜色  &&大小
+/// 修改某个工具中的属性：类型 && 颜色  &&大小   时
 - (void)didSelectDrawType:(YSDrawType)type color:(nullable NSString *)hexColor widthProgress:(float)progress;
 
 /// 改变默认画笔颜色
