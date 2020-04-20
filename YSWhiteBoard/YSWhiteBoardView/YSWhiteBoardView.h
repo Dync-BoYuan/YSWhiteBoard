@@ -92,6 +92,11 @@ NS_ASSUME_NONNULL_BEGIN
 ///拖拽手势事件
 - (void)panToMoveWhiteBoardView:(YSWhiteBoardView *)whiteBoard withGestureRecognizer:(UIPanGestureRecognizer *)pan;
 
+
+///缩放手势事件
+- (void)pinchWhiteBoardView:(YSWhiteBoardView *)whiteBoard withGestureRecognizer:(UIPinchGestureRecognizer *)pinch;
+
+
 @end
 
 

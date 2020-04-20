@@ -70,21 +70,42 @@
         UIPanGestureRecognizer * panGesture = [[UIPanGestureRecognizer alloc]initWithTarget:self action:@selector(panGestureToMoveView:)];
         [self addGestureRecognizer:panGesture];
         
+        // 捏合手势
+        UIPinchGestureRecognizer *pinchRcognize =[[UIPinchGestureRecognizer alloc]initWithTarget:self action:@selector(pinchView:)];
+        pinchRcognize.delegate = self;
+        [self addGestureRecognizer:pinchRcognize];
+//        [pinchRcognize delaysTouchesEnded];
+//        [pinchRcognize cancelsTouchesInView];
+        
+        self.exclusiveTouch = YES;
+        
+        
     }
     
     return self;
 }
 
+#pragma mark 拖拽/缩放 手势
 ///课件拖拽事件
 - (void)panGestureToMoveView:(UIPanGestureRecognizer *)pan
 {
-    
     if ([self.delegate respondsToSelector:@selector(panToMoveWhiteBoardView:withGestureRecognizer:)])
     {
         [self.delegate panToMoveWhiteBoardView:self withGestureRecognizer:pan];
     }
 }
 
+///课件缩放事件
+- (void)pinchView:(UIPinchGestureRecognizer *)pinch
+{
+    if ([self.delegate respondsToSelector:@selector(pinchWhiteBoardView:withGestureRecognizer:)])
+    {
+        [self.delegate pinchWhiteBoardView:self withGestureRecognizer:pinch];
+    }
+    
+    
+
+}
 
 - (void)setFrame:(CGRect)frame
 {

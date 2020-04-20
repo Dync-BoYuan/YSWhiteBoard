@@ -134,6 +134,8 @@ static  NSString *const sYSSignalNewPptTriggerActionClick = @"NewPptTriggerActio
 
 static  NSString *const sYSSignalClassBegin             = @"ClassBegin";
 
+/// 单窗口位置、大小、最小化、最大化数据
+static  NSString *const sYSSignalMoreWhiteboardState            = @"MoreWhiteboardState";
 
 
 #pragma - mark js命令
