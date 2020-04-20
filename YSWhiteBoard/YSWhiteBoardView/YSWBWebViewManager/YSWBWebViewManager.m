@@ -699,7 +699,7 @@
 - (void)sendSignalMessageToJS:(NSString *)signalingName message:(nullable id)message
 {
     NSString *msgName = nil;
-    NSDictionary *data = nil;
+    NSDictionary *dataDic = nil;
     
     if ([signalingName isEqualToString:WBPubMsg] || [signalingName isEqualToString:WBDelMsg])
     {
@@ -715,7 +715,8 @@
                     return;
                 }
                 
-                data = [message bm_dictionaryForKey:@"data"];
+                id data = [message objectForKey:@"data"];
+                dataDic = [YSRoomUtil convertWithData:data];
                 
                 if ([signalingName isEqualToString:WBDelMsg])
                 {
@@ -755,9 +756,9 @@
         return;
     }
     
-    if (data)
+    if (dataDic)
     {
-        message = data;
+        message = dataDic;
     }
     
     NSString *tJsonDataJsonString;

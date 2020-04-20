@@ -80,6 +80,7 @@ NS_ASSUME_NONNULL_BEGIN
 /// 白板 放大重置
 - (void)whiteBoardResetEnlarge;
 
+- (void)changeFileId:(NSString *)fileId;
 /// 当前页码
 - (void)changeCurrentPage:(NSUInteger)currentPage;
 /// 总页码

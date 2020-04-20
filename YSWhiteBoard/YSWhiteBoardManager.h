@@ -41,6 +41,9 @@ NS_ASSUME_NONNULL_BEGIN
 /// 当前激活文档id
 @property (nonatomic, strong, readonly) NSString *currentFileId;
 
+/// 主白板
+@property (nonatomic, strong, readonly) YSWhiteBoardView *mainWhiteBoardView;
+
 /// 记录UI层是否开始上课
 @property (nonatomic, assign, readonly) BOOL isBeginClass;
 

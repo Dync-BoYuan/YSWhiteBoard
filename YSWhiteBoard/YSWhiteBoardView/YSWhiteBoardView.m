@@ -59,7 +59,14 @@
     if (self)
     {
         self.fileId = fileId;
-        self.whiteBoardId = [NSString stringWithFormat:@"%@%@", YSWhiteBoardId_Header, fileId];
+        if ([fileId isEqualToString:@"0"])
+        {
+            self.whiteBoardId = [NSString stringWithFormat:@"%@%@", YSWhiteBoardId_Header, fileId];
+        }
+        else
+        {
+            self.whiteBoardId = [NSString stringWithFormat:@"%@%@", YSWhiteBoardId_Header, fileId];
+        }
         
         self.webViewManager = [[YSWBWebViewManager alloc] init];
         self.webViewManager.delegate = self;
@@ -386,8 +393,10 @@
         }
     }
 
-#warning 刷新课件页码
-    
+    if (self.delegate && [self.delegate respondsToSelector:@selector(onWBViewWebViewManagerStateUpdate:withState:)])
+    {
+        [self.delegate onWBViewWebViewManagerStateUpdate:self withState:dic];
+    }
 }
 
 /// 课件加载成功回调
@@ -887,6 +896,11 @@
     {
         //[self.drawViewManager resetEnlargeValue:YSWHITEBOARD_MINZOOMSCALE animated:YES];
     }
+}
+
+- (void)changeFileId:(NSString *)fileId
+{
+    self.fileId = fileId;
 }
 
 /// 当前页码
