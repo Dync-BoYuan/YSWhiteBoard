@@ -344,18 +344,18 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
             dragImageViewW = dragImageViewH / 3.0f * 5.0f;
         }
         
+        //小于默认时
+        if (dragImageViewW <= self.whiteBoardViewDefaultSize.width || dragImageViewH <= self.whiteBoardViewDefaultSize.height)
+        {
+            dragImageViewW = self.whiteBoardViewDefaultSize.width;
+            dragImageViewH = self.whiteBoardViewDefaultSize.height;
+        }
+        
         self.dragImageView.frame = CGRectMake(whiteBoard.bm_originX, whiteBoard.bm_originY, dragImageViewW, dragImageViewH);
                 
         if (pan.state == UIGestureRecognizerStateEnded)
         {
-            //小于默认时
-            if (dragImageViewW <= self.whiteBoardViewDefaultSize.width || dragImageViewH <= self.whiteBoardViewDefaultSize.height)
-            {
-                dragImageViewW = self.whiteBoardViewDefaultSize.width;
-                dragImageViewH = self.whiteBoardViewDefaultSize.height;
-            }
-            
-            whiteBoard.frame =  CGRectMake(whiteBoard.bm_originX, whiteBoard.bm_originY, dragImageViewW, dragImageViewH);
+            whiteBoard.frame =  self.dragImageView.frame;
             
             //宽，高值在主白板上的比例
             CGFloat scaleWidth = dragImageViewW / self.mainWhiteBoardView.bm_width;

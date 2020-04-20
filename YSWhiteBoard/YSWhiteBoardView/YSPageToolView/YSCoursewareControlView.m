@@ -51,6 +51,9 @@
         self.zoomScale = 1;
         
         [self setupUI];
+        
+        self.layer.cornerRadius = frame.size.height/2;
+        self.layer.masksToBounds = YES;
     }
     
     return self;

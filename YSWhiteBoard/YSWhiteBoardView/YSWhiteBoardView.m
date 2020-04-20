@@ -11,6 +11,7 @@
 #import "YSFileModel.h"
 #import <objc/message.h>
 #import "YSWhiteBoardTopBar.h"
+#import "YSCoursewareControlView.h"
 
 #define YSWhiteBoardId_Header   @"docModule_"
 
@@ -49,6 +50,9 @@
 /// 总页码
 @property (nonatomic, assign) NSUInteger totalPage;
 
+/// 翻页工具条
+@property (nonatomic, strong) YSCoursewareControlView *pageControlView;
+
 @end
 
 @implementation YSWhiteBoardView
@@ -61,7 +65,7 @@
         self.fileId = fileId;
         if ([fileId isEqualToString:@"0"])
         {
-            self.whiteBoardId = [NSString stringWithFormat:@"%@%@", YSWhiteBoardId_Header, fileId];
+            self.whiteBoardId = @"default";
         }
         else
         {
@@ -83,7 +87,15 @@
         YSWhiteBoardTopBar * topBar = [[YSWhiteBoardTopBar alloc]initWithFrame:CGRectMake(0, 0, frame.size.width, 30)];
         topBar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
         [self addSubview:topBar];
-//        self.topBar = topBar;
+        
+        if (![fileId isEqualToString:@"0"])
+        {
+            YSCoursewareControlView * pageControlView = [[YSCoursewareControlView alloc]initWithFrame:CGRectMake(0, 0, 246, 34)];
+            [self addSubview:pageControlView];
+            self.pageControlView = pageControlView;
+            self.pageControlView.bm_centerX = frame.size.width / 2;
+            self.pageControlView.bm_bottom = frame.size.height - 20;
+        }
         
         UIPanGestureRecognizer * panGesture = [[UIPanGestureRecognizer alloc]initWithTarget:self action:@selector(panGestureToMoveView:)];
         [self addGestureRecognizer:panGesture];
@@ -108,6 +120,9 @@
     [super setFrame:frame];
     
     [self.drawViewManager updateFrame];
+        
+    self.pageControlView.bm_centerX = frame.size.width / 2;
+    self.pageControlView.bm_bottom = frame.size.height - 20;
 }
 
 - (void)doMsgCachePool
