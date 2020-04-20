@@ -43,6 +43,11 @@
 /// 信令缓存数据 H5脚本加载完成前，之后开始预加载
 @property (nonatomic, strong) NSMutableArray *cacheMsgPool;
 
+/// 当前页码
+@property (nonatomic, assign) NSUInteger currentPage;
+/// 总页码
+@property (nonatomic, assign) NSUInteger totalPage;
+
 @end
 
 @implementation YSWhiteBoardView
@@ -302,8 +307,8 @@
              NSDictionary *dicPage = [dic bm_dictionaryForKey:@"page"];
             if ([dicPage bm_containsObjectForKey:@"currentPage"] && [dicPage bm_containsObjectForKey:@"totalPage"])
             {
-                NSUInteger currentPage = [dicPage bm_uintForKey:@"currentPage"];
-                NSUInteger totalPage   = [dicPage bm_uintForKey:@"totalPage"];
+                self.currentPage = [dicPage bm_uintForKey:@"currentPage"];
+                self.totalPage   = [dicPage bm_uintForKey:@"totalPage"];
                 
                 NSString *fileId = self.fileId;
                 if (!fileId)
@@ -312,8 +317,8 @@
                 }
                 
                 YSFileModel *file = [[YSWhiteBoardManager shareInstance] getDocumentWithFileID:fileId];
-                file.currpage = [dicPage objectForKey:@"currentPage"];
-                file.pagenum = [dicPage objectForKey:@"totalPage"];
+                file.currpage = [dicPage bm_stringForKey:@"currentPage"];
+                file.pagenum = [dicPage bm_stringForKey:@"totalPage"];
 
                 // 肯定是showOnWeb
                 if (self.drawViewManager.showOnWeb)
@@ -326,8 +331,7 @@
                     {
                         file.steptotal = [dicPage bm_stringForKey:@"steptotal"];
                     }
-                    #warning message
-                    //[self.drawViewManager setTotalPage:totalPage currentPage:currentPage];
+                    [self.drawViewManager setTotalPage:self.totalPage currentPage:self.currentPage];
                 }
             }
         }
@@ -358,8 +362,7 @@
 
         if (self.drawViewManager.showOnWeb)
         {
-#warning message
-            //[self.drawViewManager updateWBRatio:ratio];
+            [self.drawViewManager updateWBRatio:ratio];
         }
     }
 
@@ -452,7 +455,7 @@
     else
     {
         NSMutableDictionary *filedata = [NSMutableDictionary dictionaryWithDictionary:[self.drawViewManager.fileDictionary objectForKey:@"filedata"]];
-        [filedata setObject:@(self.drawViewManager.currentPage) forKey:@"currpage"];
+        [filedata setObject:@(self.currentPage) forKey:@"currpage"];
         [self.drawViewManager.fileDictionary setObject:filedata forKey:@"filedata"];
         [self showPageWithDictionary:self.drawViewManager.fileDictionary isFreshCurrentCourse:YES];
     }
@@ -562,16 +565,16 @@
         return;
     }
 
-    self.drawViewManager.currentPage--;
-    if (self.drawViewManager.currentPage < 1)
+    self.currentPage--;
+    if (self.currentPage < 1)
     {
-        self.drawViewManager.currentPage = 1;
+        self.currentPage = 1;
         return;
     }
     
     NSMutableDictionary *filedata = [NSMutableDictionary dictionaryWithDictionary:[self.drawViewManager.fileDictionary objectForKey:@"filedata"]];
-    [filedata setObject:@(self.drawViewManager.currentPage) forKey:@"currpage"];
-    [filedata setObject:@(self.drawViewManager.pagecount) forKey:@"pagenum"];
+    [filedata setObject:@(self.currentPage) forKey:@"currpage"];
+    [filedata setObject:@(self.totalPage) forKey:@"pagenum"];
     [self.drawViewManager.fileDictionary setObject:filedata forKey:@"filedata"];
     
     [self showPageWithDictionary:self.drawViewManager.fileDictionary];
@@ -598,7 +601,6 @@
     {
         return YSError_Bad_Parameters;
     }
-
 }
 
 /// 课件 下一页
@@ -610,16 +612,16 @@
         // 老师可以白板加页
         if ([YSRoomInterface instance].localUser.role == YSUserType_Teacher)
         {
-            self.drawViewManager.currentPage++;
-            if (self.drawViewManager.currentPage > self.drawViewManager.pagecount)
+            self.currentPage++;
+            if (self.currentPage > self.totalPage)
             {
                 NSMutableDictionary *filedata = [NSMutableDictionary dictionaryWithDictionary:[self.drawViewManager.fileDictionary objectForKey:@"filedata"]];
-                [filedata setObject:@(self.drawViewManager.currentPage) forKey:@"currpage"];
-                [filedata setObject:@(self.drawViewManager.currentPage) forKey:@"pagenum"];
+                [filedata setObject:@(self.currentPage) forKey:@"currpage"];
+                [filedata setObject:@(self.currentPage) forKey:@"pagenum"];
                 [self.drawViewManager.fileDictionary setObject:filedata forKey:@"filedata"];
                 
                 // 白板加页需发送
-                NSString *json = [YSRoomUtil jsonStringWithDictionary:@{@"totalPage":@(self.drawViewManager.currentPage),
+                NSString *json = [YSRoomUtil jsonStringWithDictionary:@{@"totalPage":@(self.currentPage),
                                                                   @"fileid":@(0),
                                                                   @"sourceInstanceId":@"default"
                                                                   }];
@@ -628,25 +630,25 @@
             else
             {
                 NSMutableDictionary *filedata = [NSMutableDictionary dictionaryWithDictionary:[self.drawViewManager.fileDictionary objectForKey:@"filedata"]];
-                [filedata setObject:@(self.drawViewManager.currentPage) forKey:@"currpage"];
-                [filedata setObject:@(self.drawViewManager.pagecount) forKey:@"pagenum"];
+                [filedata setObject:@(self.currentPage) forKey:@"currpage"];
+                [filedata setObject:@(self.totalPage) forKey:@"pagenum"];
                 [self.drawViewManager.fileDictionary setObject:filedata forKey:@"filedata"];
             }
         }
         else if ([YSRoomInterface instance].localUser.role == YSUserType_Student)
         {
             // 学生不加页
-            self.drawViewManager.currentPage++;
-            if (self.drawViewManager.currentPage <= self.drawViewManager.pagecount)
+            self.currentPage++;
+            if (self.currentPage <= self.totalPage)
             {
                 NSMutableDictionary *filedata = [NSMutableDictionary dictionaryWithDictionary:[self.drawViewManager.fileDictionary objectForKey:@"filedata"]];
-                [filedata setObject:@(self.drawViewManager.currentPage) forKey:@"currpage"];
-                [filedata setObject:@(self.drawViewManager.pagecount) forKey:@"pagenum"];
+                [filedata setObject:@(self.currentPage) forKey:@"currpage"];
+                [filedata setObject:@(self.totalPage) forKey:@"pagenum"];
                 [self.drawViewManager.fileDictionary setObject:filedata forKey:@"filedata"];
             }
             else
             {
-                self.drawViewManager.currentPage--;
+                self.currentPage--;
                 return;
             }
         }
@@ -660,15 +662,15 @@
             return;
         }
 
-        self.drawViewManager.currentPage++;
-        if (self.drawViewManager.currentPage > self.drawViewManager.pagecount)
+        self.currentPage++;
+        if (self.currentPage > self.totalPage)
         {
-            self.drawViewManager.currentPage = self.drawViewManager.pagecount;
+            self.currentPage = self.totalPage;
             return;
         }
     
         NSMutableDictionary *filedata = [NSMutableDictionary dictionaryWithDictionary:[self.drawViewManager.fileDictionary objectForKey:@"filedata"]];
-        [filedata setObject:@(self.drawViewManager.currentPage) forKey:@"currpage"];
+        [filedata setObject:@(self.currentPage) forKey:@"currpage"];
         [self.drawViewManager.fileDictionary setObject:filedata forKey:@"filedata"];
         
         [self showPageWithDictionary:self.drawViewManager.fileDictionary];
@@ -809,10 +811,10 @@
     }
     else
     {
-        self.drawViewManager.currentPage = pageNum;
+        self.currentPage = pageNum;
         
         NSMutableDictionary *filedata = [NSMutableDictionary dictionaryWithDictionary:[self.drawViewManager.fileDictionary objectForKey:@"filedata"]];
-        [filedata setObject:@(self.drawViewManager.currentPage) forKey:@"currpage"];
+        [filedata setObject:@(self.currentPage) forKey:@"currpage"];
         [self.drawViewManager.fileDictionary setObject:filedata forKey:@"filedata"];
         [self showPageWithDictionary:self.drawViewManager.fileDictionary];
     }
@@ -866,6 +868,19 @@
         //[self.drawViewManager resetEnlargeValue:YSWHITEBOARD_MINZOOMSCALE animated:YES];
     }
 }
+
+/// 当前页码
+- (void)changeCurrentPage:(NSUInteger)currentPage
+{
+    self.currentPage =currentPage;
+}
+
+/// 总页码
+- (void)changeTotalPage:(NSUInteger)totalPage
+{
+    self.totalPage = totalPage;
+}
+
 
 - (void)refreshWebWhiteBoard
 {

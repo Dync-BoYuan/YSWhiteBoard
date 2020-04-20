@@ -22,6 +22,11 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, readonly) NSString *whiteBoardId;
 @property (nonatomic, strong, readonly) NSString *fileId;
 
+/// 当前页码
+@property (nonatomic, assign, readonly) NSUInteger currentPage;
+/// 总页码
+@property (nonatomic, assign, readonly) NSUInteger totalPage;
+
 /// 课件加载成功
 @property (nonatomic, assign, readonly) BOOL isLoadingFinish;
 
@@ -70,6 +75,10 @@ NS_ASSUME_NONNULL_BEGIN
 /// 白板 放大重置
 - (void)whiteBoardResetEnlarge;
 
+/// 当前页码
+- (void)changeCurrentPage:(NSUInteger)currentPage;
+/// 总页码
+- (void)changeTotalPage:(NSUInteger)pagecount;
 
 @end
 

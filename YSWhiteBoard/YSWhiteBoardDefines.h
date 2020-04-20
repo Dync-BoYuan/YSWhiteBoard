@@ -50,6 +50,8 @@ static NSString *const YSWhiteBoard_domain_demoali = @"rddocdemo.roadofcloud.net
 #endif
 
 
+static  NSString *const sWhiteboardID           = @"whiteboardID";
+
 #pragma - mark 用户属性
 
 /// 用户属性
@@ -133,7 +135,6 @@ static  NSString *const sYSSignalH5DocumentAction       = @"H5DocumentAction";
 static  NSString *const sYSSignalNewPptTriggerActionClick = @"NewPptTriggerActionClick";
 
 static  NSString *const sYSSignalClassBegin             = @"ClassBegin";
-
 
 
 #pragma - mark js命令
