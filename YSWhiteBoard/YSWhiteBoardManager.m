@@ -33,6 +33,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 @interface YSWhiteBoardManager ()
 <
     YSWhiteBoardViewDelegate
+
 >
 {
 //    /// 页面加载完成, 是否需要缓存标识
@@ -94,8 +95,14 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 @property (nonatomic, strong) NSMutableArray <YSWhiteBoardView *> *coursewareViewList;
 
 // 画笔控制
-
 @property (nonatomic, strong) YSBrushToolsManager *brushToolsManager;
+
+
+///拖出视频view时的模拟移动图
+@property (nonatomic, strong) UIImageView *dragImageView;
+///小白板是否正在拖动
+@property (nonatomic, assign) BOOL isDraging;
+
 
 @end
 
@@ -173,6 +180,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         [self.mainWhiteBoardView addSubview:whiteBoardView];
         
         YSWhiteBoardTopBar * topBar = [[YSWhiteBoardTopBar alloc]initWithFrame:CGRectMake(0, 0, whiteBoardView.bm_width, 30)];
+//        topBar.fileId = whiteBoardView.fileId;
         [whiteBoardView addSubview:topBar];
         
     }
@@ -205,9 +213,6 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 
     CGSize size = self.whiteBoardViewDefaultSize;
 
-    CGFloat top1 = whiteBoardViewCurrentTop + size.height;
-    CGFloat top2 = self.mainWhiteBoardView.bm_height;
-    
     if ((whiteBoardViewCurrentTop + size.height) >= self.mainWhiteBoardView.bm_height)
     {
         lineCount++;
@@ -227,6 +232,66 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         whiteBoardViewCurrentTop = YSWhiteBoardDefaultTop*(loopCount+0.5);
     }
 }
+
+- (void)panToMoveWhiteBoardView:(YSWhiteBoardView *)whiteBoard withGestureRecognizer:(UIPanGestureRecognizer *)pan
+{
+    
+    
+    if (!self.isDraging)
+    {
+        if ([whiteBoard isEqual:self.mainWhiteBoardView])
+        {
+            [self.dragImageView removeFromSuperview];
+            self.dragImageView = nil;
+            return;
+        }
+        CGPoint point = [pan locationInView:pan.view];
+        if (point.y>30)
+        {
+            [self.dragImageView removeFromSuperview];
+            self.dragImageView = nil;
+            return;
+        }
+        
+        self.isDraging = YES;
+    }
+
+    CGPoint endPoint = [pan translationInView:whiteBoard];
+    
+     if (!self.dragImageView)
+        {
+            UIImage * img = [whiteBoard bm_screenshot];
+            self.dragImageView = [[UIImageView alloc]initWithImage:img];
+            [self.mainWhiteBoardView addSubview:self.dragImageView];
+        }
+        
+//        if (self.videoOriginInSuperview.x == 0 && self.videoOriginInSuperview.y == 0)
+//        {
+//            self.videoOriginInSuperview = [background convertPoint:CGPointMake(0, 0) fromView:videoView];
+//    //        [self.whitebordFullBackgroud bringSubviewToFront:self.dragImageView];
+//            [self.dragImageView bm_bringToFront];
+//        }
+    
+//    CGFloat
+//
+//    if (whiteBoard.bm_originX + whiteBoard.bm_width + endPoint.x > self.mainWhiteBoardView.bm_width) {
+//        <#statements#>
+//    }
+    
+        self.dragImageView.frame = CGRectMake(whiteBoard.bm_originX + endPoint.x, whiteBoard.bm_originY + endPoint.y, whiteBoard.bm_width, whiteBoard.bm_height);
+    
+    if (pan.state == UIGestureRecognizerStateEnded)
+    {
+        
+        whiteBoard.frame = self.dragImageView.frame;
+        
+        [self.dragImageView removeFromSuperview];
+        self.dragImageView = nil;
+        self.isDraging = NO;
+        [whiteBoard bm_bringToFront];
+    }
+}
+
 
 #pragma mark - 课件列表管理
 

@@ -98,6 +98,9 @@ NS_ASSUME_NONNULL_BEGIN
 /// 翻页超时
 - (void)onWBViewWebViewManagerSlideLoadTimeout:(YSWhiteBoardView *)whiteBoardView withState:(NSDictionary *)dic;
 
+///拖拽手势事件
+- (void)panToMoveWhiteBoardView:(YSWhiteBoardView *)whiteBoard withGestureRecognizer:(UIPanGestureRecognizer *)pan;
+
 @end
 
 
