@@ -98,10 +98,15 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 @property (nonatomic, strong) YSBrushToolsManager *brushToolsManager;
 
 
+
 ///拖出视频view时的模拟移动图
 @property (nonatomic, strong) UIImageView *dragImageView;
+
 ///小白板是否正在拖动
 @property (nonatomic, assign) BOOL isDraging;
+
+///小白板是否正在拖动缩放
+@property (nonatomic, assign) BOOL isDragZooming;
 
 
 @end
@@ -178,11 +183,6 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         YSWhiteBoardView *whiteBoardView= [self createWhiteBoardWithFileId:[NSString stringWithFormat:@"%@", @(i)] loadFinishedBlock:nil];
         whiteBoardView.backgroundColor = [UIColor bm_randomColor];
         [self.mainWhiteBoardView addSubview:whiteBoardView];
-        
-        YSWhiteBoardTopBar * topBar = [[YSWhiteBoardTopBar alloc]initWithFrame:CGRectMake(0, 0, whiteBoardView.bm_width, 30)];
-//        topBar.fileId = whiteBoardView.fileId;
-        [whiteBoardView addSubview:topBar];
-        
     }
     return self.mainWhiteBoardView;
 }
@@ -236,7 +236,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 #pragma mark 拖拽手势
 - (void)panToMoveWhiteBoardView:(YSWhiteBoardView *)whiteBoard withGestureRecognizer:(UIPanGestureRecognizer *)pan
 {
-    if (!self.isDraging)
+    if (!self.isDraging &&  !self.isDragZooming)
     {
         if ([whiteBoard isEqual:self.mainWhiteBoardView])
         {
@@ -245,17 +245,27 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
             return;
         }
         CGPoint point = [pan locationInView:pan.view];
-        if (point.y>30)
+        if (point.y<30)
+        {
+            self.isDraging = YES;
+            
+        }
+        else if (point.x>whiteBoard.bm_width-50 && point.y>whiteBoard.bm_height-50)
+        {
+            self.isDragZooming = YES;
+        }
+        else
         {
             [self.dragImageView removeFromSuperview];
             self.dragImageView = nil;
             return;
         }
-        
-        self.isDraging = YES;
     }
-
+    
     CGPoint endPoint = [pan translationInView:whiteBoard];
+    
+    BMLog(@"拖拽的尺寸变化：%@",NSStringFromCGPoint(endPoint));
+    
     
     if (!self.dragImageView)
     {
@@ -263,58 +273,99 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         self.dragImageView = [[UIImageView alloc]initWithImage:img];
         [self.mainWhiteBoardView addSubview:self.dragImageView];
     }
-    
-    CGFloat dragImageViewX = whiteBoard.bm_originX + endPoint.x;
-    CGFloat dragImageViewY = whiteBoard.bm_originY + endPoint.y;
 
-    if (dragImageViewX + whiteBoard.bm_width >= self.mainWhiteBoardView.bm_width-1)
-    {
-        dragImageViewX = self.mainWhiteBoardView.bm_width - 1 - whiteBoard.bm_width;
-    }
-    else if (dragImageViewX <= 1)
-    {
-        dragImageViewX = 1;
-    }
-    
-    if (dragImageViewY + whiteBoard.bm_height >= self.mainWhiteBoardView.bm_height - 1)
-    {
-        dragImageViewY = self.mainWhiteBoardView.bm_height - 1 - whiteBoard.bm_height;
-    }
-    else if (dragImageViewY <= 1)
-    {
-        dragImageViewY = 1;
-    }
-    
-    self.dragImageView.frame = CGRectMake(dragImageViewX, dragImageViewY, whiteBoard.bm_width, whiteBoard.bm_height);
-    
-    if (pan.state == UIGestureRecognizerStateEnded)
-    {
-        whiteBoard.frame = self.dragImageView.frame;
+    if (self.isDraging)
+    {//拖动 - 移动
         
-        CGFloat percentLeft = whiteBoard.bm_originX/(self.mainWhiteBoardView.bm_width - 2 - whiteBoard.bm_width);
-        CGFloat percentTop = whiteBoard.bm_originY/(self.mainWhiteBoardView.bm_height - 2 - whiteBoard.bm_height);
+        CGFloat dragImageViewX = whiteBoard.bm_originX + endPoint.x;
+        CGFloat dragImageViewY = whiteBoard.bm_originY + endPoint.y;
         
+        if (dragImageViewX + whiteBoard.bm_width >= self.mainWhiteBoardView.bm_width-1)
+        {
+            dragImageViewX = self.mainWhiteBoardView.bm_width - 1 - whiteBoard.bm_width;
+        }
+        else if (dragImageViewX <= 1)
+        {
+            dragImageViewX = 1;
+        }
         
-        [self.dragImageView removeFromSuperview];
-        self.dragImageView = nil;
-        self.isDraging = NO;
-        [whiteBoard bm_bringToFront];
+        if (dragImageViewY + whiteBoard.bm_height >= self.mainWhiteBoardView.bm_height - 1)
+        {
+            dragImageViewY = self.mainWhiteBoardView.bm_height - 1 - whiteBoard.bm_height;
+        }
+        else if (dragImageViewY <= 1)
+        {
+            dragImageViewY = 1;
+        }
+        
+        self.dragImageView.frame = CGRectMake(dragImageViewX, dragImageViewY, whiteBoard.bm_width, whiteBoard.bm_height);
+        
+        if (pan.state == UIGestureRecognizerStateEnded)
+        {
+            whiteBoard.frame = self.dragImageView.frame;
+            
+            //x,y值在主白板上的比例
+            CGFloat scaleLeft = whiteBoard.bm_originX / self.mainWhiteBoardView.bm_width;
+            CGFloat scaleTop = whiteBoard.bm_originY / self.mainWhiteBoardView.bm_height;
+            
+            [self.dragImageView removeFromSuperview];
+            self.dragImageView = nil;
+            self.isDraging = NO;
+            [whiteBoard bm_bringToFront];
+        }
     }
-}
-
-
-#pragma mark 缩放手势
-- (void)pinchWhiteBoardView:(YSWhiteBoardView *)whiteBoard withGestureRecognizer:(UIPinchGestureRecognizer *)pinch
-{
-    if (pinch.state == UIGestureRecognizerStateBegan)
-    {
-        whiteBoard.layer.anchorPoint = CGPointMake(whiteBoard.bm_originX, whiteBoard.bm_originY);
-    }
-    
-    
-    if (pinch.state == UIGestureRecognizerStateEnded)
-    {
+    else
+    {//拖动 - 缩放
         
+        //拖动时小白板的尺寸
+        CGFloat dragImageViewW = 0;
+        CGFloat dragImageViewH = 0;
+        
+        if (endPoint.x >= endPoint.y)
+        {
+            dragImageViewW = whiteBoard.bm_width + endPoint.x;
+            dragImageViewH = dragImageViewW / 5.0f * 3.0f;
+        }
+        else
+        {
+            dragImageViewH = whiteBoard.bm_height + endPoint.y;
+            dragImageViewW = dragImageViewH / 3.0f * 5.0f;
+        }
+        
+        //超出边界时
+        if (whiteBoard.bm_originX + dragImageViewW >= self.mainWhiteBoardView.bm_width - 1)
+        {
+            dragImageViewW = self.mainWhiteBoardView.bm_width - 1 - whiteBoard.bm_originX;
+            dragImageViewH = dragImageViewW / 5.0f * 3.0f;
+        }
+        else if (whiteBoard.bm_originY + dragImageViewH >= self.mainWhiteBoardView.bm_height - 1)
+        {
+            dragImageViewH = self.mainWhiteBoardView.bm_height - 1 - whiteBoard.bm_originY;
+            dragImageViewW = dragImageViewH / 3.0f * 5.0f;
+        }
+        
+        self.dragImageView.frame = CGRectMake(whiteBoard.bm_originX, whiteBoard.bm_originY, dragImageViewW, dragImageViewH);
+                
+        if (pan.state == UIGestureRecognizerStateEnded)
+        {
+            //小于默认时
+            if (dragImageViewW <= self.whiteBoardViewDefaultSize.width || dragImageViewH <= self.whiteBoardViewDefaultSize.height)
+            {
+                dragImageViewW = self.whiteBoardViewDefaultSize.width;
+                dragImageViewH = self.whiteBoardViewDefaultSize.height;
+            }
+            
+            whiteBoard.frame =  CGRectMake(whiteBoard.bm_originX, whiteBoard.bm_originY, dragImageViewW, dragImageViewH);
+            
+            //宽，高值在主白板上的比例
+            CGFloat scaleWidth = dragImageViewW / self.mainWhiteBoardView.bm_width;
+            CGFloat scaleHeight = dragImageViewH / self.mainWhiteBoardView.bm_height;
+            
+            [self.dragImageView removeFromSuperview];
+            self.dragImageView = nil;
+            self.isDragZooming = NO;
+            [whiteBoard bm_bringToFront];
+        }
     }
 }
 

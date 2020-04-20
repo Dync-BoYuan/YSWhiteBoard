@@ -10,6 +10,7 @@
 #import "YSRoomUtil.h"
 #import "YSFileModel.h"
 #import <objc/message.h>
+#import "YSWhiteBoardTopBar.h"
 
 #define YSWhiteBoardId_Header   @"docModule_"
 
@@ -72,19 +73,13 @@
         
         self.drawViewManager = [[YSWBDrawViewManager alloc] initWithBackView:self webView:self.wbView];
         
+        YSWhiteBoardTopBar * topBar = [[YSWhiteBoardTopBar alloc]initWithFrame:CGRectMake(0, 0, frame.size.width, 30)];
+        topBar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+        [self addSubview:topBar];
+//        self.topBar = topBar;
+        
         UIPanGestureRecognizer * panGesture = [[UIPanGestureRecognizer alloc]initWithTarget:self action:@selector(panGestureToMoveView:)];
         [self addGestureRecognizer:panGesture];
-        
-        // 捏合手势
-        UIPinchGestureRecognizer *pinchRcognize =[[UIPinchGestureRecognizer alloc]initWithTarget:self action:@selector(pinchView:)];
-        pinchRcognize.delegate = self;
-        [self addGestureRecognizer:pinchRcognize];
-//        [pinchRcognize delaysTouchesEnded];
-//        [pinchRcognize cancelsTouchesInView];
-        
-        self.exclusiveTouch = YES;
-        
-        
     }
     
     return self;
@@ -100,17 +95,6 @@
     }
 }
 
-///课件缩放事件
-- (void)pinchView:(UIPinchGestureRecognizer *)pinch
-{
-    if ([self.delegate respondsToSelector:@selector(pinchWhiteBoardView:withGestureRecognizer:)])
-    {
-        [self.delegate pinchWhiteBoardView:self withGestureRecognizer:pinch];
-    }
-    
-    
-
-}
 
 - (void)setFrame:(CGRect)frame
 {

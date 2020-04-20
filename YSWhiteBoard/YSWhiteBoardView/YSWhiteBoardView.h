@@ -11,6 +11,7 @@
 #import "YSWBDrawViewManager.h"
 #import "YSWBWebViewManager.h"
 
+
 NS_ASSUME_NONNULL_BEGIN
 
 @protocol YSWhiteBoardViewDelegate;
@@ -34,6 +35,10 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, readonly) YSWBWebViewManager *webViewManager;
 /// 普通文档
 @property (nonatomic, strong, readonly) YSWBDrawViewManager *drawViewManager;
+
+/// 小白板的topBar
+//@property (nonatomic, strong)YSWhiteBoardTopBar * topBar;
+
 
 - (instancetype)initWithFrame:(CGRect)frame fileId:(NSString *)fileId loadFinishedBlock:(nullable  wbLoadFinishedBlock)loadFinishedBlock;
 
@@ -100,11 +105,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 ///拖拽手势事件
 - (void)panToMoveWhiteBoardView:(YSWhiteBoardView *)whiteBoard withGestureRecognizer:(UIPanGestureRecognizer *)pan;
-
-
-///缩放手势事件
-- (void)pinchWhiteBoardView:(YSWhiteBoardView *)whiteBoard withGestureRecognizer:(UIPinchGestureRecognizer *)pinch;
-
 
 @end
 
