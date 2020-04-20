@@ -11,22 +11,17 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class YSWhiteBoardView;
 @interface YSWBDrawViewManager : NSObject
-
-@property (nonatomic, strong) NSMutableDictionary *fileDictionary;
 
 /// 课件使用 webView 加载
 @property (nonatomic, assign, readonly) BOOL showOnWeb;
 
 /// 服务器地址
 @property (nonatomic, strong) NSString *address;
+@property (nonatomic, strong) NSMutableDictionary *fileDictionary;
 
-/// 当前页码
-@property (nonatomic, assign) NSInteger currentPage;
-/// 总页码
-@property (nonatomic, assign, readonly) NSInteger pagecount;
-
-- (instancetype)initWithBackView:(UIView *)view webView:(WKWebView *)webView;
+- (instancetype)initWithBackView:(YSWhiteBoardView *)view webView:(WKWebView *)webView;
 
 - (void)clearAfterClass;
 
@@ -35,6 +30,9 @@ NS_ASSUME_NONNULL_BEGIN
 //- (void)whiteBoardOnRoomConnectedUserlist:(NSNumber *)code response:(NSDictionary *)response;
 
 - (void)updateFrame;
+
+- (void)setTotalPage:(NSInteger)total currentPage:(NSInteger)currentPage;
+- (void)updateWBRatio:(CGFloat)ratio;
 
 @end
 

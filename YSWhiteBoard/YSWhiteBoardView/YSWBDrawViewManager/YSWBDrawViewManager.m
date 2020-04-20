@@ -7,6 +7,7 @@
 //
 
 #import "YSWBDrawViewManager.h"
+#import "YSWhiteBoardView.h"
 #import "DocShowView.h"
 #import "DrawView.h"
 #import "LaserPan.h"
@@ -19,8 +20,6 @@ NSString *const YSWhiteBoardRemoteSelectTool = @"YSWhiteBoardRemoteSelectTool"; 
     DocShowViewZoomScaleDelegate
 >
 {
-    NSUInteger total0Page;
-    
     /// 获取数据
     BOOL hasRecoveried;
 
@@ -28,7 +27,7 @@ NSString *const YSWhiteBoardRemoteSelectTool = @"YSWhiteBoardRemoteSelectTool"; 
     BOOL sendFromSelf;
 }
 /// 承载View
-@property (nonatomic, weak) UIView *contentView;
+@property (nonatomic, weak) YSWhiteBoardView *contentView;
 
 /// web课件通过YSWBWebViewManager创建的webView
 @property (nonatomic, weak) WKWebView *wkWebView;
@@ -41,14 +40,6 @@ NSString *const YSWhiteBoardRemoteSelectTool = @"YSWhiteBoardRemoteSelectTool"; 
 
 @property (nonatomic, strong) NSMutableDictionary *wbToolConfigs;
 @property (nonatomic, strong) NSString *defaultPrimaryColor;
-
-/// 当前fileId
-@property (nonatomic, strong) NSString *fileId;
-
-/// 当前页码
-//@property (nonatomic, assign) NSInteger currentPage;
-/// 总页码
-@property (nonatomic, assign) NSInteger pagecount;
 
 /// 课件使用 webView 加载
 @property (nonatomic, assign) BOOL showOnWeb;
@@ -67,7 +58,7 @@ NSString *const YSWhiteBoardRemoteSelectTool = @"YSWhiteBoardRemoteSelectTool"; 
 
 @implementation YSWBDrawViewManager
 
-- (instancetype)initWithBackView:(UIView *)view webView:(WKWebView *)webView
+- (instancetype)initWithBackView:(YSWhiteBoardView *)view webView:(WKWebView *)webView
 {
     self = [super init];
 
@@ -78,10 +69,7 @@ NSString *const YSWhiteBoardRemoteSelectTool = @"YSWhiteBoardRemoteSelectTool"; 
         
         self.showOnWeb = NO;
         self.selectMouse = YES;
-        
-        self.fileId = @"0";
-        self.currentPage = 1;
-        
+                
         self.address = [YSWhiteBoardManager shareInstance].serverDocAddrKey;
 
         // 创建主白板
@@ -271,7 +259,7 @@ NSString *const YSWhiteBoardRemoteSelectTool = @"YSWhiteBoardRemoteSelectTool"; 
         }
         else
         {
-            if ([self.fileId isEqualToString:@"0"])
+            if ([self.contentView.fileId isEqualToString:@"0"])
             {
                 self.fileView.ysDrawView.drawView.hidden = NO;
             }
@@ -401,9 +389,9 @@ NSString *const YSWhiteBoardRemoteSelectTool = @"YSWhiteBoardRemoteSelectTool"; 
         return;
     }
 
-    if (self.fileId.integerValue == 0)
+    if ([self.contentView.fileId isEqualToString:@"0"])
     {
-        //避免image，pdf延迟加载影响白板比例
+        // 避免image，pdf延迟加载影响白板比例
         ratio = 16.0f / 9;
     }
     
@@ -471,8 +459,9 @@ NSString *const YSWhiteBoardRemoteSelectTool = @"YSWhiteBoardRemoteSelectTool"; 
         return;
     }
 
-    //显示纯白板或者web上的画布
-    if (self.fileId.intValue == 0) {
+    // 显示纯白板或者web上的画布
+    if ([self.contentView.fileId isEqualToString:@"0"])
+    {
         if (self.ratio >= self.contentView.frame.size.width / self.contentView.frame.size.height) {
             [self.fileView.displayView bmmas_remakeConstraints:^(BMMASConstraintMaker *make) {
                 make.width.bmmas_equalTo(self.fileView.bmmas_width);
@@ -784,7 +773,6 @@ NSString *const YSWhiteBoardRemoteSelectTool = @"YSWhiteBoardRemoteSelectTool"; 
 // MARK:-收到消息
 - (void)receiveWhiteBoardMessage:(NSDictionary *)dictionary isDelMsg:(BOOL)isDel
 {
-#if 0
     if (![dictionary bm_isNotEmptyDictionary])
     {
         return;
@@ -799,22 +787,9 @@ NSString *const YSWhiteBoardRemoteSelectTool = @"YSWhiteBoardRemoteSelectTool"; 
     // 信令内容
     id dataObject = [dictionary objectForKey:@"data"];
     
-    NSMutableDictionary *data = [YSRoomUtil convertWithData:dataObject];
+    NSMutableDictionary *data = [NSMutableDictionary dictionaryWithDictionary:[YSRoomUtil convertWithData:dataObject]];
 
-    if ([msgName isEqualToString:@"FullScreen"])
-    {
-        NSString *fullScreenType = [data objectForKey:@"fullScreenType"];
-        if ([fullScreenType isEqualToString:@"courseware_file"] && [YSWhiteBoardManager shareInstance].roomConfig.coursewareFullSynchronize)
-        {
-            [self resetEnlargeValue:YSWHITEBOARD_MINZOOMSCALE animated:YES];
-        }
-    }
-    else if ([msgName isEqualToString:@"WBPageCount"])
-    {
-        total0Page = [data bm_uintForKey:@"totalPage"];
-    }
-
-    //切换课件服务器，刷新课件
+    // 切换课件服务器，刷新课件
     if ([msgID isEqualToString:@"RemoteControl"])
     {
         NSString *action = [data objectForKey:@"action"];
@@ -824,7 +799,7 @@ NSString *const YSWhiteBoardRemoteSelectTool = @"YSWhiteBoardRemoteSelectTool"; 
             if (![self.address isEqualToString:address])
             {
                 self.address = address;
-                [self drawOnView:_fileView.ysDrawView.drawView
+                [self drawOnView:self.fileView.ysDrawView.drawView
                              withData:self.fileDictionary
                     updateImmediately:YES];
             }
@@ -833,154 +808,129 @@ NSString *const YSWhiteBoardRemoteSelectTool = @"YSWhiteBoardRemoteSelectTool"; 
 
     //选择鼠标
     NSString *fromID = [dictionary objectForKey:@"fromID"];
-    //    NSString *toID = [dictionary objectForKey:@"toID"];
-    NSNumber *selectMouse = [data objectForKey:@"selectMouse"];
-    if ([msgName isEqualToString:@"whiteboardMarkTool"]) {
-        if (![fromID isEqualToString:[YSRoomInterface instance].localUser.peerID]) {
-            //        if ([[YSRoomInterface instance] getRoomUserWithUId:fromID].role == 0) {
-
-            if (selectMouse.boolValue) {
-
+    //NSString *toID = [dictionary objectForKey:@"toID"];
+    BOOL selectMouse = [data bm_boolForKey:@"selectMouse"];
+    if ([msgName isEqualToString:@"whiteboardMarkTool"])
+    {
+        self.selectMouse = selectMouse;
+        if (![fromID isEqualToString:[YSRoomInterface instance].localUser.peerID])
+        {
+            if (selectMouse)
+            {
                 [[NSNotificationCenter defaultCenter]
                     postNotificationName:YSWhiteSendTextDrawIfChooseMouseNotification
                                   object:nil];
-                _selectMouse                         = YES;
-                _fileView.ysDrawView.rtDrawView.mode = YSWorkModeViewer;
+                self.fileView.ysDrawView.rtDrawView.mode = YSWorkModeViewer;
 
                 if ([[YSRoomInterface instance] getRoomUserWithUId:fromID].role ==
                         YSUserType_Teacher ||
                     [[YSRoomInterface instance] getRoomUserWithUId:fromID].role ==
-                        YSUserType_Assistant) {
+                        YSUserType_Assistant)
+                {
 
                     [[NSNotificationCenter defaultCenter]
                         postNotificationName:YSWhiteBoardRemoteSelectTool
                                       object:@(YES)];
                 }
             }
-            else {
-                _selectMouse = NO;
-                _fileView.ysDrawView.rtDrawView.mode =
-                    _selectMouse ? YSWorkModeViewer : YSWorkModeControllor;
-                _fileView.hidden = NO;
+            else
+            {
+                self.fileView.ysDrawView.rtDrawView.mode =
+                    self.selectMouse ? YSWorkModeViewer : YSWorkModeControllor;
+                self.fileView.hidden = NO;
 
                 if ([[YSRoomInterface instance] getRoomUserWithUId:fromID].role ==
                         YSUserType_Teacher ||
                     [[YSRoomInterface instance] getRoomUserWithUId:fromID].role ==
-                        YSUserType_Assistant) {
+                        YSUserType_Assistant)
+                {
                     [[NSNotificationCenter defaultCenter]
                         postNotificationName:YSWhiteBoardRemoteSelectTool
                                       object:@(NO)];
                 }
 
                 // 移除激光笔
-                [_laserPan removeFromSuperview];
-                _laserPan = nil;
+                [self.laserPan removeFromSuperview];
+                self.laserPan = nil;
             }
         }
-        [self setDragFileEnabled:_selectMouse];
+        
+        [self setDragFileEnabled:self.selectMouse];
+        
         return;
     }
 
-    if (!associatedMsgID || [associatedMsgID hasPrefix:@"CaptureImg"]) { // 加入截屏绘制
-        if ([msgName isEqualToString:@"ClassBegin"] && [msgID isEqualToString:@"ClassBegin"]) {
-            if (!isDel) {
+    if (!associatedMsgID || [associatedMsgID hasPrefix:@"CaptureImg"])
+    { // 加入截屏绘制
+        if ([msgName isEqualToString:@"ClassBegin"] && [msgID isEqualToString:@"ClassBegin"])
+        {
+            if (!isDel)
+            {
                 //上课
-            } else {
+            }
+            else
+            {
                 //下课
-                [_fileView.ysDrawView.rtDrawView clearDataAfterClass];
+                [self.fileView.ysDrawView.rtDrawView clearDataAfterClass];
                 // 下课隐藏 工具栏
                 [self clearAfterClass];
             }
         }
-
         //大白板翻页
-        else if ([msgName isEqualToString:sShowPage]) {
-            [_fileView.ysDrawView.rtDrawView clearDataAfterClass];
-            [self drawOnView:_fileView.ysDrawView.drawView withData:data updateImmediately:YES];
+        else if ([msgName isEqualToString:sYSSignalShowPage])
+        {
+            [self.fileView.ysDrawView.rtDrawView clearDataAfterClass];
+            [self drawOnView:self.fileView.ysDrawView.drawView withData:data updateImmediately:YES];
+            
             return;
-        } else if ([msgName isEqualToString:sDocumentChange]) {
-
-            NSNumber *inIsDel = [data objectForKey:@"isDel"];
-            NSNumber *fileid  = [[data objectForKey:@"filedata"] objectForKey:@"fileid"];
-
-            if (![YSWhiteBoardManager shareInstance].isBeginClass) {
-                if (!inIsDel.boolValue) {
-                    return;
-                } else {
-                    return;
-                }
-            } else {
-                //已上课
-                if (inIsDel.boolValue) {
-                    return;
-                } else {
-                    //添加课件，添加多媒体课件不响应
-                    NSNumber *isMedia = [data objectForKey:@"isMedia"];
-                    if (isMedia.boolValue) {
-                        return;
-                    } else {
-                        __block BOOL has = NO;
-                        [self.classFileList
-                            enumerateObjectsUsingBlock:^(NSDictionary *_Nonnull obj, NSUInteger idx,
-                                                         BOOL *_Nonnull stop) {
-                                NSNumber *inFileid = [obj objectForKey:@"fileid"];
-                                if (inFileid.integerValue == fileid.integerValue) {
-                                    has   = YES;
-                                    *stop = YES;
-                                }
-                            }];
-
-                        if (!has) {
-                            [self.classFileList addObject:[data objectForKey:@"filedata"] ?: @"0"];
-                        }
-                    }
-                    return;
-                }
-            }
         }
         //大白板绘制
-        else if ([msgName isEqualToString:sSharpsChange]) {
-
-            if ([data[@"eventType"] isEqualToString:@"laserMarkEvent"]) { // 激光笔
-                if (![associatedMsgID hasPrefix:@"CaptureImg_"]) { [self laserPen:data]; }
-            } else { // 绘制相关
-
+        else if ([msgName isEqualToString:sYSSignalSharpsChange])
+        {
+            if ([data[@"eventType"] isEqualToString:@"laserMarkEvent"])
+            { // 激光笔
+                if (![associatedMsgID hasPrefix:@"CaptureImg_"])
+                {
+                    [self laserPen:data];
+                }
+            }
+            else
+            { // 绘制相关
                 NSString *ID     = [dictionary objectForKey:@"id"];
                 NSString *pageID = [ID componentsSeparatedByString:@"_"].lastObject;
                 NSString *fileID = [[ID componentsSeparatedByString:@"_"]
                     objectAtIndex:[ID componentsSeparatedByString:@"_"].count - 2];
-                BOOL drawOnCurrentPage =
-                    [self.fileid isEqualToString:fileID] && self.currentPage == pageID.integerValue;
 
                 id whiteboardID = [data objectForKey:sWhiteboardID];
-                sendFromSelf = [fromID isEqualToString:[YSRoomInterface instance].localUser.peerID];
 
-                if (isDel) {
+                if (isDel)
+                {
                     // 此处的 delmsg  来源 于撤销 删除上一条pubmsg
                     // delMsg的data字段，在回放中是不可用的 会直接取用 对应 pubmsg 里的 data 数据
                     // 导致数据异常 此处修复异常数据
 
                     [data setObject:@"undoEvent" forKey:@"eventType"];
                 }
+                
                 BOOL isWhiteBoard = ([whiteboardID isKindOfClass:[NSString class]] &&
                                      [whiteboardID isEqualToString:@"default"]) ||
                                     ([whiteboardID isKindOfClass:[NSNumber class]] &&
                                      [whiteboardID isEqualToNumber:@(0)]);
-                if (isWhiteBoard) {
+                if (isWhiteBoard)
+                {
 
-                    [_fileView.ysDrawView.drawView switchFileID:fileID
+                    [self.fileView.ysDrawView.drawView switchFileID:fileID
                                                  andCurrentPage:pageID.intValue
-                                              updateImmediately:drawOnCurrentPage];
-                    [self drawOnView:_fileView.ysDrawView.drawView
+                                              updateImmediately:YES];
+                    [self drawOnView:self.fileView.ysDrawView.drawView
                                  withData:data
-                        updateImmediately:drawOnCurrentPage];
+                        updateImmediately:YES];
                 }
 
                 return;
             }
         }
     }
-#endif
 }
 
 #pragma mark - 进教室恢复数据 & 断线重连恢复数据
@@ -1209,67 +1159,52 @@ NSString *const YSWhiteBoardRemoteSelectTool = @"YSWhiteBoardRemoteSelectTool"; 
     
     switch (eventType)
     {
-        case YSEventShowPage: {
-            NSString *fileid   = [[dictionary objectForKey:@"filedata"] objectForKey:@"fileid"];
-            BOOL isGeneralFile = [[dictionary objectForKey:@"isGeneralFile"] boolValue];
-            NSNumber *pageNum  = [[dictionary objectForKey:@"filedata"] objectForKey:@"pagenum"];
-            NSNumber *currentPage =
-                [[dictionary objectForKey:@"filedata"] objectForKey:@"currpage"];
+        case YSEventShowPage:
+        {
+            NSString *fileId = [[dictionary bm_dictionaryForKey:@"filedata"] bm_stringForKey:@"fileid"];
+            BOOL isGeneralFile = [dictionary bm_boolForKey:@"isGeneralFile"];
+            NSUInteger pagecount  = [[dictionary bm_dictionaryForKey:@"filedata"] bm_uintForKey:@"pagenum" withDefault:0];
+            NSUInteger currentPage =
+                [[dictionary bm_dictionaryForKey:@"filedata"] bm_uintForKey:@"currpage" withDefault:1];
 
-            if (currentPage == nil || [currentPage isEqual:[NSNull null]]) { currentPage = @(1); }
-
-            NSNumber *isMedia = [dictionary objectForKey:@"isMedia"];
-            if (isMedia.boolValue)
+            BOOL isMedia = [dictionary bm_boolForKey:@"isMedia"];
+            if (isMedia)
             {
                 // 老师后台关联课件的时候会发送showpage，如果是media类型直接return
                 return;
             }
 
-            [_fileView.ysDrawView.drawView clearDrawersNameAfterShowPage];
+            [self.contentView changeCurrentPage:currentPage];
+            [self.contentView changeTotalPage:pagecount];
+
+            [self.fileView.ysDrawView.drawView clearDrawersNameAfterShowPage];
             [self resetEnlargeValue:YSWHITEBOARD_MINZOOMSCALE animated:YES];
             self.fileDictionary = dictionary;
 
             [[UIApplication sharedApplication].keyWindow endEditing:YES];
 
-            if ([pageNum isEqual:[NSNull null]]) { pageNum = @(0); }
-
-            self.fileId = [NSString stringWithFormat:@"%@", fileid];
-#warning currentFileId
-            //[YSWhiteBoardManager shareInstance].currentFileId = self.fileid;
-            self.currentPage = currentPage.intValue;
-            self.pagecount = pageNum.intValue;
-
-            //切换文档的时候更新drawview的数据用来分页绘制
-            [drawView switchFileID:self.fileId
-                    andCurrentPage:(int)self.currentPage
+            // 切换文档的时候更新drawview的数据用来分页绘制
+            [drawView switchFileID:fileId
+                    andCurrentPage:(int)currentPage
                  updateImmediately:YES];
-            [self.fileView.ysDrawView.rtDrawView switchFileID:self.fileId
-                                           andCurrentPage:(int)self.currentPage
+            [self.fileView.ysDrawView.rtDrawView switchFileID:fileId
+                                           andCurrentPage:(int)currentPage
                                         updateImmediately:YES];
 
-            self.fileView.ysDrawView.rtDrawView.fileid = self.fileId;
-            self.fileView.ysDrawView.rtDrawView.pageId = (int)self.currentPage;
+            self.fileView.ysDrawView.rtDrawView.fileid = fileId;
+            self.fileView.ysDrawView.rtDrawView.pageId = (int)currentPage;
 
-            if (self.fileId.intValue == 0)
+            if ([fileId isEqualToString:@"0"])
             {
                 self.showOnWeb = NO;
-                self.pagecount = total0Page;
                 NSMutableDictionary *message = [NSMutableDictionary dictionary];
                 [message setObject:@"showOnLocal" forKey:@"fileTypeMark"];
                 NSMutableDictionary *page = [NSMutableDictionary dictionary];
-                [page setObject:[NSString stringWithFormat:@"%d", (int)(self.currentPage)]
+                [page setObject:[NSString stringWithFormat:@"%@", @(currentPage)]
                          forKey:@"currentPage"];
-                [page setObject:[NSString stringWithFormat:@"%d", (int)(self.pagecount)]
+                [page setObject:[NSString stringWithFormat:@"%@", @(pagecount)]
                          forKey:@"totalPage"];
                 [message setObject:page forKey:@"page"];
-
-                if ([YSWhiteBoardManager shareInstance].wbDelegate &&
-                    [[YSWhiteBoardManager shareInstance].wbDelegate
-                        respondsToSelector:@selector(onWhiteBoardViewStateUpdate:)])
-                {
-                    [[YSWhiteBoardManager shareInstance].wbDelegate
-                        onWhiteBoardViewStateUpdate:message];
-                }
 
                 self.wkWebView.hidden = YES;
                 [self.fileView showWhiteBoard0];
@@ -1284,7 +1219,7 @@ NSString *const YSWhiteBoardRemoteSelectTool = @"YSWhiteBoardRemoteSelectTool"; 
             {
                 NSString *path = [[dictionary objectForKey:@"filedata"] objectForKey:@"swfpath"];
                 NSArray *com = [path componentsSeparatedByString:@"."];
-                path = [NSString stringWithFormat:@"%@-%@.%@", com.firstObject, currentPage, com.lastObject];
+                path = [NSString stringWithFormat:@"%@-%@.%@", com.firstObject, @(currentPage), com.lastObject];
                 NSString *realPath = [NSString stringWithFormat:@"https://%@%@", self.address, path];
                 
                 __block BOOL hasPDF = NO;
@@ -1292,9 +1227,9 @@ NSString *const YSWhiteBoardRemoteSelectTool = @"YSWhiteBoardRemoteSelectTool"; 
                     enumerateObjectsUsingBlock:^(NSDictionary *_Nonnull obj, NSUInteger idx,
                                                  BOOL *_Nonnull stop) {
 
-                        if ([[obj objectForKey:@"fileid"] integerValue] == self.fileId.integerValue)
+                        if ([[obj bm_stringForKey:@"fileid"] isEqualToString:fileId])
                         { //v查找课件库中的对应课件是否可以使用pdf
-                            NSString *cospdfpath = [obj objectForKey:@"cospdfpath"];
+                            NSString *cospdfpath = [obj bm_stringForKey:@"cospdfpath"];
                             if ([cospdfpath bm_isNotEmpty])
                             {
                                 hasPDF = YES;
@@ -1303,39 +1238,16 @@ NSString *const YSWhiteBoardRemoteSelectTool = @"YSWhiteBoardRemoteSelectTool"; 
                         }
                     }];
 
-                if (hasPDF) {
+                if (hasPDF)
+                {
                     self.showOnWeb = NO;
                     NSMutableDictionary *message = [NSMutableDictionary dictionary];
                     [message setObject:@"showOnLocal" forKey:@"fileTypeMark"];
                     NSMutableDictionary *page = [NSMutableDictionary dictionary];
-                    [page setObject:[NSString stringWithFormat:@"%@", currentPage]
+                    [page setObject:[NSString stringWithFormat:@"%@", @(currentPage)]
                              forKey:@"currentPage"];
-                    [page setObject:[NSString stringWithFormat:@"%@", pageNum] forKey:@"totalPage"];
+                    [page setObject:[NSString stringWithFormat:@"%@", @(pagecount)] forKey:@"totalPage"];
                     [message setObject:page forKey:@"page"];
-
-                    if ([YSWhiteBoardManager shareInstance].wbDelegate &&
-                        [[YSWhiteBoardManager shareInstance].wbDelegate
-                            respondsToSelector:@selector(onWhiteBoardViewStateUpdate:)]) {
-                        [[YSWhiteBoardManager shareInstance].wbDelegate
-                            onWhiteBoardViewStateUpdate:message];
-                    }
-                    /*
-                     {
-                     fileTypeMark = h5Document;
-                     irregular = "1.777777777777778";
-                     page =     {
-                     addPage = 0;
-                     currentPage = 1;
-                     nextPage = 0;
-                     nextStep = 0;
-                     prevPage = 0;
-                     prevStep = 0;
-                     skipPage = 0;
-                     totalPage = 10;
-                     };
-                     scale = 1;
-                     }
-                     */
 
                     //加载pdf
                     self.fileView.hidden           = NO;
@@ -1350,40 +1262,40 @@ NSString *const YSWhiteBoardRemoteSelectTool = @"YSWhiteBoardRemoteSelectTool"; 
                                                [weakSelf.fileView.pdfView setNeedsDisplay];
                                            }];
 
-                } else {
+                }
+                else
+                {
                     //加载图片
-                    if (![self.fileId isEqualToString:@"0"]) {
+                    if (![fileId isEqualToString:@"0"])
+                    {
                         if ([realPath hasSuffix:@".svg"]) {
                             //交给web加载
                             self.showOnWeb    = YES;
                             self.wkWebView.hidden = NO;
                             [self.fileView showOnWeb];
                             self.fileView.hidden = self.selectMouse;
-                        } else if ([realPath hasSuffix:@".gif"]) {
+                        }
+                        else if ([realPath hasSuffix:@".gif"])
+                        {
                             //交给web加载
                             self.showOnWeb    = YES;
                             self.wkWebView.hidden = NO;
                             [self.fileView showOnWeb];
                             self.fileView.hidden = self.selectMouse;
 
-                        } else {
-
+                        }
+                        else
+                        {
                             self.showOnWeb               = NO;
                             NSMutableDictionary *message = [NSMutableDictionary dictionary];
                             [message setObject:@"showOnLocal" forKey:@"fileTypeMark"];
                             NSMutableDictionary *page = [NSMutableDictionary dictionary];
-                            [page setObject:[NSString stringWithFormat:@"%@", currentPage]
+                            [page setObject:[NSString stringWithFormat:@"%@", @(currentPage)]
                                      forKey:@"currentPage"];
-                            [page setObject:[NSString stringWithFormat:@"%@", pageNum]
+                            [page setObject:[NSString stringWithFormat:@"%@", @(pagecount)]
                                      forKey:@"totalPage"];
                             [message setObject:page forKey:@"page"];
 
-                            if ([YSWhiteBoardManager shareInstance].wbDelegate &&
-                                [[YSWhiteBoardManager shareInstance].wbDelegate
-                                    respondsToSelector:@selector(onWhiteBoardViewStateUpdate:)]) {
-                                [[YSWhiteBoardManager shareInstance].wbDelegate
-                                    onWhiteBoardViewStateUpdate:message];
-                            }
                             //原生加载
                             self.wkWebView.hidden          = YES;
                             self.fileView.hidden           = NO;
@@ -1395,7 +1307,9 @@ NSString *const YSWhiteBoardRemoteSelectTool = @"YSWhiteBoardRemoteSelectTool"; 
                         }
                     }
                 }
-            } else {
+            }
+            else
+            {
                 self.showOnWeb    = YES;
                 self.wkWebView.hidden = NO;
                 [self.fileView showOnWeb];
@@ -1406,41 +1320,65 @@ NSString *const YSWhiteBoardRemoteSelectTool = @"YSWhiteBoardRemoteSelectTool"; 
             {
                 self.fileView.isPenetration = self.showOnWeb && self.selectMouse;
             }
-
-        } break;
+        }
+            break;
             
-        case YSEventShapeAdd: {
-            if ([actionName isEqualToString:@"ClearAction"]) {
+        case YSEventShapeAdd:
+        {
+            if ([actionName isEqualToString:@"ClearAction"])
+            {
                 //恢复清空
                 [self.fileView.ysDrawView clearDraw:clearActionId];
-            } else {
+            }
+            else
+            {
                 [self.fileView.ysDrawView addDrawData:dictionary refreshImmediately:update];
             }
-        } break;
+        }
+            break;
             
-        case YSEventShapeClean: {
+        case YSEventShapeClean:
+        {
             NSString *clearID = [dictionary objectForKey:@"clearActionId"];
             [self.fileView.ysDrawView clearDraw:clearID];
-        } break;
+        }
+            break;
             
-        case YSEventShapeUndo: {
+        case YSEventShapeUndo:
+        {
             [self.fileView.ysDrawView undoDraw];
             break;
         }
             
-        case YSEventShapeRedo: {
-            if ([actionName isEqualToString:@"ClearAction"]) {
+        case YSEventShapeRedo:
+        {
+            if ([actionName isEqualToString:@"ClearAction"])
+            {
                 NSString *clearID = [dictionary objectForKey:@"clearActionId"];
                 [self.fileView.ysDrawView clearDraw:clearID];
             }
-            if ([actionName isEqualToString:@"AddShapeAction"]) {
+            if ([actionName isEqualToString:@"AddShapeAction"])
+            {
                 [self.fileView.ysDrawView addDrawData:dictionary refreshImmediately:update];
             }
+            
             break;
         }
             
         default:
             break;
+    }
+}
+
+/// webView回调刷新页码
+- (void)setTotalPage:(NSInteger)total currentPage:(NSInteger)currentPage
+{
+    // 未上课时手动白板画板翻页，因为没有发送showpage信令
+    if (![YSWhiteBoardManager shareInstance].isBeginClass)
+    {
+        [self.fileView.ysDrawView.rtDrawView switchFileID:self.contentView.fileId
+                                       andCurrentPage:(int)currentPage
+                                    updateImmediately:YES];
     }
 }
 

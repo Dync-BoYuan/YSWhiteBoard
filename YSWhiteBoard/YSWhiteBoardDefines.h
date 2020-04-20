@@ -50,6 +50,8 @@ static NSString *const YSWhiteBoard_domain_demoali = @"rddocdemo.roadofcloud.net
 #endif
 
 
+static  NSString *const sWhiteboardID           = @"whiteboardID";
+
 #pragma - mark 用户属性
 
 /// 用户属性
@@ -136,7 +138,6 @@ static  NSString *const sYSSignalClassBegin             = @"ClassBegin";
 
 /// 单窗口位置、大小、最小化、最大化数据
 static  NSString *const sYSSignalMoreWhiteboardState            = @"MoreWhiteboardState";
-
 
 #pragma - mark js命令
 
