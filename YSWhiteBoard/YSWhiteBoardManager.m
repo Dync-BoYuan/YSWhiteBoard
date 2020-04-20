@@ -1371,6 +1371,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         }];
         [self addOrReplaceDocumentFile:tDataDic];
         [self setTheCurrentDocumentFileID:fileId];
+        [self.mainWhiteBoardView changeFileId:fileId];
     }
     
     if (self.mainWhiteBoardView)

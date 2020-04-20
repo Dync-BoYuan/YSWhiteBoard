@@ -905,6 +905,11 @@
     }
 }
 
+- (void)changeFileId:(NSString *)fileId
+{
+    self.fileId = fileId;
+}
+
 /// 当前页码
 - (void)changeCurrentPage:(NSUInteger)currentPage
 {
