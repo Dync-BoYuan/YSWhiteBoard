@@ -233,10 +233,9 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     }
 }
 
+#pragma mark 拖拽手势
 - (void)panToMoveWhiteBoardView:(YSWhiteBoardView *)whiteBoard withGestureRecognizer:(UIPanGestureRecognizer *)pan
 {
-    
-    
     if (!self.isDraging)
     {
         if ([whiteBoard isEqual:self.mainWhiteBoardView])
@@ -258,37 +257,64 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 
     CGPoint endPoint = [pan translationInView:whiteBoard];
     
-     if (!self.dragImageView)
-        {
-            UIImage * img = [whiteBoard bm_screenshot];
-            self.dragImageView = [[UIImageView alloc]initWithImage:img];
-            [self.mainWhiteBoardView addSubview:self.dragImageView];
-        }
-        
-//        if (self.videoOriginInSuperview.x == 0 && self.videoOriginInSuperview.y == 0)
-//        {
-//            self.videoOriginInSuperview = [background convertPoint:CGPointMake(0, 0) fromView:videoView];
-//    //        [self.whitebordFullBackgroud bringSubviewToFront:self.dragImageView];
-//            [self.dragImageView bm_bringToFront];
-//        }
+    if (!self.dragImageView)
+    {
+        UIImage * img = [whiteBoard bm_screenshot];
+        self.dragImageView = [[UIImageView alloc]initWithImage:img];
+        [self.mainWhiteBoardView addSubview:self.dragImageView];
+    }
     
-//    CGFloat
-//
-//    if (whiteBoard.bm_originX + whiteBoard.bm_width + endPoint.x > self.mainWhiteBoardView.bm_width) {
-//        <#statements#>
-//    }
+    CGFloat dragImageViewX = whiteBoard.bm_originX + endPoint.x;
+    CGFloat dragImageViewY = whiteBoard.bm_originY + endPoint.y;
+
+    if (dragImageViewX + whiteBoard.bm_width >= self.mainWhiteBoardView.bm_width-1)
+    {
+        dragImageViewX = self.mainWhiteBoardView.bm_width - 1 - whiteBoard.bm_width;
+    }
+    else if (dragImageViewX <= 1)
+    {
+        dragImageViewX = 1;
+    }
     
-        self.dragImageView.frame = CGRectMake(whiteBoard.bm_originX + endPoint.x, whiteBoard.bm_originY + endPoint.y, whiteBoard.bm_width, whiteBoard.bm_height);
+    if (dragImageViewY + whiteBoard.bm_height >= self.mainWhiteBoardView.bm_height - 1)
+    {
+        dragImageViewY = self.mainWhiteBoardView.bm_height - 1 - whiteBoard.bm_height;
+    }
+    else if (dragImageViewY <= 1)
+    {
+        dragImageViewY = 1;
+    }
+    
+    self.dragImageView.frame = CGRectMake(dragImageViewX, dragImageViewY, whiteBoard.bm_width, whiteBoard.bm_height);
     
     if (pan.state == UIGestureRecognizerStateEnded)
     {
-        
         whiteBoard.frame = self.dragImageView.frame;
+        
+        CGFloat percentLeft = whiteBoard.bm_originX/(self.mainWhiteBoardView.bm_width - 2 - whiteBoard.bm_width);
+        CGFloat percentTop = whiteBoard.bm_originY/(self.mainWhiteBoardView.bm_height - 2 - whiteBoard.bm_height);
+        
         
         [self.dragImageView removeFromSuperview];
         self.dragImageView = nil;
         self.isDraging = NO;
         [whiteBoard bm_bringToFront];
+    }
+}
+
+
+#pragma mark 缩放手势
+- (void)pinchWhiteBoardView:(YSWhiteBoardView *)whiteBoard withGestureRecognizer:(UIPinchGestureRecognizer *)pinch
+{
+    if (pinch.state == UIGestureRecognizerStateBegan)
+    {
+        whiteBoard.layer.anchorPoint = CGPointMake(whiteBoard.bm_originX, whiteBoard.bm_originY);
+    }
+    
+    
+    if (pinch.state == UIGestureRecognizerStateEnded)
+    {
+        
     }
 }
 

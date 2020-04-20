@@ -51,8 +51,6 @@ NS_ASSUME_NONNULL_BEGIN
 + (instancetype)shareInstance;
 + (NSString *)whiteBoardVersion;
 
-- (void)doMsgCachePool;
-
 - (void)registerDelegate:(id <YSWhiteBoardManagerDelegate>)delegate configration:(NSDictionary *)config;
 
 - (YSWhiteBoardView *)createMainWhiteBoardWithFrame:(CGRect)frame
@@ -91,6 +89,7 @@ NS_ASSUME_NONNULL_BEGIN
 /// 课件 下一页
 - (void)whiteBoardNextPage;
 - (void)whiteBoardNextPageWithFileId:(NSString *)fileId;
+
 /// 课件 跳转页
 - (void)whiteBoardTurnToPage:(NSUInteger)pageNum;
 - (void)whiteBoardTurnToPage:(NSUInteger)pageNum withFileId:(NSString *)fileId;

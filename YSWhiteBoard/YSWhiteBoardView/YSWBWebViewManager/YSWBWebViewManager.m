@@ -426,9 +426,6 @@
             weakSelf.loadFinishedBlock();
         }
         
-        // 执行所有缓存的信令消息
-        [[YSWhiteBoardManager shareInstance] doMsgCachePool];
-        
         // 尝试开始 预加载
         if (weakSelf.delegate && [weakSelf.delegate respondsToSelector:@selector(onWBWebViewManagerPageFinshed)])
         {
