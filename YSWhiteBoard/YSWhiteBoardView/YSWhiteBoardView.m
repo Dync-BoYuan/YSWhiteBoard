@@ -59,6 +59,9 @@
 /// 翻页工具条
 @property (nonatomic, strong) YSCoursewareControlView *pageControlView;
 
+/// 右下角拖动放大的view
+@property (nonatomic, strong) UIView * dragZoomView;
+
 @end
 
 @implementation YSWhiteBoardView
@@ -113,9 +116,18 @@
             self.pageControlView = pageControlView;
             self.pageControlView.bm_centerX = frame.size.width / 2;
             self.pageControlView.bm_bottom = frame.size.height - 20;
+            
+            UIView * dragZoomView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, 40, 40)];
+            dragZoomView.bm_right = frame.size.width;
+            dragZoomView.bm_bottom = frame.size.height;
+            self.dragZoomView = dragZoomView;
+            [self addSubview:dragZoomView];
+            
+            dragZoomView.backgroundColor = UIColor.redColor;
+            UIPanGestureRecognizer * panGesture = [[UIPanGestureRecognizer alloc]initWithTarget:self action:@selector(panGestureToZoomView:)];
+            [dragZoomView addGestureRecognizer:panGesture];
         }
         
-//        UIView * dragZoomView = [UIView alloc]initWithFrame:cg
         
     }
     return self;
@@ -131,6 +143,9 @@
         
     self.pageControlView.bm_centerX = frame.size.width * 0.5f;
     self.pageControlView.bm_bottom = frame.size.height - 20;
+
+    self.dragZoomView.bm_right = frame.size.width;
+    self.dragZoomView.bm_bottom = frame.size.height;
 }
 
 - (void)doMsgCachePool
@@ -974,5 +989,16 @@
 {
     [self.webViewManager refreshWhiteBoardWithFrame:self.frame];
 }
+
+#pragma mark 拖拽右下角缩放View
+
+- (void)panGestureToZoomView:(UIPanGestureRecognizer *)pan
+{
+    if ([self.delegate respondsToSelector:@selector(panToZoomWhiteBoardView:withGestureRecognizer:)])
+    {
+        [self.delegate panToZoomWhiteBoardView:self withGestureRecognizer:pan];
+    }
+}
+
 
 @end
