@@ -104,7 +104,7 @@
         [self addSubview:whiteBoardContentView];
         self.whiteBoardContentView = whiteBoardContentView;
 
-        self.wbView = [self.webViewManager createWhiteBoardWithFrame:contentFrame loadFinishedBlock:loadFinishedBlock];
+        self.wbView = [self.webViewManager createWhiteBoardWithFrame:whiteBoardContentView.bounds loadFinishedBlock:loadFinishedBlock];
         [self.whiteBoardContentView addSubview:self.wbView];
 
         self.drawViewManager = [[YSWBDrawViewManager alloc] initWithBackView:whiteBoardContentView webView:self.wbView];
@@ -471,7 +471,7 @@
 - (void)refreshWhiteBoardWithFrame:(CGRect)frame;
 {
     self.frame = frame;
-    [self.webViewManager refreshWhiteBoardWithFrame:frame];
+    [self.webViewManager refreshWhiteBoardWithFrame:self.whiteBoardContentView.bounds];
 }
 
 - (void)refreshWhiteBoard

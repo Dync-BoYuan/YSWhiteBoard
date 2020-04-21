@@ -216,6 +216,8 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         [whiteBoardView didSelectDrawType:currentConfig.drawType color:currentConfig.colorHex widthProgress:currentConfig.progress];
     }
 
+    [whiteBoardView refreshWhiteBoard];
+
     [self makeCurrentWhiteBoardViewPoint];
     
     return whiteBoardView;
@@ -256,6 +258,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 }
 
 #pragma mark 拖拽手势
+
 - (void)panToMoveWhiteBoardView:(UIView *)whiteBoard withGestureRecognizer:(UIPanGestureRecognizer *)pan
 {
     if (!self.isDraging)
@@ -327,6 +330,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 }
 
 #pragma mark 拖拽手势事件  拖拽右下角缩放View
+
 - (void)panToZoomWhiteBoardView:(YSWhiteBoardView *)whiteBoard withGestureRecognizer:(UIPanGestureRecognizer *)pan
 {
     if (!self.isDragZooming)
@@ -397,6 +401,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     if (pan.state == UIGestureRecognizerStateEnded)
     {
         whiteBoard.frame =  self.dragImageView.frame;
+        [whiteBoard refreshWhiteBoard];
         
         //宽，高值在主白板上的比例
         CGFloat scaleWidth = dragImageViewW / self.mainWhiteBoardView.bm_width;
@@ -424,6 +429,11 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     self.whiteBoardViewDefaultSize = CGSizeMake(width, height);
 
     [self.mainWhiteBoardView refreshWhiteBoard];
+    
+    for (YSWhiteBoardView *whiteBoardView in self.coursewareViewList)
+    {
+        [whiteBoardView refreshWhiteBoard];
+    }
 }
 
 - (void)freshCurrentCourse
