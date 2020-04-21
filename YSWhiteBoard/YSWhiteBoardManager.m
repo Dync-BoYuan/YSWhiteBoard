@@ -11,6 +11,12 @@
 #import "YSWBLogger.h"
 #import "YSWhiteBoardTopBar.h"
 
+#if YSWHITEBOARD_USEHTTPDNS
+#import "YSWhiteBordHttpDNSUtil.h"
+#import "YSWhiteBordNSURLProtocol.h"
+#import "NSURLProtocol+YSWhiteBoard.h"
+#endif
+
 #define YSWhiteBoardDefaultFrame        CGRectMake(0, 0, 100, 100)
 #define YSWhiteBoardDefaultLeft         10.0f
 #define YSWhiteBoardDefaultTop          10.0f
@@ -116,6 +122,67 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 
 @implementation YSWhiteBoardManager
 
+#pragma mark - dealloc
+
+- (void)dealloc
+{
+    [self clearAllData];
+}
+
+- (void)clearAllData
+{
+    [self.mainWhiteBoardView destroy];
+    
+    for (YSWhiteBoardView *whiteBoardView in self.coursewareViewList)
+    {
+        [whiteBoardView destroy];
+    }
+    [self.coursewareViewList removeAllObjects];
+    self.coursewareViewList = nil;
+
+    self.docmentList = nil;
+    self.wbDelegate = nil;
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
++ (void)destroy
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+        
+    if (whiteBoardManagerSingleton)
+    {
+        [whiteBoardManagerSingleton clearAllData];
+        //[whiteBoardManagerSingleton registerURLProtocol:NO];
+        whiteBoardManagerSingleton = nil;
+    }
+}
+
+// 拦截网络请求
+- (void)registerURLProtocol:(BOOL)isRegister
+{
+#if YSWHITEBOARD_USEHTTPDNS
+    if (isRegister)
+    {
+        [NSURLProtocol registerClass:[YSWhiteBordNSURLProtocol class]];
+        for (NSString* scheme in @[@"http", @"https"])
+        {
+            [NSURLProtocol ys_registerScheme:scheme];
+        }
+        [YSWhiteBordHttpDNSUtil sharedInstance];
+    }
+    else
+    {
+        [NSURLProtocol unregisterClass:[YSWhiteBordNSURLProtocol class]];
+        for (NSString* scheme in @[@"http", @"https"])
+        {
+            [NSURLProtocol ys_unregisterScheme:scheme];
+        }
+        [YSWhiteBordHttpDNSUtil destroy];
+    }
+#endif
+}
+
 + (instancetype)shareInstance
 {
     @synchronized(self)
@@ -123,6 +190,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         if (!whiteBoardManagerSingleton)
         {
             whiteBoardManagerSingleton = [[YSWhiteBoardManager alloc] init];
+            [whiteBoardManagerSingleton registerURLProtocol:YES];
         }
     }
     return whiteBoardManagerSingleton;

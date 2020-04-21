@@ -32,8 +32,8 @@ static NSString *const YSWhiteBoard_domain_demows = @"rddoccdndemows.roadofcloud
 /// 网宿dns解析
 static NSString *const YSWhiteBoard_wshttpdnsurl = @"http://edge.wshttpdns.com/v1/httpdns/clouddns";
 
-#define YSWHITEBOARD_USEHTTPDNS 0
-#define YSWHITEBOARD_NORMALUSEHTTPDNS 0
+#define YSWHITEBOARD_USEHTTPDNS 1
+#define YSWHITEBOARD_NORMALUSEHTTPDNS 1
 //#if YSSDK
 #define YSWHITEBOARD_USEHTTPDNS_ADDALI 0
 //#else

@@ -42,6 +42,8 @@ NS_ASSUME_NONNULL_BEGIN
 /// 小白板的topBar
 @property (nonatomic, strong)YSWhiteBoardTopBar * topBar;
 
+- (void)destroy;
+
 
 - (instancetype)initWithFrame:(CGRect)frame fileId:(NSString *)fileId loadFinishedBlock:(nullable  wbLoadFinishedBlock)loadFinishedBlock;
 

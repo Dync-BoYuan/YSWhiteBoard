@@ -66,6 +66,21 @@
 
 @implementation YSWhiteBoardView
 
+- (void)dealloc
+{
+    [self destroy];
+}
+
+- (void)destroy
+{
+    [self.cacheMsgPool removeAllObjects];
+    self.cacheMsgPool = nil;
+
+    [self.webViewManager destroy];
+
+    [self.drawViewManager clearAfterClass];
+}
+
 - (instancetype)initWithFrame:(CGRect)frame fileId:(NSString *)fileId loadFinishedBlock:(wbLoadFinishedBlock)loadFinishedBlock
 {
     self = [super initWithFrame:frame];
@@ -127,9 +142,8 @@
             UIPanGestureRecognizer * panGesture = [[UIPanGestureRecognizer alloc]initWithTarget:self action:@selector(panGestureToZoomView:)];
             [dragZoomView addGestureRecognizer:panGesture];
         }
-        
-        
     }
+    
     return self;
 }
 

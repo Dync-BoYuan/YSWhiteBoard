@@ -1118,7 +1118,7 @@
 //    }
 }
 
-- (void)destory
+- (void)destroy
 {
     if (!self.webView)
     {

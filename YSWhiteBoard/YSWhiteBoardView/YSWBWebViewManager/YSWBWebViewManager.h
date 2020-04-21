@@ -82,7 +82,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  销毁
  */
-- (void)destory;
+- (void)destroy;
 
 /**
  重新加载webview

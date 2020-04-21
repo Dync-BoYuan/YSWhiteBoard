@@ -53,6 +53,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign, readonly) BOOL isUpdateWebAddressInfo;
 
 
++ (void)destroy;
+
 + (instancetype)shareInstance;
 + (NSString *)whiteBoardVersion;
 
