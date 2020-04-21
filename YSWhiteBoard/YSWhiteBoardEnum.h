@@ -9,6 +9,17 @@
 #ifndef YSWhiteBoardEnum_h
 #define YSWhiteBoardEnum_h
 
+/// app使用场景  3：小班课  4：直播   6：会议
+typedef NS_ENUM(NSUInteger, YSRoomUseType)
+{
+    /** 小班课 */
+    YSRoomUseTypeSmallClass = 3,
+    /** 直播 */
+    YSRoomUseTypeLiveRoom = 4,
+    /** 会议*/
+    YSRoomUseTypeMeeting = 6
+};
+
 typedef NS_ENUM(NSInteger, YSEvent)
 {
     YSEventShowPage        = 0,    //增加文档

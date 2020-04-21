@@ -299,7 +299,7 @@
     }
 
     NSString *msgName = [msgDic bm_stringForKey:@"name"];
-    if ([msgName isEqualToString:sYSSignalShowPage])
+    if ([msgName isEqualToString:sYSSignalShowPage] || [msgName isEqualToString:sYSSignalExtendShowPage])
     {
         id data = msgDic[@"data"];
         NSDictionary *dic = [YSRoomUtil convertWithData:data];
@@ -323,7 +323,7 @@
     NSString *associatedUserID = [msgDic bm_stringForKey:@"associatedUserID"];
     NSDictionary *expandParams = [msgDic bm_dictionaryForKey:@"expandParams"];
 
-    if ([msgName isEqualToString:sYSSignalShowPage])
+    if ([msgName isEqualToString:sYSSignalShowPage] || [msgName isEqualToString:sYSSignalExtendShowPage])
     {
         toId = YSRoomPubMsgTellAll;
         [self stopPlayMp3];
@@ -710,7 +710,7 @@
             if (msgName != nil)
             {
                 // 只转发 ClassBegin， ShowPage  和 H5DocumentAction， NewPptTriggerActionClick 四种信令
-                if (![msgName isEqualToString:sYSSignalShowPage] && ![msgName isEqualToString:sYSSignalH5DocumentAction] && ![msgName isEqualToString:sYSSignalNewPptTriggerActionClick] && ![msgName isEqualToString:sYSSignalClassBegin])
+                if (![msgName isEqualToString:sYSSignalShowPage] && ![msgName isEqualToString:sYSSignalExtendShowPage] && ![msgName isEqualToString:sYSSignalH5DocumentAction] && ![msgName isEqualToString:sYSSignalNewPptTriggerActionClick] && ![msgName isEqualToString:sYSSignalClassBegin])
                 {
                     return;
                 }

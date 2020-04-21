@@ -50,6 +50,7 @@ static NSString *const YSWhiteBoard_domain_demoali = @"rddocdemo.roadofcloud.net
 #endif
 
 
+#define YSWhiteBoardId_Header                   @"docModule_"
 static  NSString *const sWhiteboardID           = @"whiteboardID";
 
 #pragma - mark 用户属性
@@ -118,13 +119,18 @@ static  NSString *const sYSSignalGetValueByKey          = @"getValueByKey";
 static  NSString *const sYSSignalOnJsPlay               = @"isPlayAudio";
 
 /// 显示课件
+/// 单课件
 static  NSString *const sYSSignalShowPage               = @"ShowPage";
+/// 多课件
+static  NSString *const sYSSignalExtendShowPage         = @"ExtendShowPage";
 static  NSString *const sYSSignalDocumentChange         = @"DocumentChange";
+/// 白板增加页数
 static  NSString *const sYSSignalWBPageCount            = @"WBPageCount";
 
 
 /// ShowPage ID
-static  NSString *const sYSSignalDocumentFilePage_ShowPage = @"DocumentFilePage_ShowPage";
+static  NSString *const sYSSignalDocumentFilePage_ShowPage          = @"DocumentFilePage_ShowPage";
+static  NSString *const sYSSignalDocumentFilePage_ExtendShowPage    = @"DocumentFilePage_ExtendShowPage_";
 static  NSString *const sYSSignalActionShow             = @"show";
 
 /// 更换画笔工具

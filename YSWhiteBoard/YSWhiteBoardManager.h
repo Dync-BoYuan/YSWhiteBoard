@@ -28,6 +28,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, readonly) NSDictionary *roomDic;
 /// 房间配置项
 @property (nonatomic, strong, readonly) YSRoomConfiguration *roomConfig;
+/// 房间类型
+@property (nonatomic, assign, readonly) YSRoomUseType roomUseType;
 
 // 关于获取白板 服务器地址、备份地址、web地址相关通知
 /// 文档服务器地址

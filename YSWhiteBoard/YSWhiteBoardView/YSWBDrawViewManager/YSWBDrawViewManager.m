@@ -684,7 +684,7 @@
             }
         }
         //大白板翻页
-        else if ([msgName isEqualToString:sYSSignalShowPage])
+        else if ([msgName isEqualToString:sYSSignalShowPage] || [msgName isEqualToString:sYSSignalExtendShowPage])
         {
             [self.fileView.ysDrawView.rtDrawView clearDataAfterClass];
             [self drawOnView:self.fileView.ysDrawView.drawView withData:data updateImmediately:YES];

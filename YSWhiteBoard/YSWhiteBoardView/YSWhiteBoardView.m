@@ -13,8 +13,6 @@
 
 #import "YSCoursewareControlView.h"
 
-#define YSWhiteBoardId_Header   @"docModule_"
-
 #define YSTopViewHeight         (30.0f)
 
 @interface YSWhiteBoardView ()
@@ -28,6 +26,8 @@
     BOOL predownloadError;
     
     CGFloat topViewHeight;
+    
+    CGSize oldSize;
 }
 
 @property (nonatomic, strong) NSString *whiteBoardId;
@@ -111,7 +111,7 @@
             YSCoursewareControlView * pageControlView = [[YSCoursewareControlView alloc]initWithFrame:CGRectMake(0, 0, 246, 34)];
             [self addSubview:pageControlView];
             self.pageControlView = pageControlView;
-            self.pageControlView.bm_centerX = frame.size.width / 2;
+            self.pageControlView.bm_centerX = frame.size.width * 0.5f;
             self.pageControlView.bm_bottom = frame.size.height - 20;
         }
         
@@ -253,7 +253,7 @@
     if (self.webViewManager)
     {
         BOOL remotePub = YES;
-        if (![msgName isEqualToString:sYSSignalShowPage] && ![msgName isEqualToString:sYSSignalH5DocumentAction] && ![msgName isEqualToString:sYSSignalNewPptTriggerActionClick] && ![msgName isEqualToString:sYSSignalClassBegin])
+        if (![msgName isEqualToString:sYSSignalShowPage] && ![msgName isEqualToString:sYSSignalExtendShowPage] && ![msgName isEqualToString:sYSSignalH5DocumentAction] && ![msgName isEqualToString:sYSSignalNewPptTriggerActionClick] && ![msgName isEqualToString:sYSSignalClassBegin])
         {
             remotePub = NO;
         }
@@ -261,7 +261,7 @@
         if (remotePub)
         {
             // 关联媒体课件不响应
-            if ([msgName isEqualToString:sYSSignalShowPage])
+            if ([msgName isEqualToString:sYSSignalShowPage] || [msgName isEqualToString:sYSSignalExtendShowPage])
             {
                 BOOL isMedia = [tDataDic bm_boolForKey:@"isMedia"];
                 
@@ -276,7 +276,7 @@
             }
         }
         
-        if ([msgName isEqualToString:sYSSignalShowPage] && ![fromId isEqualToString:[YSRoomInterface instance].localUser.peerID])
+        if (([msgName isEqualToString:sYSSignalShowPage] || [msgName isEqualToString:sYSSignalExtendShowPage]) && ![fromId isEqualToString:[YSRoomInterface instance].localUser.peerID])
         {
             [self.webViewManager stopPlayMp3];
         }
@@ -495,7 +495,15 @@
     
     NSString *dataString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
     
-    [[YSRoomInterface instance] pubMsg:sYSSignalShowPage msgID:sYSSignalDocumentFilePage_ShowPage toID:tellWho data:dataString save:save extensionData:@{} associatedMsgID:nil associatedUserID:nil expires:0 completion:nil];
+    if ([YSWhiteBoardManager shareInstance].roomUseType == YSRoomUseTypeLiveRoom)
+    {
+        [[YSRoomInterface instance] pubMsg:sYSSignalShowPage msgID:sYSSignalDocumentFilePage_ShowPage toID:tellWho data:dataString save:save extensionData:@{} associatedMsgID:nil associatedUserID:nil expires:0 completion:nil];
+    }
+    else
+    {
+        NSString *msgID = [NSString stringWithFormat:@"%@%@", sYSSignalDocumentFilePage_ExtendShowPage, self.whiteBoardId];
+        [[YSRoomInterface instance] pubMsg:sYSSignalExtendShowPage msgID:sYSSignalDocumentFilePage_ShowPage toID:tellWho data:dataString save:save extensionData:@{} associatedMsgID:nil associatedUserID:nil expires:0 completion:nil];
+    }
 }
 
 /// 刷新当前白板课件
@@ -839,13 +847,27 @@
         [self.webViewManager stopPlayMp3];
 
         NSDictionary *dic = [self fileDataDocDic:file currentPage:pageNum];
-        NSDictionary *tParamDicDefault = @{
-                                           @"id":sYSSignalDocumentFilePage_ShowPage,
-                                           @"ts":@(0),
-                                           @"data":dic ? dic : [NSNull null],
-                                           @"name":sYSSignalShowPage
-                                           };
-        [self.webViewManager sendSignalMessageToJS:WBPubMsg message:tParamDicDefault];
+        if ([YSWhiteBoardManager shareInstance].roomUseType == YSRoomUseTypeLiveRoom)
+        {
+            NSDictionary *tParamDicDefault = @{
+                                               @"id":sYSSignalDocumentFilePage_ShowPage,
+                                               @"ts":@(0),
+                                               @"data":dic ? dic : [NSNull null],
+                                               @"name":sYSSignalShowPage
+                                               };
+            [self.webViewManager sendSignalMessageToJS:WBPubMsg message:tParamDicDefault];
+        }
+        else
+        {
+            NSString *msgID = [NSString stringWithFormat:@"%@%@", sYSSignalDocumentFilePage_ExtendShowPage, self.whiteBoardId];
+            NSDictionary *tParamDicDefault = @{
+                                               @"id":msgID,
+                                               @"ts":@(0),
+                                               @"data":dic ? dic : [NSNull null],
+                                               @"name":sYSSignalExtendShowPage
+                                               };
+            [self.webViewManager sendSignalMessageToJS:WBPubMsg message:tParamDicDefault];
+        }
 
         return YSError_OK;
     }
