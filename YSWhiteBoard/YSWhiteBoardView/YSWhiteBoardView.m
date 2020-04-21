@@ -10,7 +10,7 @@
 #import "YSRoomUtil.h"
 #import "YSFileModel.h"
 #import <objc/message.h>
-#import "YSWhiteBoardTopBar.h"
+
 #import "YSCoursewareControlView.h"
 
 #define YSWhiteBoardId_Header   @"docModule_"
@@ -87,7 +87,9 @@
         YSWhiteBoardTopBar * topBar = [[YSWhiteBoardTopBar alloc]initWithFrame:CGRectMake(0, 0, frame.size.width, 30)];
         topBar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
         [self addSubview:topBar];
-        
+        topBar.whiteBoardView = self;
+        self.topBar = topBar;
+                
         if (![fileId isEqualToString:@"0"])
         {
             YSCoursewareControlView * pageControlView = [[YSCoursewareControlView alloc]initWithFrame:CGRectMake(0, 0, 246, 34)];
@@ -96,24 +98,10 @@
             self.pageControlView.bm_centerX = frame.size.width / 2;
             self.pageControlView.bm_bottom = frame.size.height - 20;
         }
-        
-        UIPanGestureRecognizer * panGesture = [[UIPanGestureRecognizer alloc]initWithTarget:self action:@selector(panGestureToMoveView:)];
-        [self addGestureRecognizer:panGesture];
     }
     
     return self;
 }
-
-#pragma mark 拖拽/缩放 手势
-///课件拖拽事件
-- (void)panGestureToMoveView:(UIPanGestureRecognizer *)pan
-{
-    if ([self.delegate respondsToSelector:@selector(panToMoveWhiteBoardView:withGestureRecognizer:)])
-    {
-        [self.delegate panToMoveWhiteBoardView:self withGestureRecognizer:pan];
-    }
-}
-
 
 - (void)setFrame:(CGRect)frame
 {

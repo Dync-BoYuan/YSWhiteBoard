@@ -10,7 +10,7 @@
 
 #import "YSWBDrawViewManager.h"
 #import "YSWBWebViewManager.h"
-
+#import "YSWhiteBoardTopBar.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -37,7 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, readonly) YSWBDrawViewManager *drawViewManager;
 
 /// 小白板的topBar
-//@property (nonatomic, strong)YSWhiteBoardTopBar * topBar;
+@property (nonatomic, strong)YSWhiteBoardTopBar * topBar;
 
 
 - (instancetype)initWithFrame:(CGRect)frame fileId:(NSString *)fileId loadFinishedBlock:(nullable  wbLoadFinishedBlock)loadFinishedBlock;
@@ -111,9 +111,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)onWBViewWebViewManagerStateUpdate:(YSWhiteBoardView *)whiteBoardView withState:(NSDictionary *)dic;
 /// 翻页超时
 - (void)onWBViewWebViewManagerSlideLoadTimeout:(YSWhiteBoardView *)whiteBoardView withState:(NSDictionary *)dic;
-
-///拖拽手势事件
-- (void)panToMoveWhiteBoardView:(YSWhiteBoardView *)whiteBoard withGestureRecognizer:(UIPanGestureRecognizer *)pan;
 
 @end
 

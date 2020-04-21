@@ -31,6 +31,10 @@
     {
         self.backgroundColor = [UIColor bm_colorWithHex:0x82ABEC];
         [self setupTitleBar];
+        
+        UIPanGestureRecognizer * panGesture = [[UIPanGestureRecognizer alloc]initWithTarget:self action:@selector(panGestureToMoveView:)];
+        [self addGestureRecognizer:panGesture];
+        
     }
     return self;
 }
@@ -95,5 +99,14 @@
     }
 }
 
+#pragma mark 拖拽 手势
+///课件拖拽事件
+- (void)panGestureToMoveView:(UIPanGestureRecognizer *)pan
+{
+    if ([self.delegate respondsToSelector:@selector(panToMoveWhiteBoardView:withGestureRecognizer:)])
+    {
+        [self.delegate panToMoveWhiteBoardView:self.whiteBoardView withGestureRecognizer:pan];
+    }
+}
 
 @end

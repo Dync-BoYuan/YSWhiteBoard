@@ -32,8 +32,8 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 
 @interface YSWhiteBoardManager ()
 <
-    YSWhiteBoardViewDelegate
-
+    YSWhiteBoardViewDelegate,
+    YSWhiteBoardTopBarDelegate
 >
 {
 //    /// 页面加载完成, 是否需要缓存标识
@@ -183,6 +183,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         YSWhiteBoardView *whiteBoardView= [self createWhiteBoardWithFileId:[NSString stringWithFormat:@"%@", @(i)] loadFinishedBlock:nil];
         whiteBoardView.backgroundColor = [UIColor bm_randomColor];
         [self.mainWhiteBoardView addSubview:whiteBoardView];
+        whiteBoardView.topBar.delegate = self;
     }
     return self.mainWhiteBoardView;
 }

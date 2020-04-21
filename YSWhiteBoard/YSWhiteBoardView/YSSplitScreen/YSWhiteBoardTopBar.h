@@ -8,15 +8,30 @@
 
 #import <UIKit/UIKit.h>
 
+@class YSWhiteBoardView;
+
 NS_ASSUME_NONNULL_BEGIN
 
+@protocol YSWhiteBoardTopBarDelegate <NSObject>
+
+///拖拽手势事件
+- (void)panToMoveWhiteBoardView:(YSWhiteBoardView *)whiteBoard withGestureRecognizer:(UIPanGestureRecognizer *)pan;
+
+@end
+
+
 @interface YSWhiteBoardTopBar : UIView
+
+@property (nonatomic, weak) id<YSWhiteBoardTopBarDelegate>  delegate;
 
 ///按钮点击事件
 @property(nonatomic,copy) void(^barButtonsClick)(UIButton *sender);
 
 /// 课件 title
 @property (nonatomic, copy) NSString  *titleString;
+
+/// 自身对应的YSWhiteBoardView
+@property (nonatomic, strong) YSWhiteBoardView  *whiteBoardView;
 
 @end
 
