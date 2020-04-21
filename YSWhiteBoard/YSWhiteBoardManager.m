@@ -235,7 +235,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 }
 
 #pragma mark 拖拽手势
-- (void)panToMoveWhiteBoardView:(YSWhiteBoardView *)whiteBoard withGestureRecognizer:(UIPanGestureRecognizer *)pan
+- (void)panToMoveWhiteBoardView:(UIView *)whiteBoard withGestureRecognizer:(UIPanGestureRecognizer *)pan
 {
     if (!self.isDraging && !self.isDragZooming)
     {

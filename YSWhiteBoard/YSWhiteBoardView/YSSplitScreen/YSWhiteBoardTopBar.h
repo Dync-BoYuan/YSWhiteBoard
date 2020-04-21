@@ -15,7 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol YSWhiteBoardTopBarDelegate <NSObject>
 
 ///拖拽手势事件
-- (void)panToMoveWhiteBoardView:(YSWhiteBoardView *)whiteBoard withGestureRecognizer:(UIPanGestureRecognizer *)pan;
+- (void)panToMoveWhiteBoardView:(UIView *)whiteBoard withGestureRecognizer:(UIPanGestureRecognizer *)pan;
 
 @end
 
