@@ -35,6 +35,10 @@
         UIPanGestureRecognizer * panGesture = [[UIPanGestureRecognizer alloc]initWithTarget:self action:@selector(panGestureToMoveView:)];
         [self addGestureRecognizer:panGesture];
         
+        UITapGestureRecognizer *oneTap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(tapToBringVideoToFont:)];
+        oneTap.numberOfTapsRequired = 1;
+        [self addGestureRecognizer:oneTap];
+        
     }
     return self;
 }
@@ -106,6 +110,14 @@
     if ([self.delegate respondsToSelector:@selector(panToMoveWhiteBoardView:withGestureRecognizer:)])
     {
         [self.delegate panToMoveWhiteBoardView:self.superview withGestureRecognizer:pan];
+    }
+}
+
+- (void)tapToBringVideoToFont:(UITapGestureRecognizer *)tapGesture
+{
+    if ([self.delegate respondsToSelector:@selector(clickToBringVideoToFont:)])
+    {
+        [self.delegate clickToBringVideoToFont:self.superview];
     }
 }
 

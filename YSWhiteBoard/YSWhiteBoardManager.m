@@ -250,10 +250,15 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     }
 }
 
+- (void)clickToBringVideoToFont:(UIView *)whiteBoard
+{
+    [whiteBoard bm_bringToFront];
+}
+
 #pragma mark 拖拽手势
 - (void)panToMoveWhiteBoardView:(UIView *)whiteBoard withGestureRecognizer:(UIPanGestureRecognizer *)pan
 {
-    if (!self.isDraging && !self.isDragZooming)
+    if (!self.isDraging)
     {
         if ([whiteBoard isEqual:self.mainWhiteBoardView])
         {
@@ -265,11 +270,6 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         if (point.y<30)
         {
             self.isDraging = YES;
-            
-        }
-        else if (point.x>whiteBoard.bm_width-50 && point.y>whiteBoard.bm_height-50)
-        {
-            self.isDragZooming = YES;
         }
         else
         {
@@ -281,9 +281,6 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     
     CGPoint endPoint = [pan translationInView:whiteBoard];
     
-    BMLog(@"拖拽的尺寸变化：%@",NSStringFromCGPoint(endPoint));
-    
-    
     if (!self.dragImageView)
     {
         UIImage * img = [whiteBoard bm_screenshot];
@@ -291,9 +288,6 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         [self.mainWhiteBoardView addSubview:self.dragImageView];
     }
 
-    if (self.isDraging)
-    {//拖动 - 移动
-        
         CGFloat dragImageViewX = whiteBoard.bm_originX + endPoint.x;
         CGFloat dragImageViewY = whiteBoard.bm_originY + endPoint.y;
         
@@ -330,62 +324,90 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
             self.isDraging = NO;
             [whiteBoard bm_bringToFront];
         }
-    }
-    else
-    {//拖动 - 缩放
-        
-        //拖动时小白板的尺寸
-        CGFloat dragImageViewW = 0;
-        CGFloat dragImageViewH = 0;
-        
-        if (endPoint.x >= endPoint.y)
+}
+
+#pragma mark 拖拽手势事件  拖拽右下角缩放View
+- (void)panToZoomWhiteBoardView:(YSWhiteBoardView *)whiteBoard withGestureRecognizer:(UIPanGestureRecognizer *)pan
+{
+    if (!self.isDragZooming)
+    {
+        if ([whiteBoard isEqual:self.mainWhiteBoardView])
         {
-            dragImageViewW = whiteBoard.bm_width + endPoint.x;
-            dragImageViewH = dragImageViewW / 5.0f * 3.0f;
+            [self.dragImageView removeFromSuperview];
+            self.dragImageView = nil;
+            return;
+        }
+
+        CGPoint point = [pan locationInView:pan.view.superview];
+        if (point.x>whiteBoard.bm_width-50 && point.y>whiteBoard.bm_height-50)
+        {
+            self.isDragZooming = YES;
         }
         else
         {
-            dragImageViewH = whiteBoard.bm_height + endPoint.y;
-            dragImageViewW = dragImageViewH / 3.0f * 5.0f;
-        }
-        
-        //超出边界时
-        if (whiteBoard.bm_originX + dragImageViewW >= self.mainWhiteBoardView.bm_width - 1)
-        {
-            dragImageViewW = self.mainWhiteBoardView.bm_width - 1 - whiteBoard.bm_originX;
-            dragImageViewH = dragImageViewW / 5.0f * 3.0f;
-        }
-        else if (whiteBoard.bm_originY + dragImageViewH >= self.mainWhiteBoardView.bm_height - 1)
-        {
-            dragImageViewH = self.mainWhiteBoardView.bm_height - 1 - whiteBoard.bm_originY;
-            dragImageViewW = dragImageViewH / 3.0f * 5.0f;
-        }
-        
-        //小于默认时
-        if (dragImageViewW <= self.whiteBoardViewDefaultSize.width || dragImageViewH <= self.whiteBoardViewDefaultSize.height)
-        {
-            dragImageViewW = self.whiteBoardViewDefaultSize.width;
-            dragImageViewH = self.whiteBoardViewDefaultSize.height;
-        }
-        
-        self.dragImageView.frame = CGRectMake(whiteBoard.bm_originX, whiteBoard.bm_originY, dragImageViewW, dragImageViewH);
-                
-        if (pan.state == UIGestureRecognizerStateEnded)
-        {
-            whiteBoard.frame =  self.dragImageView.frame;
-            
-            //宽，高值在主白板上的比例
-            CGFloat scaleWidth = dragImageViewW / self.mainWhiteBoardView.bm_width;
-            CGFloat scaleHeight = dragImageViewH / self.mainWhiteBoardView.bm_height;
-            
             [self.dragImageView removeFromSuperview];
             self.dragImageView = nil;
-            self.isDragZooming = NO;
-            [whiteBoard bm_bringToFront];
+            return;
         }
     }
+    CGPoint endPoint = [pan translationInView:whiteBoard];
+    if (!self.dragImageView)
+    {
+        UIImage * img = [whiteBoard bm_screenshot];
+        self.dragImageView = [[UIImageView alloc]initWithImage:img];
+        [self.mainWhiteBoardView addSubview:self.dragImageView];
+    }
+    
+    //拖动时小白板的尺寸
+    CGFloat dragImageViewW = 0;
+    CGFloat dragImageViewH = 0;
+    
+    if (endPoint.x >= endPoint.y)
+    {
+        dragImageViewW = whiteBoard.bm_width + endPoint.x;
+        dragImageViewH = dragImageViewW / 5.0f * 3.0f;
+    }
+    else
+    {
+        dragImageViewH = whiteBoard.bm_height + endPoint.y;
+        dragImageViewW = dragImageViewH / 3.0f * 5.0f;
+    }
+    
+    //超出边界时
+    if (whiteBoard.bm_originX + dragImageViewW >= self.mainWhiteBoardView.bm_width - 1)
+    {
+        dragImageViewW = self.mainWhiteBoardView.bm_width - 1 - whiteBoard.bm_originX;
+        dragImageViewH = dragImageViewW / 5.0f * 3.0f;
+    }
+    else if (whiteBoard.bm_originY + dragImageViewH >= self.mainWhiteBoardView.bm_height - 1)
+    {
+        dragImageViewH = self.mainWhiteBoardView.bm_height - 1 - whiteBoard.bm_originY;
+        dragImageViewW = dragImageViewH / 3.0f * 5.0f;
+    }
+    
+    //小于默认时
+    if (dragImageViewW <= self.whiteBoardViewDefaultSize.width || dragImageViewH <= self.whiteBoardViewDefaultSize.height)
+    {
+        dragImageViewW = self.whiteBoardViewDefaultSize.width;
+        dragImageViewH = self.whiteBoardViewDefaultSize.height;
+    }
+    
+    self.dragImageView.frame = CGRectMake(whiteBoard.bm_originX, whiteBoard.bm_originY, dragImageViewW, dragImageViewH);
+            
+    if (pan.state == UIGestureRecognizerStateEnded)
+    {
+        whiteBoard.frame =  self.dragImageView.frame;
+        
+        //宽，高值在主白板上的比例
+        CGFloat scaleWidth = dragImageViewW / self.mainWhiteBoardView.bm_width;
+        CGFloat scaleHeight = dragImageViewH / self.mainWhiteBoardView.bm_height;
+        
+        [self.dragImageView removeFromSuperview];
+        self.dragImageView = nil;
+        self.isDragZooming = NO;
+        [whiteBoard bm_bringToFront];
+    }
 }
-
 
 #pragma mark - 课件列表管理
 
