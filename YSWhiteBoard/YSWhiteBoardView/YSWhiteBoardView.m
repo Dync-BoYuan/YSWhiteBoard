@@ -15,6 +15,8 @@
 
 #define YSWhiteBoardId_Header   @"docModule_"
 
+#define YSTopViewHeight         (30.0f)
+
 @interface YSWhiteBoardView ()
 <
     YSWBWebViewManagerDelegate
@@ -24,11 +26,15 @@
     BOOL preloadDispose;
     /// 预加载失败
     BOOL predownloadError;
+    
+    CGFloat topViewHeight;
 }
 
 @property (nonatomic, strong) NSString *whiteBoardId;
 @property (nonatomic, strong) NSString *fileId;
 
+/// 白板背景容器
+@property (nonatomic, strong) UIView *whiteBoardContentView;
 /// web文档
 @property (nonatomic, strong) YSWBWebViewManager *webViewManager;
 /// 普通文档
@@ -78,18 +84,27 @@
         self.cacheMsgPool = [NSMutableArray array];
 
         self.isLoadingFinish = NO;
+
+        topViewHeight = 0;
+        if (![fileId isEqualToString:@"0"])
+        {
+            topViewHeight = YSTopViewHeight;
+            
+            YSWhiteBoardTopBar *topBar = [[YSWhiteBoardTopBar alloc] initWithFrame:CGRectMake(0, 0, frame.size.width, YSTopViewHeight)];
+            topBar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+            [self addSubview:topBar];
+        }
         
-        self.wbView = [self.webViewManager createWhiteBoardWithFrame:frame loadFinishedBlock:loadFinishedBlock];
+        CGRect contentFrame = CGRectMake(0, topViewHeight, frame.size.width, frame.size.height-topViewHeight);
+        UIView *whiteBoardContentView = [[UIView alloc] initWithFrame:contentFrame];
+        [self addSubview:whiteBoardContentView];
+        self.whiteBoardContentView = whiteBoardContentView;
+
+        self.wbView = [self.webViewManager createWhiteBoardWithFrame:contentFrame loadFinishedBlock:loadFinishedBlock];
         [self addSubview:self.wbView];
+
+        self.drawViewManager = [[YSWBDrawViewManager alloc] initWithBackView:whiteBoardContentView webView:self.wbView];
         
-        self.drawViewManager = [[YSWBDrawViewManager alloc] initWithBackView:self webView:self.wbView];
-        
-        YSWhiteBoardTopBar * topBar = [[YSWhiteBoardTopBar alloc]initWithFrame:CGRectMake(0, 0, frame.size.width, 30)];
-        topBar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-        [self addSubview:topBar];
-        topBar.whiteBoardView = self;
-        self.topBar = topBar;
-                
         if (![fileId isEqualToString:@"0"])
         {
             YSCoursewareControlView * pageControlView = [[YSCoursewareControlView alloc]initWithFrame:CGRectMake(0, 0, 246, 34)];
@@ -98,6 +113,7 @@
             self.pageControlView.bm_centerX = frame.size.width / 2;
             self.pageControlView.bm_bottom = frame.size.height - 20;
         }
+
     }
     
     return self;
@@ -107,6 +123,8 @@
 {
     [super setFrame:frame];
     
+    CGRect contentFrame = CGRectMake(0, topViewHeight, frame.size.width, frame.size.height-topViewHeight);
+    self.whiteBoardContentView.frame = contentFrame;
     [self.drawViewManager updateFrame];
         
     self.pageControlView.bm_centerX = frame.size.width * 0.5f;
