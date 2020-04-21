@@ -94,7 +94,7 @@
     [_drawView clearDraw];
 }
 
-- (void)setDrawType:(YSDrawType)drawType hexColor:(NSString *)hexColor progress:(float)progress {
+- (void)setDrawType:(YSDrawType)drawType hexColor:(NSString *)hexColor progress:(CGFloat)progress {
     _selectedType     = drawType;
     _selectedHexColor = hexColor;
     _selectedProgress = progress;

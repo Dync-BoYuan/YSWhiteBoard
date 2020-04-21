@@ -53,7 +53,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)setDrawType:(YSDrawType)drawType
            hexColor:(NSString *)hexColor
-           progress:(float)progress;
+           progress:(CGFloat)progress;
 
 
 

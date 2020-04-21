@@ -236,7 +236,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 #pragma mark 拖拽手势
 - (void)panToMoveWhiteBoardView:(YSWhiteBoardView *)whiteBoard withGestureRecognizer:(UIPanGestureRecognizer *)pan
 {
-    if (!self.isDraging &&  !self.isDragZooming)
+    if (!self.isDraging && !self.isDragZooming)
     {
         if ([whiteBoard isEqual:self.mainWhiteBoardView])
         {
@@ -847,17 +847,47 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 - (void)brushToolsDidSelect:(YSBrushToolType)BrushToolType
 {
     [self.brushToolsManager brushToolsDidSelect:BrushToolType];
+    
+    if (self.mainWhiteBoardView)
+    {
+        [self.mainWhiteBoardView brushToolsDidSelect:BrushToolType];
+    }
+
+    for (YSWhiteBoardView *whiteBoardView in self.coursewareViewList)
+    {
+        [whiteBoardView brushToolsDidSelect:BrushToolType];
+    }
 }
 
-- (void)didSelectDrawType:(YSDrawType)type color:(NSString *)hexColor widthProgress:(float)progress
+- (void)didSelectDrawType:(YSDrawType)type color:(NSString *)hexColor widthProgress:(CGFloat)progress
 {
     [self.brushToolsManager didSelectDrawType:type color:hexColor widthProgress:progress];
+    
+    if (self.mainWhiteBoardView)
+    {
+        [self.mainWhiteBoardView didSelectDrawType:type color:hexColor widthProgress:progress];
+    }
+
+    for (YSWhiteBoardView *whiteBoardView in self.coursewareViewList)
+    {
+        [whiteBoardView didSelectDrawType:type color:hexColor widthProgress:progress];
+    }
 }
 
 // 恢复默认工具配置设置
 - (void)freshBrushToolConfig
 {
-    [self.brushToolsManager freshBrushToolConfigs];
+    [self.brushToolsManager freshDefaultBrushToolConfigs];
+    
+    if (self.mainWhiteBoardView)
+    {
+        [self.mainWhiteBoardView freshBrushToolConfigs];
+    }
+
+    for (YSWhiteBoardView *whiteBoardView in self.coursewareViewList)
+    {
+        [whiteBoardView freshBrushToolConfigs];
+    }
 }
 
 // 获取当前工具配置设置 drawType: YSBrushToolType类型  colorHex: RGB颜色  progress: 值
@@ -1271,6 +1301,12 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     if (![properties bm_containsObjectForKey:sYSUserCandraw] && ![properties bm_containsObjectForKey:sYSUserPrimaryColor])
     {
         return;
+    }
+
+    if ([properties bm_containsObjectForKey:sYSUserPrimaryColor])
+    {
+        NSString *colorHex = [properties bm_stringForKey:sYSUserPrimaryColor];
+        [self.brushToolsManager changePrimaryColor:colorHex];
     }
 
     if (self.mainWhiteBoardView)

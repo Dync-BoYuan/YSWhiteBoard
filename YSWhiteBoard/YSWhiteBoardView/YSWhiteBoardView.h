@@ -86,6 +86,14 @@ NS_ASSUME_NONNULL_BEGIN
 /// 总页码
 - (void)changeTotalPage:(NSUInteger)pagecount;
 
+
+#pragma -
+#pragma mark 画笔控制
+
+- (void)brushToolsDidSelect:(YSBrushToolType)BrushToolType;
+- (void)didSelectDrawType:(YSDrawType)type color:(NSString *)hexColor widthProgress:(CGFloat)progress;
+- (void)freshBrushToolConfigs;
+
 @end
 
 

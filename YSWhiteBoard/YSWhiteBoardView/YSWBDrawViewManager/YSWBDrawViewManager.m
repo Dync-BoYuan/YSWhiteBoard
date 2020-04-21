@@ -12,8 +12,6 @@
 #import "DrawView.h"
 #import "LaserPan.h"
 
-NSString *const YSWhiteBoardRemoteSelectTool = @"YSWhiteBoardRemoteSelectTool"; //远程选择
-
 @interface YSWBDrawViewManager ()
 <
     UIGestureRecognizerDelegate,
@@ -85,19 +83,6 @@ NSString *const YSWhiteBoardRemoteSelectTool = @"YSWhiteBoardRemoteSelectTool"; 
             make.top.bmmas_equalTo(self.contentView.bmmas_top);
             make.bottom.bmmas_equalTo(self.contentView.bmmas_bottom);
         }];
-
-//        // 监听_contentView.frame更新布局
-//        [self.contentView addObserver:self
-//                       forKeyPath:@"frame"
-//                          options:NSKeyValueObservingOptionNew
-//                          context:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(remoteSelectorTool:)
-                                                     name:YSWhiteBoardRemoteSelectTool
-                                                   object:nil];
-
-
-        [self makeWbToolConfigs];
         
         [view setNeedsLayout];
         [view layoutIfNeeded];
@@ -123,127 +108,7 @@ NSString *const YSWhiteBoardRemoteSelectTool = @"YSWhiteBoardRemoteSelectTool"; 
     }
 }
 
-#pragma mark - WbToolConfigs
-
-- (void)makeWbToolConfigs
-{
-    // 默认颜色 红
-    self.defaultPrimaryColor = @"#FF0000";
-    [self freshWbToolConfigs];
-}
-
-- (void)freshWbToolConfigs
-{
-    self.wbToolConfigs = [[NSMutableDictionary alloc] init];
-    
-    // 画笔
-    NSDictionary *toolTypeLineConfig = @{ @"drawType" : @(YSDrawTypePen),
-                                          @"colorHex" : @"",
-                                          @"progress" : @(0.03f) };
-    [self.wbToolConfigs setObject:toolTypeLineConfig forKey:@(YSNativeToolTypeLine)];
-    
-    // 文本
-    NSDictionary *toolTypeTextConfig = @{ @"drawType" : @(YSDrawTypeTextMS),
-                                          @"colorHex" : @"",
-                                          @"progress" : @(0.3f) };
-    [self.wbToolConfigs setObject:toolTypeTextConfig forKey:@(YSNativeToolTypeText)];
-    
-    // 形状
-    NSDictionary *toolTypeSharpConfig = @{ @"drawType" : @(YSDrawTypeEmptyRectangle),
-                                           @"colorHex" : @"",
-                                           @"progress" : @(0.03f) };
-    [self.wbToolConfigs setObject:toolTypeSharpConfig forKey:@(YSNativeToolTypeShape)];
-    
-    // 橡皮
-    NSDictionary *toolTypeEraserConfig = @{ @"drawType" : @(YSDrawTypeEraser),
-                                            @"colorHex" : @"",
-                                            @"progress" : @(0.03f) };
-    [self.wbToolConfigs setObject:toolTypeEraserConfig forKey:@(YSNativeToolTypeEraser)];
-}
-
-- (void)changeDefaultPrimaryColor:(NSString *)colorHex
-{
-    NSMutableArray *colorMuArr = [NSMutableArray arrayWithObjects:
-                                  @"#000000", @"#9B9B9B", @"#FFFFFF", @"#FF87A3", @"#FF515F", @"#FF0000",
-                                  @"#E18838", @"#AC6B00", @"#864706", @"#FF7E0B", @"#FFD33B", @"#FFF52B",
-                                  @"#B3D330", @"#88BA44", @"#56A648", @"#53B1A4", @"#68C1FF", @"#058CE5",
-                                  @"#0B48FF", @"#C1C7FF", @"#D25FFA", @"#6E3087", @"#3D2484", @"#142473", nil];
-    
-    NSUInteger index = [colorMuArr indexOfObject:colorHex];
-    if (index != NSNotFound)
-    {
-        self.defaultPrimaryColor = colorHex;
-    }
-}
-
-- (NSDictionary *)getWbToolConfigWithToolType:(YSNativeToolType)type
-{
-    NSDictionary *dic = self.wbToolConfigs[@(type)];
-    NSMutableDictionary *configDic = [NSMutableDictionary dictionaryWithDictionary:dic];
-    NSString *colorHex = [configDic bm_stringForKey:@"colorHex"];
-    if (![colorHex bm_isNotEmpty])
-    {
-        [configDic setObject:self.defaultPrimaryColor forKey:@"colorHex"];
-    }
-    
-    return configDic;
-}
-
-- (void)changeWbToolConfigWithToolType:(YSNativeToolType)type drawType:(YSDrawType)drawType color:(NSString *)hexColor progress:(float)progress
-{
-    if (![hexColor bm_isNotEmpty])
-    {
-        hexColor = self.defaultPrimaryColor;
-    }
-    
-    switch (type)
-    {
-        case YSNativeToolTypeLine:
-        {
-            NSDictionary *dic = self.wbToolConfigs[@(YSNativeToolTypeLine)];
-            NSMutableDictionary *configDic = [NSMutableDictionary dictionaryWithDictionary:dic];
-            [configDic setObject:@(drawType) forKey:@"drawType"];
-            [configDic setObject:hexColor forKey:@"colorHex"];
-            [configDic setObject:@(progress) forKey:@"progress"];
-            [self.wbToolConfigs setObject:configDic forKey:@(YSNativeToolTypeLine)];
-            break;
-        }
-        case YSNativeToolTypeText:
-        {
-            NSDictionary *dic = self.wbToolConfigs[@(YSNativeToolTypeText)];
-            NSMutableDictionary *configDic = [NSMutableDictionary dictionaryWithDictionary:dic];
-            [configDic setObject:@(drawType) forKey:@"drawType"];
-            [configDic setObject:hexColor forKey:@"colorHex"];
-            [configDic setObject:@(progress) forKey:@"progress"];
-            [self.wbToolConfigs setObject:configDic forKey:@(YSNativeToolTypeText)];
-        }
-            break;
-        case YSNativeToolTypeShape:
-        {
-            NSDictionary *dic = self.wbToolConfigs[@(YSNativeToolTypeShape)];
-            NSMutableDictionary *configDic = [NSMutableDictionary dictionaryWithDictionary:dic];
-            [configDic setObject:@(drawType) forKey:@"drawType"];
-            [configDic setObject:hexColor forKey:@"colorHex"];
-            [configDic setObject:@(progress) forKey:@"progress"];
-            [self.wbToolConfigs setObject:configDic forKey:@(YSNativeToolTypeShape)];
-        }
-            break;
-        case YSNativeToolTypeEraser:
-        {
-            NSDictionary *dic = self.wbToolConfigs[@(YSNativeToolTypeEraser)];
-            NSMutableDictionary *configDic = [NSMutableDictionary dictionaryWithDictionary:dic];
-            [configDic setObject:@(drawType) forKey:@"drawType"];
-            [configDic setObject:@"" forKey:@"colorHex"];
-            [configDic setObject:@(progress) forKey:@"progress"];
-            [self.wbToolConfigs setObject:configDic forKey:@(YSNativeToolTypeEraser)];
-        }
-            break;
-        default:
-            break;
-    }
-}
-
-- (void)remoteSelectorTool:(NSNotification *)noti
+- (void)changeSelectorTool:(BOOL)selected
 {
     // 有穿透画笔配置项不隐藏画布(笔迹) 并响应动态课件事件
     if ([YSWhiteBoardManager shareInstance].roomConfig.isPenCanPenetration == YES)
@@ -255,7 +120,7 @@ NSString *const YSWhiteBoardRemoteSelectTool = @"YSWhiteBoardRemoteSelectTool"; 
         // 是否点选鼠标
         if (self.showOnWeb)
         {
-            self.fileView.hidden = [noti.object boolValue];
+            self.fileView.hidden = selected;
         }
         else
         {
@@ -265,7 +130,7 @@ NSString *const YSWhiteBoardRemoteSelectTool = @"YSWhiteBoardRemoteSelectTool"; 
             }
             else
             {
-                self.fileView.ysDrawView.drawView.hidden = [noti.object boolValue];
+                self.fileView.ysDrawView.drawView.hidden = selected;
             }
         }
     }
@@ -668,53 +533,6 @@ NSString *const YSWhiteBoardRemoteSelectTool = @"YSWhiteBoardRemoteSelectTool"; 
 }
 
 
-#pragma -
-#pragma mark DrawTool
-
-#pragma mark - 选择画笔工具：类型 && 颜色  &&大小
-- (void)didSelectDrawType:(YSDrawType)type
-                    color:(NSString *)hexColor
-            widthProgress:(float)progress
-{
-    if (type == YSDrawTypeClear)
-    {
-        [self.fileView.ysDrawView clearDrawWithMsg];
-        return;
-    }
-
-    NSUInteger toolType = 0;
-    if (type >= YSDrawTypePen)
-    {
-        toolType = YSNativeToolTypeLine;
-    }
-    if (type >= YSDrawTypeTextMS)
-    {
-        toolType = YSNativeToolTypeText;
-    }
-    if (type >= YSDrawTypeEmptyRectangle)
-    {
-        toolType = YSNativeToolTypeShape;
-    }
-    if (type >= YSDrawTypeEraser)
-    {
-        toolType = YSNativeToolTypeEraser;
-    }
-    if (toolType)
-    {
-        [self changeWbToolConfigWithToolType:toolType drawType:type color:hexColor progress:progress];
-    }
-
-    [_fileView.ysDrawView setDrawType:type hexColor:hexColor progress:progress];
-    [[YSRoomInterface instance] changeUserProperty:[YSRoomInterface instance].localUser.peerID
-                                        tellWhom:YSRoomPubMsgTellAll
-                                            data:@{
-                                                @"primaryColor" : hexColor
-                                            }
-                                      completion:nil];
-}
-
-
-
 #pragma mark - 监听课堂 底层通知消息
 
 ////MARK: 授权&&上台
@@ -756,7 +574,7 @@ NSString *const YSWhiteBoardRemoteSelectTool = @"YSWhiteBoardRemoteSelectTool"; 
             if (self.showOnWeb)
             {
                 // 画笔穿透时在web课件上不隐藏
-                self.fileView.hidden = [YSWhiteBoardManager shareInstance].roomConfig.isPenCanPenetration ? NO : _selectMouse;
+                self.fileView.hidden = [YSWhiteBoardManager shareInstance].roomConfig.isPenCanPenetration ? NO : self.selectMouse;
             }
         }
         else if ([YSRoomInterface instance].localUser.role == YSUserType_Teacher)
@@ -821,17 +639,6 @@ NSString *const YSWhiteBoardRemoteSelectTool = @"YSWhiteBoardRemoteSelectTool"; 
                     postNotificationName:YSWhiteSendTextDrawIfChooseMouseNotification
                                   object:nil];
                 self.fileView.ysDrawView.rtDrawView.mode = YSWorkModeViewer;
-
-                if ([[YSRoomInterface instance] getRoomUserWithUId:fromID].role ==
-                        YSUserType_Teacher ||
-                    [[YSRoomInterface instance] getRoomUserWithUId:fromID].role ==
-                        YSUserType_Assistant)
-                {
-
-                    [[NSNotificationCenter defaultCenter]
-                        postNotificationName:YSWhiteBoardRemoteSelectTool
-                                      object:@(YES)];
-                }
             }
             else
             {
@@ -839,19 +646,17 @@ NSString *const YSWhiteBoardRemoteSelectTool = @"YSWhiteBoardRemoteSelectTool"; 
                     self.selectMouse ? YSWorkModeViewer : YSWorkModeControllor;
                 self.fileView.hidden = NO;
 
-                if ([[YSRoomInterface instance] getRoomUserWithUId:fromID].role ==
-                        YSUserType_Teacher ||
-                    [[YSRoomInterface instance] getRoomUserWithUId:fromID].role ==
-                        YSUserType_Assistant)
-                {
-                    [[NSNotificationCenter defaultCenter]
-                        postNotificationName:YSWhiteBoardRemoteSelectTool
-                                      object:@(NO)];
-                }
-
                 // 移除激光笔
                 [self.laserPan removeFromSuperview];
                 self.laserPan = nil;
+            }
+            
+            if ([[YSRoomInterface instance] getRoomUserWithUId:fromID].role ==
+                    YSUserType_Teacher ||
+                [[YSRoomInterface instance] getRoomUserWithUId:fromID].role ==
+                    YSUserType_Assistant)
+            {
+                [self changeSelectorTool:selectMouse];
             }
         }
         
@@ -1381,5 +1186,120 @@ NSString *const YSWhiteBoardRemoteSelectTool = @"YSWhiteBoardRemoteSelectTool"; 
                                     updateImmediately:YES];
     }
 }
+
+#pragma mark - 点击画笔工具创建画笔选择器
+
+- (void)brushToolsDidSelect:(YSNativeToolType)type fromRemote:(BOOL)isFromRemote
+{
+    [self setWorkMode:YSWorkModeControllor];
+
+    switch (type)
+    {
+        case YSNativeToolTypeMouse:
+        {
+            self.selectMouse = YES;
+
+            [self setWorkMode:YSWorkModeViewer];
+
+            NSNumber *isDynamicPPT = [self.fileDictionary objectForKey:@"isDynamicPPT"];
+            NSNumber *isH5Document = [self.fileDictionary objectForKey:@"isH5Document"];
+
+            if ((isDynamicPPT.intValue == 1) || (isH5Document.intValue == 1))
+            {
+                self.fileView.ysDrawView.rtDrawView.mode = YSWorkModeViewer;
+            }
+
+            break;
+        }
+        case YSNativeToolTypeLine:
+        {
+        }
+        case YSNativeToolTypeText:
+        {
+        }
+        case YSNativeToolTypeShape:
+        {
+            self.fileView.ysDrawView.rtDrawView.hidden = NO;
+            self.selectMouse = NO;
+            break;
+        }
+        case YSNativeToolTypeEraser:
+        {
+            self.fileView.ysDrawView.rtDrawView.hidden = YES;
+        }
+        default:
+            self.selectMouse = NO;
+            break;
+    }
+
+    if (!isFromRemote)
+    {
+        [self setDragFileEnabled:(type == YSNativeToolTypeMouse)];
+    }
+
+    // 有穿透画笔配置项不隐藏画布(笔迹) 并响应动态课件事件
+    if ([YSWhiteBoardManager shareInstance].roomConfig.isPenCanPenetration == YES)
+    {
+        self.fileView.isPenetration = _showOnWeb && _selectMouse;
+    }
+    // 画布显示不显示和当前是否选中了鼠标按钮有关系，如果选中了鼠标隐藏画布
+    else
+    {
+        if (self.showOnWeb)
+        {
+            self.fileView.hidden = (type == YSNativeToolTypeMouse);
+        }
+        else
+        {
+            if ([self.contentView.fileId isEqualToString:@"0"])
+            {
+                self.fileView.ysDrawView.drawView.hidden = NO;
+            }
+            else
+            {
+                self.fileView.ysDrawView.drawView.hidden = (type == YSNativeToolTypeMouse);
+            }
+        }
+    }
+}
+
+#pragma mark - 选择画笔工具：类型 && 颜色  &&大小
+- (void)didSelectDrawType:(YSDrawType)type
+                    color:(NSString *)hexColor
+            widthProgress:(CGFloat)progress
+{
+    if (type == YSDrawTypeClear)
+    {
+        [self.fileView.ysDrawView clearDrawWithMsg];
+        return;
+    }
+
+    NSUInteger toolType = 0;
+    if (type >= YSDrawTypePen)
+    {
+        toolType = YSNativeToolTypeLine;
+    }
+    if (type >= YSDrawTypeTextMS)
+    {
+        toolType = YSNativeToolTypeText;
+    }
+    if (type >= YSDrawTypeEmptyRectangle)
+    {
+        toolType = YSNativeToolTypeShape;
+    }
+    if (type >= YSDrawTypeEraser)
+    {
+        toolType = YSNativeToolTypeEraser;
+    }
+
+    [self.fileView.ysDrawView setDrawType:type hexColor:hexColor progress:progress];
+    [[YSRoomInterface instance] changeUserProperty:[YSRoomInterface instance].localUser.peerID
+                                        tellWhom:YSRoomPubMsgTellAll
+                                            data:@{
+                                                @"primaryColor" : hexColor
+                                            }
+                                      completion:nil];
+}
+
 
 @end

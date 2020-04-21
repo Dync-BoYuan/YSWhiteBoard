@@ -92,6 +92,33 @@ static YSBrushToolsManager *brushTools = nil;
     self.currentConfig = self.lineConfig;
 }
 
+- (YSBrushToolsConfigs *)getSBrushToolsConfigsWithBrushToolType:(YSBrushToolType)brushToolType;
+{
+    switch (brushToolType)
+    {
+        case YSBrushToolTypeLine:
+        {
+            return self.lineConfig;
+        }
+        case YSBrushToolTypeText:
+        {
+            return self.textConfig;
+        }
+        case YSBrushToolTypeShape:
+        {
+            return self.sharpConfig;
+        }
+        case YSBrushToolTypeEraser:
+        {
+            return self.eraserConfig;
+        }
+        default:
+            break;
+    }
+
+    return self.currentConfig;
+}
+
 ///选择画笔工具
 - (void)brushToolsDidSelect:(YSBrushToolType)BrushToolType
 {
@@ -130,7 +157,7 @@ static YSBrushToolsManager *brushTools = nil;
 }
 
 #pragma mark - 选择画笔工具：类型 && 颜色  &&大小
-- (void)didSelectDrawType:(YSDrawType)type color:(NSString *)hexColor widthProgress:(float)progress
+- (void)didSelectDrawType:(YSDrawType)type color:(NSString *)hexColor widthProgress:(CGFloat)progress
 {
     if (self.currentBrushToolType != YSBrushToolTypeMouse)
     {
@@ -139,7 +166,7 @@ static YSBrushToolsManager *brushTools = nil;
 }
 
 ///画笔属性变化时修改配置
-- (void)changeToolConfigWithToolType:(YSBrushToolType)type drawType:(YSDrawType)drawType color:(NSString *)hexColor progress:(float)progress
+- (void)changeToolConfigWithToolType:(YSBrushToolType)type drawType:(YSDrawType)drawType color:(NSString *)hexColor progress:(CGFloat)progress
 {
     if (![hexColor bm_isNotEmpty])
     {

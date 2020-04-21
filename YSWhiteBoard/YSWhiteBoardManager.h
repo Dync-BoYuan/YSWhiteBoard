@@ -115,8 +115,9 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma -
 #pragma mark 画笔控制
 
+/// 更换画笔工具
 - (void)brushToolsDidSelect:(YSBrushToolType)BrushToolType;
-- (void)didSelectDrawType:(YSDrawType)type color:(NSString *)hexColor widthProgress:(float)progress;
+- (void)didSelectDrawType:(YSDrawType)type color:(NSString *)hexColor widthProgress:(CGFloat)progress;
 // 恢复默认工具配置设置
 - (void)freshBrushToolConfig;
 // 获取当前工具配置设置 drawType: YSBrushToolType类型  colorHex: RGB颜色  progress: 值

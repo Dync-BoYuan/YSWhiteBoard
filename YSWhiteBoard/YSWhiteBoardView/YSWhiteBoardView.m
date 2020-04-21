@@ -121,7 +121,7 @@
     
     [self.drawViewManager updateFrame];
         
-    self.pageControlView.bm_centerX = frame.size.width / 2;
+    self.pageControlView.bm_centerX = frame.size.width * 0.5f;
     self.pageControlView.bm_bottom = frame.size.height - 20;
 }
 
@@ -455,6 +455,7 @@
 {
     [self refreshWhiteBoardWithFrame:self.frame];
 }
+
 
 #pragma -
 #pragma mark 课件操作
@@ -930,6 +931,36 @@
     self.totalPage = totalPage;
 }
 
+#pragma -
+#pragma mark 画笔控制
+
+- (void)brushToolsDidSelect:(YSBrushToolType)BrushToolType
+{
+    if (self.drawViewManager)
+    {
+        [self.drawViewManager brushToolsDidSelect:(YSNativeToolType)BrushToolType fromRemote:NO];
+        
+        YSBrushToolsConfigs *currentConfig = [YSBrushToolsManager shareInstance].currentConfig;
+        [self.drawViewManager didSelectDrawType:currentConfig.drawType color:currentConfig.colorHex widthProgress:currentConfig.progress];
+    }
+}
+
+- (void)didSelectDrawType:(YSDrawType)type color:(NSString *)hexColor widthProgress:(CGFloat)progress
+{
+    if (self.drawViewManager)
+    {
+        [self.drawViewManager didSelectDrawType:type color:hexColor widthProgress:progress];
+    }
+}
+
+- (void)freshBrushToolConfigs
+{
+    if (self.drawViewManager)
+    {
+        YSBrushToolsConfigs *currentConfig = [YSBrushToolsManager shareInstance].currentConfig;
+        [self.drawViewManager didSelectDrawType:currentConfig.drawType color:currentConfig.colorHex widthProgress:currentConfig.progress];
+    }
+}
 
 - (void)refreshWebWhiteBoard
 {

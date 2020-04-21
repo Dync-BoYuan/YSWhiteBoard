@@ -28,13 +28,15 @@ NS_ASSUME_NONNULL_BEGIN
 + (instancetype)shareInstance;
 
 /// 画笔默认配置
-- (void)freshBrushToolConfigs;
+- (void)freshDefaultBrushToolConfigs;
+
+- (YSBrushToolsConfigs *)getSBrushToolsConfigsWithBrushToolType:(YSBrushToolType)brushToolType;
 
 /// 选择画笔工具条中的某个工具时的方法
 - (void)brushToolsDidSelect:(YSBrushToolType)BrushToolType;
 
 /// 修改某个工具中的属性：类型 && 颜色  &&大小   时
-- (void)didSelectDrawType:(YSDrawType)type color:(nullable NSString *)hexColor widthProgress:(float)progress;
+- (void)didSelectDrawType:(YSDrawType)type color:(nullable NSString *)hexColor widthProgress:(CGFloat)progress;
 
 /// 改变默认画笔颜色
 - (void)changePrimaryColor:(nullable NSString *)colorHex;
