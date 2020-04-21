@@ -31,6 +31,9 @@ NS_ASSUME_NONNULL_BEGIN
 /// 课件加载成功
 @property (nonatomic, assign, readonly) BOOL isLoadingFinish;
 
+/// 白板背景容器
+@property (nonatomic, strong, readonly) UIView *whiteBoardContentView;
+
 /// web文档
 @property (nonatomic, strong, readonly) YSWBWebViewManager *webViewManager;
 /// 普通文档

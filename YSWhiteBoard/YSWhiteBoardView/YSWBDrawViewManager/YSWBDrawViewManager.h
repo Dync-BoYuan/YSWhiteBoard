@@ -11,7 +11,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class YSWhiteBoardView;
 @interface YSWBDrawViewManager : NSObject
 
 /// 课件使用 webView 加载
@@ -21,7 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) NSString *address;
 @property (nonatomic, strong) NSMutableDictionary *fileDictionary;
 
-- (instancetype)initWithBackView:(YSWhiteBoardView *)view webView:(WKWebView *)webView;
+- (instancetype)initWithBackView:(UIView *)view webView:(WKWebView *)webView;
 
 - (void)clearAfterClass;
 

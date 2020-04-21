@@ -25,7 +25,8 @@
     BOOL sendFromSelf;
 }
 /// 承载View
-@property (nonatomic, weak) YSWhiteBoardView *contentView;
+@property (nonatomic, weak) UIView *contentView;
+@property (nonatomic, weak) YSWhiteBoardView *bwContentView;
 
 /// web课件通过YSWBWebViewManager创建的webView
 @property (nonatomic, weak) WKWebView *wkWebView;
@@ -56,13 +57,14 @@
 
 @implementation YSWBDrawViewManager
 
-- (instancetype)initWithBackView:(YSWhiteBoardView *)view webView:(WKWebView *)webView
+- (instancetype)initWithBackView:(UIView *)view webView:(WKWebView *)webView
 {
     self = [super init];
 
     if (self)
     {
         self.contentView = view;
+        self.bwContentView = (YSWhiteBoardView *)(view.superview);
         self.wkWebView = webView;
         
         self.showOnWeb = NO;
@@ -124,7 +126,7 @@
         }
         else
         {
-            if ([self.contentView.fileId isEqualToString:@"0"])
+            if ([self.bwContentView.fileId isEqualToString:@"0"])
             {
                 self.fileView.ysDrawView.drawView.hidden = NO;
             }
@@ -193,7 +195,7 @@
         CGPoint offset = fileView.contentOffset;
         [self resetEnlargeValue:YSWHITEBOARD_MINZOOMSCALE animated:NO];
         [fileView setContentOffset:CGPointZero];
-        [self updateWBRatio:_ratio];
+        [self updateWBRatio:self.ratio];
         [fileView setNeedsLayout];
         [fileView layoutIfNeeded];
         [self resetEnlargeValue:zoomScale animated:NO];
@@ -217,7 +219,7 @@
     }
     else
     {
-        [self updateWBRatio:_ratio];
+        [self updateWBRatio:self.ratio];
         [fileView setNeedsLayout];
         [fileView layoutIfNeeded];
     }
@@ -254,7 +256,7 @@
         return;
     }
 
-    if ([self.contentView.fileId isEqualToString:@"0"])
+    if ([self.bwContentView.fileId isEqualToString:@"0"])
     {
         // 避免image，pdf延迟加载影响白板比例
         ratio = 16.0f / 9;
@@ -325,7 +327,7 @@
     }
 
     // 显示纯白板或者web上的画布
-    if ([self.contentView.fileId isEqualToString:@"0"])
+    if ([self.bwContentView.fileId isEqualToString:@"0"])
     {
         if (self.ratio >= self.contentView.frame.size.width / self.contentView.frame.size.height) {
             [self.fileView.displayView bmmas_remakeConstraints:^(BMMASConstraintMaker *make) {
@@ -979,8 +981,8 @@
                 return;
             }
 
-            [self.contentView changeCurrentPage:currentPage];
-            [self.contentView changeTotalPage:pagecount];
+            [self.bwContentView changeCurrentPage:currentPage];
+            [self.bwContentView changeTotalPage:pagecount];
 
             [self.fileView.ysDrawView.drawView clearDrawersNameAfterShowPage];
             [self resetEnlargeValue:YSWHITEBOARD_MINZOOMSCALE animated:YES];
@@ -1181,7 +1183,7 @@
     // 未上课时手动白板画板翻页，因为没有发送showpage信令
     if (![YSWhiteBoardManager shareInstance].isBeginClass)
     {
-        [self.fileView.ysDrawView.rtDrawView switchFileID:self.contentView.fileId
+        [self.fileView.ysDrawView.rtDrawView switchFileID:self.bwContentView.fileId
                                        andCurrentPage:(int)currentPage
                                     updateImmediately:YES];
     }
@@ -1251,7 +1253,7 @@
         }
         else
         {
-            if ([self.contentView.fileId isEqualToString:@"0"])
+            if ([self.bwContentView.fileId isEqualToString:@"0"])
             {
                 self.fileView.ysDrawView.drawView.hidden = NO;
             }
