@@ -93,6 +93,7 @@
             YSWhiteBoardTopBar *topBar = [[YSWhiteBoardTopBar alloc] initWithFrame:CGRectMake(0, 0, frame.size.width, YSTopViewHeight)];
             topBar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
             [self addSubview:topBar];
+            self.topBar = topBar;
         }
         
         CGRect contentFrame = CGRectMake(0, topViewHeight, frame.size.width, frame.size.height-topViewHeight);
@@ -101,7 +102,7 @@
         self.whiteBoardContentView = whiteBoardContentView;
 
         self.wbView = [self.webViewManager createWhiteBoardWithFrame:contentFrame loadFinishedBlock:loadFinishedBlock];
-        [self addSubview:self.wbView];
+        [self.whiteBoardContentView addSubview:self.wbView];
 
         self.drawViewManager = [[YSWBDrawViewManager alloc] initWithBackView:whiteBoardContentView webView:self.wbView];
         
@@ -113,9 +114,10 @@
             self.pageControlView.bm_centerX = frame.size.width / 2;
             self.pageControlView.bm_bottom = frame.size.height - 20;
         }
-
+        
+//        UIView * dragZoomView = [UIView alloc]initWithFrame:cg
+        
     }
-    
     return self;
 }
 

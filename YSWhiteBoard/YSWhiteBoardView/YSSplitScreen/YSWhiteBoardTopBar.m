@@ -105,7 +105,7 @@
 {
     if ([self.delegate respondsToSelector:@selector(panToMoveWhiteBoardView:withGestureRecognizer:)])
     {
-        [self.delegate panToMoveWhiteBoardView:self.whiteBoardView withGestureRecognizer:pan];
+        [self.delegate panToMoveWhiteBoardView:self.superview withGestureRecognizer:pan];
     }
 }
 

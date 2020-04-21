@@ -31,7 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy) NSString  *titleString;
 
 /// 自身对应的YSWhiteBoardView
-@property (nonatomic, strong) YSWhiteBoardView  *whiteBoardView;
+//@property (nonatomic, weak) YSWhiteBoardView  *whiteBoardView;
 
 @end
 
