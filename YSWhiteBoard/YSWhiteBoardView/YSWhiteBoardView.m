@@ -17,7 +17,8 @@
 
 @interface YSWhiteBoardView ()
 <
-    YSWBWebViewManagerDelegate
+    YSWBWebViewManagerDelegate,
+    YSCoursewareControlViewDelegate
 >
 {
     /// 预加载开始处理
@@ -127,6 +128,7 @@
         if (![fileId isEqualToString:@"0"])
         {
             YSCoursewareControlView * pageControlView = [[YSCoursewareControlView alloc]initWithFrame:CGRectMake(0, 0, 246, 34)];
+            pageControlView.delegate = self;
             [self addSubview:pageControlView];
             self.pageControlView = pageControlView;
             self.pageControlView.bm_centerX = frame.size.width * 0.5f;
@@ -315,6 +317,41 @@
     {
         [self.drawViewManager receiveWhiteBoardMessage:[NSMutableDictionary dictionaryWithDictionary:message] isDelMsg:NO];
     }
+    
+    if (([msgName isEqualToString:sYSSignalShowPage] || [msgName isEqualToString:sYSSignalExtendShowPage]))
+    {
+        NSDictionary *resault = [message bm_dictionaryForKey:@"filedata"];
+        
+        if ([resault bm_isNotEmptyDictionary])
+        {
+            BOOL isDynamic = NO;
+            if ([message bm_boolForKey:@"isDynamicPPT"] || [message bm_boolForKey:@"isH5Document"])
+            {
+                isDynamic = YES;
+            }
+            else if ([message bm_boolForKey:@"isGeneralFile"])
+            {
+                NSString *filetype = [[resault bm_stringForKey:@"filetype"] lowercaseString];
+                NSString *path = [[resault bm_stringForKey:@"swfpath"] lowercaseString];
+                if ([filetype isEqualToString:@"gif"] || [filetype isEqualToString:@"svg"])
+                {
+                    isDynamic = YES;
+                }
+                else if ([path hasSuffix:@".gif"] || [path hasSuffix:@".svg"])
+                {
+                    isDynamic = YES;
+                }
+            }
+            
+            if (!isDynamic)
+            {
+                NSInteger totalPage = [resault bm_intForKey:@"pagenum"];
+                NSInteger currentPage = [resault bm_intForKey:@"currpage"];
+                
+                [self.pageControlView sc_setTotalPage:totalPage currentPage:currentPage isWhiteBoard:[self.fileId isEqualToString:@"0"]];
+            }
+        }
+    }
 }
 
 /// 收到远端delMsg消息的通知
@@ -378,12 +415,16 @@
 - (void)onWBWebViewManagerStateUpdate:(NSDictionary *)dic
 {
     NSLog(@"%s,message:%@", __func__, dic);
+    
+    BOOL prevPage = NO;
+    BOOL nextPage = NO;
+    
     if (self.drawViewManager)
     {
         // 设置页码
         if ([dic bm_containsObjectForKey:@"page"])
         {
-             NSDictionary *dicPage = [dic bm_dictionaryForKey:@"page"];
+            NSDictionary *dicPage = [dic bm_dictionaryForKey:@"page"];
             if ([dicPage bm_containsObjectForKey:@"currentPage"] && [dicPage bm_containsObjectForKey:@"totalPage"])
             {
                 self.currentPage = [dicPage bm_uintForKey:@"currentPage"];
@@ -413,6 +454,9 @@
                     [self.drawViewManager setTotalPage:self.totalPage currentPage:self.currentPage];
                 }
             }
+            
+            prevPage = [dicPage bm_boolForKey:@"prevPage"];
+            nextPage = [dicPage bm_boolForKey:@"nextPage"];
         }
         
         NSNumber *scale = [dic objectForKey:@"scale"];
@@ -444,7 +488,9 @@
             [self.drawViewManager updateWBRatio:ratio];
         }
     }
-
+    
+    [self.pageControlView sc_setTotalPage:_totalPage currentPage:_currentPage canPrevPage:prevPage canNextPage:nextPage isWhiteBoard:[self.fileId isEqualToString:@"0"]];
+        
     if (self.delegate && [self.delegate respondsToSelector:@selector(onWBViewWebViewManagerStateUpdate:withState:)])
     {
         [self.delegate onWBViewWebViewManagerStateUpdate:self withState:dic];
@@ -888,7 +934,7 @@
 /// 当前页码
 - (void)changeCurrentPage:(NSUInteger)currentPage
 {
-    self.currentPage =currentPage;
+    self.currentPage = currentPage;
 }
 
 /// 总页码
@@ -943,5 +989,35 @@
     }
 }
 
+#pragma mark YSCoursewareControlViewDelegate
+/// 全屏 复原 回调
+- (void)coursewarefullScreen:(BOOL)isAllScreen
+{
+    
+}
+
+/// 上一页
+- (void)coursewareTurnToPreviousPage
+{
+    [self whiteBoardPrePage];
+}
+
+/// 下一页
+- (void)coursewareTurnToNextPage
+{
+    [self whiteBoardNextPage];
+}
+
+/// 放大
+- (void)coursewareToEnlarge
+{
+    [self whiteBoardEnlarge];
+}
+
+/// 缩小
+- (void)coursewareToNarrow
+{
+    [self whiteBoardNarrow];
+}
 
 @end
