@@ -248,16 +248,8 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     
     self.mainWhiteBoardView = [[YSWhiteBoardView alloc] initWithFrame:frame fileId:@"0" loadFinishedBlock:loadFinishedBlock];
     self.mainWhiteBoardView.delegate = self;
+    [self.mainWhiteBoardView changeWhiteBoardBackgroudColor:YSWhiteBoard_MainBackGroudColor];
     
-//    for (int i=1; i<4; i++)
-//    {
-//        YSWhiteBoardView *whiteBoardView= [self createWhiteBoardWithFileId:[NSString stringWithFormat:@"%@", @(i)] loadFinishedBlock:nil];
-//        whiteBoardView.backgroundColor = [UIColor bm_randomColor];
-//        [self.mainWhiteBoardView addSubview:whiteBoardView];
-//        whiteBoardView.topBar.delegate = self;
-//
-//        [self addWhiteBoardViewWithWhiteBoardView:whiteBoardView];
-//    }
     return self.mainWhiteBoardView;
 }
 
@@ -484,10 +476,55 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 
 #pragma mark - 课件列表管理
 
-/// 变更白板画板背景色
-- (void)changeFileViewBackgroudColor:(UIColor *)color
+/// 变更白板窗口背景色
+- (void)changeMainWhiteBoardBackgroudColor:(UIColor *)color
 {
+    [self.mainWhiteBoardView changeWhiteBoardBackgroudColor:color];
+}
+
+/// 变更白板画板背景色
+- (void)changeMainCourseViewBackgroudColor:(UIColor *)color
+{
+    [self.mainWhiteBoardView changeCourseViewBackgroudColor:color];
+}
+
+/// 变更白板背景图
+- (void)changeMainWhiteBoardBackImage:(UIImage *)image;
+{
+    [self.mainWhiteBoardView changeMainWhiteBoardBackImage:image];
+}
+
+/// 变更白板窗口背景色
+- (void)changeAllWhiteBoardBackgroudColor:(UIColor *)color
+{
+    [self changeMainWhiteBoardBackgroudColor:color];
     
+    for (YSWhiteBoardView *whiteBoardView in self.coursewareViewList)
+    {
+        [whiteBoardView changeWhiteBoardBackgroudColor:color];
+    }
+}
+
+/// 变更白板画板背景色
+- (void)changeAllCourseViewBackgroudColor:(UIColor *)color
+{
+    [self changeMainCourseViewBackgroudColor:color];
+    
+    for (YSWhiteBoardView *whiteBoardView in self.coursewareViewList)
+    {
+        [whiteBoardView changeCourseViewBackgroudColor:color];
+    }
+}
+
+/// 变更白板背景图
+- (void)changeAllWhiteBoardBackImage:(nullable UIImage *)image
+{
+    [self changeMainWhiteBoardBackImage:image];
+    
+    for (YSWhiteBoardView *whiteBoardView in self.coursewareViewList)
+    {
+        [whiteBoardView changeMainWhiteBoardBackImage:image];
+    }
 }
 
 - (void)refreshWhiteBoard
@@ -756,7 +793,6 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     if (whiteBoardView)
     {
         [whiteBoardView bm_bringToFront];
-        whiteBoardView;
     }
     
     if ([self.coursewareViewList containsObject:whiteBoardView])
@@ -813,7 +849,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 {
     for (YSWhiteBoardView *whiteBoardView in self.coursewareViewList)
     {
-        whiteBoardView;
+        [whiteBoardView destroy];
     }
     
     [self.coursewareViewList removeAllObjects];

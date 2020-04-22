@@ -53,6 +53,10 @@ static NSString *const YSWhiteBoard_domain_demoali = @"rddocdemo.roadofcloud.net
 #define YSWhiteBoardId_Header                   @"docModule_"
 static  NSString *const sWhiteboardID           = @"whiteboardID";
 
+#define YSWhiteBoard_MainBackGroudColor         [UIColor bm_colorWithHex:0xDCE2F1]
+#define YSWhiteBoard_BackGroudColor             [UIColor bm_colorWithHex:0x6D7278]
+
+
 #pragma - mark 用户属性
 
 /// 用户属性

@@ -94,9 +94,9 @@
 }
 
 /// 变更fileView背景色
-- (void)changeFileViewBackgroudColor:(UIColor *)color
+- (void)changeCourseViewBackgroudColor:(UIColor *)color
 {
-    self.fileView.userSetWhiteBoardColor = color;
+    [self.fileView setWhiteBoardColor:color];
 }
 
 - (void)setAddress:(NSString *)address

@@ -60,6 +60,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)remoteDelMsg:(NSDictionary *)message;
 
 
+/// 变更白板窗口背景色
+- (void)changeWhiteBoardBackgroudColor:(UIColor *)color;
+/// 变更白板画板背景色
+- (void)changeCourseViewBackgroudColor:(UIColor *)color;
+/// 变更白板背景图
+- (void)changeMainWhiteBoardBackImage:(UIImage *)image;
+
 // 页面刷新尺寸
 - (void)refreshWhiteBoard;
 - (void)refreshWhiteBoardWithFrame:(CGRect)frame;
