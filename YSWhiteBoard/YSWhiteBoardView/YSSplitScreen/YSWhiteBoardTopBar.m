@@ -29,7 +29,7 @@
 {
     if (self = [super initWithFrame:frame])
     {
-        self.backgroundColor = [UIColor bm_colorWithHex:0x82ABEC];
+        self.backgroundColor = YSWhiteBoard_TopBarBackGroudColor;
         [self setupTitleBar];
         
         UIPanGestureRecognizer * panGesture = [[UIPanGestureRecognizer alloc]initWithTarget:self action:@selector(panGestureToMoveView:)];
