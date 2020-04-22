@@ -58,7 +58,7 @@
 
 + (NSDictionary *)fileDataDocDic:(YSFileModel *)aDefaultDocment currentPage:(NSUInteger)currentPage sourceInstanceId:(NSString *)sourceInstanceId
 {
-    if ([sourceInstanceId bm_isNotEmpty])
+    if (![sourceInstanceId bm_isNotEmpty])
     {
         sourceInstanceId = @"default";
     }

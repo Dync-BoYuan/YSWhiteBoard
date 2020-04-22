@@ -1002,6 +1002,10 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     }
     
     NSString *sourceInstanceId = [NSString stringWithFormat:@"%@%@", YSWhiteBoardId_Header, fileId];
+    if ([fileId isEqualToString:@"0"])
+    {
+        sourceInstanceId = @"default";
+    }
     NSDictionary *fileDic = [YSFileModel fileDataDocDic:fileModel sourceInstanceId:sourceInstanceId];
     
     if (self.roomUseType == YSRoomUseTypeLiveRoom)
@@ -1516,12 +1520,11 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     {
         [self changeCourseWithFileId:self.currentFile.fileid];
         
-        if (self.roomUseType == YSRoomUseTypeLiveRoom)
+        if (self.roomUseType != YSRoomUseTypeLiveRoom)
         {
             NSString *fileId = @"0";
             YSFileModel *fileModel = [self getDocumentWithFileID:fileId];
-            NSString *sourceInstanceId = [NSString stringWithFormat:@"%@%@", YSWhiteBoardId_Header, fileId];
-            NSDictionary *fileDic = [YSFileModel fileDataDocDic:fileModel sourceInstanceId:sourceInstanceId];
+            NSDictionary *fileDic = [YSFileModel fileDataDocDic:fileModel sourceInstanceId:nil];
             
             NSString *msgID = [NSString stringWithFormat:@"%@%@%@", sYSSignalDocumentFilePage_ExtendShowPage, YSWhiteBoardId_Header, self.currentFile.fileid];
             [[YSRoomInterface instance] pubMsg:sYSSignalExtendShowPage
@@ -1866,7 +1869,11 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
             NSString *sourceInstanceId = [tDataDic bm_stringForKey:@"sourceInstanceId"];
             if (sourceInstanceId)
             {
-                if (sourceInstanceId.length > YSWhiteBoardId_Header.length)
+                if ([sourceInstanceId isEqualToString:@"default"])
+                {
+                    fileId = @"0";
+                }
+                else if (sourceInstanceId.length > YSWhiteBoardId_Header.length)
                 {
                     fileId = [sourceInstanceId substringFromIndex:YSWhiteBoardId_Header.length];
                 }
@@ -1932,7 +1939,11 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
             NSString *sourceInstanceId = [tDataDic bm_stringForKey:@"sourceInstanceId"];
             if (sourceInstanceId)
             {
-                if (sourceInstanceId.length > YSWhiteBoardId_Header.length)
+                if ([sourceInstanceId isEqualToString:@"default"])
+                {
+                    return;
+                }
+                else if (sourceInstanceId.length > YSWhiteBoardId_Header.length)
                 {
                     fileId = [sourceInstanceId substringFromIndex:YSWhiteBoardId_Header.length];
                 }
