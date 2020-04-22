@@ -1704,6 +1704,12 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     NSDictionary *dict = notification.userInfo;
     NSDictionary *message = [dict objectForKey:YSWhiteBoardNotificationUserInfoKey];
     
+    NSString *msgName = [message bm_stringForKey:@"name"];
+    if ([msgName isEqualToString:sYSSignalExtendShowPage])
+    {
+#warning 关闭窗口
+    }
+
     if (self.mainWhiteBoardView)
     {
         [self.mainWhiteBoardView remoteDelMsg:message];
