@@ -947,6 +947,10 @@
     else
     {
         //[self.drawViewManager narrow];
+        
+        
+        
+        
     }
 }
 
@@ -1016,9 +1020,14 @@
 
 - (void)panGestureToZoomView:(UIPanGestureRecognizer *)pan
 {
-    if ([self.delegate respondsToSelector:@selector(panToZoomWhiteBoardView:withGestureRecognizer:)])
+    YSUserRoleType role = [YSRoomInterface instance].localUser.role;
+    
+    if (role == YSUserType_Teacher)
     {
-        [self.delegate panToZoomWhiteBoardView:self withGestureRecognizer:pan];
+        if ([self.delegate respondsToSelector:@selector(panToZoomWhiteBoardView:withGestureRecognizer:)])
+        {
+            [self.delegate panToZoomWhiteBoardView:self withGestureRecognizer:pan];
+        }
     }
 }
 
