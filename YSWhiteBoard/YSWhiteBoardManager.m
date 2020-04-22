@@ -869,6 +869,12 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     if (whiteBoardView)
     {
         [self.coursewareViewList removeObject:whiteBoardView];
+        
+        if (whiteBoardView.superview)
+        {
+            [whiteBoardView removeFromSuperview];
+        }
+        
         [whiteBoardView destroy];
     }
 }
@@ -1850,7 +1856,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         return;
     }
 
-    if (![msgName isEqualToString:sYSSignalClassBegin])
+    if (![msgName isEqualToString:sYSSignalClassBegin] && ![msgName isEqualToString:sYSSignalSharpsChange])
     {
         return;
     }

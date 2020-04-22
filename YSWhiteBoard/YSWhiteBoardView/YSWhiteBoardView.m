@@ -871,7 +871,7 @@
     {
         [self.webViewManager stopPlayMp3];
 
-        NSString *sourceInstanceId = [NSString stringWithFormat:@"%@%@", YSWhiteBoardId_Header, self.fileId];
+        NSString *sourceInstanceId = self.whiteBoardId;
         NSDictionary *dic = [YSFileModel fileDataDocDic:file currentPage:pageNum sourceInstanceId:sourceInstanceId];
         if ([YSWhiteBoardManager shareInstance].roomUseType == YSRoomUseTypeLiveRoom)
         {

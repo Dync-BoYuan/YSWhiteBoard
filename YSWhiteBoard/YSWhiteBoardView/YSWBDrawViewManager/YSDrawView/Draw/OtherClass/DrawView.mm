@@ -165,8 +165,18 @@ struct CompareNSString: public std::binary_function<NSString*, NSString*, bool> 
 
 - (void)clearDraw
 {
+    NSString *whiteboardID;
+    if ([self.fileid isEqualToString:@"0"])
+    {
+        whiteboardID = @"default";
+    }
+    else
+    {
+        whiteboardID = [NSString stringWithFormat:@"%@%@", YSWhiteBoardId_Header, self.fileid];
+    }
+
     NSString *key = [NSString stringWithFormat:@"clear_%f", [NSDate date].timeIntervalSince1970];
-    NSDictionary *dic = @{@"eventType" : @"clearEvent", @"actionName" : @"ClearAction", @"clearActionId" : key, @"whiteboardID" : @"default", @"nickname" : @"tmp"};
+    NSDictionary *dic = @{@"eventType" : @"clearEvent", @"actionName" : @"ClearAction", @"clearActionId" : key, @"whiteboardID" : whiteboardID, @"nickname" : @"tmp"};
     NSError *error;
     NSData *data = [NSJSONSerialization dataWithJSONObject:dic options:NSJSONWritingPrettyPrinted error:&error];
     if (error)
@@ -235,8 +245,18 @@ struct CompareNSString: public std::binary_function<NSString*, NSString*, bool> 
         }
         case Draw_Edite_Clear:
         {
+            NSString *whiteboardID;
+            if ([self.fileid isEqualToString:@"0"])
+            {
+                whiteboardID = @"default";
+            }
+            else
+            {
+                whiteboardID = [NSString stringWithFormat:@"%@%@", YSWhiteBoardId_Header, self.fileid];
+            }
+            
             NSString *key = [NSString stringWithFormat:@"clear_%f",[NSDate date].timeIntervalSince1970];
-            NSDictionary *dic = @{@"eventType" : @"clearEvent", @"actionName" : @"ClearAction", @"clearActionId" : key, @"whiteboardID" : @"default", @"nickname" : @"tmp"};
+            NSDictionary *dic = @{@"eventType" : @"clearEvent", @"actionName" : @"ClearAction", @"clearActionId" : key, @"whiteboardID" : whiteboardID, @"nickname" : @"tmp"};
             NSError *error;
             NSData *data = [NSJSONSerialization dataWithJSONObject:dic options:NSJSONWritingPrettyPrinted error:&error];
             if (error) {

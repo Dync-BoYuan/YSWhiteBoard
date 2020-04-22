@@ -736,7 +736,7 @@
                 NSString *fileID = [[ID componentsSeparatedByString:@"_"]
                     objectAtIndex:[ID componentsSeparatedByString:@"_"].count - 2];
 
-                id whiteboardID = [data objectForKey:sWhiteboardID];
+                NSString *whiteboardID = [data bm_stringForKey:sWhiteboardID];
 
                 if (isDel)
                 {
@@ -747,13 +747,19 @@
                     [data setObject:@"undoEvent" forKey:@"eventType"];
                 }
                 
-                BOOL isWhiteBoard = ([whiteboardID isKindOfClass:[NSString class]] &&
-                                     [whiteboardID isEqualToString:@"default"]) ||
-                                    ([whiteboardID isKindOfClass:[NSNumber class]] &&
-                                     [whiteboardID isEqualToNumber:@(0)]);
+                NSString *checkWhiteboardID;
+                if ([fileID isEqualToString:@"0"])
+                {
+                    checkWhiteboardID = @"default";
+                }
+                else
+                {
+                    checkWhiteboardID = [NSString stringWithFormat:@"%@%@", YSWhiteBoardId_Header, fileID];
+                }
+
+                BOOL isWhiteBoard = [whiteboardID isEqualToString:checkWhiteboardID];
                 if (isWhiteBoard)
                 {
-
                     [self.fileView.ysDrawView.drawView switchFileID:fileID
                                                  andCurrentPage:pageID.intValue
                                               updateImmediately:YES];
