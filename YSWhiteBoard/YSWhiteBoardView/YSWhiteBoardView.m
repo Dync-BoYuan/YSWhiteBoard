@@ -21,10 +21,8 @@
     YSCoursewareControlViewDelegate
 >
 {
-    /// 预加载开始处理
-    BOOL preloadDispose;
-    /// 预加载失败
-    BOOL predownloadError;
+    /// 是否主白板
+    BOOL isMainWhiteBoard;
     
     CGFloat topViewHeight;
     
@@ -93,10 +91,12 @@
         self.fileId = fileId;
         if ([fileId isEqualToString:@"0"])
         {
+            isMainWhiteBoard = YES;
             self.whiteBoardId = @"default";
         }
         else
         {
+            isMainWhiteBoard = NO;
             self.whiteBoardId = [NSString stringWithFormat:@"%@%@", YSWhiteBoardId_Header, fileId];
         }
         
@@ -108,7 +108,7 @@
         self.isLoadingFinish = NO;
 
         topViewHeight = 0;
-        if (![fileId isEqualToString:@"0"])
+        if (!isMainWhiteBoard)
         {
             topViewHeight = YSTopViewHeight;
             
@@ -116,6 +116,8 @@
             topBar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
             [self addSubview:topBar];
             self.topBar = topBar;
+            
+            [self bm_addShadow:3.0f Radius:0.0f BorderColor:YSWhiteBoard_TopBarBackGroudColor ShadowColor:YSWhiteBoard_BackGroudColor Offset:CGSizeMake(1, 2) Opacity:0.6f];
         }
         
         CGRect contentFrame = CGRectMake(0, topViewHeight, frame.size.width, frame.size.height-topViewHeight);
@@ -135,7 +137,7 @@
 
         self.drawViewManager = [[YSWBDrawViewManager alloc] initWithBackView:whiteBoardContentView webView:self.wbView];
         
-        if (![fileId isEqualToString:@"0"])
+        //if (![fileId isEqualToString:@"0"])
         {
             YSCoursewareControlView * pageControlView = [[YSCoursewareControlView alloc]initWithFrame:CGRectMake(0, 0, 246, 34)];
             pageControlView.delegate = self;
@@ -154,6 +156,8 @@
             UIPanGestureRecognizer * panGesture = [[UIPanGestureRecognizer alloc]initWithTarget:self action:@selector(panGestureToZoomView:)];
             [dragZoomView addGestureRecognizer:panGesture];
         }
+        
+        
     }
     
     return self;

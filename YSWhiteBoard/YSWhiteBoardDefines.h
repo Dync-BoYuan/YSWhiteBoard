@@ -56,6 +56,8 @@ static  NSString *const sWhiteboardID           = @"whiteboardID";
 #define YSWhiteBoard_MainBackGroudColor         [UIColor bm_colorWithHex:0xDCE2F1]
 #define YSWhiteBoard_BackGroudColor             [UIColor bm_colorWithHex:0x6D7278]
 
+#define YSWhiteBoard_TopBarBackGroudColor       [UIColor bm_colorWithHex:0x82ABEC]
+
 
 #pragma - mark 用户属性
 
