@@ -503,6 +503,93 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     }
 }
 
+///k接收信令进行拖拽和缩放
+
+- (void)receiveMessageToMoveAndZoomWith:(NSDictionary *)message WithInlist:(BOOL)inlist
+{
+    NSString * instanceId = [message bm_stringForKey:@"instanceId"];
+    NSString * fileId = nil;
+    if (instanceId.length > YSWhiteBoardId_Header.length)
+    {
+        fileId = [instanceId substringFromIndex:YSWhiteBoardId_Header.length];
+    }
+    if (!fileId)
+    {
+        return;
+    }
+    YSWhiteBoardView * whiteBoardView = [self getWhiteBoardViewWithFileId:fileId];
+    
+    if (!whiteBoardView)
+    {
+        return;
+    }
+    
+    if (inlist)
+    {
+        //x,y值在主白板上的比例
+        CGFloat scaleLeft = [message bm_floatForKey:@"x"];
+        CGFloat scaleTop = [message bm_floatForKey:@"y"];
+        //宽，高值在主白板上的比例
+        CGFloat scaleWidth = [message bm_floatForKey:@"width"];
+        CGFloat scaleHeight = [message bm_floatForKey:@"height"];
+        
+        NSInteger x = scaleLeft * self.mainWhiteBoardView.bm_width;
+        NSInteger y = scaleTop * self.mainWhiteBoardView.bm_height;
+        NSInteger width = scaleWidth * self.mainWhiteBoardView.bm_width;
+        NSInteger height = scaleHeight * self.mainWhiteBoardView.bm_height;
+        
+        BOOL small = [message bm_boolForKey:@"small"];
+        BOOL full = [message bm_boolForKey:@"full"];
+        
+        whiteBoardView.frame = CGRectMake(x, y, width, height);
+        
+        if (small)
+        {//最小化
+            
+        }
+        else if (full)
+        {//最大化
+            
+        }
+    }
+    else
+    {
+        NSString * type = [message bm_stringForKey:@"type"];
+        
+        if ([type isEqualToString:@"drag"])
+        {//拖拽
+            
+            //x,y值在主白板上的比例
+            CGFloat scaleLeft = [message bm_floatForKey:@"x"];
+            CGFloat scaleTop = [message bm_floatForKey:@"y"];
+            
+            NSInteger x = scaleLeft * self.mainWhiteBoardView.bm_width;
+            NSInteger y = scaleTop * self.mainWhiteBoardView.bm_height;
+                            
+            whiteBoardView.bm_origin = CGPointMake(x, y);
+        }
+        else if ([type isEqualToString:@"resize"])
+        {//缩放
+             //宽，高值在主白板上的比例
+            CGFloat scaleWidth = [message bm_floatForKey:@"width"];
+            CGFloat scaleHeight = [message bm_floatForKey:@"height"];
+            
+            NSInteger width = scaleWidth * self.mainWhiteBoardView.bm_width;
+            NSInteger height = scaleHeight * self.mainWhiteBoardView.bm_height;
+            whiteBoardView.bm_size = CGSizeMake(width, height);
+        }
+        else if ([type isEqualToString:@"small"])
+        {//最小化
+            
+        }
+        else if ([type isEqualToString:@"full"])
+        {//最大化
+            
+        }
+    }
+}
+
+
 #pragma mark - 课件列表管理
 
 /// 变更白板窗口背景色
@@ -1793,71 +1880,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     }
     else if ([msgName isEqualToString:sYSSignalMoreWhiteboardState])
     {
-        
-        NSString * instanceId = [message bm_stringForKey:@"instanceId"];
-        NSString * fileId = nil;
-        if (instanceId.length > YSWhiteBoardId_Header.length)
-        {
-            fileId = [instanceId substringFromIndex:YSWhiteBoardId_Header.length];
-        }
-        if (!fileId)
-        {
-            return;
-        }
-        YSWhiteBoardView * whiteBoardView = [self getWhiteBoardViewWithFileId:fileId];
-        
-        if (!whiteBoardView)
-        {
-            return;
-        }
-        
-        if (inlist)
-        {
-            //x,y值在主白板上的比例
-            CGFloat scaleLeft = [message bm_floatForKey:@"x"];
-            CGFloat scaleTop = [message bm_floatForKey:@"y"];
-            //宽，高值在主白板上的比例
-            CGFloat scaleWidth = [message bm_floatForKey:@"width"];
-            CGFloat scaleHeight = [message bm_floatForKey:@"height"];
-            
-            BOOL small = [message bm_boolForKey:@"small"];
-            BOOL full = [message bm_boolForKey:@"full"];
-        }
-        else
-        {
-            NSString * type = [message bm_stringForKey:@"type"];            
-            
-            if ([type isEqualToString:@"drag"])
-            {//拖拽
-                
-                //x,y值在主白板上的比例
-                CGFloat scaleLeft = [message bm_floatForKey:@"x"];
-                CGFloat scaleTop = [message bm_floatForKey:@"y"];
-                
-                NSInteger x = scaleLeft * self.mainWhiteBoardView.bm_width;
-                NSInteger y = scaleTop * self.mainWhiteBoardView.bm_height;
-                                
-                whiteBoardView.bm_origin = CGPointMake(x, y);
-            }
-            else if ([type isEqualToString:@"resize"])
-            {//缩放
-                 //宽，高值在主白板上的比例
-                CGFloat scaleWidth = [message bm_floatForKey:@"width"];
-                CGFloat scaleHeight = [message bm_floatForKey:@"height"];
-                
-                NSInteger width = scaleWidth * self.mainWhiteBoardView.bm_width;
-                NSInteger height = scaleWidth * self.mainWhiteBoardView.bm_height;
-                whiteBoardView.bm_size = CGSizeMake(width, height);
-            }
-            else if ([type isEqualToString:@"small"])
-            {//最小化
-                
-            }
-            else if ([type isEqualToString:@"full"])
-            {//最大化
-                
-            }
-        }
+        [self receiveMessageToMoveAndZoomWith:message WithInlist:inlist];
     }
     
     
