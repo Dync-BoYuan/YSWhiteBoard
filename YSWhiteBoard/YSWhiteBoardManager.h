@@ -65,10 +65,23 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)updateWebAddressInfo;
 
+
 #pragma -
 #pragma mark 课件操作
+
+/// 变更白板窗口背景色
+- (void)changeMainWhiteBoardBackgroudColor:(UIColor *)color;
 /// 变更白板画板背景色
-- (void)changeFileViewBackgroudColor:(UIColor *)color;
+- (void)changeMainCourseViewBackgroudColor:(UIColor *)color;
+/// 变更白板背景图
+- (void)changeMainWhiteBoardBackImage:(nullable UIImage *)image;
+
+/// 变更白板窗口背景色
+- (void)changeAllWhiteBoardBackgroudColor:(UIColor *)color;
+/// 变更白板画板背景色
+- (void)changeAllCourseViewBackgroudColor:(UIColor *)color;
+/// 变更白板背景图
+- (void)changeAllWhiteBoardBackImage:(nullable UIImage *)image;
 
 
 /// 刷新白板
@@ -80,7 +93,7 @@ NS_ASSUME_NONNULL_BEGIN
 /// 添加文档
 - (void)addDocumentWithFileDic:(NSDictionary *)file;
 /// 删除文档
-- (void)delDocumentFile:(NSDictionary *)file;
+- (void)deleteDocumentWithFileID:(NSString *)fileId;
 
 - (void)setTheCurrentDocumentFileID:(NSString *)fileId;
 

@@ -30,6 +30,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)updateFrame;
 
+/// 变更fileView背景色
+- (void)changeCourseViewBackgroudColor:(UIColor *)color;
+
 - (void)setTotalPage:(NSInteger)total currentPage:(NSInteger)currentPage;
 - (void)updateWBRatio:(CGFloat)ratio;
 

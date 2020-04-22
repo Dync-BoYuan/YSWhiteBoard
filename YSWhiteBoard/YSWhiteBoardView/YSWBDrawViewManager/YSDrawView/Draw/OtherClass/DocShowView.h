@@ -30,8 +30,6 @@ typedef void(^FinishBlock)(float ratio);
 @property (nonatomic, strong) YSDrawView *ysDrawView;
 @property (nonatomic, assign) BOOL       isPenetration; // 动态课件 是否穿透画布
 
-@property (nonatomic, strong) UIColor *userSetWhiteBoardColor;
-
 - (void)setWhiteBoardColor:(UIColor *)color;
 
 - (void)showWhiteBoard0;

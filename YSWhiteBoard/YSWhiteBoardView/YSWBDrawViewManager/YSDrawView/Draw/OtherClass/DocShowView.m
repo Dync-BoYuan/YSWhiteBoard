@@ -38,13 +38,13 @@
         // 设置代理
         self.delegate = self;
         
-        //暂时禁掉翻页
+        // 暂时禁掉翻页
         self.scrollEnabled = NO;
         self.pagingEnabled = NO;
         
-        //设置背景颜色
+        // 设置背景颜色
         self.backgroundColor = [UIColor clearColor];
-        self.userSetWhiteBoardColor = nil;
+        _whiteBoardColor = [UIColor clearColor];
         
         [self initScrollView];
     }
@@ -118,13 +118,13 @@
 
 - (void)setWhiteBoardColor:(UIColor *)color
 {
-    if (self.userSetWhiteBoardColor)
+    if (color)
     {
-        _whiteBoardColor = self.userSetWhiteBoardColor;
+        _whiteBoardColor = color;
     }
     else
     {
-        _whiteBoardColor = color;
+        _whiteBoardColor = [UIColor clearColor];
     }
 }
 

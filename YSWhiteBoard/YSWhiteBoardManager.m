@@ -248,16 +248,8 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     
     self.mainWhiteBoardView = [[YSWhiteBoardView alloc] initWithFrame:frame fileId:@"0" loadFinishedBlock:loadFinishedBlock];
     self.mainWhiteBoardView.delegate = self;
+    [self.mainWhiteBoardView changeWhiteBoardBackgroudColor:YSWhiteBoard_MainBackGroudColor];
     
-//    for (int i=1; i<4; i++)
-//    {
-//        YSWhiteBoardView *whiteBoardView= [self createWhiteBoardWithFileId:[NSString stringWithFormat:@"%@", @(i)] loadFinishedBlock:nil];
-//        whiteBoardView.backgroundColor = [UIColor bm_randomColor];
-//        [self.mainWhiteBoardView addSubview:whiteBoardView];
-//        whiteBoardView.topBar.delegate = self;
-//
-//        [self addWhiteBoardViewWithWhiteBoardView:whiteBoardView];
-//    }
     return self.mainWhiteBoardView;
 }
 
@@ -513,10 +505,55 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 
 #pragma mark - 课件列表管理
 
-/// 变更白板画板背景色
-- (void)changeFileViewBackgroudColor:(UIColor *)color
+/// 变更白板窗口背景色
+- (void)changeMainWhiteBoardBackgroudColor:(UIColor *)color
 {
+    [self.mainWhiteBoardView changeWhiteBoardBackgroudColor:color];
+}
+
+/// 变更白板画板背景色
+- (void)changeMainCourseViewBackgroudColor:(UIColor *)color
+{
+    [self.mainWhiteBoardView changeCourseViewBackgroudColor:color];
+}
+
+/// 变更白板背景图
+- (void)changeMainWhiteBoardBackImage:(UIImage *)image;
+{
+    [self.mainWhiteBoardView changeMainWhiteBoardBackImage:image];
+}
+
+/// 变更白板窗口背景色
+- (void)changeAllWhiteBoardBackgroudColor:(UIColor *)color
+{
+    [self changeMainWhiteBoardBackgroudColor:color];
     
+    for (YSWhiteBoardView *whiteBoardView in self.coursewareViewList)
+    {
+        [whiteBoardView changeWhiteBoardBackgroudColor:color];
+    }
+}
+
+/// 变更白板画板背景色
+- (void)changeAllCourseViewBackgroudColor:(UIColor *)color
+{
+    [self changeMainCourseViewBackgroudColor:color];
+    
+    for (YSWhiteBoardView *whiteBoardView in self.coursewareViewList)
+    {
+        [whiteBoardView changeCourseViewBackgroudColor:color];
+    }
+}
+
+/// 变更白板背景图
+- (void)changeAllWhiteBoardBackImage:(nullable UIImage *)image
+{
+    [self changeMainWhiteBoardBackImage:image];
+    
+    for (YSWhiteBoardView *whiteBoardView in self.coursewareViewList)
+    {
+        [whiteBoardView changeMainWhiteBoardBackImage:image];
+    }
 }
 
 - (void)refreshWhiteBoard
@@ -785,7 +822,6 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     if (whiteBoardView)
     {
         [whiteBoardView bm_bringToFront];
-        whiteBoardView;
     }
     
     if ([self.coursewareViewList containsObject:whiteBoardView])
@@ -842,7 +878,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 {
     for (YSWhiteBoardView *whiteBoardView in self.coursewareViewList)
     {
-        whiteBoardView;
+        [whiteBoardView destroy];
     }
     
     [self.coursewareViewList removeAllObjects];
@@ -1354,7 +1390,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     {
         NSDictionary *msgDic = [msgList bm_dictionaryForKey:key];
 
-        [self roomWhiteBoardOnRemotePubMsgWithMessage:msgDic];
+        [self roomWhiteBoardOnRemotePubMsgWithMessage:msgDic inList:YES];
     }
 
     NSSortDescriptor *desc = [[NSSortDescriptor alloc] initWithKey:@"seq" ascending:YES];
@@ -1468,7 +1504,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     {
         if (dic && [dic isKindOfClass:NSDictionary.class])
         {
-            [self roomWhiteBoardOnRemotePubMsgWithMessage:dic];
+            [self roomWhiteBoardOnRemotePubMsgWithMessage:dic inList:YES];
         }
     }
 }
@@ -1586,10 +1622,10 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         return;
     }
     
-    [self roomWhiteBoardOnRemotePubMsgWithMessage:message];
+    [self roomWhiteBoardOnRemotePubMsgWithMessage:message inList:NO];
 }
 
-- (void)roomWhiteBoardOnRemotePubMsgWithMessage:(NSDictionary *)message
+- (void)roomWhiteBoardOnRemotePubMsgWithMessage:(NSDictionary *)message inList:(BOOL)inlist
 {
     if (![message bm_isNotEmptyDictionary])
     {
@@ -1629,7 +1665,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     NSObject *data = [message objectForKey:@"data"];
     if (self.wbDelegate && [self.wbDelegate respondsToSelector:@selector(onWhiteBroadPubMsgWithMsgID:msgName:data:fromID:inList:ts:)])
     {
-        [self.wbDelegate onWhiteBroadPubMsgWithMsgID:msgId msgName:msgName data:data fromID:fromId inList:YES ts:ts];
+        [self.wbDelegate onWhiteBroadPubMsgWithMsgID:msgId msgName:msgName data:data fromID:fromId inList:inlist ts:ts];
     }
     
     NSDictionary *tDataDic = [YSRoomUtil convertWithData:data];
@@ -1708,7 +1744,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
             NSArray *components = [msgId componentsSeparatedByString:@"_"];
             if (components.count > 2)
             {
-                NSString *currentPage = components.lastObject;
+                //NSString *currentPage = components.lastObject;
                 NSString *fileId = [components objectAtIndex:components.count - 2];
                 YSWhiteBoardView *whiteBoardView = [self getWhiteBoardViewWithFileId:fileId];
                 if (whiteBoardView)

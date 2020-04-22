@@ -36,6 +36,9 @@
 
 /// 白板背景容器
 @property (nonatomic, strong) UIView *whiteBoardContentView;
+/// 白板背景图
+@property (nonatomic, strong) UIImageView *bgImageView;
+
 /// web文档
 @property (nonatomic, strong) YSWBWebViewManager *webViewManager;
 /// 普通文档
@@ -119,6 +122,13 @@
         UIView *whiteBoardContentView = [[UIView alloc] initWithFrame:contentFrame];
         [self addSubview:whiteBoardContentView];
         self.whiteBoardContentView = whiteBoardContentView;
+        self.whiteBoardContentView.backgroundColor = YSWhiteBoard_BackGroudColor;
+        
+        self.bgImageView = [[UIImageView alloc] init];
+        [self.whiteBoardContentView addSubview:self.bgImageView];
+        self.bgImageView.frame = self.whiteBoardContentView.bounds;
+        self.bgImageView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+        self.bgImageView.contentMode = UIViewContentModeScaleAspectFit;
 
         self.wbView = [self.webViewManager createWhiteBoardWithFrame:whiteBoardContentView.bounds loadFinishedBlock:loadFinishedBlock];
         [self.whiteBoardContentView addSubview:self.wbView];
@@ -192,6 +202,41 @@
     }
     
     [self.cacheMsgPool removeAllObjects];
+}
+
+- (void)refreshWhiteBoard
+{
+    [self refreshWhiteBoardWithFrame:self.frame];
+}
+
+// 页面刷新尺寸
+- (void)refreshWhiteBoardWithFrame:(CGRect)frame;
+{
+    self.frame = frame;
+    [self.webViewManager refreshWhiteBoardWithFrame:self.whiteBoardContentView.bounds];
+}
+
+/// 变更白板窗口背景色
+- (void)changeWhiteBoardBackgroudColor:(UIColor *)color
+{
+    if (!color)
+    {
+        color = YSWhiteBoard_BackGroudColor;
+    }
+
+    self.whiteBoardContentView.backgroundColor = color;
+}
+
+/// 变更白板画板背景色
+- (void)changeCourseViewBackgroudColor:(UIColor *)color
+{
+    [self.drawViewManager changeCourseViewBackgroudColor:color];
+}
+
+/// 变更白板背景图
+- (void)changeMainWhiteBoardBackImage:(UIImage *)image
+{
+    self.bgImageView.image = image;
 }
 
 
@@ -525,18 +570,6 @@
     }
     
     [[NSNotificationCenter defaultCenter] postNotificationName:YSWhiteBoardEventLoadSlideFail object:dic[@"data"]];
-}
-
-// 页面刷新尺寸
-- (void)refreshWhiteBoardWithFrame:(CGRect)frame;
-{
-    self.frame = frame;
-    [self.webViewManager refreshWhiteBoardWithFrame:self.whiteBoardContentView.bounds];
-}
-
-- (void)refreshWhiteBoard
-{
-    [self refreshWhiteBoardWithFrame:self.frame];
 }
 
 
