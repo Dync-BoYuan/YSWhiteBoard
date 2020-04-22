@@ -107,6 +107,13 @@
 ///课件拖拽事件
 - (void)panGestureToMoveView:(UIPanGestureRecognizer *)pan
 {
+    YSUserRoleType role = [YSRoomInterface instance].localUser.role;
+    
+    if (role != YSUserType_Teacher)
+    {
+        return;
+    }
+    
     if ([self.delegate respondsToSelector:@selector(panToMoveWhiteBoardView:withGestureRecognizer:)])
     {
         [self.delegate panToMoveWhiteBoardView:self.superview withGestureRecognizer:pan];
@@ -115,6 +122,13 @@
 
 - (void)tapToBringVideoToFont:(UITapGestureRecognizer *)tapGesture
 {
+    YSUserRoleType role = [YSRoomInterface instance].localUser.role;
+    
+    if (role != YSUserType_Teacher)
+    {
+        return;
+    }
+    
     if ([self.delegate respondsToSelector:@selector(clickToBringVideoToFont:)])
     {
         [self.delegate clickToBringVideoToFont:self.superview];

@@ -61,8 +61,13 @@
 /// 翻页工具条
 @property (nonatomic, strong) YSCoursewareControlView *pageControlView;
 
+/// 翻页工具条拖动前的临时View
+@property (nonatomic, strong) UIImageView *dragPageControlViewImage;
+
 /// 右下角拖动放大的view
 @property (nonatomic, strong) UIView * dragZoomView;
+
+
 
 @end
 
@@ -136,14 +141,18 @@
         [self.whiteBoardContentView addSubview:self.wbView];
 
         self.drawViewManager = [[YSWBDrawViewManager alloc] initWithBackView:whiteBoardContentView webView:self.wbView];
-        
+
         YSCoursewareControlView * pageControlView = [[YSCoursewareControlView alloc]initWithFrame:CGRectMake(0, 0, 246, 34)];
         pageControlView.delegate = self;
         [self addSubview:pageControlView];
         self.pageControlView = pageControlView;
         self.pageControlView.bm_centerX = frame.size.width * 0.5f;
         self.pageControlView.bm_bottom = frame.size.height - 20;
-        
+            
+        //拖拽
+        UIPanGestureRecognizer *panGestureRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(dragPageControlView:)];
+        [self.pageControlView addGestureRecognizer:panGestureRecognizer];
+
         if (![fileId isEqualToString:@"0"])
         {
             UIView * dragZoomView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, 40, 40)];
@@ -957,6 +966,7 @@
 //    }
 //    else
     {
+
         [self.drawViewManager narrow];
     }
 }
@@ -1042,10 +1052,100 @@
 
 - (void)panGestureToZoomView:(UIPanGestureRecognizer *)pan
 {
-    if ([self.delegate respondsToSelector:@selector(panToZoomWhiteBoardView:withGestureRecognizer:)])
+    YSUserRoleType role = [YSRoomInterface instance].localUser.role;
+    
+    if (role == YSUserType_Teacher)
     {
-        [self.delegate panToZoomWhiteBoardView:self withGestureRecognizer:pan];
+        if ([self.delegate respondsToSelector:@selector(panToZoomWhiteBoardView:withGestureRecognizer:)])
+        {
+            [self.delegate panToZoomWhiteBoardView:self withGestureRecognizer:pan];
+        }
     }
+}
+
+- (void)dragPageControlView:(UIPanGestureRecognizer *)pan
+{
+    
+    UIView *dragView = pan.view;
+       if (pan.state == UIGestureRecognizerStateBegan)
+       {
+           
+       }
+       else if (pan.state == UIGestureRecognizerStateChanged)
+       {
+           CGPoint location = [pan locationInView:self];
+           
+           if (location.y < self.topBar.bm_height || location.y > self.bm_height)
+           {
+               return;
+           }
+           
+           CGPoint translation = [pan translationInView:self];
+           
+           dragView.center = CGPointMake(dragView.center.x + translation.x, dragView.center.y + translation.y);
+           [pan setTranslation:CGPointZero inView:self];
+       }
+       else if (pan.state == UIGestureRecognizerStateEnded || pan.state == UIGestureRecognizerStateCancelled)
+       {
+           CGRect currentFrame = dragView.frame;//self.chatBtn.frame;
+           
+           if (currentFrame.origin.x < 0) {
+               
+               currentFrame.origin.x = 0;
+               if (currentFrame.origin.y < self.topBar.bm_height)
+               {
+                   currentFrame.origin.y = self.topBar.bm_height + 4;
+               }
+               else if ((currentFrame.origin.y + currentFrame.size.height) > self.bounds.size.height)
+               {
+                   currentFrame.origin.y = self.bounds.size.height - currentFrame.size.height;
+               }
+               [UIView animateWithDuration:BMDEFAULT_DELAY_TIME animations:^{
+                   dragView.frame = currentFrame;
+               }];
+               
+               return;
+           }
+           
+           if ((currentFrame.origin.x + currentFrame.size.width) > self.bounds.size.width)
+           {
+               currentFrame.origin.x = self.bounds.size.width - currentFrame.size.width;
+               if (currentFrame.origin.y < self.topBar.bm_height)
+               {
+                   currentFrame.origin.y = self.topBar.bm_height + 4;
+               }
+               else if ((currentFrame.origin.y + currentFrame.size.height) > self.bounds.size.height)
+               {
+                   currentFrame.origin.y = self.bounds.size.height - currentFrame.size.height;
+               }
+               [UIView animateWithDuration:BMDEFAULT_DELAY_TIME animations:^{
+                   dragView.frame = currentFrame;
+               }];
+               
+               return;
+           }
+           
+           if (currentFrame.origin.y < self.topBar.bm_height)
+           {
+               currentFrame.origin.y = self.topBar.bm_height + 4;
+               [UIView animateWithDuration:BMDEFAULT_DELAY_TIME animations:^{
+                   dragView.frame = currentFrame;
+               }];
+               
+               return;
+           }
+           
+           if ((currentFrame.origin.y + currentFrame.size.height) > self.bounds.size.height)
+           {
+               currentFrame.origin.y = self.bounds.size.height - currentFrame.size.height;
+               [UIView animateWithDuration:BMDEFAULT_DELAY_TIME animations:^{
+                   dragView.frame = currentFrame;
+               }];
+               
+               return;
+           }
+       }
+    
 }
 
 #pragma mark YSCoursewareControlViewDelegate
