@@ -967,6 +967,11 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 {
     for (YSWhiteBoardView *whiteBoardView in self.coursewareViewList)
     {
+        if (whiteBoardView.superview)
+        {
+            [whiteBoardView removeFromSuperview];
+        }
+        
         [whiteBoardView destroy];
     }
     
@@ -1746,6 +1751,8 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     {
         self.isBeginClass = YES;
         self.beginClassMessage = message;
+        
+        [self removeAllWhiteBoardView];
     }
     
     long ts = (long)[message bm_uintForKey:@"ts"];
