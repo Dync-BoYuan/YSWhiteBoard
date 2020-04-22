@@ -16,6 +16,8 @@
 @property (nonatomic, copy) NSString *downloadpath;
 @property (nonatomic, strong) NSString *fileid;
 
+@property (nonatomic, strong) NSString *sourceInstanceId;
+
 @property (nonatomic, copy) NSString *filename;
 @property (nonatomic, copy) NSString *filepath;
 @property (nonatomic, copy) NSString *fileserverid;
@@ -59,7 +61,7 @@
 
 - (void)dynamicpptUpdate;
 
-+ (NSDictionary *)fileDataDocDic:(YSFileModel *)aDefaultDocment;
-+ (NSDictionary *)fileDataDocDic:(YSFileModel *)aDefaultDocment currentPage:(NSNumber *)currentPage;
++ (NSDictionary *)fileDataDocDic:(YSFileModel *)aDefaultDocment sourceInstanceId:(NSString *)sourceInstanceId;
++ (NSDictionary *)fileDataDocDic:(YSFileModel *)aDefaultDocment currentPage:(NSUInteger)currentPage sourceInstanceId:(NSString *)sourceInstanceId;
 
 @end

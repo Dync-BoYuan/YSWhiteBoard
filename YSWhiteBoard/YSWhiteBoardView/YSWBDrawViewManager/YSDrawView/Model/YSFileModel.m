@@ -51,13 +51,17 @@
     return [NSString stringWithFormat:@"%@---%@",self.fileid, self.filecategory];
 }
 
-+ (NSDictionary *)fileDataDocDic:(YSFileModel *)aDefaultDocment
++ (NSDictionary *)fileDataDocDic:(YSFileModel *)aDefaultDocment sourceInstanceId:(NSString *)sourceInstanceId
 {
-    return [self fileDataDocDic:aDefaultDocment currentPage:nil];
+    return [self fileDataDocDic:aDefaultDocment currentPage:0 sourceInstanceId:sourceInstanceId];
 }
 
-+ (NSDictionary *)fileDataDocDic:(YSFileModel *)aDefaultDocment currentPage:(NSNumber *)currentPage
++ (NSDictionary *)fileDataDocDic:(YSFileModel *)aDefaultDocment currentPage:(NSUInteger)currentPage sourceInstanceId:(NSString *)sourceInstanceId
 {
+    if ([sourceInstanceId bm_isNotEmpty])
+    {
+        sourceInstanceId = @"default";
+    }
     if (!aDefaultDocment)
     {
         // 白板
@@ -67,6 +71,7 @@
                                    @"isH5Document":@(false),
                                    @"action":@"",
                                    @"fileid":@(0),
+                                   @"sourceInstanceId":@"default",
                                    @"mediaType":@"",
                                    @"isMedia":@(false),
                                    @"filedata":@{
@@ -119,10 +124,10 @@
                                                                                     @"isContentDocument":aDefaultDocment.isContentDocument?aDefaultDocment.isContentDocument:@(0),
                                                                                     @"swfpath"  :  aDefaultDocment.swfpath?aDefaultDocment.swfpath:@""
                                                                                     }];
-    if (currentPage)
+    if (currentPage > 0)
     {
-        [filedata setObject:currentPage forKey:@"currpage"];
-        [filedata setObject:currentPage forKey:@"pptslide"];
+        [filedata setObject:@(currentPage) forKey:@"currpage"];
+        [filedata setObject:@(currentPage) forKey:@"pptslide"];
     }
     
 //    NSString *type = nil;
@@ -148,6 +153,7 @@
                                @"action":action,
                                @"downloadpath":downloadpath,
                                @"fileid":aDefaultDocment.fileid?aDefaultDocment.fileid:@(0),
+                               @"sourceInstanceId":sourceInstanceId,
                                @"mediaType":mediaType,
                                @"isMedia":@(false),
                                @"filedata":filedata

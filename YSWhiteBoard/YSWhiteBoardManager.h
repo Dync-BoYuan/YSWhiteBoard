@@ -90,6 +90,9 @@ NS_ASSUME_NONNULL_BEGIN
 /// 刷新白板课件
 - (void)freshCurrentCourseWithFileId:(NSString *)fileId;
 
+/// 切换课件
+- (void)changeCourseWithFileId:(NSString *)fileId;
+
 /// 课件 上一页
 - (void)whiteBoardPrePage;
 - (void)whiteBoardPrePageWithFileId:(NSString *)fileId;

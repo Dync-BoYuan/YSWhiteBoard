@@ -773,7 +773,6 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 }
 
 #pragma mark  获取课件窗口
-
 - (YSWhiteBoardView *)getWhiteBoardViewWithFileId:(NSString *)fileId
 {
     for (YSWhiteBoardView *whiteBoardView in self.coursewareViewList)
@@ -791,18 +790,26 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 }
 
 #pragma mark  删除课件窗口
-
-- (void)delWhiteBoardViewWithFileId:(NSString *)fileId
+- (void)removeWhiteBoardViewWithFileId:(NSString *)fileId
 {
     YSWhiteBoardView *whiteBoardView = [self getWhiteBoardViewWithFileId:fileId];
     if (whiteBoardView)
     {
+        [self removeWhiteBoardViewWithWhiteBoardView:whiteBoardView];
+    }
+}
+
+- (void)removeWhiteBoardViewWithWhiteBoardView:(YSWhiteBoardView *)whiteBoardView
+{
+    if (whiteBoardView)
+    {
         [self.coursewareViewList removeObject:whiteBoardView];
+        [whiteBoardView destroy];
     }
 }
 
 #pragma mark  删除所有课件窗口
-- (void)removeWhiteBoardView
+- (void)removeAllWhiteBoardView
 {
     for (YSWhiteBoardView *whiteBoardView in self.coursewareViewList)
     {
@@ -824,6 +831,47 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     if (whiteBoardView)
     {
         [whiteBoardView freshCurrentCourse];
+    }
+}
+
+/// 切换课件
+- (void)changeCourseWithFileId:(NSString *)fileId
+{
+    YSFileModel *fileModel = [self getDocumentWithFileID:fileId];
+    if (!fileModel)
+    {
+        return;
+    }
+    
+    NSString *sourceInstanceId = [NSString stringWithFormat:@"%@%@", YSWhiteBoardId_Header, fileId];
+    NSDictionary *fileDic = [YSFileModel fileDataDocDic:fileModel sourceInstanceId:sourceInstanceId];
+    
+    if (self.roomUseType == YSRoomUseTypeLiveRoom)
+    {
+        [[YSRoomInterface instance] pubMsg:sYSSignalShowPage
+                                     msgID:sYSSignalDocumentFilePage_ShowPage
+                                      toID:[YSRoomInterface instance].localUser.peerID
+                                      data:fileDic
+                                      save:NO
+                             extensionData:nil
+                           associatedMsgID:nil
+                          associatedUserID:nil
+                                   expires:0
+                                completion:nil];
+    }
+    else
+    {
+        NSString *msgID = [NSString stringWithFormat:@"%@%@%@", sYSSignalDocumentFilePage_ExtendShowPage, YSWhiteBoardId_Header, self.currentFile.fileid];
+        [[YSRoomInterface instance] pubMsg:sYSSignalExtendShowPage
+                                     msgID:msgID
+                                      toID:[YSRoomInterface instance].localUser.peerID
+                                      data:fileDic
+                                      save:NO
+                             extensionData:nil
+                           associatedMsgID:nil
+                          associatedUserID:nil
+                                   expires:0
+                                completion:nil];
     }
 }
 
@@ -1308,35 +1356,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     
     if (!show)
     {
-        NSDictionary *fileDic = [YSFileModel fileDataDocDic:self.currentFile];
-        
-        if (self.roomUseType == YSRoomUseTypeLiveRoom)
-        {
-            [[YSRoomInterface instance] pubMsg:sYSSignalShowPage
-                                         msgID:sYSSignalDocumentFilePage_ShowPage
-                                          toID:[YSRoomInterface instance].localUser.peerID
-                                          data:fileDic
-                                          save:NO
-                                 extensionData:nil
-                               associatedMsgID:nil
-                              associatedUserID:nil
-                                       expires:0
-                                    completion:nil];
-        }
-        else
-        {
-            NSString *msgID = [NSString stringWithFormat:@"%@%@%@", sYSSignalDocumentFilePage_ExtendShowPage, YSWhiteBoardId_Header, self.currentFile.fileid];
-            [[YSRoomInterface instance] pubMsg:sYSSignalExtendShowPage
-                                         msgID:msgID
-                                          toID:[YSRoomInterface instance].localUser.peerID
-                                          data:fileDic
-                                          save:NO
-                                 extensionData:nil
-                               associatedMsgID:nil
-                              associatedUserID:nil
-                                       expires:0
-                                    completion:nil];
-        }
+        [self changeCourseWithFileId:self.currentFile.fileid];
     }
 }
 
@@ -1543,8 +1563,8 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         WB_INFO(@"%s %@", __func__, message);
     }
     
-    // 不处理大房间
-    if ([msgName isEqualToString:sYSSignalNotice_BigRoom_Usernum])
+    // 不处理大房间, 时间
+    if ([msgName isEqualToString:sYSSignalNotice_BigRoom_Usernum] || [msgName isEqualToString:sYSSignalUpdateTime])
     {
         return;
     }
@@ -1705,11 +1725,51 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     NSDictionary *message = [dict objectForKey:YSWhiteBoardNotificationUserInfoKey];
     
     NSString *msgName = [message bm_stringForKey:@"name"];
-    if ([msgName isEqualToString:sYSSignalExtendShowPage])
+    if (![msgName bm_isNotEmpty])
     {
-#warning 关闭窗口
+        return;
+    }
+    NSString *msgId = [message bm_stringForKey:@"id"];
+    if (![msgId bm_isNotEmpty])
+    {
+        return;
     }
 
+    if ([msgName isEqualToString:sYSSignalExtendShowPage])
+    {
+        NSObject *data = [message objectForKey:@"data"];
+        NSDictionary *tDataDic = [YSRoomUtil convertWithData:data];
+        if (![tDataDic bm_isNotEmptyDictionary])
+        {
+            return;
+        }
+        
+        NSString *fileId = [tDataDic bm_stringForKey:@"fileid"];
+        if (!fileId)
+        {
+            NSString *sourceInstanceId = [tDataDic bm_stringForKey:@"sourceInstanceId"];
+            if (sourceInstanceId)
+            {
+                if (sourceInstanceId.length > YSWhiteBoardId_Header.length)
+                {
+                    fileId = [sourceInstanceId substringFromIndex:YSWhiteBoardId_Header.length];
+                }
+            }
+        }
+        
+        if (fileId)
+        {
+            [self removeWhiteBoardViewWithFileId:fileId];
+        }
+        
+        return;
+    }
+
+    if (![msgName isEqualToString:sYSSignalClassBegin])
+    {
+        return;
+    }
+    
     if (self.mainWhiteBoardView)
     {
         [self.mainWhiteBoardView remoteDelMsg:message];
