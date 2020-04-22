@@ -747,16 +747,7 @@
                     [data setObject:@"undoEvent" forKey:@"eventType"];
                 }
                 
-                NSString *checkWhiteboardID;
-                if ([fileID isEqualToString:@"0"])
-                {
-                    checkWhiteboardID = @"default";
-                }
-                else
-                {
-                    checkWhiteboardID = [NSString stringWithFormat:@"%@%@", YSWhiteBoardId_Header, fileID];
-                }
-
+                NSString *checkWhiteboardID = [YSRoomUtil getwhiteboardIDFromFileId:fileID];
                 BOOL isWhiteBoard = [whiteboardID isEqualToString:checkWhiteboardID];
                 if (isWhiteBoard)
                 {

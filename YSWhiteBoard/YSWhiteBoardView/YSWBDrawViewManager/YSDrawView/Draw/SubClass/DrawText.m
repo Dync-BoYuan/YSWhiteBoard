@@ -272,15 +272,8 @@
     [data setObject:[self getDrawID] forKey:@"id"];
     
     [dictionary setObject:data forKey:@"data"];
-    if ([self.fileId isEqualToString:@"0"])
-    {
-        [dictionary setObject:@"default" forKey:@"whiteboardID"];
-    }
-    else
-    {
-        NSString *whiteboardID = [NSString stringWithFormat:@"%@%@", YSWhiteBoardId_Header, self.fileId];
-        [dictionary setObject:whiteboardID forKey:@"whiteboardID"];
-    }
+    NSString *whiteboardID = [YSRoomUtil getwhiteboardIDFromFileId:self.fileId];
+    [dictionary setObject:whiteboardID forKey:@"whiteboardID"];
     [dictionary setObject:[YSRoomInterface instance].localUser.nickName ? : @" " forKey:@"nickname"];
     
     _serializedData = dictionary;

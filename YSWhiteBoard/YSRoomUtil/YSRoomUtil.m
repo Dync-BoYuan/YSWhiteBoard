@@ -120,4 +120,42 @@
     return dic;
 }
 
+
++ (NSString *)getFileIdFromSourceInstanceId:(NSString *)sourceInstanceId
+{
+    NSString *fileId = nil;
+    if ([sourceInstanceId isEqualToString:@"default"])
+    {
+        fileId = @"0";
+    }
+    else if (sourceInstanceId.length > YSWhiteBoardId_Header.length)
+    {
+        fileId = [sourceInstanceId substringFromIndex:YSWhiteBoardId_Header.length];
+    }
+    
+    return fileId;
+}
+
++ (NSString *)getSourceInstanceIdFromFileId:(NSString *)fileId
+{
+    NSString *sourceInstanceId = [YSRoomUtil getwhiteboardIDFromFileId:fileId];
+    
+    return sourceInstanceId;
+}
+
++ (NSString *)getwhiteboardIDFromFileId:(NSString *)fileId
+{
+    if ([fileId isEqualToString:@"0"])
+    {
+       return  @"default";
+    }
+    else
+    {
+        NSString *whiteboardID = [NSString stringWithFormat:@"%@%@", YSWhiteBoardId_Header, fileId];
+        return whiteboardID;
+    }
+}
+
+
+
 @end

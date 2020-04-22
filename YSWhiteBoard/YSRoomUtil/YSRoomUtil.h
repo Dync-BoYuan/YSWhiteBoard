@@ -21,6 +21,10 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)jsonStringWithDictionary:(NSDictionary *)dict;
 + (nullable NSDictionary *)dictionaryWithJsonString:(NSString *)jsonString;
 
++ (NSString *)getFileIdFromSourceInstanceId:(NSString *)sourceInstanceId;
++ (NSString *)getSourceInstanceIdFromFileId:(NSString *)fileId;
++ (NSString *)getwhiteboardIDFromFileId:(NSString *)fileId;
+
 @end
 
 NS_ASSUME_NONNULL_END

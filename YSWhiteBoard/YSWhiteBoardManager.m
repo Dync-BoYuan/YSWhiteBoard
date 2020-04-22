@@ -388,9 +388,9 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
             
             YSWhiteBoardView * whiteBoardView = (YSWhiteBoardView *)whiteBoard;
             
-            NSString * msgID = [NSString stringWithFormat:@"MoreWhiteboardState_%@",whiteBoardView.whiteBoardId];
+            NSString * msgID = [NSString stringWithFormat:@"MoreWhiteboardState_%@", whiteBoardView.whiteBoardId];
             NSDictionary * data = @{@"x":@(scaleLeft),@"y":@(scaleTop),@"width":@(scaleWidth),@"height":@(scaleHeight),@"small":@NO,@"full":@NO,@"type":@"drag",@"instanceId":whiteBoardView.whiteBoardId};
-            NSString * associatedMsgID = [NSString stringWithFormat:@"DocumentFilePage_ExtendShowPage_%@",whiteBoardView.whiteBoardId];
+            NSString * associatedMsgID = [NSString stringWithFormat:@"DocumentFilePage_ExtendShowPage_%@", whiteBoardView.whiteBoardId];
             
             
             [[YSRoomInterface instance] pubMsg:sYSSignalMoreWhiteboardState msgID:msgID toID:@"__all" data:data save:YES associatedMsgID:associatedMsgID associatedUserID:nil expires:0 completion:nil];
@@ -508,11 +508,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 - (void)receiveMessageToMoveAndZoomWith:(NSDictionary *)message WithInlist:(BOOL)inlist
 {
     NSString * instanceId = [message bm_stringForKey:@"instanceId"];
-    NSString * fileId = nil;
-    if (instanceId.length > YSWhiteBoardId_Header.length)
-    {
-        fileId = [instanceId substringFromIndex:YSWhiteBoardId_Header.length];
-    }
+    NSString *fileId = [YSRoomUtil getFileIdFromSourceInstanceId:instanceId];
     if (!fileId)
     {
         return;
@@ -1001,11 +997,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         return;
     }
     
-    NSString *sourceInstanceId = [NSString stringWithFormat:@"%@%@", YSWhiteBoardId_Header, fileId];
-    if ([fileId isEqualToString:@"0"])
-    {
-        sourceInstanceId = @"default";
-    }
+    NSString *sourceInstanceId = [YSRoomUtil getSourceInstanceIdFromFileId:fileId];
     NSDictionary *fileDic = [YSFileModel fileDataDocDic:fileModel sourceInstanceId:sourceInstanceId];
     
     if (self.roomUseType == YSRoomUseTypeLiveRoom)
@@ -1869,14 +1861,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
             NSString *sourceInstanceId = [tDataDic bm_stringForKey:@"sourceInstanceId"];
             if (sourceInstanceId)
             {
-                if ([sourceInstanceId isEqualToString:@"default"])
-                {
-                    fileId = @"0";
-                }
-                else if (sourceInstanceId.length > YSWhiteBoardId_Header.length)
-                {
-                    fileId = [sourceInstanceId substringFromIndex:YSWhiteBoardId_Header.length];
-                }
+                fileId = [YSRoomUtil getFileIdFromSourceInstanceId:sourceInstanceId];
             }
         }
         
