@@ -36,6 +36,14 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setTotalPage:(NSInteger)total currentPage:(NSInteger)currentPage;
 - (void)updateWBRatio:(CGFloat)ratio;
 
+/// 放大
+- (void)enlarge;
+/// 缩小
+- (void)narrow;
+/// 设置具体放大值
+- (void)resetEnlargeValue:(CGFloat)value animated:(BOOL)animated;
+
+
 #pragma mark - 点击画笔工具创建画笔选择器
 - (void)brushToolsDidSelect:(YSNativeToolType)type fromRemote:(BOOL)isFromRemote;
 - (void)didSelectDrawType:(YSDrawType)type color:(NSString *)hexColor widthProgress:(CGFloat)progress;

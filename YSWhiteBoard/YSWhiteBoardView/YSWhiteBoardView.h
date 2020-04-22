@@ -98,6 +98,9 @@ NS_ASSUME_NONNULL_BEGIN
 /// 总页码
 - (void)changeTotalPage:(NSUInteger)pagecount;
 
+/// 缩放变更回调
+- (void)onWhiteBoardFileViewZoomScaleChanged:(CGFloat)zoomScale;
+
 
 #pragma -
 #pragma mark 画笔控制
@@ -105,6 +108,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)brushToolsDidSelect:(YSBrushToolType)BrushToolType;
 - (void)didSelectDrawType:(YSDrawType)type color:(NSString *)hexColor widthProgress:(CGFloat)progress;
 - (void)freshBrushToolConfigs;
+
+
 
 @end
 
@@ -123,6 +128,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)onWBViewWebViewManagerStateUpdate:(YSWhiteBoardView *)whiteBoardView withState:(NSDictionary *)dic;
 /// 翻页超时
 - (void)onWBViewWebViewManagerSlideLoadTimeout:(YSWhiteBoardView *)whiteBoardView withState:(NSDictionary *)dic;
+
+/// 课件缩放
+- (void)onWWBViewDrawViewManagerZoomScaleChanged:(YSWhiteBoardView *)whiteBoardView zoomScale:(CGFloat)zoomScale;
 
 ///拖拽手势事件  拖拽右下角缩放View
 - (void)panToZoomWhiteBoardView:(YSWhiteBoardView *)whiteBoard withGestureRecognizer:(UIPanGestureRecognizer *)pan;
