@@ -1357,6 +1357,26 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     if (!show)
     {
         [self changeCourseWithFileId:self.currentFile.fileid];
+        
+        if (self.roomUseType == YSRoomUseTypeLiveRoom)
+        {
+            NSString *fileId = @"0";
+            YSFileModel *fileModel = [self getDocumentWithFileID:fileId];
+            NSString *sourceInstanceId = [NSString stringWithFormat:@"%@%@", YSWhiteBoardId_Header, fileId];
+            NSDictionary *fileDic = [YSFileModel fileDataDocDic:fileModel sourceInstanceId:sourceInstanceId];
+            
+            NSString *msgID = [NSString stringWithFormat:@"%@%@%@", sYSSignalDocumentFilePage_ExtendShowPage, YSWhiteBoardId_Header, self.currentFile.fileid];
+            [[YSRoomInterface instance] pubMsg:sYSSignalExtendShowPage
+                                         msgID:msgID
+                                          toID:[YSRoomInterface instance].localUser.peerID
+                                          data:fileDic
+                                          save:NO
+                                 extensionData:nil
+                               associatedMsgID:nil
+                              associatedUserID:nil
+                                       expires:0
+                                    completion:nil];
+        }
     }
 }
 
