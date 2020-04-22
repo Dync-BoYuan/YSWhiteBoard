@@ -1753,7 +1753,6 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
                 }
             }
         }
-        
         return;
     }
     // 白板加页
@@ -1792,7 +1791,76 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         
         return;
     }
-
+    else if ([msgName isEqualToString:sYSSignalMoreWhiteboardState])
+    {
+        
+        NSString * instanceId = [message bm_stringForKey:@"instanceId"];
+        NSString * fileId = nil;
+        if (instanceId.length > YSWhiteBoardId_Header.length)
+        {
+            fileId = [instanceId substringFromIndex:YSWhiteBoardId_Header.length];
+        }
+        if (!fileId)
+        {
+            return;
+        }
+        YSWhiteBoardView * whiteBoardView = [self getWhiteBoardViewWithFileId:fileId];
+        
+        if (!whiteBoardView)
+        {
+            return;
+        }
+        
+        if (inlist)
+        {
+            //x,y值在主白板上的比例
+            CGFloat scaleLeft = [message bm_floatForKey:@"x"];
+            CGFloat scaleTop = [message bm_floatForKey:@"y"];
+            //宽，高值在主白板上的比例
+            CGFloat scaleWidth = [message bm_floatForKey:@"width"];
+            CGFloat scaleHeight = [message bm_floatForKey:@"height"];
+            
+            BOOL small = [message bm_boolForKey:@"small"];
+            BOOL full = [message bm_boolForKey:@"full"];
+        }
+        else
+        {
+            NSString * type = [message bm_stringForKey:@"type"];            
+            
+            if ([type isEqualToString:@"drag"])
+            {//拖拽
+                
+                //x,y值在主白板上的比例
+                CGFloat scaleLeft = [message bm_floatForKey:@"x"];
+                CGFloat scaleTop = [message bm_floatForKey:@"y"];
+                
+                NSInteger x = scaleLeft * self.mainWhiteBoardView.bm_width;
+                NSInteger y = scaleTop * self.mainWhiteBoardView.bm_height;
+                                
+                whiteBoardView.bm_origin = CGPointMake(x, y);
+            }
+            else if ([type isEqualToString:@"resize"])
+            {//缩放
+                 //宽，高值在主白板上的比例
+                CGFloat scaleWidth = [message bm_floatForKey:@"width"];
+                CGFloat scaleHeight = [message bm_floatForKey:@"height"];
+                
+                NSInteger width = scaleWidth * self.mainWhiteBoardView.bm_width;
+                NSInteger height = scaleWidth * self.mainWhiteBoardView.bm_height;
+                whiteBoardView.bm_size = CGSizeMake(width, height);
+            }
+            else if ([type isEqualToString:@"small"])
+            {//最小化
+                
+            }
+            else if ([type isEqualToString:@"full"])
+            {//最大化
+                
+            }
+        }
+    }
+    
+    
     if (self.mainWhiteBoardView)
     {
         [self.mainWhiteBoardView remotePubMsg:message];
