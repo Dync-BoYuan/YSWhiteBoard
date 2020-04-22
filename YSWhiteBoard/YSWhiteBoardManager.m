@@ -1361,7 +1361,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     {
         NSDictionary *msgDic = [msgList bm_dictionaryForKey:key];
 
-        [self roomWhiteBoardOnRemotePubMsgWithMessage:msgDic];
+        [self roomWhiteBoardOnRemotePubMsgWithMessage:msgDic inList:YES];
     }
 
     NSSortDescriptor *desc = [[NSSortDescriptor alloc] initWithKey:@"seq" ascending:YES];
@@ -1475,7 +1475,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     {
         if (dic && [dic isKindOfClass:NSDictionary.class])
         {
-            [self roomWhiteBoardOnRemotePubMsgWithMessage:dic];
+            [self roomWhiteBoardOnRemotePubMsgWithMessage:dic inList:YES];
         }
     }
 }
@@ -1593,10 +1593,10 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         return;
     }
     
-    [self roomWhiteBoardOnRemotePubMsgWithMessage:message];
+    [self roomWhiteBoardOnRemotePubMsgWithMessage:message inList:NO];
 }
 
-- (void)roomWhiteBoardOnRemotePubMsgWithMessage:(NSDictionary *)message
+- (void)roomWhiteBoardOnRemotePubMsgWithMessage:(NSDictionary *)message inList:(BOOL)inlist
 {
     if (![message bm_isNotEmptyDictionary])
     {
@@ -1636,7 +1636,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     NSObject *data = [message objectForKey:@"data"];
     if (self.wbDelegate && [self.wbDelegate respondsToSelector:@selector(onWhiteBroadPubMsgWithMsgID:msgName:data:fromID:inList:ts:)])
     {
-        [self.wbDelegate onWhiteBroadPubMsgWithMsgID:msgId msgName:msgName data:data fromID:fromId inList:YES ts:ts];
+        [self.wbDelegate onWhiteBroadPubMsgWithMsgID:msgId msgName:msgName data:data fromID:fromId inList:inlist ts:ts];
     }
     
     NSDictionary *tDataDic = [YSRoomUtil convertWithData:data];
@@ -1715,7 +1715,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
             NSArray *components = [msgId componentsSeparatedByString:@"_"];
             if (components.count > 2)
             {
-                NSString *currentPage = components.lastObject;
+                //NSString *currentPage = components.lastObject;
                 NSString *fileId = [components objectAtIndex:components.count - 2];
                 YSWhiteBoardView *whiteBoardView = [self getWhiteBoardViewWithFileId:fileId];
                 if (whiteBoardView)
