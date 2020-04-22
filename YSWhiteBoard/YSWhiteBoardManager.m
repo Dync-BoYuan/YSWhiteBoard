@@ -1663,10 +1663,10 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     long ts = (long)[message bm_uintForKey:@"ts"];
     NSString *fromId = [message objectForKey:@"fromID"];
     NSObject *data = [message objectForKey:@"data"];
-    if (self.wbDelegate && [self.wbDelegate respondsToSelector:@selector(onWhiteBroadPubMsgWithMsgID:msgName:data:fromID:inList:ts:)])
-    {
-        [self.wbDelegate onWhiteBroadPubMsgWithMsgID:msgId msgName:msgName data:data fromID:fromId inList:inlist ts:ts];
-    }
+//    if (self.wbDelegate && [self.wbDelegate respondsToSelector:@selector(onWhiteBroadPubMsgWithMsgID:msgName:data:fromID:inList:ts:)])
+//    {
+//        [self.wbDelegate onWhiteBroadPubMsgWithMsgID:msgId msgName:msgName data:data fromID:fromId inList:inlist ts:ts];
+//    }
     
     NSDictionary *tDataDic = [YSRoomUtil convertWithData:data];
     if (![tDataDic bm_isNotEmptyDictionary])
@@ -1873,28 +1873,46 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 /// H5脚本文件加载初始化完成
 - (void)onWBViewWebViewManagerPageFinshed:(YSWhiteBoardView *)whiteBoardView
 {
-    
+    if (self.wbDelegate && [self.wbDelegate respondsToSelector:@selector(onWhiteBoardPageFinshed:)])
+    {
+        [self.wbDelegate onWhiteBoardPageFinshed:whiteBoardView.fileId];
+    }
 }
 
 /// 切换Web课件加载状态
 - (void)onWBViewWebViewManagerLoadedState:(YSWhiteBoardView *)whiteBoardView withState:(NSDictionary *)dic
 {
-    
+    if (self.wbDelegate && [self.wbDelegate respondsToSelector:@selector(onWhiteBoardLoadedState:withState:)])
+    {
+        [self.wbDelegate onWhiteBoardLoadedState:whiteBoardView.fileId withState:dic];
+    }
 }
 
 /// Web课件翻页结果
 - (void)onWBViewWebViewManagerStateUpdate:(YSWhiteBoardView *)whiteBoardView withState:(NSDictionary *)dic
 {
-    if (self.wbDelegate && [self.wbDelegate respondsToSelector:@selector(onWhiteBoardViewStateUpdate:)])
+    if (self.wbDelegate && [self.wbDelegate respondsToSelector:@selector(onWhiteBoardStateUpdate:withState:)])
     {
-        [self.wbDelegate onWhiteBoardViewStateUpdate:dic];
+        [self.wbDelegate onWhiteBoardStateUpdate:whiteBoardView.fileId withState:dic];
     }
 }
 
 /// 翻页超时
 - (void)onWBViewWebViewManagerSlideLoadTimeout:(YSWhiteBoardView *)whiteBoardView withState:(NSDictionary *)dic
 {
-    
+    if (self.wbDelegate && [self.wbDelegate respondsToSelector:@selector(onWhiteBoardSlideLoadTimeout:withState:)])
+    {
+        [self.wbDelegate onWhiteBoardSlideLoadTimeout:whiteBoardView.fileId withState:dic];
+    }
+}
+
+/// 课件缩放
+- (void)onWWBViewDrawViewManagerZoomScaleChanged:(YSWhiteBoardView *)whiteBoardView zoomScale:(CGFloat)zoomScale
+{
+    if (self.wbDelegate && [self.wbDelegate respondsToSelector:@selector(onWhiteBoardZoomScaleChanged:zoomScale:)])
+    {
+        [self.wbDelegate onWhiteBoardZoomScaleChanged:whiteBoardView.fileId zoomScale:zoomScale];
+    }
 }
 
 

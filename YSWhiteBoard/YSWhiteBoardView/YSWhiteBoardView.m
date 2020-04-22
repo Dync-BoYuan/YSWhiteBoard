@@ -457,6 +457,11 @@
 //    }
     
     [self doMsgCachePool];
+    
+    if (self.delegate && [self.delegate respondsToSelector:@selector(onWBViewWebViewManagerPageFinshed:)])
+    {
+        [self.delegate onWBViewWebViewManagerPageFinshed:self];
+    }
 }
 
 /// Web课件翻页结果
@@ -558,9 +563,9 @@
         [[NSNotificationCenter defaultCenter] postNotificationName:YSWhiteBoardEventLoadFileFail object:dic[@"data"]];
     }
     
-    if ([YSWhiteBoardManager shareInstance].wbDelegate && [[YSWhiteBoardManager shareInstance].wbDelegate respondsToSelector:@selector(onWhiteBoardLoadedState:)])
+    if (self.delegate && [self.delegate respondsToSelector:@selector(onWBViewWebViewManagerLoadedState:withState:)])
     {
-        [[YSWhiteBoardManager shareInstance].wbDelegate onWhiteBoardLoadedState:dic];
+        [self.delegate onWBViewWebViewManagerLoadedState:self withState:dic];
     }
 }
 
@@ -573,6 +578,11 @@
     }
     
     [[NSNotificationCenter defaultCenter] postNotificationName:YSWhiteBoardEventLoadSlideFail object:dic[@"data"]];
+    
+    if (self.delegate && [self.delegate respondsToSelector:@selector(onWBViewWebViewManagerSlideLoadTimeout:withState:)])
+    {
+        [self.delegate onWBViewWebViewManagerSlideLoadTimeout:self withState:dic];
+    }
 }
 
 

@@ -17,45 +17,22 @@
 
 /**
  文件列表回调
- @param fileList 文件列表 是一个NSArray类型的数据
+ @param fileList 文件NSDictionary列表
  */
 - (void)onWhiteBroadFileList:(NSArray *)fileList;
 
-/**
-PubMsg消息
- */
-- (void)onWhiteBroadPubMsgWithMsgID:(NSString *)msgID
-                            msgName:(NSString *)msgName
-                               data:(NSObject *)data
-                             fromID:(NSString *)fromID
-                             inList:(BOOL)inlist
-                                 ts:(long)ts;
+/// H5脚本文件加载初始化完成
+- (void)onWhiteBoardPageFinshed:(NSString *)fileId;
 
-/**
- msglist消息
+/// 切换Web课件加载状态
+- (void)onWhiteBoardLoadedState:(NSString *)fileId withState:(NSDictionary *)dic;
 
- @param msgList 消息
- */
-- (void)onWhiteBoardOnRoomConnectedMsglist:(NSDictionary *)msgList;
-
-/**
- 界面更新
- */
-- (void)onWhiteBoardViewStateUpdate:(NSDictionary *)message;
-
-/**
- 教室加载状态
- 
- */
-- (void)onWhiteBoardLoadedState:(NSDictionary *)message;
-
-
-/**
- 本地操作，缩放课件比例变化
-
-*/
-- (void)onWhiteBoardFileViewZoomScaleChanged:(CGFloat)zoomScale;
-
+/// Web课件翻页结果
+- (void)onWhiteBoardStateUpdate:(NSString *)fileId withState:(NSDictionary *)dic;
+/// 翻页超时
+- (void)onWhiteBoardSlideLoadTimeout:(NSString *)fileId withState:(NSDictionary *)dic;
+/// 课件缩放
+- (void)onWhiteBoardZoomScaleChanged:(NSString *)fileId zoomScale:(CGFloat)zoomScale;
 
 @end
 
