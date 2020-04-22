@@ -389,11 +389,27 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
             //x,y值在主白板上的比例
             CGFloat scaleLeft = whiteBoard.bm_originX / self.mainWhiteBoardView.bm_width;
             CGFloat scaleTop = whiteBoard.bm_originY / self.mainWhiteBoardView.bm_height;
+            //宽，高值在主白板上的比例
+            CGFloat scaleWidth = whiteBoard.bm_width / self.mainWhiteBoardView.bm_width;
+            CGFloat scaleHeight = whiteBoard.bm_width / self.mainWhiteBoardView.bm_height;
             
-            [self.dragImageView removeFromSuperview];
-            self.dragImageView = nil;
-            self.isDraging = NO;
-            [whiteBoard bm_bringToFront];
+            
+            YSWhiteBoardView * whiteBoardView = (YSWhiteBoardView *)whiteBoard;
+            
+            NSString * msgID = [NSString stringWithFormat:@"MoreWhiteboardState_%@",whiteBoardView.whiteBoardId];
+            NSDictionary * data = @{@"x":@(scaleLeft),@"y":@(scaleTop),@"width":@(scaleWidth),@"height":@(scaleHeight),@"small":@NO,@"full":@NO,@"type":@"drag",@"instanceId":whiteBoardView.whiteBoardId};
+            NSString * associatedMsgID = [NSString stringWithFormat:@"DocumentFilePage_ExtendShowPage_%@",whiteBoardView.whiteBoardId];
+            
+            
+            [[YSRoomInterface instance] pubMsg:sYSSignalMoreWhiteboardState msgID:msgID toID:@"__all" data:data save:YES associatedMsgID:associatedMsgID associatedUserID:nil expires:0 completion:nil];
+            
+            
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                [self.dragImageView removeFromSuperview];
+                self.dragImageView = nil;
+                self.isDraging = NO;
+                [whiteBoard bm_bringToFront];
+            });
         }
 }
 
@@ -471,9 +487,22 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         whiteBoard.frame =  self.dragImageView.frame;
         [whiteBoard refreshWhiteBoard];
         
+        //x,y值在主白板上的比例
+        CGFloat scaleLeft = whiteBoard.bm_originX / self.mainWhiteBoardView.bm_width;
+        CGFloat scaleTop = whiteBoard.bm_originY / self.mainWhiteBoardView.bm_height;
+        
         //宽，高值在主白板上的比例
         CGFloat scaleWidth = dragImageViewW / self.mainWhiteBoardView.bm_width;
         CGFloat scaleHeight = dragImageViewH / self.mainWhiteBoardView.bm_height;
+        
+        
+        NSString * msgID = [NSString stringWithFormat:@"MoreWhiteboardState_%@",whiteBoard.whiteBoardId];
+        NSDictionary * data = @{@"x":@(scaleLeft),@"y":@(scaleTop),@"width":@(scaleWidth),@"height":@(scaleHeight),@"small":@NO,@"full":@NO,@"type":@"resize",@"instanceId":whiteBoard.whiteBoardId};
+        NSString * associatedMsgID = [NSString stringWithFormat:@"DocumentFilePage_ExtendShowPage_%@",whiteBoard.whiteBoardId];
+        
+        
+        [[YSRoomInterface instance] pubMsg:sYSSignalMoreWhiteboardState msgID:msgID toID:@"__all" data:data save:YES associatedMsgID:associatedMsgID associatedUserID:nil expires:0 completion:nil];
+        
         
         [self.dragImageView removeFromSuperview];
         self.dragImageView = nil;
