@@ -363,11 +363,45 @@
     }
 }
 
+/// 放大
+- (void)enlarge
+{
+    // 最大放大系数为3，每级系数为+0.5
+    self.currentScale = self.fileView.zoomScale;
+    self.currentScale = self.currentScale + 0.5;
+    
+    self.currentScale = (NSInteger)(ceil(self.currentScale / 0.5f))*0.5f;
+    
+    if (self.currentScale >= YSWHITEBOARD_MAXZOOMSCALE)
+    {
+        self.currentScale = YSWHITEBOARD_MAXZOOMSCALE;
+    }
+
+    [self resetEnlargeValue:self.currentScale animated:YES];
+}
+
+/// 缩小
+- (void)narrow
+{
+    // 最小缩放系数为1，每级系数为-0.5
+    self.currentScale = self.fileView.zoomScale;
+    self.currentScale = self.currentScale - 0.5;
+    
+    self.currentScale = (NSInteger)(ceil(self.currentScale / 0.5f))*0.5f;
+
+    if (self.currentScale <= YSWHITEBOARD_MINZOOMSCALE)
+    {
+        self.currentScale = YSWHITEBOARD_MINZOOMSCALE;
+    }
+
+    [self resetEnlargeValue:self.currentScale animated:YES];
+}
+
 // 设置具体放大值
-- (void)resetEnlargeValue:(float)value animated:(BOOL)animated
+- (void)resetEnlargeValue:(CGFloat)value animated:(BOOL)animated
 {
     self.currentScale = value;
-    //最小缩放系数为1，每级系数为-0.5
+    // 最小缩放系数为1，每级系数为-0.5
     [self setDragFileEnabled:self.selectMouse];
     
     //_fileView.maximumZoomScale = value;
@@ -525,13 +559,7 @@
         [self showLaserPen];
     }
 
-    if ([YSWhiteBoardManager shareInstance].wbDelegate &&
-        [[YSWhiteBoardManager shareInstance].wbDelegate
-            respondsToSelector:@selector(onWhiteBoardFileViewZoomScaleChanged:)])
-    {
-        [[YSWhiteBoardManager shareInstance].wbDelegate
-            onWhiteBoardFileViewZoomScaleChanged:self.fileView.zoomScale];
-    }
+    [self.bwContentView onWhiteBoardFileViewZoomScaleChanged:self.fileView.zoomScale];
 }
 
 

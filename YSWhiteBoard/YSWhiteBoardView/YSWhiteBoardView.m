@@ -137,15 +137,15 @@
 
         self.drawViewManager = [[YSWBDrawViewManager alloc] initWithBackView:whiteBoardContentView webView:self.wbView];
         
-        //if (![fileId isEqualToString:@"0"])
+        YSCoursewareControlView * pageControlView = [[YSCoursewareControlView alloc]initWithFrame:CGRectMake(0, 0, 246, 34)];
+        pageControlView.delegate = self;
+        [self addSubview:pageControlView];
+        self.pageControlView = pageControlView;
+        self.pageControlView.bm_centerX = frame.size.width * 0.5f;
+        self.pageControlView.bm_bottom = frame.size.height - 20;
+        
+        if (![fileId isEqualToString:@"0"])
         {
-            YSCoursewareControlView * pageControlView = [[YSCoursewareControlView alloc]initWithFrame:CGRectMake(0, 0, 246, 34)];
-            pageControlView.delegate = self;
-            [self addSubview:pageControlView];
-            self.pageControlView = pageControlView;
-            self.pageControlView.bm_centerX = frame.size.width * 0.5f;
-            self.pageControlView.bm_bottom = frame.size.height - 20;
-            
             UIView * dragZoomView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, 40, 40)];
             dragZoomView.bm_right = frame.size.width;
             dragZoomView.bm_bottom = frame.size.height;
@@ -156,8 +156,6 @@
             UIPanGestureRecognizer * panGesture = [[UIPanGestureRecognizer alloc]initWithTarget:self action:@selector(panGestureToZoomView:)];
             [dragZoomView addGestureRecognizer:panGesture];
         }
-        
-        
     }
     
     return self;
@@ -217,7 +215,7 @@
 - (void)refreshWhiteBoardWithFrame:(CGRect)frame;
 {
     self.frame = frame;
-    [self.webViewManager refreshWhiteBoardWithFrame:self.whiteBoardContentView.bounds];
+    [self refreshWebWhiteBoard];
 }
 
 /// 变更白板窗口背景色
@@ -369,19 +367,20 @@
     
     if (([msgName isEqualToString:sYSSignalShowPage] || [msgName isEqualToString:sYSSignalExtendShowPage]))
     {
-        NSDictionary *resault = [message bm_dictionaryForKey:@"filedata"];
+        id data = [tDataDic bm_dictionaryForKey:@"filedata"];
+        NSDictionary *fileDataDic = [YSRoomUtil convertWithData:data];
         
-        if ([resault bm_isNotEmptyDictionary])
+        if ([fileDataDic bm_isNotEmptyDictionary])
         {
             BOOL isDynamic = NO;
-            if ([message bm_boolForKey:@"isDynamicPPT"] || [message bm_boolForKey:@"isH5Document"])
+            if ([tDataDic bm_boolForKey:@"isDynamicPPT"] || [tDataDic bm_boolForKey:@"isH5Document"])
             {
                 isDynamic = YES;
             }
-            else if ([message bm_boolForKey:@"isGeneralFile"])
+            else if ([tDataDic bm_boolForKey:@"isGeneralFile"])
             {
-                NSString *filetype = [[resault bm_stringForKey:@"filetype"] lowercaseString];
-                NSString *path = [[resault bm_stringForKey:@"swfpath"] lowercaseString];
+                NSString *filetype = [[fileDataDic bm_stringForKey:@"filetype"] lowercaseString];
+                NSString *path = [[fileDataDic bm_stringForKey:@"swfpath"] lowercaseString];
                 if ([filetype isEqualToString:@"gif"] || [filetype isEqualToString:@"svg"])
                 {
                     isDynamic = YES;
@@ -394,8 +393,8 @@
             
             if (!isDynamic)
             {
-                NSInteger totalPage = [resault bm_intForKey:@"pagenum"];
-                NSInteger currentPage = [resault bm_intForKey:@"currpage"];
+                NSInteger totalPage = [fileDataDic bm_intForKey:@"pagenum"];
+                NSInteger currentPage = [fileDataDic bm_intForKey:@"currpage"];
                 
                 [self.pageControlView sc_setTotalPage:totalPage currentPage:currentPage isWhiteBoard:[self.fileId isEqualToString:@"0"]];
             }
@@ -850,8 +849,6 @@
     }
 }
 
-
-
 - (YSWhiteBoardErrorCode)skipToPageNum:(NSUInteger)pageNum
 {
     if (![self.fileId bm_isNotEmpty])
@@ -931,26 +928,26 @@
 /// 白板 放大
 - (void)whiteBoardEnlarge
 {
-    if (self.drawViewManager.showOnWeb)
+//    if (self.drawViewManager.showOnWeb)
+//    {
+//        [self enlargeWhiteboard];
+//    }
+//    else
     {
-        [self enlargeWhiteboard];
-    }
-    else
-    {
-        //[self.drawViewManager enlarge];
+        [self.drawViewManager enlarge];
     }
 }
 
 /// 白板 缩小
 - (void)whiteBoardNarrow
 {
-    if (self.drawViewManager.showOnWeb)
+//    if (self.drawViewManager.showOnWeb)
+//    {
+//        [self narrowWhiteboard];
+//    }
+//    else
     {
-        [self narrowWhiteboard];
-    }
-    else
-    {
-        //[self.drawViewManager narrow];
+        [self.drawViewManager narrow];
     }
 }
 
@@ -959,7 +956,7 @@
 {
     if (!self.drawViewManager.showOnWeb)
     {
-        //[self.drawViewManager resetEnlargeValue:YSWHITEBOARD_MINZOOMSCALE animated:YES];
+        [self.drawViewManager resetEnlargeValue:YSWHITEBOARD_MINZOOMSCALE animated:YES];
     }
 }
 
@@ -979,6 +976,21 @@
 {
     self.totalPage = totalPage;
 }
+
+/// 缩放变更回调
+- (void)onWhiteBoardFileViewZoomScaleChanged:(CGFloat)zoomScale
+{
+    [self.pageControlView changeZoomScale:zoomScale];
+    
+    if (self.delegate &&
+        [self.delegate
+            respondsToSelector:@selector(onWWBViewDrawViewManagerZoomScaleChanged:zoomScale:)])
+    {
+        [self.delegate
+         onWWBViewDrawViewManagerZoomScaleChanged:self zoomScale:zoomScale];
+    }
+}
+
 
 #pragma -
 #pragma mark 画笔控制
@@ -1013,7 +1025,7 @@
 
 - (void)refreshWebWhiteBoard
 {
-    [self.webViewManager refreshWhiteBoardWithFrame:self.frame];
+    [self.webViewManager refreshWhiteBoardWithFrame:self.whiteBoardContentView.bounds];
 }
 
 #pragma mark 拖拽右下角缩放View
