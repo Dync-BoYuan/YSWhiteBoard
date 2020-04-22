@@ -42,7 +42,8 @@
 /// 普通文档
 @property (nonatomic, strong) YSWBDrawViewManager *drawViewManager;
 
-@property (nonatomic, weak) WKWebView *wbView;
+@property (nonatomic, weak) WKWebView *webView;
+@property (nonatomic, strong) UIScrollView *webScrollView;
 
 /// 加载H5脚本结束
 @property (nonatomic, assign) BOOL loadingH5Fished;
@@ -132,10 +133,21 @@
         self.bgImageView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
         self.bgImageView.contentMode = UIViewContentModeScaleAspectFit;
 
-        self.wbView = [self.webViewManager createWhiteBoardWithFrame:whiteBoardContentView.bounds loadFinishedBlock:loadFinishedBlock];
-        [self.whiteBoardContentView addSubview:self.wbView];
+        self.webScrollView = [[UIScrollView alloc] initWithFrame:whiteBoardContentView.bounds];
+        self.webScrollView.scrollEnabled = NO;
+        self.webScrollView.pagingEnabled = NO;
+        self.webScrollView.backgroundColor = [UIColor clearColor];
+        self.webScrollView.contentSize = self.webScrollView.bounds.size;
+        if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 11.0)
+        {
+            self.webScrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+        }
 
-        self.drawViewManager = [[YSWBDrawViewManager alloc] initWithBackView:whiteBoardContentView webView:self.wbView];
+        [self.whiteBoardContentView addSubview:self.webScrollView];
+        self.webView = [self.webViewManager createWhiteBoardWithFrame:whiteBoardContentView.bounds loadFinishedBlock:loadFinishedBlock];
+        [self.webScrollView addSubview:self.webView];
+
+        self.drawViewManager = [[YSWBDrawViewManager alloc] initWithBackView:whiteBoardContentView webScrollView:self.webScrollView webView:self.webView];
         
         YSCoursewareControlView * pageControlView = [[YSCoursewareControlView alloc]initWithFrame:CGRectMake(0, 0, 246, 34)];
         pageControlView.delegate = self;
@@ -323,7 +335,7 @@
     }
 
     NSString *msgName = [message bm_stringForKey:@"name"];
-    NSString *msgId = [message bm_stringForKey:@"id"];
+    //NSString *msgId = [message bm_stringForKey:@"id"];
     NSString *fromId = [message objectForKey:@"fromID"];
     NSObject *data = [message objectForKey:@"data"];
     NSDictionary *tDataDic = [YSRoomUtil convertWithData:data];
@@ -743,6 +755,7 @@
 {
     if (self.drawViewManager.showOnWeb)
     {
+        [self.drawViewManager resetEnlargeValue:YSWHITEBOARD_MINZOOMSCALE animated:YES];
         [self prePage];
         return;
     }
@@ -840,6 +853,7 @@
     {
         if (self.drawViewManager.showOnWeb)
         {
+            [self.drawViewManager resetEnlargeValue:YSWHITEBOARD_MINZOOMSCALE animated:YES];
             [self nextPage];
             return;
         }
@@ -908,6 +922,7 @@
 {
     if (self.drawViewManager.showOnWeb)
     {
+        [self.drawViewManager resetEnlargeValue:YSWHITEBOARD_MINZOOMSCALE animated:YES];
         [self skipToPageNum:pageNum];
     }
     else
@@ -967,6 +982,11 @@
     if (!self.drawViewManager.showOnWeb)
     {
         [self.drawViewManager resetEnlargeValue:YSWHITEBOARD_MINZOOMSCALE animated:YES];
+    }
+    else
+    {
+        [self.drawViewManager resetEnlargeValue:YSWHITEBOARD_MINZOOMSCALE animated:YES];
+        [self refreshWebWhiteBoard];
     }
 }
 
@@ -1035,6 +1055,7 @@
 
 - (void)refreshWebWhiteBoard
 {
+    self.webScrollView.frame = self.whiteBoardContentView.bounds;
     [self.webViewManager refreshWhiteBoardWithFrame:self.whiteBoardContentView.bounds];
 }
 

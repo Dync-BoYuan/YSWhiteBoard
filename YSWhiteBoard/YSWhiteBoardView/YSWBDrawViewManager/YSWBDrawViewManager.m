@@ -14,6 +14,7 @@
 
 @interface YSWBDrawViewManager ()
 <
+    UIScrollViewDelegate,
     UIGestureRecognizerDelegate,
     DocShowViewZoomScaleDelegate
 >
@@ -26,10 +27,11 @@
 }
 /// 承载View
 @property (nonatomic, weak) UIView *contentView;
-@property (nonatomic, weak) YSWhiteBoardView *bwContentView;
+@property (nonatomic, weak) YSWhiteBoardView *wbContentView;
 
 /// web课件通过YSWBWebViewManager创建的webView
 @property (nonatomic, weak) WKWebView *wkWebView;
+@property (nonatomic, weak) UIScrollView *wkWebViewScrollView;
 /// 普通课件视图
 @property (nonatomic, strong) DocShowView *fileView;
 
@@ -57,16 +59,18 @@
 
 @implementation YSWBDrawViewManager
 
-- (instancetype)initWithBackView:(UIView *)view webView:(WKWebView *)webView
+- (instancetype)initWithBackView:(UIView *)view webScrollView:(UIScrollView *)webScrollView webView:(WKWebView *)webView
 {
     self = [super init];
 
     if (self)
     {
         self.contentView = view;
-        self.bwContentView = (YSWhiteBoardView *)(view.superview);
+        self.wbContentView = (YSWhiteBoardView *)(view.superview);
+        self.wkWebViewScrollView = webScrollView;
+        self.wkWebViewScrollView.delegate = self;
         self.wkWebView = webView;
-        
+
         self.showOnWeb = NO;
         self.selectMouse = YES;
                 
@@ -126,7 +130,7 @@
         }
         else
         {
-            if ([self.bwContentView.fileId isEqualToString:@"0"])
+            if ([self.wbContentView.fileId isEqualToString:@"0"])
             {
                 self.fileView.ysDrawView.drawView.hidden = NO;
             }
@@ -188,6 +192,13 @@
 
 - (void)updateFrame
 {
+    if (self.showOnWeb)
+    {
+        [self resetEnlargeValue:YSWHITEBOARD_MINZOOMSCALE animated:NO];
+
+        return;
+    }
+    
     DocShowView *fileView = self.fileView;
     if (fileView.zoomScale > YSWHITEBOARD_MINZOOMSCALE)
     {
@@ -256,7 +267,7 @@
         return;
     }
 
-    if ([self.bwContentView.fileId isEqualToString:@"0"])
+    if ([self.wbContentView.fileId isEqualToString:@"0"])
     {
         // 避免image，pdf延迟加载影响白板比例
         ratio = 16.0f / 9;
@@ -327,7 +338,7 @@
     }
 
     // 显示纯白板或者web上的画布
-    if ([self.bwContentView.fileId isEqualToString:@"0"])
+    if ([self.wbContentView.fileId isEqualToString:@"0"])
     {
         if (self.ratio >= self.contentView.frame.size.width / self.contentView.frame.size.height) {
             [self.fileView.displayView bmmas_remakeConstraints:^(BMMASConstraintMaker *make) {
@@ -367,7 +378,14 @@
 - (void)enlarge
 {
     // 最大放大系数为3，每级系数为+0.5
-    self.currentScale = self.fileView.zoomScale;
+    if (self.showOnWeb)
+    {
+        self.currentScale = self.wkWebViewScrollView.zoomScale;
+    }
+    else
+    {
+        self.currentScale = self.fileView.zoomScale;
+    }
     self.currentScale = self.currentScale + 0.5;
     
     self.currentScale = (NSInteger)(ceil(self.currentScale / 0.5f))*0.5f;
@@ -384,7 +402,14 @@
 - (void)narrow
 {
     // 最小缩放系数为1，每级系数为-0.5
-    self.currentScale = self.fileView.zoomScale;
+    if (self.showOnWeb)
+    {
+        self.currentScale = self.wkWebViewScrollView.zoomScale;
+    }
+    else
+    {
+        self.currentScale = self.fileView.zoomScale;
+    }
     self.currentScale = self.currentScale - 0.5;
     
     self.currentScale = (NSInteger)(ceil(self.currentScale / 0.5f))*0.5f;
@@ -407,7 +432,14 @@
     //_fileView.maximumZoomScale = value;
     //_fileView.minimumZoomScale = value;
     
-    [self.fileView setZoomScale:value animated:YES];
+    if (self.showOnWeb)
+    {
+        [self.wkWebViewScrollView setZoomScale:value animated:YES];
+    }
+    else
+    {
+        [self.fileView setZoomScale:value animated:YES];
+    }
 
     if (self.laserPan.superview)
     {
@@ -418,24 +450,62 @@
 // MARK: 设置课件可以拖动
 - (void)setDragFileEnabled:(BOOL)enable
 {
-    self.fileView.scrollEnabled = enable;
+    if (self.showOnWeb)
+    {
+        self.wkWebViewScrollView.scrollEnabled = enable;
+    }
+    else
+    {
+        self.fileView.scrollEnabled = enable;
+    }
     if ((([YSRoomInterface instance].localUser.role == YSUserType_Student) && ![YSRoomInterface instance].localUser.canDraw) ||
         ([YSRoomInterface instance].localUser.role == YSUserType_Patrol))
     {
         // 如果学生未授权总是能放大拖动
-        self.fileView.scrollEnabled = YES;
+        if (self.showOnWeb)
+        {
+            self.wkWebViewScrollView.scrollEnabled = YES;
+        }
+        else
+        {
+            self.fileView.scrollEnabled = YES;
+        }
     }
 
     if (self.showOnWeb)
     {
-        self.currentScale = YSWHITEBOARD_MINZOOMSCALE;
         [self.fileView setZoomScale:YSWHITEBOARD_MINZOOMSCALE animated:NO];
         self.fileView.maximumZoomScale = YSWHITEBOARD_MINZOOMSCALE;
         self.fileView.minimumZoomScale = YSWHITEBOARD_MINZOOMSCALE;
+        
+        if (self.selectMouse)
+        {
+            // 直播支持手势缩放
+            self.wkWebViewScrollView.maximumZoomScale = YSWHITEBOARD_MAXZOOMSCALE;
+            self.wkWebViewScrollView.minimumZoomScale = YSWHITEBOARD_MINZOOMSCALE;
+        }
+        else
+        {
+            if ((([YSRoomInterface instance].localUser.role == YSUserType_Student) && ![YSRoomInterface instance].localUser.canDraw))
+            {
+                self.currentScale = YSWHITEBOARD_MINZOOMSCALE;
+                [self.wkWebViewScrollView setZoomScale:YSWHITEBOARD_MINZOOMSCALE animated:NO];
+                
+                self.wkWebViewScrollView.maximumZoomScale = YSWHITEBOARD_MINZOOMSCALE;
+                self.wkWebViewScrollView.minimumZoomScale = YSWHITEBOARD_MINZOOMSCALE;
+            }
+            
+            self.wkWebViewScrollView.maximumZoomScale = YSWHITEBOARD_MAXZOOMSCALE;
+            self.wkWebViewScrollView.minimumZoomScale = YSWHITEBOARD_MINZOOMSCALE;
+        }
+        
         return;
     }
 
-    
+    [self.wkWebViewScrollView setZoomScale:YSWHITEBOARD_MINZOOMSCALE animated:NO];
+    self.wkWebViewScrollView.maximumZoomScale = YSWHITEBOARD_MINZOOMSCALE;
+    self.wkWebViewScrollView.minimumZoomScale = YSWHITEBOARD_MINZOOMSCALE;
+
     if (self.selectMouse)
     {
         // 直播支持手势缩放
@@ -507,18 +577,40 @@
 {
     CGFloat moveX = self.laserPan.offsetX;
     CGFloat moveY = self.laserPan.offsetY;
-    CGFloat zoomScale = self.fileView.zoomScale;
-
-    CGFloat offsetX = self.fileView.contentOffset.x;
-    CGFloat offsetY = self.fileView.contentOffset.y;
     
-    moveX = moveX * zoomScale;
-    moveY = moveY * zoomScale;
-    moveX = moveX - offsetX;
-    moveY = moveY - offsetY;
+    CGFloat startX = 0;
+    CGFloat startY = 0;
 
-    CGFloat startX = CGRectGetMinX(self.fileView.displayView.frame);
-    CGFloat startY = CGRectGetMinY(self.fileView.displayView.frame);
+    if (self.showOnWeb)
+    {
+        CGFloat zoomScale = self.wkWebViewScrollView.zoomScale;
+
+        CGFloat offsetX = self.wkWebViewScrollView.contentOffset.x;
+        CGFloat offsetY = self.wkWebViewScrollView.contentOffset.y;
+        
+        moveX = moveX * zoomScale;
+        moveY = moveY * zoomScale;
+        moveX = moveX - offsetX;
+        moveY = moveY - offsetY;
+
+        startX = CGRectGetMinX(self.wkWebViewScrollView.bounds);
+        startY = CGRectGetMinY(self.wkWebViewScrollView.bounds);
+    }
+    else
+    {
+        CGFloat zoomScale = self.fileView.zoomScale;
+
+        CGFloat offsetX = self.fileView.contentOffset.x;
+        CGFloat offsetY = self.fileView.contentOffset.y;
+        
+        moveX = moveX * zoomScale;
+        moveY = moveY * zoomScale;
+        moveX = moveX - offsetX;
+        moveY = moveY - offsetY;
+
+        startX = CGRectGetMinX(self.fileView.displayView.frame);
+        startY = CGRectGetMinY(self.fileView.displayView.frame);
+    }
 
     if (!self.laserPan.superview)
     {
@@ -559,7 +651,7 @@
         [self showLaserPen];
     }
 
-    [self.bwContentView onWhiteBoardFileViewZoomScaleChanged:self.fileView.zoomScale];
+    [self.wbContentView onWhiteBoardFileViewZoomScaleChanged:self.fileView.zoomScale];
 }
 
 
@@ -1009,8 +1101,8 @@
                 return;
             }
 
-            [self.bwContentView changeCurrentPage:currentPage];
-            [self.bwContentView changeTotalPage:pagecount];
+            [self.wbContentView changeCurrentPage:currentPage];
+            [self.wbContentView changeTotalPage:pagecount];
 
             [self.fileView.ysDrawView.drawView clearDrawersNameAfterShowPage];
             [self resetEnlargeValue:YSWHITEBOARD_MINZOOMSCALE animated:YES];
@@ -1041,7 +1133,7 @@
                          forKey:@"totalPage"];
                 [message setObject:page forKey:@"page"];
 
-                self.wkWebView.hidden = YES;
+                self.wkWebViewScrollView.hidden = YES;
                 [self.fileView showWhiteBoard0];
                 [self updateWBRatio:16.0f / 9];
                 
@@ -1086,7 +1178,7 @@
 
                     //加载pdf
                     self.fileView.hidden           = NO;
-                    self.wkWebView.hidden          = YES;
+                    self.wkWebViewScrollView.hidden          = YES;
                     BMWeakSelf
                     [self.fileView showPDFwithDataDictionary:dictionary
                                                 Doc_Host:self.address
@@ -1106,7 +1198,7 @@
                         if ([realPath hasSuffix:@".svg"]) {
                             //交给web加载
                             self.showOnWeb    = YES;
-                            self.wkWebView.hidden = NO;
+                            self.wkWebViewScrollView.hidden = NO;
                             [self.fileView showOnWeb];
                             self.fileView.hidden = self.selectMouse;
                         }
@@ -1114,7 +1206,7 @@
                         {
                             //交给web加载
                             self.showOnWeb    = YES;
-                            self.wkWebView.hidden = NO;
+                            self.wkWebViewScrollView.hidden = NO;
                             [self.fileView showOnWeb];
                             self.fileView.hidden = self.selectMouse;
 
@@ -1132,7 +1224,7 @@
                             [message setObject:page forKey:@"page"];
 
                             //原生加载
-                            self.wkWebView.hidden          = YES;
+                            self.wkWebViewScrollView.hidden          = YES;
                             self.fileView.hidden           = NO;
                             BMWeakSelf
                             NSString *host = [NSURL URLWithString:realPath].host;
@@ -1146,7 +1238,7 @@
             else
             {
                 self.showOnWeb    = YES;
-                self.wkWebView.hidden = NO;
+                self.wkWebViewScrollView.hidden = NO;
                 [self.fileView showOnWeb];
                 self.fileView.hidden = [YSWhiteBoardManager shareInstance].roomConfig.isPenCanPenetration ? NO : self.selectMouse;
             }
@@ -1211,7 +1303,7 @@
     // 未上课时手动白板画板翻页，因为没有发送showpage信令
     if (![YSWhiteBoardManager shareInstance].isBeginClass)
     {
-        [self.fileView.ysDrawView.rtDrawView switchFileID:self.bwContentView.fileId
+        [self.fileView.ysDrawView.rtDrawView switchFileID:self.wbContentView.fileId
                                        andCurrentPage:(int)currentPage
                                     updateImmediately:YES];
     }
@@ -1281,7 +1373,7 @@
         }
         else
         {
-            if ([self.bwContentView.fileId isEqualToString:@"0"])
+            if ([self.wbContentView.fileId isEqualToString:@"0"])
             {
                 self.fileView.ysDrawView.drawView.hidden = NO;
             }
@@ -1331,5 +1423,50 @@
                                       completion:nil];
 }
 
+
+
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView
+{
+    if (self.laserPan.superview)
+    {
+        [self showLaserPen];
+    }
+}
+
+- (UIView *)viewForZoomingInScrollView:(UIScrollView *)scrollView
+{
+    return self.wkWebView;
+}
+
+- (void)scrollViewDidEndZooming:(UIScrollView *)scrollView withView:(UIView *)view atScale:(CGFloat)scale
+{
+    //scrollView.zoomScale = scale;
+}
+
+- (void)scrollViewDidZoom:(UIScrollView *)scrollView
+{
+    if (scrollView.contentSize.width <= scrollView.frame.size.width) {
+        if (scrollView.contentSize.height <= scrollView.frame.size.height) {
+            self.wkWebView.center = CGPointMake(scrollView.frame.size.width / 2, scrollView.frame.size.height / 2);
+        } else {
+            self.wkWebView.center = CGPointMake(scrollView.frame.size.width / 2, scrollView.contentSize.height / 2);
+        }
+    } else {
+        if (scrollView.contentSize.height <= scrollView.frame.size.height) {
+            self.wkWebView.center = CGPointMake(scrollView.contentSize.width / 2, scrollView.frame.size.height / 2);
+        } else {
+            self.wkWebView.center = CGPointMake(scrollView.contentSize.width / 2, scrollView.contentSize.height / 2);
+        }
+    }
+    
+    self.currentScale = scrollView.zoomScale;
+    
+    if (self.laserPan.superview)
+    {
+        [self showLaserPen];
+    }
+
+    [self.wbContentView onWhiteBoardFileViewZoomScaleChanged:scrollView.zoomScale];
+}
 
 @end

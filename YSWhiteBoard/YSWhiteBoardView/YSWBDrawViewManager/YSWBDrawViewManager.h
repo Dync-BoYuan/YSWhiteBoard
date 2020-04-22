@@ -20,7 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) NSString *address;
 @property (nonatomic, strong) NSMutableDictionary *fileDictionary;
 
-- (instancetype)initWithBackView:(UIView *)view webView:(WKWebView *)webView;
+- (instancetype)initWithBackView:(UIView *)view webScrollView:(UIScrollView *)webScrollView webView:(WKWebView *)webView;
 
 - (void)clearAfterClass;
 
