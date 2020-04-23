@@ -10,7 +10,7 @@
 #import "YSRoomUtil.h"
 #import "YSFileModel.h"
 #import <objc/message.h>
-#import "YSWhiteBoardControlView.h"
+
 
 #define YSTopViewHeight         (30.0f)
 
@@ -67,14 +67,7 @@
 /// 小白板点击控制条全屏前的frame
 @property (nonatomic, assign)CGRect whiteBoardFrame;
 
-/// 小白板全屏时的复原，删除的工具条
-@property (nonatomic, strong) YSWhiteBoardControlView *whiteBoardControlView;
 
-/// 小白板点击topbar上全屏前的frame
-@property (nonatomic, assign)CGRect topFullScreenFrame;
-
-///最小化时的收藏夹按钮
-@property (nonatomic, strong) UIButton * collectBtn;
 
 @end
 
@@ -1211,7 +1204,14 @@
             YSWhiteBoardView * whiteBoardView = coursewareViewList[i];
             if (!whiteBoardView.hidden)
             {
-                whiteBoardView.hidden = YES;
+//                whiteBoardView.hidden = YES;
+                
+                NSString * msgID = [NSString stringWithFormat:@"MoreWhiteboardState_%@", whiteBoardView.whiteBoardId];
+                NSDictionary * data = @{@"x":@0,@"y":@0,@"width":@1,@"height":@1,@"small":@YES,@"full":@NO,@"type":@"small",@"instanceId":whiteBoardView.whiteBoardId};
+                NSString * associatedMsgID = [NSString stringWithFormat:@"DocumentFilePage_ExtendShowPage_%@", whiteBoardView.whiteBoardId];
+                
+                [[YSRoomInterface instance] pubMsg:sYSSignalMoreWhiteboardState msgID:msgID toID:YSRoomPubMsgTellAll data:data save:YES associatedMsgID:associatedMsgID associatedUserID:nil expires:0 completion:nil];
+                
                 isHidden = YES;
             }
         }
@@ -1220,7 +1220,20 @@
         {
             for (YSWhiteBoardView * whiteBoardView in coursewareViewList)
             {
-                whiteBoardView.hidden = NO;
+//                whiteBoardView.hidden = NO;
+                
+                // x,y值在主白板上的比例
+                CGFloat scaleLeft = whiteBoardView.bm_originX / (self.mainWhiteBoard.bm_width - whiteBoardView.bm_width);
+                CGFloat scaleTop = whiteBoardView.bm_originY / (self.mainWhiteBoard.bm_height - whiteBoardView.bm_height);
+                // 宽，高值在主白板上的比例
+                CGFloat scaleWidth = whiteBoardView.bm_width / self.mainWhiteBoard.bm_width;
+                CGFloat scaleHeight = whiteBoardView.bm_height / self.mainWhiteBoard.bm_height;
+                
+                NSString * msgID = [NSString stringWithFormat:@"MoreWhiteboardState_%@", whiteBoardView.whiteBoardId];
+                NSDictionary * data = @{@"x":@(scaleLeft),@"y":@(scaleTop),@"width":@(scaleWidth),@"height":@(scaleHeight),@"small":@NO,@"full":@NO,@"type":@"small",@"instanceId":whiteBoardView.whiteBoardId};
+                NSString * associatedMsgID = [NSString stringWithFormat:@"DocumentFilePage_ExtendShowPage_%@", whiteBoardView.whiteBoardId];
+                
+                [[YSRoomInterface instance] pubMsg:sYSSignalMoreWhiteboardState msgID:msgID toID:YSRoomPubMsgTellAll data:data save:YES associatedMsgID:associatedMsgID associatedUserID:nil expires:0 completion:nil];
             }
             sender.selected = NO;
         }
@@ -1229,7 +1242,12 @@
     {
         for (YSWhiteBoardView * whiteBoardView in coursewareViewList)
         {
-            whiteBoardView.hidden = YES;
+//            whiteBoardView.hidden = YES;
+            NSString * msgID = [NSString stringWithFormat:@"MoreWhiteboardState_%@", whiteBoardView.whiteBoardId];
+            NSDictionary * data = @{@"x":@0,@"y":@0,@"width":@1,@"height":@1,@"small":@YES,@"full":@NO,@"type":@"small",@"instanceId":whiteBoardView.whiteBoardId};
+            NSString * associatedMsgID = [NSString stringWithFormat:@"DocumentFilePage_ExtendShowPage_%@", whiteBoardView.whiteBoardId];
+            
+            [[YSRoomInterface instance] pubMsg:sYSSignalMoreWhiteboardState msgID:msgID toID:YSRoomPubMsgTellAll data:data save:YES associatedMsgID:associatedMsgID associatedUserID:nil expires:0 completion:nil];
         }
         sender.selected = YES;
     }
@@ -1241,17 +1259,23 @@
     switch (sender.tag) {
         case 1:
         {//最小化
-            self.hidden = YES;
-            self.mainWhiteBoard.collectBtn.selected = YES;
+//            self.hidden = YES;
+//            self.mainWhiteBoard.collectBtn.selected = YES;
+            
+            NSString * msgID = [NSString stringWithFormat:@"MoreWhiteboardState_%@", self.whiteBoardId];
+            NSDictionary * data = @{@"x":@0,@"y":@0,@"width":@1,@"height":@1,@"small":@YES,@"full":@NO,@"type":@"small",@"instanceId":self.whiteBoardId};
+            NSString * associatedMsgID = [NSString stringWithFormat:@"DocumentFilePage_ExtendShowPage_%@", self.whiteBoardId];
+            
+            [[YSRoomInterface instance] pubMsg:sYSSignalMoreWhiteboardState msgID:msgID toID:YSRoomPubMsgTellAll data:data save:YES associatedMsgID:associatedMsgID associatedUserID:nil expires:0 completion:nil];
         }
             break;
         case 2:
         {//全屏
             self.topFullScreenFrame = self.frame;
             
-            self.frame = CGRectMake(0, -YSTopViewHeight, self.mainWhiteBoard.bm_width, self.mainWhiteBoard.bm_height + YSTopViewHeight);
-            self.whiteBoardControlView.hidden = NO;
-            [self refreshWhiteBoard];
+//            self.frame = CGRectMake(0, -YSTopViewHeight, self.mainWhiteBoard.bm_width, self.mainWhiteBoard.bm_height + YSTopViewHeight);
+//            self.whiteBoardControlView.hidden = NO;
+//            [self refreshWhiteBoard];
             
             // ====  信令  ====
             NSString * msgID = [NSString stringWithFormat:@"MoreWhiteboardState_%@", self.whiteBoardId];
@@ -1259,7 +1283,6 @@
             NSString * associatedMsgID = [NSString stringWithFormat:@"DocumentFilePage_ExtendShowPage_%@", self.whiteBoardId];
             
             [[YSRoomInterface instance] pubMsg:sYSSignalMoreWhiteboardState msgID:msgID toID:YSRoomPubMsgTellAll data:data save:YES associatedMsgID:associatedMsgID associatedUserID:nil expires:0 completion:nil];
-            
         }
             break;
         case 3:
@@ -1312,9 +1335,9 @@
 /// 由全屏还原的按钮
 - (void)whiteBoardfullScreenReturn
 {
-    self.frame = self.topFullScreenFrame;
-    self.whiteBoardControlView.hidden = YES;
-    [self refreshWhiteBoard];
+//    self.frame = self.topFullScreenFrame;
+//    self.whiteBoardControlView.hidden = YES;
+//    [self refreshWhiteBoard];
     
     //====  信令  ====
     // x,y值在主白板上的比例
@@ -1325,7 +1348,7 @@
     CGFloat scaleHeight = self.bm_height / self.mainWhiteBoard.bm_height;
     
     NSString * msgID = [NSString stringWithFormat:@"MoreWhiteboardState_%@", self.whiteBoardId];
-    NSDictionary * data = @{@"x":@(scaleLeft),@"y":@(scaleTop),@"width":@(scaleWidth),@"height":@(scaleHeight),@"small":@NO,@"full":@YES,@"type":@"full",@"instanceId":self.whiteBoardId};
+    NSDictionary * data = @{@"x":@(scaleLeft),@"y":@(scaleTop),@"width":@(scaleWidth),@"height":@(scaleHeight),@"small":@NO,@"full":@NO,@"type":@"full",@"instanceId":self.whiteBoardId};
     NSString * associatedMsgID = [NSString stringWithFormat:@"DocumentFilePage_ExtendShowPage_%@", self.whiteBoardId];
     
     [[YSRoomInterface instance] pubMsg:sYSSignalMoreWhiteboardState msgID:msgID toID:YSRoomPubMsgTellAll data:data save:YES associatedMsgID:associatedMsgID associatedUserID:nil expires:0 completion:nil];    
@@ -1333,7 +1356,10 @@
 /// 删除按钮
 - (void)deleteWhiteBoardView
 {
-    [[YSWhiteBoardManager shareInstance] removeWhiteBoardViewWithFileId:self.fileId];
+//    [[YSWhiteBoardManager shareInstance] removeWhiteBoardViewWithFileId:self.fileId];
+    NSString *msgID = [NSString stringWithFormat:@"%@%@", sYSSignalDocumentFilePage_ExtendShowPage, self.whiteBoardId];
+    NSDictionary * data = @{@"sourceInstanceId" : self.whiteBoardId};
+    [[YSRoomInterface instance] delMsg:sYSSignalExtendShowPage msgID:msgID toID:YSRoomPubMsgTellAll data:data completion:nil];
     self.topFullScreenFrame = CGRectZero;
 }
 

@@ -497,7 +497,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     }
 }
 
-///k接收信令进行拖拽和缩放
+///接收信令进行拖拽和缩放
 
 - (void)receiveMessageToMoveAndZoomWith:(NSDictionary *)message WithInlist:(BOOL)inlist
 {
@@ -516,6 +516,8 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     
     if (inlist)
     {
+        NSString * type = [message bm_stringForKey:@"type"];
+        
         //宽，高值在主白板上的比例
         CGFloat scaleWidth = [message bm_floatForKey:@"width"];
         CGFloat scaleHeight = [message bm_floatForKey:@"height"];
@@ -535,14 +537,17 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         
         whiteBoardView.frame = CGRectMake(x, y, width, height);
         
+        
+        
         if (small)
         {//最小化
-            
+            whiteBoardView.hidden = YES;
+            self.mainWhiteBoardView.collectBtn.selected = YES;
         }
-        else if (full)
-        {//最大化
-            
-        }
+//        else if (full)
+//        {//最大化
+//
+//        }
     }
     else
     {
@@ -577,10 +582,52 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         }
         else if ([type isEqualToString:@"small"])
         {//最小化
+            BOOL small = [message bm_boolForKey:@"small"];
+            if (small)
+            {
+                whiteBoardView.hidden = YES;
+//                self.mainWhiteBoardView.collectBtn.selected = YES;
+            }
+            else
+            {
+                CGFloat scaleWidth = [message bm_floatForKey:@"width"];
+                CGFloat scaleHeight = [message bm_floatForKey:@"height"];
+
+                CGFloat width = scaleWidth * self.mainWhiteBoardView.bm_width;
+                CGFloat height = scaleHeight * self.mainWhiteBoardView.bm_height;
+
+                //x,y值在主白板上的比例
+                CGFloat scaleLeft = [message bm_floatForKey:@"x"];
+                CGFloat scaleTop = [message bm_floatForKey:@"y"];
+                
+                CGFloat x = scaleLeft * (self.mainWhiteBoardView.bm_width - width);
+                CGFloat y = scaleTop * (self.mainWhiteBoardView.bm_height - height);
+
+                whiteBoardView.frame = CGRectMake(x, y, width, height);
+                
+                
+                whiteBoardView.hidden = YES;
+//                self.mainWhiteBoardView.collectBtn.selected = YES;
+            }
             
         }
         else if ([type isEqualToString:@"full"])
         {//最大化
+            
+            BOOL full = [message bm_boolForKey:@"full"];
+            if (full)
+            {
+                whiteBoardView.frame = CGRectMake(0, -30, self.mainWhiteBoardView.bm_width, self.mainWhiteBoardView.bm_height + 30);
+                whiteBoardView.whiteBoardControlView.hidden = NO;
+                [whiteBoardView refreshWhiteBoard];
+            }
+            else
+            {
+                    whiteBoardView.frame = whiteBoardView.topFullScreenFrame;
+                    whiteBoardView.whiteBoardControlView.hidden = YES;
+                    [whiteBoardView refreshWhiteBoard];
+            }
+            
             
         }
     }

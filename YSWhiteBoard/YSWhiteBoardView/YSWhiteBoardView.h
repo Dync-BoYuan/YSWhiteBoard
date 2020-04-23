@@ -12,6 +12,7 @@
 #import "YSWBWebViewManager.h"
 #import "YSWhiteBoardTopBar.h"
 #import "YSCoursewareControlView.h"
+#import "YSWhiteBoardControlView.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -46,9 +47,17 @@ NS_ASSUME_NONNULL_BEGIN
 /// 翻页工具条
 @property (nonatomic, strong) YSCoursewareControlView *pageControlView;
 
+/// 小白板全屏时的复原，删除的工具条
+@property (nonatomic, strong) YSWhiteBoardControlView *whiteBoardControlView;
+
 /// 主白板的bounce
 @property (nonatomic, strong)YSWhiteBoardView *mainWhiteBoard;
 
+/// 小白板点击topbar上全屏前的frame
+@property (nonatomic, assign)CGRect topFullScreenFrame;
+
+///最小化时的收藏夹按钮
+@property (nonatomic, strong) UIButton * collectBtn;
 
 - (void)destroy;
 
