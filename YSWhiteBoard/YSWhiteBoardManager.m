@@ -98,15 +98,9 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 
 /// 主白板
 @property (nonatomic, strong) YSWhiteBoardView *mainWhiteBoardView;
-/// 预加载课件
-@property (nonatomic, strong) YSWhiteBoardView *preLoadWhiteBoardView;
-/// 课件窗口列表
-@property (nonatomic, strong) NSMutableArray <YSWhiteBoardView *> *coursewareViewList;
 
 // 画笔控制
 @property (nonatomic, strong) YSBrushToolsManager *brushToolsManager;
-
-
 
 ///拖出视频view时的模拟移动图
 @property (nonatomic, strong) UIImageView *dragImageView;
@@ -280,7 +274,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 
     [self makeCurrentWhiteBoardViewPoint];
     
-    whiteBoardView.mainWhiteBoardBounce = self.mainWhiteBoardView.bounds;
+    whiteBoardView.mainWhiteBoardFrame = self.mainWhiteBoardView.frame;
     
     return whiteBoardView;
 }
@@ -658,7 +652,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     for (YSWhiteBoardView *whiteBoardView in self.coursewareViewList)
     {
         [whiteBoardView refreshWhiteBoard];
-        whiteBoardView.mainWhiteBoardBounce = self.mainWhiteBoardView.bounds;
+        whiteBoardView.mainWhiteBoardFrame = self.mainWhiteBoardView.frame;
     }
 }
 

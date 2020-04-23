@@ -52,6 +52,9 @@ NS_ASSUME_NONNULL_BEGIN
 /// 更新服务器地址
 @property (nonatomic, assign, readonly) BOOL isUpdateWebAddressInfo;
 
+/// 课件窗口列表
+@property (nonatomic, strong) NSMutableArray <YSWhiteBoardView *> *coursewareViewList;
+
 
 + (void)destroy;
 
