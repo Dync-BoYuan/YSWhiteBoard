@@ -12,7 +12,7 @@
 		040812712435894A00900963 /* YSBrushToolsManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 0408126F2435894A00900963 /* YSBrushToolsManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		040812722435894A00900963 /* YSBrushToolsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 040812702435894A00900963 /* YSBrushToolsManager.m */; };
 		041CEADC24514C3E00E07723 /* YSWhiteBoardImage.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 041CEADB24514C3E00E07723 /* YSWhiteBoardImage.xcassets */; };
-		041CEADF245169A300E07723 /* YSWhiteBoardControlView.h in Headers */ = {isa = PBXBuildFile; fileRef = 041CEADD245169A300E07723 /* YSWhiteBoardControlView.h */; };
+		041CEADF245169A300E07723 /* YSWhiteBoardControlView.h in Headers */ = {isa = PBXBuildFile; fileRef = 041CEADD245169A300E07723 /* YSWhiteBoardControlView.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		041CEAE0245169A300E07723 /* YSWhiteBoardControlView.m in Sources */ = {isa = PBXBuildFile; fileRef = 041CEADE245169A300E07723 /* YSWhiteBoardControlView.m */; };
 		042F2F922435BDEE00838154 /* YSBrushToolsConfigs.h in Headers */ = {isa = PBXBuildFile; fileRef = 042F2F902435BDEE00838154 /* YSBrushToolsConfigs.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		042F2F932435BDEE00838154 /* YSBrushToolsConfigs.m in Sources */ = {isa = PBXBuildFile; fileRef = 042F2F912435BDEE00838154 /* YSBrushToolsConfigs.m */; };
@@ -669,6 +669,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				041CEADF245169A300E07723 /* YSWhiteBoardControlView.h in Headers */,
 				0455F11D243EFA1900468853 /* YSWhiteBoardTopBar.h in Headers */,
 				042F2F972435DD3E00838154 /* YSCoursewareControlView.h in Headers */,
 				042F2F922435BDEE00838154 /* YSBrushToolsConfigs.h in Headers */,
@@ -681,7 +682,6 @@
 				87AD16442428B6AB00EAE233 /* YSWhiteBoardView.h in Headers */,
 				87C8B1062429BCD20016848E /* YSFileModel.h in Headers */,
 				87AD1600242721F000EAE233 /* YSWhiteBoardManager.h in Headers */,
-				041CEADF245169A300E07723 /* YSWhiteBoardControlView.h in Headers */,
 				87AD162924284E8E00EAE233 /* YSRoomUtil.h in Headers */,
 				87C8B0862429B9150016848E /* YSWhiteBoardEnum.h in Headers */,
 				87AD163E2428B68400EAE233 /* YSWBWebViewManager.h in Headers */,
