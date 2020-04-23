@@ -273,7 +273,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 
     [self makeCurrentWhiteBoardViewPoint];
     
-    whiteBoardView.mainWhiteBoard = self.mainWhiteBoardView;
+//    whiteBoardView.mainWhiteBoard = self.mainWhiteBoardView;
     
     return whiteBoardView;
 }
@@ -517,8 +517,6 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     
     if (inlist)
     {
-        NSString * type = [message bm_stringForKey:@"type"];
-        
         //宽，高值在主白板上的比例
         CGFloat scaleWidth = [message bm_floatForKey:@"width"];
         CGFloat scaleHeight = [message bm_floatForKey:@"height"];
@@ -534,10 +532,10 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         CGFloat y = scaleTop * (self.mainWhiteBoardView.bm_height - height);
         
         BOOL small = [message bm_boolForKey:@"small"];
-        BOOL full = [message bm_boolForKey:@"full"];
+//        BOOL full = [message bm_boolForKey:@"full"];
         
         whiteBoardView.frame = CGRectMake(x, y, width, height);
-        
+
         if (small)
         {//最小化
             whiteBoardView.hidden = YES;
@@ -554,12 +552,20 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         
         if ([type isEqualToString:@"drag"])
         {//拖拽
+
+            //宽，高值在主白板上的比例
             CGFloat scaleWidth = [message bm_floatForKey:@"width"];
             CGFloat scaleHeight = [message bm_floatForKey:@"height"];
 
             CGFloat width = scaleWidth * self.mainWhiteBoardView.bm_width;
             CGFloat height = scaleHeight * self.mainWhiteBoardView.bm_height;
 
+            if (!width || !height)
+            {
+                width = whiteBoardView.bm_width;
+                height = whiteBoardView.bm_height;
+            }
+             
             //x,y值在主白板上的比例
             CGFloat scaleLeft = [message bm_floatForKey:@"x"];
             CGFloat scaleTop = [message bm_floatForKey:@"y"];
@@ -589,12 +595,19 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
             }
             else
             {
+                //宽，高值在主白板上的比例
                 CGFloat scaleWidth = [message bm_floatForKey:@"width"];
                 CGFloat scaleHeight = [message bm_floatForKey:@"height"];
 
                 CGFloat width = scaleWidth * self.mainWhiteBoardView.bm_width;
                 CGFloat height = scaleHeight * self.mainWhiteBoardView.bm_height;
 
+                if (!width || !height)
+                {
+                    width = whiteBoardView.bm_width;
+                    height = whiteBoardView.bm_height;
+                }
+                
                 //x,y值在主白板上的比例
                 CGFloat scaleLeft = [message bm_floatForKey:@"x"];
                 CGFloat scaleTop = [message bm_floatForKey:@"y"];
@@ -604,36 +617,35 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 
                 whiteBoardView.frame = CGRectMake(x, y, width, height);
                 
-                
-                whiteBoardView.hidden = YES;
+                whiteBoardView.hidden = NO;
 //                self.mainWhiteBoardView.collectBtn.selected = YES;
             }
-            
         }
         else if ([type isEqualToString:@"full"])
         {//最大化
             
+            [whiteBoardView bm_bringToFront];
+            
             BOOL full = [message bm_boolForKey:@"full"];
             if (full)
             {
+                whiteBoardView.topFullScreenFrame = whiteBoardView.frame;
+                
                 whiteBoardView.frame = CGRectMake(0, -30, self.mainWhiteBoardView.bm_width, self.mainWhiteBoardView.bm_height + 30);
                 whiteBoardView.whiteBoardControlView.hidden = NO;
                 [whiteBoardView refreshWhiteBoard];
             }
             else
             {
-                    whiteBoardView.frame = whiteBoardView.topFullScreenFrame;
-                    whiteBoardView.whiteBoardControlView.hidden = YES;
-                    [whiteBoardView refreshWhiteBoard];
+                whiteBoardView.frame = whiteBoardView.topFullScreenFrame;
+                whiteBoardView.whiteBoardControlView.hidden = YES;
+                [whiteBoardView refreshWhiteBoard];
             }
-            
-            
         }
     }
     
     [self setTheCurrentDocumentFileID:whiteBoardView.fileId];
 }
-
 
 #pragma mark - 课件列表管理
 
@@ -699,7 +711,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     for (YSWhiteBoardView *whiteBoardView in self.coursewareViewList)
     {
         [whiteBoardView refreshWhiteBoard];
-        whiteBoardView.mainWhiteBoard = self.mainWhiteBoardView;
+//        whiteBoardView.mainWhiteBoard = self.mainWhiteBoardView;
     }
 }
 
@@ -1955,7 +1967,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
                 whiteBoardView.backgroundColor = [UIColor bm_randomColor];
                 [self.mainWhiteBoardView addSubview:whiteBoardView];
                 whiteBoardView.topBar.delegate = self;
-                
+//                whiteBoardView.mainWhiteBoard = self.mainWhiteBoardView;
                 [self addWhiteBoardViewWithWhiteBoardView:whiteBoardView];
             }
             
@@ -2016,7 +2028,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         return;
     }
     else if ([msgName isEqualToString:sYSSignalMoreWhiteboardState])
-    {
+    {//小白板上的UI信令
         [self receiveMessageToMoveAndZoomWith:tDataDic WithInlist:inlist];
     }
     
