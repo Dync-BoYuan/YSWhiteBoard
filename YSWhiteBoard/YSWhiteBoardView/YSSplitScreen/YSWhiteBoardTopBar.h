@@ -32,6 +32,8 @@ NS_ASSUME_NONNULL_BEGIN
 /// 课件 title
 @property (nonatomic, copy) NSString  *titleString;
 
+
+
 /// 自身对应的YSWhiteBoardView
 //@property (nonatomic, weak) YSWhiteBoardView  *whiteBoardView;
 

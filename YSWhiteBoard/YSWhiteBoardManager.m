@@ -93,7 +93,6 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 @property (nonatomic, strong, setter=setTheCurrentDocumentFileID:) NSString *currentFileId;
 
 // UI
-
 @property (nonatomic, assign) CGSize whiteBoardViewDefaultSize;
 
 /// 主白板

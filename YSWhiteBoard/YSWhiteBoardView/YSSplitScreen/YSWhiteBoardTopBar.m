@@ -55,6 +55,7 @@
     closeBtn.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin;
     [self addSubview:closeBtn];
     self.closeBtn = closeBtn;
+    closeBtn.hidden = YES;
     
     ///全屏
     UIButton *fullScreenBtn = [[UIButton alloc]initWithFrame:CGRectMake(closeBtn.bm_originX - self.bm_height - 20, 5, self.bm_height-5, self.bm_height-5)];
@@ -66,6 +67,7 @@
     fullScreenBtn.tag = 2;
     [self addSubview:fullScreenBtn];
     self.fullScreenBtn = fullScreenBtn;
+    fullScreenBtn.hidden = YES;
     
     ///最小化
     UIButton *minimizeBtn = [[UIButton alloc]initWithFrame:CGRectMake(fullScreenBtn.bm_originX - self.bm_height - 20, 5, self.bm_height-5, self.bm_height-5)];
@@ -77,6 +79,7 @@
     minimizeBtn.tag = 1;
     [self addSubview:minimizeBtn];
     self.minimizeBtn = minimizeBtn;
+    minimizeBtn.hidden = YES;
     
     ///标题
     UILabel * titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(15, 0, minimizeBtn.bm_originX - 15-2, self.bm_height)];
@@ -88,8 +91,14 @@
     [self addSubview:titleLabel];
     titleLabel.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     self.titleLabel = titleLabel;
+    
+    if ([YSRoomInterface instance].localUser.role == YSUserType_Teacher)
+    {
+        closeBtn.hidden = NO;
+        fullScreenBtn.hidden = NO;
+        minimizeBtn.hidden = NO;
+    }
 }
-
 
 - (void)setTitleString:(NSString *)titleString
 {

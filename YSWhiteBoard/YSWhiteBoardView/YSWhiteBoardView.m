@@ -180,6 +180,7 @@
             UIPanGestureRecognizer * panGesture = [[UIPanGestureRecognizer alloc]initWithTarget:self action:@selector(panGestureToZoomView:)];
             [dragZoomView addGestureRecognizer:panGesture];
             
+            
             YSWhiteBoardControlView * whiteBoardControlView = [[YSWhiteBoardControlView alloc] initWithFrame:CGRectMake(self.bm_width - 50 - 80, pageControlView.bm_originY, 80, 34)];
             whiteBoardControlView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin;
             [self addSubview:whiteBoardControlView];
@@ -1234,7 +1235,7 @@
     }
 }
 
-#pragma mark 小白板的topbar上的按钮n点击事件
+#pragma mark 小白板的topbar上的按钮点击事件
 - (void)topBarButtonClick:(UIButton *)sender
 {
     switch (sender.tag) {
@@ -1252,8 +1253,7 @@
             self.whiteBoardControlView.hidden = NO;
             [self refreshWhiteBoard];
             
-            
-            // 发信令
+            // ====  信令  ====
             NSString * msgID = [NSString stringWithFormat:@"MoreWhiteboardState_%@", self.whiteBoardId];
             NSDictionary * data = @{@"x":@0,@"y":@0,@"width":@1,@"height":@1,@"small":@NO,@"full":@YES,@"type":@"full",@"instanceId":self.whiteBoardId};
             NSString * associatedMsgID = [NSString stringWithFormat:@"DocumentFilePage_ExtendShowPage_%@", self.whiteBoardId];
@@ -1313,6 +1313,20 @@
     self.frame = self.topFullScreenFrame;
     self.whiteBoardControlView.hidden = YES;
     [self refreshWhiteBoard];
+    
+    //====  信令  ====
+    // x,y值在主白板上的比例
+    CGFloat scaleLeft = self.bm_originX / (self.mainWhiteBoard.bm_width - self.bm_width);
+    CGFloat scaleTop = self.bm_originY / (self.mainWhiteBoard.bm_height - self.bm_height);
+    // 宽，高值在主白板上的比例
+    CGFloat scaleWidth = self.bm_width / self.mainWhiteBoard.bm_width;
+    CGFloat scaleHeight = self.bm_height / self.mainWhiteBoard.bm_height;
+    
+    NSString * msgID = [NSString stringWithFormat:@"MoreWhiteboardState_%@", self.whiteBoardId];
+    NSDictionary * data = @{@"x":@(scaleLeft),@"y":@(scaleTop),@"width":@(scaleWidth),@"height":@(scaleHeight),@"small":@NO,@"full":@YES,@"type":@"full",@"instanceId":self.whiteBoardId};
+    NSString * associatedMsgID = [NSString stringWithFormat:@"DocumentFilePage_ExtendShowPage_%@", self.whiteBoardId];
+    
+    [[YSRoomInterface instance] pubMsg:sYSSignalMoreWhiteboardState msgID:msgID toID:YSRoomPubMsgTellAll data:data save:YES associatedMsgID:associatedMsgID associatedUserID:nil expires:0 completion:nil];    
 }
 /// 删除按钮
 - (void)deleteWhiteBoardView
