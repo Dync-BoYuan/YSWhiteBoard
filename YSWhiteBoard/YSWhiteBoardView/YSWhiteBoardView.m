@@ -1187,7 +1187,6 @@
                [UIView animateWithDuration:BMDEFAULT_DELAY_TIME animations:^{
                    dragView.frame = currentFrame;
                }];
-               
                return;
            }
            
@@ -1201,7 +1200,6 @@
                return;
            }
        }
-    
 }
 
 - (void)collectButtonsClick:(UIButton *)sender

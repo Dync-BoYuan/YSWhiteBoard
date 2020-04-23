@@ -574,6 +574,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
             CGFloat y = scaleTop * (self.mainWhiteBoardView.bm_height - height);
 
             whiteBoardView.frame = CGRectMake(x, y, width, height);
+            [whiteBoardView refreshWhiteBoard];
         }
         else if ([type isEqualToString:@"resize"])
         {//缩放
@@ -584,6 +585,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
             CGFloat width = scaleWidth * self.mainWhiteBoardView.bm_width;
             CGFloat height = scaleHeight * self.mainWhiteBoardView.bm_height;
             whiteBoardView.bm_size = CGSizeMake(width, height);
+            [whiteBoardView refreshWhiteBoard];
         }
         else if ([type isEqualToString:@"small"])
         {//最小化
@@ -619,13 +621,12 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
                 
                 whiteBoardView.hidden = NO;
 //                self.mainWhiteBoardView.collectBtn.selected = YES;
+                [whiteBoardView refreshWhiteBoard];
             }
         }
         else if ([type isEqualToString:@"full"])
         {//最大化
-            
-            [whiteBoardView bm_bringToFront];
-            
+                        
             BOOL full = [message bm_boolForKey:@"full"];
             if (full)
             {
