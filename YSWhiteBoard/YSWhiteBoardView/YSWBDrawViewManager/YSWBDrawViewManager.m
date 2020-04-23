@@ -244,6 +244,11 @@
     [self setDragFileEnabled:self.selectMouse];
 }
 
+- (CGFloat)documentZoomScale
+{
+    self.fileView.zoomScale;
+}
+
 - (CGFloat)getRatio
 {
     return self.ratio;

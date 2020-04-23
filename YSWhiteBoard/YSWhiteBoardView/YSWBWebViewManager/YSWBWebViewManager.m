@@ -958,15 +958,6 @@
     [self sendAction:WBChangeDynamicPptSize command:tParamDic];
 }
 
-- (void)sendCacheInformation:(NSMutableArray *)array
-{
-    //发送room-msglist
-    for (NSDictionary *dic in array)
-    {
-        [self sendSignalMessageToJS:WBPubMsg message:dic];
-    }
-}
-
 // 重新加载白板
 - (void)webViewreload
 {

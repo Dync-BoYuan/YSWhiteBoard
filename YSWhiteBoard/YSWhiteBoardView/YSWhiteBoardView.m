@@ -250,6 +250,17 @@
     self.bgImageView.image = image;
 }
 
+- (CGFloat)documentZoomScale
+{
+    if (self.drawViewManager.showOnWeb)
+    {
+        return 1.0f
+    }
+    else
+    {
+        return [self.drawViewManager documentZoomScale];
+    }
+}
 
 #pragma mark - 监听课堂 底层通知消息
 
