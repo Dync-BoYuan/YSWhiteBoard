@@ -1559,7 +1559,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     NSSortDescriptor *desc = [[NSSortDescriptor alloc] initWithKey:@"seq" ascending:YES];
     // 历史msgList如果有ShowPage信令，需要主动发给H5去刷新当前课件
     BOOL show = NO;
-    NSArray *msgArray = [[msgList allValues] sortedArrayUsingDescriptors:@[ desc ]];;
+    NSArray *msgArray = [[msgList allValues] sortedArrayUsingDescriptors:@[ desc ]];
     for (NSDictionary *msgDic in msgArray)
     {
         if ([[msgDic objectForKey:@"name"] isEqualToString:sYSSignalShowPage] || [[msgDic objectForKey:@"name"] isEqualToString:sYSSignalExtendShowPage])
@@ -1954,7 +1954,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     }
     else if ([msgName isEqualToString:sYSSignalMoreWhiteboardState])
     {
-        [self receiveMessageToMoveAndZoomWith:message WithInlist:inlist];
+        [self receiveMessageToMoveAndZoomWith:tDataDic WithInlist:inlist];
     }
     
     
