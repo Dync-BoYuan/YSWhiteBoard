@@ -1575,10 +1575,10 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     
     if (!show)
     {
-        [self changeCourseWithFileId:@"0" toID:[YSRoomInterface instance].localUser.peerID];
-        [self setTheCurrentDocumentFileID:@"0"];
+        [self changeCourseWithFileId:self.currentFileId toID:[YSRoomInterface instance].localUser.peerID];
     }
-    else if (self.roomUseType != YSRoomUseTypeLiveRoom)
+    
+    if (self.roomUseType != YSRoomUseTypeLiveRoom && ![self.currentFileId isEqualToString:@"0"])
     {
         NSString *fileId = @"0";
         YSFileModel *fileModel = [self getDocumentWithFileID:fileId];
