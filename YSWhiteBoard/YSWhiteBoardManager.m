@@ -1180,6 +1180,17 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 }
 
 
+- (CGFloat)currentDocumentZoomScale
+{
+    return [self documentZoomScaleWithFileId:self.currentFileId];
+}
+
+- (CGFloat)documentZoomScaleWithFileId:(NSString *)fileId
+{
+    YSWhiteBoardView *whiteBoardView = [self getWhiteBoardViewWithFileId:fileId];
+    return [whiteBoardView documentZoomScale];
+}
+
 #pragma -
 #pragma mark 画笔权限
 

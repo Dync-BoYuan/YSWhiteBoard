@@ -128,6 +128,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)whiteBoardResetEnlarge;
 - (void)whiteBoardResetEnlargeWithFileId:(NSString *)fileId;
 
+- (CGFloat)currentDocumentZoomScale;
+- (CGFloat)documentZoomScaleWithFileId:(NSString *)fileId;
+
 #pragma -
 #pragma mark 画笔权限
 
