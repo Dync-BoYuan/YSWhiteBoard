@@ -10,15 +10,15 @@
 #import "YSRoomUtil.h"
 #import "YSFileModel.h"
 #import <objc/message.h>
-
-#import "YSCoursewareControlView.h"
+#import "YSWhiteBoardControlView.h"
 
 #define YSTopViewHeight         (30.0f)
 
 @interface YSWhiteBoardView ()
 <
     YSWBWebViewManagerDelegate,
-    YSCoursewareControlViewDelegate
+    YSCoursewareControlViewDelegate,
+    YSWhiteBoardControlViewDelegate
 >
 {
     /// 是否主白板
@@ -58,16 +58,20 @@
 /// 总页码
 @property (nonatomic, assign) NSUInteger totalPage;
 
-/// 翻页工具条
-@property (nonatomic, strong) YSCoursewareControlView *pageControlView;
-
 /// 翻页工具条拖动前的临时View
 @property (nonatomic, strong) UIImageView *dragPageControlViewImage;
 
 /// 右下角拖动放大的view
 @property (nonatomic, strong) UIView * dragZoomView;
 
+/// 小白板点击控制条全屏前的frame
+@property (nonatomic, assign)CGRect whiteBoardFrame;
 
+/// 小白板全屏时的复原，删除的工具条
+@property (nonatomic, strong) YSWhiteBoardControlView *whiteBoardControlView;
+
+/// 小白板点击topbar上全屏前的frame
+@property (nonatomic, assign)CGRect topFullScreenFrame;
 
 @end
 
@@ -87,6 +91,8 @@
 
     [self.drawViewManager clearAfterClass];
 }
+
+
 
 - (instancetype)initWithFrame:(CGRect)frame fileId:(NSString *)fileId loadFinishedBlock:(wbLoadFinishedBlock)loadFinishedBlock
 {
@@ -117,12 +123,43 @@
         {
             topViewHeight = YSTopViewHeight;
             
+            YSFileModel * model = [[YSWhiteBoardManager shareInstance]getDocumentWithFileID:self.fileId];
+            
             YSWhiteBoardTopBar *topBar = [[YSWhiteBoardTopBar alloc] initWithFrame:CGRectMake(0, 0, frame.size.width, YSTopViewHeight)];
             topBar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+            topBar.titleString = model.filename;
             [self addSubview:topBar];
             self.topBar = topBar;
             
             [self bm_addShadow:3.0f Radius:0.0f BorderColor:YSWhiteBoard_TopBarBackGroudColor ShadowColor:YSWhiteBoard_BackGroudColor Offset:CGSizeMake(1, 2) Opacity:0.6f];
+            
+            BMWeakSelf
+            topBar.barButtonsClick = ^(UIButton * _Nonnull sender) {
+                switch (sender.tag) {
+                    case 1:
+                    {//最小化
+                        
+                    }
+                        break;
+                    case 2:
+                    {//全屏
+                        weakSelf.topFullScreenFrame = weakSelf.frame;
+                        
+                        weakSelf.frame = CGRectMake(0, -YSTopViewHeight, weakSelf.mainWhiteBoardBounce.size.width, weakSelf.mainWhiteBoardBounce.size.height + YSTopViewHeight);
+                        weakSelf.whiteBoardControlView.hidden = NO;
+                        [weakSelf refreshWhiteBoard];
+                    }
+                        break;
+                    case 3:
+                    {//删除按钮
+                        [[YSWhiteBoardManager shareInstance] removeWhiteBoardViewWithFileId:weakSelf.fileId];
+                        weakSelf.topFullScreenFrame = CGRectZero;
+                    }
+                        break;
+                    default:
+                        break;
+                }
+            };
         }
         
         CGRect contentFrame = CGRectMake(0, topViewHeight, frame.size.width, frame.size.height-topViewHeight);
@@ -148,6 +185,8 @@
         self.pageControlView = pageControlView;
         self.pageControlView.bm_centerX = frame.size.width * 0.5f;
         self.pageControlView.bm_bottom = frame.size.height - 20;
+        
+        
             
         //拖拽
         UIPanGestureRecognizer *panGestureRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(dragPageControlView:)];
@@ -156,14 +195,21 @@
         if (![fileId isEqualToString:@"0"])
         {
             UIView * dragZoomView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, 40, 40)];
+            dragZoomView.backgroundColor = UIColor.clearColor;
             dragZoomView.bm_right = frame.size.width;
             dragZoomView.bm_bottom = frame.size.height;
             self.dragZoomView = dragZoomView;
             [self addSubview:dragZoomView];
             
-            dragZoomView.backgroundColor = UIColor.redColor;
             UIPanGestureRecognizer * panGesture = [[UIPanGestureRecognizer alloc]initWithTarget:self action:@selector(panGestureToZoomView:)];
             [dragZoomView addGestureRecognizer:panGesture];
+            
+            YSWhiteBoardControlView * whiteBoardControlView = [[YSWhiteBoardControlView alloc] initWithFrame:CGRectMake(self.bm_width - 50 - 80, pageControlView.bm_originY, 80, 34)];
+            whiteBoardControlView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin;
+            [self addSubview:whiteBoardControlView];
+            self.whiteBoardControlView = whiteBoardControlView;
+            self.whiteBoardControlView.delegate = self;
+            whiteBoardControlView.hidden = YES;
         }
     }
     
@@ -1052,6 +1098,11 @@
 
 - (void)panGestureToZoomView:(UIPanGestureRecognizer *)pan
 {
+    if (self.pageControlView.isAllScreen)
+    {
+        return;
+    }
+    
     YSUserRoleType role = [YSRoomInterface instance].localUser.role;
     
     if (role == YSUserType_Teacher)
@@ -1152,7 +1203,16 @@
 /// 全屏 复原 回调
 - (void)coursewarefullScreen:(BOOL)isAllScreen
 {
-    
+//    if (isAllScreen)
+//    {
+//        self.whiteBoardFrame = self.frame;
+//        self.frame = CGRectMake(0, 0, self.mainWhiteBoardBounce.size.width, self.mainWhiteBoardBounce.size.height);
+//    }
+//    else
+//    {
+//        self.frame = self.whiteBoardFrame;
+//    }
+//    [self refreshWhiteBoard];
 }
 
 /// 上一页
@@ -1177,6 +1237,22 @@
 - (void)coursewareToNarrow
 {
     [self whiteBoardNarrow];
+}
+
+#pragma mark YSWhiteBoardControlViewDelegate
+
+/// 由全屏还原的按钮
+- (void)whiteBoardfullScreenReturn
+{
+    self.frame = self.topFullScreenFrame;
+    self.whiteBoardControlView.hidden = YES;
+    [self refreshWhiteBoard];
+}
+/// 删除按钮
+- (void)deleteWhiteBoardView
+{
+    [[YSWhiteBoardManager shareInstance] removeWhiteBoardViewWithFileId:self.fileId];
+    self.topFullScreenFrame = CGRectZero;
 }
 
 @end

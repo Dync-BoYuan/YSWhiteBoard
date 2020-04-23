@@ -127,6 +127,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)whiteBoardResetEnlarge;
 - (void)whiteBoardResetEnlargeWithFileId:(NSString *)fileId;
 
+///删除课件窗口
+- (void)removeWhiteBoardViewWithFileId:(NSString *)fileId;
+
+
 #pragma -
 #pragma mark 画笔权限
 

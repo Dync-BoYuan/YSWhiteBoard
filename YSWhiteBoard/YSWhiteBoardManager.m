@@ -280,6 +280,8 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 
     [self makeCurrentWhiteBoardViewPoint];
     
+    whiteBoardView.mainWhiteBoardBounce = self.mainWhiteBoardView.bounds;
+    
     return whiteBoardView;
 }
 
@@ -321,9 +323,16 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 
 - (void)panToMoveWhiteBoardView:(UIView *)whiteBoard withGestureRecognizer:(UIPanGestureRecognizer *)pan
 {
+    YSWhiteBoardView * whiteBoardView = (YSWhiteBoardView *)whiteBoard;
+    
+    if (whiteBoardView.pageControlView.isAllScreen)
+    {
+        return;
+    }
+    
     if (!self.isDraging)
     {
-        if ([whiteBoard isEqual:self.mainWhiteBoardView])
+        if ([whiteBoardView isEqual:self.mainWhiteBoardView])
         {
             [self.dragImageView removeFromSuperview];
             self.dragImageView = nil;
@@ -342,56 +351,55 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         }
     }
     
-    CGPoint endPoint = [pan translationInView:whiteBoard];
+    CGPoint endPoint = [pan translationInView:whiteBoardView];
     
     if (!self.dragImageView)
     {
-        UIImage * img = [whiteBoard bm_screenshot];
+        UIImage * img = [whiteBoardView bm_screenshot];
         self.dragImageView = [[UIImageView alloc]initWithImage:img];
         [self.mainWhiteBoardView addSubview:self.dragImageView];
     }
 
-        CGFloat dragImageViewX = whiteBoard.bm_originX + endPoint.x;
-        CGFloat dragImageViewY = whiteBoard.bm_originY + endPoint.y;
+        CGFloat dragImageViewX = whiteBoardView.bm_originX + endPoint.x;
+        CGFloat dragImageViewY = whiteBoardView.bm_originY + endPoint.y;
         
-        if (dragImageViewX + whiteBoard.bm_width >= self.mainWhiteBoardView.bm_width-1)
+        if (dragImageViewX + whiteBoardView.bm_width >= self.mainWhiteBoardView.bm_width-1)
         {
-            dragImageViewX = self.mainWhiteBoardView.bm_width - 1 - whiteBoard.bm_width;
+            dragImageViewX = self.mainWhiteBoardView.bm_width - 1 - whiteBoardView.bm_width;
         }
         else if (dragImageViewX <= 1)
         {
             dragImageViewX = 1;
         }
         
-        if (dragImageViewY + whiteBoard.bm_height >= self.mainWhiteBoardView.bm_height - 1)
+        if (dragImageViewY + whiteBoardView.bm_height >= self.mainWhiteBoardView.bm_height - 1)
         {
-            dragImageViewY = self.mainWhiteBoardView.bm_height - 1 - whiteBoard.bm_height;
+            dragImageViewY = self.mainWhiteBoardView.bm_height - 1 - whiteBoardView.bm_height;
         }
         else if (dragImageViewY <= 1)
         {
             dragImageViewY = 1;
         }
         
-        self.dragImageView.frame = CGRectMake(dragImageViewX, dragImageViewY, whiteBoard.bm_width, whiteBoard.bm_height);
+        self.dragImageView.frame = CGRectMake(dragImageViewX, dragImageViewY, whiteBoardView.bm_width, whiteBoardView.bm_height);
         
         if (pan.state == UIGestureRecognizerStateEnded)
         {
-            whiteBoard.frame = self.dragImageView.frame;
+            whiteBoardView.frame = self.dragImageView.frame;
             
             //x,y值在主白板上的比例
-            CGFloat scaleLeft = whiteBoard.bm_originX / self.mainWhiteBoardView.bm_width;
-            CGFloat scaleTop = whiteBoard.bm_originY / self.mainWhiteBoardView.bm_height;
+            CGFloat scaleLeft = whiteBoardView.bm_originX / self.mainWhiteBoardView.bm_width;
+            CGFloat scaleTop = whiteBoardView.bm_originY / self.mainWhiteBoardView.bm_height;
             //宽，高值在主白板上的比例
-            CGFloat scaleWidth = whiteBoard.bm_width / self.mainWhiteBoardView.bm_width;
-            CGFloat scaleHeight = whiteBoard.bm_width / self.mainWhiteBoardView.bm_height;
+            CGFloat scaleWidth = whiteBoardView.bm_width / self.mainWhiteBoardView.bm_width;
+            CGFloat scaleHeight = whiteBoardView.bm_width / self.mainWhiteBoardView.bm_height;
             
             
-            YSWhiteBoardView * whiteBoardView = (YSWhiteBoardView *)whiteBoard;
+            
             
             NSString * msgID = [NSString stringWithFormat:@"MoreWhiteboardState_%@", whiteBoardView.whiteBoardId];
             NSDictionary * data = @{@"x":@(scaleLeft),@"y":@(scaleTop),@"width":@(scaleWidth),@"height":@(scaleHeight),@"small":@NO,@"full":@NO,@"type":@"drag",@"instanceId":whiteBoardView.whiteBoardId};
             NSString * associatedMsgID = [NSString stringWithFormat:@"DocumentFilePage_ExtendShowPage_%@", whiteBoardView.whiteBoardId];
-            
             
             [[YSRoomInterface instance] pubMsg:sYSSignalMoreWhiteboardState msgID:msgID toID:@"__all" data:data save:YES associatedMsgID:associatedMsgID associatedUserID:nil expires:0 completion:nil];
             
@@ -400,7 +408,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
                 [self.dragImageView removeFromSuperview];
                 self.dragImageView = nil;
                 self.isDraging = NO;
-                [whiteBoard bm_bringToFront];
+                [whiteBoardView bm_bringToFront];
             });
         }
 }
@@ -650,6 +658,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     for (YSWhiteBoardView *whiteBoardView in self.coursewareViewList)
     {
         [whiteBoardView refreshWhiteBoard];
+        whiteBoardView.mainWhiteBoardBounce = self.mainWhiteBoardView.bounds;
     }
 }
 

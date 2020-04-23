@@ -11,6 +11,7 @@
 #import "YSWBDrawViewManager.h"
 #import "YSWBWebViewManager.h"
 #import "YSWhiteBoardTopBar.h"
+#import "YSCoursewareControlView.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -41,6 +42,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// 小白板的topBar
 @property (nonatomic, strong)YSWhiteBoardTopBar * topBar;
+
+/// 翻页工具条
+@property (nonatomic, strong) YSCoursewareControlView *pageControlView;
+
+/// 主白板的bounce
+@property (nonatomic, assign)CGRect mainWhiteBoardBounce;
+
 
 - (void)destroy;
 

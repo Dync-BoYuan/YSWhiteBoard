@@ -24,6 +24,7 @@
 ///缩小按钮
 @property (nonatomic, weak) UIButton *reduceBtn;
 
+
 /// 总页数
 @property (nonatomic, assign) NSInteger totalPage;
 /// 当前页
@@ -122,6 +123,9 @@
     
     self.augmentBtn.enabled = YES;
     self.reduceBtn.enabled  = NO;
+    
+    
+    
 }
 
 - (void)layoutSubviews
@@ -196,6 +200,7 @@
             }
         }
             break;
+            
         default:
             break;
     }
