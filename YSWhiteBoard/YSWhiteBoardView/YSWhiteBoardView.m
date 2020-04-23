@@ -136,31 +136,7 @@
             
             BMWeakSelf
             topBar.barButtonsClick = ^(UIButton * _Nonnull sender) {
-                switch (sender.tag) {
-                    case 1:
-                    {//最小化
-                        weakSelf.hidden = YES;
-                        weakSelf.collectBtn.selected = YES;
-                    }
-                        break;
-                    case 2:
-                    {//全屏
-                        weakSelf.topFullScreenFrame = weakSelf.frame;
-                        
-                        weakSelf.frame = CGRectMake(0, -YSTopViewHeight, weakSelf.mainWhiteBoardFrame.size.width, weakSelf.mainWhiteBoardFrame.size.height + YSTopViewHeight);
-                        weakSelf.whiteBoardControlView.hidden = NO;
-                        [weakSelf refreshWhiteBoard];
-                    }
-                        break;
-                    case 3:
-                    {//删除按钮
-                        [[YSWhiteBoardManager shareInstance] removeWhiteBoardViewWithFileId:weakSelf.fileId];
-                        weakSelf.topFullScreenFrame = CGRectZero;
-                    }
-                        break;
-                    default:
-                        break;
-                }
+                [weakSelf topBarButtonClick:sender];
             };
         }
         
@@ -214,7 +190,7 @@
         else
         {
             //最小化时的收藏夹按钮
-            UIButton * collectBtn = [[UIButton alloc]initWithFrame:CGRectMake(self.mainWhiteBoardFrame.size.width-40-26, self.mainWhiteBoardFrame.size.height-90, 40, 40)];
+            UIButton * collectBtn = [[UIButton alloc]initWithFrame:CGRectMake(frame.size.width-40-26, frame.size.height-90, 40, 40)];
             collectBtn.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin;
             [collectBtn setImage:[UIImage imageNamed:@"SplitScreen_leaveMessage_normal"] forState:UIControlStateNormal];
             [collectBtn setImage:[UIImage imageNamed:@"SplitScreen_leaveMessage_selected"] forState:UIControlStateSelected];
@@ -1257,6 +1233,46 @@
         sender.selected = YES;
     }
 }
+
+#pragma mark 小白板的topbar上的按钮n点击事件
+- (void)topBarButtonClick:(UIButton *)sender
+{
+    switch (sender.tag) {
+        case 1:
+        {//最小化
+            self.hidden = YES;
+            self.mainWhiteBoard.collectBtn.selected = YES;
+        }
+            break;
+        case 2:
+        {//全屏
+            self.topFullScreenFrame = self.frame;
+            
+            self.frame = CGRectMake(0, -YSTopViewHeight, self.mainWhiteBoard.bm_width, self.mainWhiteBoard.bm_height + YSTopViewHeight);
+            self.whiteBoardControlView.hidden = NO;
+            [self refreshWhiteBoard];
+            
+            
+            // 发信令
+            NSString * msgID = [NSString stringWithFormat:@"MoreWhiteboardState_%@", self.whiteBoardId];
+            NSDictionary * data = @{@"x":@0,@"y":@0,@"width":@1,@"height":@1,@"small":@NO,@"full":@YES,@"type":@"full",@"instanceId":self.whiteBoardId};
+            NSString * associatedMsgID = [NSString stringWithFormat:@"DocumentFilePage_ExtendShowPage_%@", self.whiteBoardId];
+            
+            [[YSRoomInterface instance] pubMsg:sYSSignalMoreWhiteboardState msgID:msgID toID:@"__all" data:data save:YES associatedMsgID:associatedMsgID associatedUserID:nil expires:0 completion:nil];
+            
+        }
+            break;
+        case 3:
+        {//删除按钮
+            [[YSWhiteBoardManager shareInstance] removeWhiteBoardViewWithFileId:self.fileId];
+            self.topFullScreenFrame = CGRectZero;
+        }
+            break;
+        default:
+            break;
+    }
+}
+
 
 #pragma mark YSCoursewareControlViewDelegate
 /// 全屏 复原 回调

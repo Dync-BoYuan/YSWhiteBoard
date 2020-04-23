@@ -274,7 +274,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 
     [self makeCurrentWhiteBoardViewPoint];
     
-    whiteBoardView.mainWhiteBoardFrame = self.mainWhiteBoardView.frame;
+    whiteBoardView.mainWhiteBoard = self.mainWhiteBoardView;
     
     return whiteBoardView;
 }
@@ -652,7 +652,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     for (YSWhiteBoardView *whiteBoardView in self.coursewareViewList)
     {
         [whiteBoardView refreshWhiteBoard];
-        whiteBoardView.mainWhiteBoardFrame = self.mainWhiteBoardView.frame;
+        whiteBoardView.mainWhiteBoard = self.mainWhiteBoardView;
     }
 }
 
