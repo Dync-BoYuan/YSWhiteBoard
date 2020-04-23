@@ -953,6 +953,10 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     {
         return self.mainWhiteBoardView;
     }
+    if ([fileId isEqualToString:@"0"])
+    {
+        return self.mainWhiteBoardView;
+    }
     return nil;
 }
 
