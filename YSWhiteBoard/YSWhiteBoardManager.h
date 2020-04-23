@@ -128,6 +128,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)whiteBoardResetEnlarge;
 - (void)whiteBoardResetEnlargeWithFileId:(NSString *)fileId;
 
+///删除课件窗口
+- (void)removeWhiteBoardViewWithFileId:(NSString *)fileId;
+
 - (CGFloat)currentDocumentZoomScale;
 - (CGFloat)documentZoomScaleWithFileId:(NSString *)fileId;
 

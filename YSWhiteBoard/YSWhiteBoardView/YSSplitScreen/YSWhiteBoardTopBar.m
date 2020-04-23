@@ -46,37 +46,40 @@
 - (void)setupTitleBar
 {
     ///关闭按钮
-    UIButton *closeBtn = [[UIButton alloc]initWithFrame:CGRectMake(self.bm_width - 40 - 10, 0, 40, 40)];
+    UIButton *closeBtn = [[UIButton alloc]initWithFrame:CGRectMake(self.bm_width - self.bm_height - 10, 5, self.bm_height-5, self.bm_height-5)];
     closeBtn.bm_centerY = self.bm_height/2;
     [closeBtn addTarget:self action:@selector(buttonsClick:) forControlEvents:UIControlEventTouchUpInside];
     [closeBtn setImage:[UIImage imageNamed:@"SplitScreen_close"] forState:UIControlStateNormal];
+    closeBtn.contentMode = UIViewContentModeScaleAspectFill;
     closeBtn.tag = 3;
     closeBtn.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin;
     [self addSubview:closeBtn];
     self.closeBtn = closeBtn;
     
     ///全屏
-    UIButton *fullScreenBtn = [[UIButton alloc]initWithFrame:CGRectMake(closeBtn.bm_originX - 40 - 20, 0, 40, 40)];
+    UIButton *fullScreenBtn = [[UIButton alloc]initWithFrame:CGRectMake(closeBtn.bm_originX - self.bm_height - 20, 5, self.bm_height-5, self.bm_height-5)];
     fullScreenBtn.bm_centerY = self.bm_height/2;
     [fullScreenBtn addTarget:self action:@selector(buttonsClick:) forControlEvents:UIControlEventTouchUpInside];
     [fullScreenBtn setImage:[UIImage imageNamed:@"SplitScreen_fullScreen"] forState:UIControlStateNormal];
+    fullScreenBtn.contentMode = UIViewContentModeScaleAspectFill;
     fullScreenBtn.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin;
     fullScreenBtn.tag = 2;
     [self addSubview:fullScreenBtn];
     self.fullScreenBtn = fullScreenBtn;
     
     ///最小化
-    UIButton *minimizeBtn = [[UIButton alloc]initWithFrame:CGRectMake(fullScreenBtn.bm_originX - 40 - 20, 0, 40, 40)];
+    UIButton *minimizeBtn = [[UIButton alloc]initWithFrame:CGRectMake(fullScreenBtn.bm_originX - self.bm_height - 20, 5, self.bm_height-5, self.bm_height-5)];
     minimizeBtn.bm_centerY = self.bm_height/2;
     [minimizeBtn addTarget:self action:@selector(buttonsClick:) forControlEvents:UIControlEventTouchUpInside];
     [minimizeBtn setImage:[UIImage imageNamed:@"SplitScreen_minimize"] forState:UIControlStateNormal];
+    minimizeBtn.contentMode = UIViewContentModeScaleAspectFill;
     minimizeBtn.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin;
     minimizeBtn.tag = 1;
     [self addSubview:minimizeBtn];
     self.minimizeBtn = minimizeBtn;
     
     ///标题
-    UILabel * titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(15, 0, minimizeBtn.bm_originX - 15-2, 30)];
+    UILabel * titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(15, 0, minimizeBtn.bm_originX - 15-2, self.bm_height)];
     titleLabel.bm_centerY = self.bm_height/2;
     titleLabel.textColor = [UIColor whiteColor];
     titleLabel.font = [UIFont systemFontOfSize:14];

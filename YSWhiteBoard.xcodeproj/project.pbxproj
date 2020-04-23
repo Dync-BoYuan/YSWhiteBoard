@@ -11,13 +11,15 @@
 		040812692435881000900963 /* BMKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 040812642435881000900963 /* BMKit.framework */; };
 		040812712435894A00900963 /* YSBrushToolsManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 0408126F2435894A00900963 /* YSBrushToolsManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		040812722435894A00900963 /* YSBrushToolsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 040812702435894A00900963 /* YSBrushToolsManager.m */; };
+		041CEADC24514C3E00E07723 /* YSWhiteBoardImage.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 041CEADB24514C3E00E07723 /* YSWhiteBoardImage.xcassets */; };
+		041CEADF245169A300E07723 /* YSWhiteBoardControlView.h in Headers */ = {isa = PBXBuildFile; fileRef = 041CEADD245169A300E07723 /* YSWhiteBoardControlView.h */; };
+		041CEAE0245169A300E07723 /* YSWhiteBoardControlView.m in Sources */ = {isa = PBXBuildFile; fileRef = 041CEADE245169A300E07723 /* YSWhiteBoardControlView.m */; };
 		042F2F922435BDEE00838154 /* YSBrushToolsConfigs.h in Headers */ = {isa = PBXBuildFile; fileRef = 042F2F902435BDEE00838154 /* YSBrushToolsConfigs.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		042F2F932435BDEE00838154 /* YSBrushToolsConfigs.m in Sources */ = {isa = PBXBuildFile; fileRef = 042F2F912435BDEE00838154 /* YSBrushToolsConfigs.m */; };
 		042F2F972435DD3E00838154 /* YSCoursewareControlView.h in Headers */ = {isa = PBXBuildFile; fileRef = 042F2F952435DD3E00838154 /* YSCoursewareControlView.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		042F2F982435DD3E00838154 /* YSCoursewareControlView.m in Sources */ = {isa = PBXBuildFile; fileRef = 042F2F962435DD3E00838154 /* YSCoursewareControlView.m */; };
 		0455F11D243EFA1900468853 /* YSWhiteBoardTopBar.h in Headers */ = {isa = PBXBuildFile; fileRef = 0455F11B243EFA1900468853 /* YSWhiteBoardTopBar.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		0455F11E243EFA1900468853 /* YSWhiteBoardTopBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 0455F11C243EFA1900468853 /* YSWhiteBoardTopBar.m */; };
-		0455F120243EFC8C00468853 /* YSWhiteBoardImage.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0455F11F243EFC8C00468853 /* YSWhiteBoardImage.xcassets */; };
 		26ACB4BB2446F3E300C8B149 /* YSRoomSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 26ACB4BA2446F3E300C8B149 /* YSRoomSDK.framework */; };
 		26ACB4C52446F7C500C8B149 /* NSURLProtocol+YSWhiteBoard.m in Sources */ = {isa = PBXBuildFile; fileRef = 26ACB4BD2446F7C500C8B149 /* NSURLProtocol+YSWhiteBoard.m */; };
 		26ACB4C62446F7C500C8B149 /* YSWhiteBordNSURLProtocol.h in Headers */ = {isa = PBXBuildFile; fileRef = 26ACB4BE2446F7C500C8B149 /* YSWhiteBordNSURLProtocol.h */; };
@@ -130,13 +132,15 @@
 		040812682435881000900963 /* BMDatePicker.nib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; path = BMDatePicker.nib; sourceTree = "<group>"; };
 		0408126F2435894A00900963 /* YSBrushToolsManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YSBrushToolsManager.h; sourceTree = "<group>"; };
 		040812702435894A00900963 /* YSBrushToolsManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YSBrushToolsManager.m; sourceTree = "<group>"; };
+		041CEADB24514C3E00E07723 /* YSWhiteBoardImage.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = YSWhiteBoardImage.xcassets; sourceTree = "<group>"; };
+		041CEADD245169A300E07723 /* YSWhiteBoardControlView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YSWhiteBoardControlView.h; sourceTree = "<group>"; };
+		041CEADE245169A300E07723 /* YSWhiteBoardControlView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YSWhiteBoardControlView.m; sourceTree = "<group>"; };
 		042F2F902435BDEE00838154 /* YSBrushToolsConfigs.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YSBrushToolsConfigs.h; sourceTree = "<group>"; };
 		042F2F912435BDEE00838154 /* YSBrushToolsConfigs.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YSBrushToolsConfigs.m; sourceTree = "<group>"; };
 		042F2F952435DD3E00838154 /* YSCoursewareControlView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YSCoursewareControlView.h; sourceTree = "<group>"; };
 		042F2F962435DD3E00838154 /* YSCoursewareControlView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YSCoursewareControlView.m; sourceTree = "<group>"; };
 		0455F11B243EFA1900468853 /* YSWhiteBoardTopBar.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YSWhiteBoardTopBar.h; sourceTree = "<group>"; };
 		0455F11C243EFA1900468853 /* YSWhiteBoardTopBar.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YSWhiteBoardTopBar.m; sourceTree = "<group>"; };
-		0455F11F243EFC8C00468853 /* YSWhiteBoardImage.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = YSWhiteBoardImage.xcassets; sourceTree = "<group>"; };
 		26ACB4BA2446F3E300C8B149 /* YSRoomSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = YSRoomSDK.framework; path = YSWhiteBoard/YSRoomSDK.framework; sourceTree = SOURCE_ROOT; };
 		26ACB4BD2446F7C500C8B149 /* NSURLProtocol+YSWhiteBoard.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSURLProtocol+YSWhiteBoard.m"; sourceTree = "<group>"; };
 		26ACB4BE2446F7C500C8B149 /* YSWhiteBordNSURLProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YSWhiteBordNSURLProtocol.h; sourceTree = "<group>"; };
@@ -323,6 +327,8 @@
 			children = (
 				042F2F952435DD3E00838154 /* YSCoursewareControlView.h */,
 				042F2F962435DD3E00838154 /* YSCoursewareControlView.m */,
+				041CEADD245169A300E07723 /* YSWhiteBoardControlView.h */,
+				041CEADE245169A300E07723 /* YSWhiteBoardControlView.m */,
 			);
 			path = YSPageToolView;
 			sourceTree = "<group>";
@@ -382,7 +388,7 @@
 				87AD16262428449000EAE233 /* YSWhiteBoardManagerDelegate.h */,
 				87AD15FE242721F000EAE233 /* YSWhiteBoardManager.h */,
 				87AD15FF242721F000EAE233 /* YSWhiteBoardManager.m */,
-				0455F11F243EFC8C00468853 /* YSWhiteBoardImage.xcassets */,
+				041CEADB24514C3E00E07723 /* YSWhiteBoardImage.xcassets */,
 				8732B8D424270E18005BEB99 /* Info.plist */,
 			);
 			path = YSWhiteBoard;
@@ -675,6 +681,7 @@
 				87AD16442428B6AB00EAE233 /* YSWhiteBoardView.h in Headers */,
 				87C8B1062429BCD20016848E /* YSFileModel.h in Headers */,
 				87AD1600242721F000EAE233 /* YSWhiteBoardManager.h in Headers */,
+				041CEADF245169A300E07723 /* YSWhiteBoardControlView.h in Headers */,
 				87AD162924284E8E00EAE233 /* YSRoomUtil.h in Headers */,
 				87C8B0862429B9150016848E /* YSWhiteBoardEnum.h in Headers */,
 				87AD163E2428B68400EAE233 /* YSWBWebViewManager.h in Headers */,
@@ -781,7 +788,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0455F120243EFC8C00468853 /* YSWhiteBoardImage.xcassets in Resources */,
+				041CEADC24514C3E00E07723 /* YSWhiteBoardImage.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -821,6 +828,7 @@
 				87C8B1032429BCD20016848E /* YSDrawView.m in Sources */,
 				87C8B0BF2429B9D20016848E /* VYSDWebImageDecoder.m in Sources */,
 				87C8B0C32429B9D20016848E /* VYSDWebImagePrefetcher.m in Sources */,
+				041CEAE0245169A300E07723 /* YSWhiteBoardControlView.m in Sources */,
 				26ACB4C92446F7C500C8B149 /* YSWhiteBordNSURLProtocol.m in Sources */,
 				87C8B1122429BCD20016848E /* DrawRectangle.m in Sources */,
 				26ACB4CC2446F7C500C8B149 /* YSWhiteBordHttpDNSUtil.m in Sources */,
