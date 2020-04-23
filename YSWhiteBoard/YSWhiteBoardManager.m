@@ -1553,7 +1553,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     NSSortDescriptor *desc = [[NSSortDescriptor alloc] initWithKey:@"seq" ascending:YES];
     // 历史msgList如果有ShowPage信令，需要主动发给H5去刷新当前课件
     BOOL show = NO;
-    NSArray *msgArray = [[msgList allValues] sortedArrayUsingDescriptors:@[ desc ]];;
+    NSArray *msgArray = [[msgList allValues] sortedArrayUsingDescriptors:@[ desc ]];
     for (NSDictionary *msgDic in msgArray)
     {
         if ([[msgDic objectForKey:@"name"] isEqualToString:sYSSignalShowPage] || [[msgDic objectForKey:@"name"] isEqualToString:sYSSignalExtendShowPage])
@@ -1578,10 +1578,10 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     
     if (!show)
     {
-        [self changeCourseWithFileId:@"0" toID:[YSRoomInterface instance].localUser.peerID];
-        [self setTheCurrentDocumentFileID:@"0"];
+        [self changeCourseWithFileId:self.currentFileId toID:[YSRoomInterface instance].localUser.peerID];
     }
-    else if (self.roomUseType != YSRoomUseTypeLiveRoom)
+    
+    if (self.roomUseType != YSRoomUseTypeLiveRoom && ![self.currentFileId isEqualToString:@"0"])
     {
         NSString *fileId = @"0";
         YSFileModel *fileModel = [self getDocumentWithFileID:fileId];
