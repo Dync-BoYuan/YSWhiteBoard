@@ -34,6 +34,17 @@
 /// 课件缩放
 - (void)onWhiteBoardZoomScaleChanged:(NSString *)fileId zoomScale:(CGFloat)zoomScale;
 
+
+
+
+#pragma mark - 课件事件
+
+/// 切剑课件
+- (void)onWhiteBoardChangedFileWithFileList:(NSArray *)fileList;
+
+
+
+
 @end
 
 #endif /* YSWhiteBoardManagerDelegate_h */
