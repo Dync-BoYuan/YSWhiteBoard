@@ -51,7 +51,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) YSWhiteBoardControlView *whiteBoardControlView;
 
 /// 主白板的bounce
-@property (nonatomic, strong)YSWhiteBoardView *mainWhiteBoard;
+//@property (nonatomic, strong)YSWhiteBoardView *mainWhiteBoard;
 
 /// 小白板点击topbar上全屏前的frame
 @property (nonatomic, assign)CGRect topFullScreenFrame;

@@ -1232,11 +1232,11 @@
 //                whiteBoardView.hidden = NO;
                 
                 // x,y值在主白板上的比例
-                CGFloat scaleLeft = whiteBoardView.bm_originX / (self.mainWhiteBoard.bm_width - whiteBoardView.bm_width);
-                CGFloat scaleTop = whiteBoardView.bm_originY / (self.mainWhiteBoard.bm_height - whiteBoardView.bm_height);
+                CGFloat scaleLeft = whiteBoardView.bm_originX / (whiteBoardView.superview.bm_width - whiteBoardView.bm_width);
+                CGFloat scaleTop = whiteBoardView.bm_originY / (whiteBoardView.superview.bm_height - whiteBoardView.bm_height);
                 // 宽，高值在主白板上的比例
-                CGFloat scaleWidth = whiteBoardView.bm_width / self.mainWhiteBoard.bm_width;
-                CGFloat scaleHeight = whiteBoardView.bm_height / self.mainWhiteBoard.bm_height;
+                CGFloat scaleWidth = whiteBoardView.bm_width / whiteBoardView.superview.bm_width;
+                CGFloat scaleHeight = whiteBoardView.bm_height / whiteBoardView.superview.bm_height;
                 
                 NSString * msgID = [NSString stringWithFormat:@"MoreWhiteboardState_%@", whiteBoardView.whiteBoardId];
                 NSDictionary * data = @{@"x":@(scaleLeft),@"y":@(scaleTop),@"width":@(scaleWidth),@"height":@(scaleHeight),@"small":@NO,@"full":@NO,@"type":@"small",@"instanceId":whiteBoardView.whiteBoardId};
@@ -1269,7 +1269,10 @@
         case 1:
         {//最小化
 //            self.hidden = YES;
-//            self.mainWhiteBoard.collectBtn.selected = YES;
+            
+            YSWhiteBoardView * mainWhiteBoard = (YSWhiteBoardView *)self.superview;
+            
+            mainWhiteBoard.collectBtn.selected = YES;
             
             NSString * msgID = [NSString stringWithFormat:@"MoreWhiteboardState_%@", self.whiteBoardId];
             NSDictionary * data = @{@"x":@0,@"y":@0,@"width":@1,@"height":@1,@"small":@YES,@"full":@NO,@"type":@"small",@"instanceId":self.whiteBoardId};
@@ -1280,7 +1283,7 @@
             break;
         case 2:
         {//全屏
-            self.topFullScreenFrame = self.frame;
+//            self.topFullScreenFrame = self.frame;
             
 //            self.frame = CGRectMake(0, -YSTopViewHeight, self.mainWhiteBoard.bm_width, self.mainWhiteBoard.bm_height + YSTopViewHeight);
 //            self.whiteBoardControlView.hidden = NO;
@@ -1350,11 +1353,11 @@
     
     //====  信令  ====
     // x,y值在主白板上的比例
-    CGFloat scaleLeft = self.bm_originX / (self.mainWhiteBoard.bm_width - self.bm_width);
-    CGFloat scaleTop = self.bm_originY / (self.mainWhiteBoard.bm_height - self.bm_height);
+    CGFloat scaleLeft = self.bm_originX / (self.superview.bm_width - self.bm_width);
+    CGFloat scaleTop = self.bm_originY / (self.superview.bm_height - self.bm_height);
     // 宽，高值在主白板上的比例
-    CGFloat scaleWidth = self.bm_width / self.mainWhiteBoard.bm_width;
-    CGFloat scaleHeight = self.bm_height / self.mainWhiteBoard.bm_height;
+    CGFloat scaleWidth = self.bm_width / self.superview.bm_width;
+    CGFloat scaleHeight = self.bm_height / self.superview.bm_height;
     
     NSString * msgID = [NSString stringWithFormat:@"MoreWhiteboardState_%@", self.whiteBoardId];
     NSDictionary * data = @{@"x":@(scaleLeft),@"y":@(scaleTop),@"width":@(scaleWidth),@"height":@(scaleHeight),@"small":@NO,@"full":@NO,@"type":@"full",@"instanceId":self.whiteBoardId};
