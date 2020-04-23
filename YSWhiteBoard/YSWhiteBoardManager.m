@@ -622,9 +622,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         }
         else if ([type isEqualToString:@"full"])
         {//最大化
-            
-            [whiteBoardView bm_bringToFront];
-            
+                        
             BOOL full = [message bm_boolForKey:@"full"];
             if (full)
             {
