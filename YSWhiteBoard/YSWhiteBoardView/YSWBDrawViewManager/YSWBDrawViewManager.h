@@ -30,6 +30,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)updateFrame;
 
+- (CGFloat)documentZoomScale;
+
 /// 变更fileView背景色
 - (void)changeCourseViewBackgroudColor:(UIColor *)color;
 

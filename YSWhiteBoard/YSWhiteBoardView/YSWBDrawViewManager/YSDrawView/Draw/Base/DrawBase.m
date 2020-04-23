@@ -60,6 +60,7 @@
 - (void)touchesBegan:(CGPoint)point
 {
     _drawData.start = _drawData.end = CGPointMake(point.x*self.sacle.x, point.y*self.sacle.y);
+    [[YSWhiteBoardManager shareInstance] setTheCurrentDocumentFileID:self.fileId];
 }
 
 - (void)touchesMoved:(CGPoint)point

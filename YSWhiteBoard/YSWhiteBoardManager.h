@@ -105,6 +105,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// 切换课件
 - (void)changeCourseWithFileId:(NSString *)fileId;
+- (void)changeCourseWithFileId:(NSString *)fileId toID:(NSString *)toID;
 
 /// 课件 上一页
 - (void)whiteBoardPrePage;
@@ -130,6 +131,8 @@ NS_ASSUME_NONNULL_BEGIN
 ///删除课件窗口
 - (void)removeWhiteBoardViewWithFileId:(NSString *)fileId;
 
+- (CGFloat)currentDocumentZoomScale;
+- (CGFloat)documentZoomScaleWithFileId:(NSString *)fileId;
 
 #pragma -
 #pragma mark 画笔权限

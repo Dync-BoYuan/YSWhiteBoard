@@ -56,28 +56,10 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)sendAction:(NSString *)action command:(nullable NSDictionary *)cmd;
 
-/*
- 房间链接成功
- */
-//- (void)whiteBoardOnRoomConnectedUserlist:(NSNumber *)code response:(NSDictionary *)response;
-
-/**
- 发送缓存消息
-
- @param array 缓存消息
- */
-- (void)sendCacheInformation:(NSMutableArray *)array;
-
 /**
  刷新界面
  */
 - (void)refreshWhiteBoardWithFrame:(CGRect)frame;
-
-
-/**
- 链接房间 预加载 都成功之后 发送预加载缓存
- */
-- (void)afterConnectToRoomAndPreloadingFished;
 
 /**
  销毁

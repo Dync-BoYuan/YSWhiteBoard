@@ -79,6 +79,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)refreshWhiteBoard;
 - (void)refreshWhiteBoardWithFrame:(CGRect)frame;
 
+- (CGFloat)documentZoomScale;
 
 #pragma -
 #pragma mark 课件操作
