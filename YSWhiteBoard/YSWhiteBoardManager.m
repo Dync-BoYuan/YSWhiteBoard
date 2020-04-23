@@ -1047,10 +1047,10 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 /// 切换课件
 - (void)changeCourseWithFileId:(NSString *)fileId
 {
-    [self changeCourseWithFileId:fileId toID:YSRoomPubMsgTellAll];
+    [self changeCourseWithFileId:fileId toID:YSRoomPubMsgTellAll save:YES];
 }
 
-- (void)changeCourseWithFileId:(NSString *)fileId toID:(NSString *)toID;
+- (void)changeCourseWithFileId:(NSString *)fileId toID:(NSString *)toID save:(BOOL)save
 {
     YSFileModel *fileModel = [self getDocumentWithFileID:fileId];
     if (!fileModel)
@@ -1067,7 +1067,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
                                      msgID:sYSSignalDocumentFilePage_ShowPage
                                       toID:toID
                                       data:fileDic
-                                      save:NO
+                                      save:save
                              extensionData:nil
                            associatedMsgID:nil
                           associatedUserID:nil
@@ -1081,7 +1081,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
                                      msgID:msgID
                                       toID:toID
                                       data:fileDic
-                                      save:NO
+                                      save:save
                              extensionData:nil
                            associatedMsgID:nil
                           associatedUserID:nil
@@ -1582,7 +1582,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     
     if (!show)
     {
-        [self changeCourseWithFileId:self.currentFileId toID:[YSRoomInterface instance].localUser.peerID];
+        [self changeCourseWithFileId:self.currentFileId toID:[YSRoomInterface instance].localUser.peerID save:NO];
     }
     
     if (self.roomUseType != YSRoomUseTypeLiveRoom && ![self.currentFileId isEqualToString:@"0"])

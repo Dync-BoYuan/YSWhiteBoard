@@ -168,7 +168,7 @@
         UIPanGestureRecognizer *panGestureRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(dragPageControlView:)];
         [self.pageControlView addGestureRecognizer:panGestureRecognizer];
 
-        if (![fileId isEqualToString:@"0"])
+        if (!isMainWhiteBoard)
         {
             UIView * dragZoomView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, 40, 40)];
             dragZoomView.backgroundColor = UIColor.clearColor;
@@ -186,6 +186,10 @@
             self.whiteBoardControlView = whiteBoardControlView;
             self.whiteBoardControlView.delegate = self;
             whiteBoardControlView.hidden = YES;
+            
+            UITapGestureRecognizer *oneTap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(changeToCurrentBWView:)];
+            oneTap.numberOfTapsRequired = 1;
+            [self.whiteBoardContentView addGestureRecognizer:oneTap];
         }
         else
         {
@@ -202,6 +206,11 @@
     }
     
     return self;
+}
+
+- (void)changeToCurrentBWView:(UITapGestureRecognizer *)tapGesture
+{
+    [[YSWhiteBoardManager shareInstance] setTheCurrentDocumentFileID:self.fileId];
 }
 
 - (void)setFrame:(CGRect)frame
