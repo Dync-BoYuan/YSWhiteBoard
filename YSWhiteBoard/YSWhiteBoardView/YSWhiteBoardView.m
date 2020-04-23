@@ -73,6 +73,9 @@
 /// 小白板点击topbar上全屏前的frame
 @property (nonatomic, assign)CGRect topFullScreenFrame;
 
+///最小化时的收藏夹按钮
+@property (nonatomic, strong) UIButton * collectBtn;
+
 @end
 
 @implementation YSWhiteBoardView
@@ -91,8 +94,6 @@
 
     [self.drawViewManager clearAfterClass];
 }
-
-
 
 - (instancetype)initWithFrame:(CGRect)frame fileId:(NSString *)fileId loadFinishedBlock:(wbLoadFinishedBlock)loadFinishedBlock
 {
@@ -138,14 +139,15 @@
                 switch (sender.tag) {
                     case 1:
                     {//最小化
-                        
+                        weakSelf.hidden = YES;
+                        weakSelf.collectBtn.selected = YES;
                     }
                         break;
                     case 2:
                     {//全屏
                         weakSelf.topFullScreenFrame = weakSelf.frame;
                         
-                        weakSelf.frame = CGRectMake(0, -YSTopViewHeight, weakSelf.mainWhiteBoardBounce.size.width, weakSelf.mainWhiteBoardBounce.size.height + YSTopViewHeight);
+                        weakSelf.frame = CGRectMake(0, -YSTopViewHeight, weakSelf.mainWhiteBoardFrame.size.width, weakSelf.mainWhiteBoardFrame.size.height + YSTopViewHeight);
                         weakSelf.whiteBoardControlView.hidden = NO;
                         [weakSelf refreshWhiteBoard];
                     }
@@ -185,8 +187,6 @@
         self.pageControlView = pageControlView;
         self.pageControlView.bm_centerX = frame.size.width * 0.5f;
         self.pageControlView.bm_bottom = frame.size.height - 20;
-        
-        
             
         //拖拽
         UIPanGestureRecognizer *panGestureRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(dragPageControlView:)];
@@ -210,6 +210,18 @@
             self.whiteBoardControlView = whiteBoardControlView;
             self.whiteBoardControlView.delegate = self;
             whiteBoardControlView.hidden = YES;
+        }
+        else
+        {
+            //最小化时的收藏夹按钮
+            UIButton * collectBtn = [[UIButton alloc]initWithFrame:CGRectMake(self.mainWhiteBoardFrame.size.width-40-26, self.mainWhiteBoardFrame.size.height-90, 40, 40)];
+            collectBtn.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin;
+            [collectBtn setImage:[UIImage imageNamed:@"SplitScreen_leaveMessage_normal"] forState:UIControlStateNormal];
+            [collectBtn setImage:[UIImage imageNamed:@"SplitScreen_leaveMessage_selected"] forState:UIControlStateSelected];
+            collectBtn.contentMode = UIViewContentModeScaleAspectFill;
+            [collectBtn addTarget:self action:@selector(collectButtonsClick:) forControlEvents:UIControlEventTouchUpInside];
+            [self addSubview:collectBtn];
+            self.collectBtn = collectBtn;
         }
     }
     
@@ -1210,20 +1222,47 @@
     
 }
 
+- (void)collectButtonsClick:(UIButton *)sender
+{
+    NSArray * coursewareViewList = [YSWhiteBoardManager shareInstance].coursewareViewList;
+    
+    if (sender.selected)
+    {
+        BOOL isHidden = NO;
+        for (int i = 0; i<coursewareViewList.count; i++)
+        {
+            YSWhiteBoardView * whiteBoardView = coursewareViewList[i];
+            if (!whiteBoardView.hidden)
+            {
+                whiteBoardView.hidden = YES;
+                isHidden = YES;
+            }
+        }
+        
+        if (!isHidden)
+        {
+            for (YSWhiteBoardView * whiteBoardView in coursewareViewList)
+            {
+                whiteBoardView.hidden = NO;
+            }
+            sender.selected = NO;
+        }
+    }
+    else
+    {
+        for (YSWhiteBoardView * whiteBoardView in coursewareViewList)
+        {
+            whiteBoardView.hidden = YES;
+        }
+        sender.selected = YES;
+    }
+}
+
 #pragma mark YSCoursewareControlViewDelegate
 /// 全屏 复原 回调
 - (void)coursewarefullScreen:(BOOL)isAllScreen
 {
-//    if (isAllScreen)
-//    {
-//        self.whiteBoardFrame = self.frame;
-//        self.frame = CGRectMake(0, 0, self.mainWhiteBoardBounce.size.width, self.mainWhiteBoardBounce.size.height);
-//    }
-//    else
-//    {
-//        self.frame = self.whiteBoardFrame;
-//    }
-//    [self refreshWhiteBoard];
+
 }
 
 /// 上一页

@@ -47,7 +47,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) YSCoursewareControlView *pageControlView;
 
 /// 主白板的bounce
-@property (nonatomic, assign)CGRect mainWhiteBoardBounce;
+@property (nonatomic, assign)CGRect mainWhiteBoardFrame;
 
 
 - (void)destroy;
