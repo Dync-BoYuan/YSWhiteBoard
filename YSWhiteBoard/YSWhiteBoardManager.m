@@ -309,7 +309,8 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 
 - (void)clickToBringVideoToFont:(UIView *)whiteBoard
 {
-    [whiteBoard bm_bringToFront];
+    YSWhiteBoardView *whiteBoardView = (YSWhiteBoardView *)whiteBoard;
+    [self setTheCurrentDocumentFileID:whiteBoardView.fileId];
 }
 
 #pragma mark 拖拽手势
@@ -397,7 +398,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
                 [self.dragImageView removeFromSuperview];
                 self.dragImageView = nil;
                 self.isDraging = NO;
-                [whiteBoardView bm_bringToFront];
+                //[whiteBoardView bm_bringToFront];
             });
         }
 }
@@ -493,7 +494,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         [self.dragImageView removeFromSuperview];
         self.dragImageView = nil;
         self.isDragZooming = NO;
-        [whiteBoard bm_bringToFront];
+        //[whiteBoard bm_bringToFront];
     }
 }
 
@@ -507,8 +508,8 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     {
         return;
     }
-    YSWhiteBoardView * whiteBoardView = [self getWhiteBoardViewWithFileId:fileId];
     
+    YSWhiteBoardView * whiteBoardView = [self getWhiteBoardViewWithFileId:fileId];
     if (!whiteBoardView)
     {
         return;
@@ -536,8 +537,6 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         BOOL full = [message bm_boolForKey:@"full"];
         
         whiteBoardView.frame = CGRectMake(x, y, width, height);
-        
-        
         
         if (small)
         {//最小化
@@ -631,6 +630,8 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
             
         }
     }
+    
+    [self setTheCurrentDocumentFileID:whiteBoardView.fileId];
 }
 
 
@@ -906,6 +907,24 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         {
             [whiteBoardView bm_bringToFront];
         }
+        
+        NSArray *subviews = self.mainWhiteBoardView.subviews;
+        NSMutableArray *whiteboardIdList = [[NSMutableArray alloc] init];
+        for (UIView *view in subviews)
+        {
+            if ([view isKindOfClass:[YSWhiteBoardView class]])
+            {
+                YSWhiteBoardView *whiteBoardView1 = (YSWhiteBoardView *)view;
+                [whiteboardIdList addObject:whiteBoardView1.whiteBoardId];
+            }
+        }
+        
+//        if ([whiteboardIdList bm_isNotEmpty])
+//        {
+//            NSDictionary *data = @{ @"type" : @"sort", @"instanceId" : whiteBoardView.whiteBoardId, @"sort" : whiteboardIdList, @"hideAll":@(false)};
+//
+//            [[YSRoomInterface instance] pubMsg:sYSSignalMoreWhiteboardGlobalState msgID:sYSSignalMoreWhiteboardGlobalState toID:YSRoomPubMsgTellAll data:data save:YES completion:nil];
+//        }
     }
 }
 
