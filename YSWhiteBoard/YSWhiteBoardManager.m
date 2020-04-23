@@ -387,22 +387,18 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         {
             whiteBoardView.frame = self.dragImageView.frame;
             
-            //x,y值在主白板上的比例
-            CGFloat scaleLeft = whiteBoardView.bm_originX / self.mainWhiteBoardView.bm_width;
-            CGFloat scaleTop = whiteBoardView.bm_originY / self.mainWhiteBoardView.bm_height;
-            //宽，高值在主白板上的比例
+            // x,y值在主白板上的比例
+            CGFloat scaleLeft = whiteBoardView.bm_originX / (self.mainWhiteBoardView.bm_width - whiteBoardView.bm_width);
+            CGFloat scaleTop = whiteBoardView.bm_originY / (self.mainWhiteBoardView.bm_height - whiteBoardView.bm_height);
+            // 宽，高值在主白板上的比例
             CGFloat scaleWidth = whiteBoardView.bm_width / self.mainWhiteBoardView.bm_width;
-            CGFloat scaleHeight = whiteBoardView.bm_width / self.mainWhiteBoardView.bm_height;
-            
-            
-            
+            CGFloat scaleHeight = whiteBoardView.bm_height / self.mainWhiteBoardView.bm_height;
             
             NSString * msgID = [NSString stringWithFormat:@"MoreWhiteboardState_%@", whiteBoardView.whiteBoardId];
             NSDictionary * data = @{@"x":@(scaleLeft),@"y":@(scaleTop),@"width":@(scaleWidth),@"height":@(scaleHeight),@"small":@NO,@"full":@NO,@"type":@"drag",@"instanceId":whiteBoardView.whiteBoardId};
             NSString * associatedMsgID = [NSString stringWithFormat:@"DocumentFilePage_ExtendShowPage_%@", whiteBoardView.whiteBoardId];
             
-            [[YSRoomInterface instance] pubMsg:sYSSignalMoreWhiteboardState msgID:msgID toID:@"__all" data:data save:YES associatedMsgID:associatedMsgID associatedUserID:nil expires:0 completion:nil];
-            
+            [[YSRoomInterface instance] pubMsg:sYSSignalMoreWhiteboardState msgID:msgID toID:YSRoomPubMsgTellAll data:data save:YES associatedMsgID:associatedMsgID associatedUserID:nil expires:0 completion:nil];
             
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
                 [self.dragImageView removeFromSuperview];
@@ -488,21 +484,18 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         [whiteBoard refreshWhiteBoard];
         
         //x,y值在主白板上的比例
-        CGFloat scaleLeft = whiteBoard.bm_originX / self.mainWhiteBoardView.bm_width;
-        CGFloat scaleTop = whiteBoard.bm_originY / self.mainWhiteBoardView.bm_height;
+        CGFloat scaleLeft = whiteBoard.bm_originX / (self.mainWhiteBoardView.bm_width - dragImageViewW);
+        CGFloat scaleTop = whiteBoard.bm_originY / (self.mainWhiteBoardView.bm_height - dragImageViewH);
         
         //宽，高值在主白板上的比例
         CGFloat scaleWidth = dragImageViewW / self.mainWhiteBoardView.bm_width;
         CGFloat scaleHeight = dragImageViewH / self.mainWhiteBoardView.bm_height;
         
-        
         NSString * msgID = [NSString stringWithFormat:@"MoreWhiteboardState_%@",whiteBoard.whiteBoardId];
         NSDictionary * data = @{@"x":@(scaleLeft),@"y":@(scaleTop),@"width":@(scaleWidth),@"height":@(scaleHeight),@"small":@NO,@"full":@NO,@"type":@"resize",@"instanceId":whiteBoard.whiteBoardId};
         NSString * associatedMsgID = [NSString stringWithFormat:@"DocumentFilePage_ExtendShowPage_%@",whiteBoard.whiteBoardId];
         
-        
-        [[YSRoomInterface instance] pubMsg:sYSSignalMoreWhiteboardState msgID:msgID toID:@"__all" data:data save:YES associatedMsgID:associatedMsgID associatedUserID:nil expires:0 completion:nil];
-        
+        [[YSRoomInterface instance] pubMsg:sYSSignalMoreWhiteboardState msgID:msgID toID:YSRoomPubMsgTellAll data:data save:YES associatedMsgID:associatedMsgID associatedUserID:nil expires:0 completion:nil];
         
         [self.dragImageView removeFromSuperview];
         self.dragImageView = nil;
@@ -530,17 +523,19 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     
     if (inlist)
     {
-        //x,y值在主白板上的比例
-        CGFloat scaleLeft = [message bm_floatForKey:@"x"];
-        CGFloat scaleTop = [message bm_floatForKey:@"y"];
         //宽，高值在主白板上的比例
         CGFloat scaleWidth = [message bm_floatForKey:@"width"];
         CGFloat scaleHeight = [message bm_floatForKey:@"height"];
+
+        CGFloat width = scaleWidth * self.mainWhiteBoardView.bm_width;
+        CGFloat height = scaleHeight * self.mainWhiteBoardView.bm_height;
+
+        //x,y值在主白板上的比例
+        CGFloat scaleLeft = [message bm_floatForKey:@"x"];
+        CGFloat scaleTop = [message bm_floatForKey:@"y"];
         
-        NSInteger x = scaleLeft * self.mainWhiteBoardView.bm_width;
-        NSInteger y = scaleTop * self.mainWhiteBoardView.bm_height;
-        NSInteger width = scaleWidth * self.mainWhiteBoardView.bm_width;
-        NSInteger height = scaleHeight * self.mainWhiteBoardView.bm_height;
+        CGFloat x = scaleLeft * (self.mainWhiteBoardView.bm_width - width);
+        CGFloat y = scaleTop * (self.mainWhiteBoardView.bm_height - height);
         
         BOOL small = [message bm_boolForKey:@"small"];
         BOOL full = [message bm_boolForKey:@"full"];
@@ -562,15 +557,20 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         
         if ([type isEqualToString:@"drag"])
         {//拖拽
-            
+            CGFloat scaleWidth = [message bm_floatForKey:@"width"];
+            CGFloat scaleHeight = [message bm_floatForKey:@"height"];
+
+            CGFloat width = scaleWidth * self.mainWhiteBoardView.bm_width;
+            CGFloat height = scaleHeight * self.mainWhiteBoardView.bm_height;
+
             //x,y值在主白板上的比例
             CGFloat scaleLeft = [message bm_floatForKey:@"x"];
             CGFloat scaleTop = [message bm_floatForKey:@"y"];
             
-            NSInteger x = scaleLeft * self.mainWhiteBoardView.bm_width;
-            NSInteger y = scaleTop * self.mainWhiteBoardView.bm_height;
-                            
-            whiteBoardView.bm_origin = CGPointMake(x, y);
+            CGFloat x = scaleLeft * (self.mainWhiteBoardView.bm_width - width);
+            CGFloat y = scaleTop * (self.mainWhiteBoardView.bm_height - height);
+
+            whiteBoardView.frame = CGRectMake(x, y, width, height);
         }
         else if ([type isEqualToString:@"resize"])
         {//缩放
@@ -578,8 +578,8 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
             CGFloat scaleWidth = [message bm_floatForKey:@"width"];
             CGFloat scaleHeight = [message bm_floatForKey:@"height"];
             
-            NSInteger width = scaleWidth * self.mainWhiteBoardView.bm_width;
-            NSInteger height = scaleHeight * self.mainWhiteBoardView.bm_height;
+            CGFloat width = scaleWidth * self.mainWhiteBoardView.bm_width;
+            CGFloat height = scaleHeight * self.mainWhiteBoardView.bm_height;
             whiteBoardView.bm_size = CGSizeMake(width, height);
         }
         else if ([type isEqualToString:@"small"])
