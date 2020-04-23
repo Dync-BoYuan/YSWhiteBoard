@@ -1258,13 +1258,15 @@
             NSDictionary * data = @{@"x":@0,@"y":@0,@"width":@1,@"height":@1,@"small":@NO,@"full":@YES,@"type":@"full",@"instanceId":self.whiteBoardId};
             NSString * associatedMsgID = [NSString stringWithFormat:@"DocumentFilePage_ExtendShowPage_%@", self.whiteBoardId];
             
-            [[YSRoomInterface instance] pubMsg:sYSSignalMoreWhiteboardState msgID:msgID toID:@"__all" data:data save:YES associatedMsgID:associatedMsgID associatedUserID:nil expires:0 completion:nil];
+            [[YSRoomInterface instance] pubMsg:sYSSignalMoreWhiteboardState msgID:msgID toID:YSRoomPubMsgTellAll data:data save:YES associatedMsgID:associatedMsgID associatedUserID:nil expires:0 completion:nil];
             
         }
             break;
         case 3:
         {//删除按钮
-            [[YSWhiteBoardManager shareInstance] removeWhiteBoardViewWithFileId:self.fileId];
+            NSString *msgID = [NSString stringWithFormat:@"%@%@", sYSSignalDocumentFilePage_ExtendShowPage, self.whiteBoardId];
+            NSDictionary * data = @{@"sourceInstanceId" : self.whiteBoardId};
+            [[YSRoomInterface instance] delMsg:sYSSignalExtendShowPage msgID:msgID toID:YSRoomPubMsgTellAll data:data completion:nil];
             self.topFullScreenFrame = CGRectZero;
         }
             break;
