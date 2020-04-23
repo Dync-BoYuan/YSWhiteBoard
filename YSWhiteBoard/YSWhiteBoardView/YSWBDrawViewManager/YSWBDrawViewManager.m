@@ -246,7 +246,7 @@
 
 - (CGFloat)documentZoomScale
 {
-    self.fileView.zoomScale;
+    return self.fileView.zoomScale;
 }
 
 - (CGFloat)getRatio

@@ -254,7 +254,7 @@
 {
     if (self.drawViewManager.showOnWeb)
     {
-        return 1.0f
+        return 1.0f;
     }
     else
     {
