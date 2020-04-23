@@ -35,7 +35,6 @@ NS_ASSUME_NONNULL_BEGIN
 /// 文档服务器地址
 @property (nonatomic, strong, readonly) NSString *serverDocAddrKey;
 
-
 /// 课件列表
 @property (nonatomic, strong, readonly) NSMutableArray <YSFileModel *> *docmentList;
 /// 课件Dic列表
