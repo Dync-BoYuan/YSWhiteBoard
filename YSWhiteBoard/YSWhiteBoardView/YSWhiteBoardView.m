@@ -204,7 +204,7 @@
 
 - (void)changeToCurrentBWView:(UITapGestureRecognizer *)tapGesture
 {
-    if ([YSRoomInterface instance].localUser.peerID == YSUserType_Teacher)
+    if ([YSRoomInterface instance].localUser.role == YSUserType_Teacher)
     {
         [[YSWhiteBoardManager shareInstance] setTheCurrentDocumentFileID:self.fileId];
     }

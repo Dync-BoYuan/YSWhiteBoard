@@ -923,7 +923,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         }
     }
     
-    if ([YSRoomInterface instance].localUser.peerID == YSUserType_Teacher)
+    if ([YSRoomInterface instance].localUser.role == YSUserType_Teacher)
     {
         NSArray *subviews = self.mainWhiteBoardView.subviews;
         NSMutableArray *whiteboardIdList = [[NSMutableArray alloc] init];
@@ -943,7 +943,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
             {
                 instanceId = @"";
             }
-            NSDictionary *data = @{ @"type" : @"sort", @"instanceId" : whiteBoardView.whiteBoardId, @"sort" : whiteboardIdList, @"hideAll" : @(NO)};
+            NSDictionary *data = @{ @"type" : @"sort", @"instanceId" : instanceId, @"sort" : whiteboardIdList, @"hideAll" : @(NO)};
 
             [[YSRoomInterface instance] pubMsg:sYSSignalMoreWhiteboardGlobalState msgID:sYSSignalMoreWhiteboardGlobalState toID:YSRoomPubMsgTellAll data:data save:YES completion:nil];
         }
