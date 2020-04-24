@@ -20,6 +20,15 @@ typedef NS_ENUM(NSUInteger, YSRoomUseType)
     YSRoomUseTypeMeeting = 6
 };
 
+/// 白板文档媒体类型
+typedef NS_ENUM(NSUInteger, YSWhiteBordMediaType)
+{
+    /// 视频
+    YSWhiteBordMediaType_Video = 0,
+    /// 音频
+    YSWhiteBordMediaType_Audio
+};
+
 typedef NS_ENUM(NSInteger, YSEvent)
 {
     YSEventShowPage        = 0,    //增加文档

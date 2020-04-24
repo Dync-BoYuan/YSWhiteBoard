@@ -90,6 +90,11 @@
 
 - (instancetype)initWithFrame:(CGRect)frame fileId:(NSString *)fileId loadFinishedBlock:(wbLoadFinishedBlock)loadFinishedBlock
 {
+    return [self initWithFrame:frame fileId:fileId isMedia:NO mediaType:YSWhiteBordMediaType_Video loadFinishedBlock:loadFinishedBlock];
+}
+
+- (instancetype)initWithFrame:(CGRect)frame fileId:(NSString *)fileId isMedia:(BOOL)isMedia mediaType:(YSWhiteBordMediaType)mediaType loadFinishedBlock:(nullable  wbLoadFinishedBlock)loadFinishedBlock
+{
     self = [super initWithFrame:frame];
     if (self)
     {
@@ -105,14 +110,17 @@
             self.whiteBoardId = [NSString stringWithFormat:@"%@%@", YSWhiteBoardId_Header, fileId];
         }
         
-        self.webViewManager = [[YSWBWebViewManager alloc] init];
-        self.webViewManager.delegate = self;
-        
         self.cacheMsgPool = [NSMutableArray array];
-
         self.isLoadingFinish = NO;
-
         topViewHeight = 0;
+
+        if (isMedia)
+        {
+            self.bm_size = CGSizeMake(100, 100);
+            self.backgroundColor = [UIColor greenColor];
+            return self;
+        }
+
         if (!isMainWhiteBoard)
         {
             topViewHeight = YSTopViewHeight;
@@ -132,6 +140,9 @@
                 [weakSelf topBarButtonClick:sender];
             };
         }
+        
+        self.webViewManager = [[YSWBWebViewManager alloc] init];
+        self.webViewManager.delegate = self;
         
         CGRect contentFrame = CGRectMake(0, topViewHeight, frame.size.width, frame.size.height-topViewHeight);
         UIView *whiteBoardContentView = [[UIView alloc] initWithFrame:contentFrame];
