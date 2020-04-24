@@ -1678,6 +1678,17 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
                           associatedUserID:nil
                                    expires:0
                                 completion:nil];
+        // 学生默认课件最大化
+        if ([YSRoomInterface instance].localUser.role == YSUserType_Student)
+        {
+#warning 最大化
+            NSString *whiteBoardId = [YSRoomUtil getwhiteboardIDFromFileId:self.currentFileId];
+            NSString * msgID = [NSString stringWithFormat:@"MoreWhiteboardState_%@", whiteBoardId];
+            NSDictionary * data = @{@"x":@0,@"y":@0,@"width":@1,@"height":@1,@"small":@NO,@"full":@YES,@"type":@"full",@"instanceId":whiteBoardId};
+            NSString * associatedMsgID = [NSString stringWithFormat:@"DocumentFilePage_ExtendShowPage_%@", whiteBoardId];
+            
+            [YSRoomUtil pubWhiteBoardMsg:sYSSignalMoreWhiteboardState msgID:msgID data:data extensionData:nil associatedMsgID:associatedMsgID associatedUserID:nil expires:0 completion:nil];
+        }
     }
 }
 
