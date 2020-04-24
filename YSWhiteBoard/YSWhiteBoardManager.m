@@ -515,32 +515,37 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         return;
     }
     
+    
+    
     if (inlist)
     {
         //宽，高值在主白板上的比例
-        CGFloat scaleWidth = [message bm_floatForKey:@"width"];
-        CGFloat scaleHeight = [message bm_floatForKey:@"height"];
-
-        CGFloat width = scaleWidth * self.mainWhiteBoardView.bm_width;
-        CGFloat height = scaleHeight * self.mainWhiteBoardView.bm_height;
-
-        //x,y值在主白板上的比例
-        CGFloat scaleLeft = [message bm_floatForKey:@"x"];
-        CGFloat scaleTop = [message bm_floatForKey:@"y"];
-        
-        CGFloat x = scaleLeft * (self.mainWhiteBoardView.bm_width - width);
-        CGFloat y = scaleTop * (self.mainWhiteBoardView.bm_height - height);
-        
-        BOOL small = [message bm_boolForKey:@"small"];
-//        BOOL full = [message bm_boolForKey:@"full"];
-        
-        whiteBoardView.frame = CGRectMake(x, y, width, height);
-
-        if (small)
+//        CGFloat scaleWidth = [message bm_floatForKey:@"width"];
+//        CGFloat scaleHeight = [message bm_floatForKey:@"height"];
+//
+//        CGFloat width = scaleWidth * self.mainWhiteBoardView.bm_width;
+//        CGFloat height = scaleHeight * self.mainWhiteBoardView.bm_height;
+//
+//        //x,y值在主白板上的比例
+//        CGFloat scaleLeft = [message bm_floatForKey:@"x"];
+//        CGFloat scaleTop = [message bm_floatForKey:@"y"];
+//
+//        CGFloat x = scaleLeft * (self.mainWhiteBoardView.bm_width - width);
+//        CGFloat y = scaleTop * (self.mainWhiteBoardView.bm_height - height);
+//
+////        BOOL full = [message bm_boolForKey:@"full"];
+//
+//        whiteBoardView.frame = CGRectMake(x, y, width, height);
+        whiteBoardView.positionData = message;
+        if ([message bm_boolForKey:@"small"])
         {//最小化
             whiteBoardView.hidden = YES;
             self.mainWhiteBoardView.collectBtn.selected = YES;
         }
+        
+        
+        [whiteBoardView refreshWhiteBoard];
+        
 //        else if (full)
 //        {//最大化
 //
@@ -554,37 +559,39 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         {//拖拽
 
             //宽，高值在主白板上的比例
-            CGFloat scaleWidth = [message bm_floatForKey:@"width"];
-            CGFloat scaleHeight = [message bm_floatForKey:@"height"];
-
-            CGFloat width = scaleWidth * self.mainWhiteBoardView.bm_width;
-            CGFloat height = scaleHeight * self.mainWhiteBoardView.bm_height;
-
-            if (!width || !height)
-            {
-                width = whiteBoardView.bm_width;
-                height = whiteBoardView.bm_height;
-            }
-             
-            //x,y值在主白板上的比例
-            CGFloat scaleLeft = [message bm_floatForKey:@"x"];
-            CGFloat scaleTop = [message bm_floatForKey:@"y"];
-            
-            CGFloat x = scaleLeft * (self.mainWhiteBoardView.bm_width - width);
-            CGFloat y = scaleTop * (self.mainWhiteBoardView.bm_height - height);
-
-            whiteBoardView.frame = CGRectMake(x, y, width, height);
+//            CGFloat scaleWidth = [message bm_floatForKey:@"width"];
+//            CGFloat scaleHeight = [message bm_floatForKey:@"height"];
+//
+//            CGFloat width = scaleWidth * self.mainWhiteBoardView.bm_width;
+//            CGFloat height = scaleHeight * self.mainWhiteBoardView.bm_height;
+//
+//            if (!width || !height)
+//            {
+//                width = whiteBoardView.bm_width;
+//                height = whiteBoardView.bm_height;
+//            }
+//
+//            //x,y值在主白板上的比例
+//            CGFloat scaleLeft = [message bm_floatForKey:@"x"];
+//            CGFloat scaleTop = [message bm_floatForKey:@"y"];
+//
+//            CGFloat x = scaleLeft * (self.mainWhiteBoardView.bm_width - width);
+//            CGFloat y = scaleTop * (self.mainWhiteBoardView.bm_height - height);
+//
+//            whiteBoardView.frame = CGRectMake(x, y, width, height);
+            whiteBoardView.positionData = message;
             [whiteBoardView refreshWhiteBoard];
         }
         else if ([type isEqualToString:@"resize"])
         {//缩放
              //宽，高值在主白板上的比例
-            CGFloat scaleWidth = [message bm_floatForKey:@"width"];
-            CGFloat scaleHeight = [message bm_floatForKey:@"height"];
-            
-            CGFloat width = scaleWidth * self.mainWhiteBoardView.bm_width;
-            CGFloat height = scaleHeight * self.mainWhiteBoardView.bm_height;
-            whiteBoardView.bm_size = CGSizeMake(width, height);
+//            CGFloat scaleWidth = [message bm_floatForKey:@"width"];
+//            CGFloat scaleHeight = [message bm_floatForKey:@"height"];
+//
+//            CGFloat width = scaleWidth * self.mainWhiteBoardView.bm_width;
+//            CGFloat height = scaleHeight * self.mainWhiteBoardView.bm_height;
+//            whiteBoardView.bm_size = CGSizeMake(width, height);
+            whiteBoardView.positionData = message;
             [whiteBoardView refreshWhiteBoard];
         }
         else if ([type isEqualToString:@"small"])
@@ -598,30 +605,30 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
             else
             {
                 //宽，高值在主白板上的比例
-                CGFloat scaleWidth = [message bm_floatForKey:@"width"];
-                CGFloat scaleHeight = [message bm_floatForKey:@"height"];
-
-                CGFloat width = scaleWidth * self.mainWhiteBoardView.bm_width;
-                CGFloat height = scaleHeight * self.mainWhiteBoardView.bm_height;
-
-                if (!width || !height)
-                {
-                    width = whiteBoardView.bm_width;
-                    height = whiteBoardView.bm_height;
-                }
-                
-                //x,y值在主白板上的比例
-                CGFloat scaleLeft = [message bm_floatForKey:@"x"];
-                CGFloat scaleTop = [message bm_floatForKey:@"y"];
-                
-                CGFloat x = scaleLeft * (self.mainWhiteBoardView.bm_width - width);
-                CGFloat y = scaleTop * (self.mainWhiteBoardView.bm_height - height);
-
-                whiteBoardView.frame = CGRectMake(x, y, width, height);
+//                CGFloat scaleWidth = [message bm_floatForKey:@"width"];
+//                CGFloat scaleHeight = [message bm_floatForKey:@"height"];
+//
+//                CGFloat width = scaleWidth * self.mainWhiteBoardView.bm_width;
+//                CGFloat height = scaleHeight * self.mainWhiteBoardView.bm_height;
+//
+//                if (!width || !height)
+//                {
+//                    width = whiteBoardView.bm_width;
+//                    height = whiteBoardView.bm_height;
+//                }
+//
+//                //x,y值在主白板上的比例
+//                CGFloat scaleLeft = [message bm_floatForKey:@"x"];
+//                CGFloat scaleTop = [message bm_floatForKey:@"y"];
+//
+//                CGFloat x = scaleLeft * (self.mainWhiteBoardView.bm_width - width);
+//                CGFloat y = scaleTop * (self.mainWhiteBoardView.bm_height - height);
+//
+//                whiteBoardView.frame = CGRectMake(x, y, width, height);
                 
                 whiteBoardView.hidden = NO;
 //                self.mainWhiteBoardView.collectBtn.selected = YES;
-                [whiteBoardView refreshWhiteBoard];
+//                [whiteBoardView refreshWhiteBoard];
             }
         }
         else if ([type isEqualToString:@"full"])
@@ -630,16 +637,19 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
             BOOL full = [message bm_boolForKey:@"full"];
             if (full)
             {
-                whiteBoardView.topFullScreenFrame = whiteBoardView.frame;
+                whiteBoardView.beforeFullScreenData = whiteBoardView.positionData;
                 
-                whiteBoardView.frame = CGRectMake(0, -30, self.mainWhiteBoardView.bm_width, self.mainWhiteBoardView.bm_height + 30);
+//                whiteBoardView.frame = CGRectMake(0, -30, self.mainWhiteBoardView.bm_width, self.mainWhiteBoardView.bm_height + 30);
                 whiteBoardView.whiteBoardControlView.hidden = NO;
+                whiteBoardView.positionData = message;
                 [whiteBoardView refreshWhiteBoard];
             }
             else
             {
-                whiteBoardView.frame = whiteBoardView.topFullScreenFrame;
+                whiteBoardView.positionData = whiteBoardView.beforeFullScreenData;
+                
                 whiteBoardView.whiteBoardControlView.hidden = YES;
+                
                 [whiteBoardView refreshWhiteBoard];
             }
         }

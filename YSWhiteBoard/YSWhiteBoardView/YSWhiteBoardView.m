@@ -65,7 +65,7 @@
 @property (nonatomic, strong) UIView * dragZoomView;
 
 /// 小白板点击控制条全屏前的frame
-@property (nonatomic, assign)CGRect whiteBoardFrame;
+//@property (nonatomic, assign)CGRect whiteBoardFrame;
 
 
 
@@ -257,7 +257,42 @@
 
 - (void)refreshWhiteBoard
 {
-    [self refreshWhiteBoardWithFrame:self.frame];
+    CGRect frame = self.frame;
+    if (self != [YSWhiteBoardManager shareInstance].mainWhiteBoardView)
+    {
+        NSDictionary *message = self.positionData;
+        //宽，高值在主白板上的比例
+        CGFloat scaleWidth = [message bm_floatForKey:@"width"];
+        CGFloat scaleHeight = [message bm_floatForKey:@"height"];
+        
+        CGFloat width = scaleWidth * self.superview.bm_width;
+        CGFloat height = scaleHeight * self.superview.bm_height;
+        
+        if (!width || !height)
+        {
+            width = self.bm_width;
+            height = self.bm_height;
+        }
+        
+        //x,y值在主白板上的比例
+        CGFloat scaleLeft = [message bm_floatForKey:@"x"];
+        CGFloat scaleTop = [message bm_floatForKey:@"y"];
+        
+        CGFloat x = scaleLeft * (self.superview.bm_width - width);
+        CGFloat y = scaleTop * (self.superview.bm_height - height);
+
+        
+        if ([[message bm_stringForKey:@"type"] isEqualToString:@"full"] && [message bm_boolForKey:@"full"])
+        {
+            frame = CGRectMake(x, y-30, width, height+30);
+        }
+        else
+        {
+            frame = CGRectMake(x, y, width, height);
+        }
+        
+    }
+    [self refreshWhiteBoardWithFrame:frame];
 }
 
 // 页面刷新尺寸
@@ -1305,7 +1340,6 @@
             NSString *msgID = [NSString stringWithFormat:@"%@%@", sYSSignalDocumentFilePage_ExtendShowPage, self.whiteBoardId];
             NSDictionary *data = @{@"sourceInstanceId" : self.whiteBoardId};
             [[YSRoomInterface instance] delMsg:sYSSignalExtendShowPage msgID:msgID toID:YSRoomPubMsgTellAll data:data completion:nil];
-            self.topFullScreenFrame = CGRectZero;
         }
             break;
         default:
@@ -1318,7 +1352,7 @@
 /// 全屏 复原 回调
 - (void)coursewarefullScreen:(BOOL)isAllScreen
 {
-
+  
 }
 
 /// 上一页
@@ -1376,7 +1410,6 @@
     NSString *msgID = [NSString stringWithFormat:@"%@%@", sYSSignalDocumentFilePage_ExtendShowPage, self.whiteBoardId];
     NSDictionary *data = @{@"sourceInstanceId" : self.whiteBoardId};
     [[YSRoomInterface instance] delMsg:sYSSignalExtendShowPage msgID:msgID toID:YSRoomPubMsgTellAll data:data completion:nil];
-    self.topFullScreenFrame = CGRectZero;
 }
 
 @end
