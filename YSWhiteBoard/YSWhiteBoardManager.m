@@ -1982,31 +1982,31 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
             }
         }];
         [self addOrReplaceDocumentFile:tDataDic];
-        [self setTheCurrentDocumentFileID:fileId];
         
+        YSWhiteBoardView *whiteBoardView = nil;
         if ([msgName isEqualToString:sYSSignalShowPage])
         {
             if (self.mainWhiteBoardView)
             {
                 [self.mainWhiteBoardView changeFileId:fileId];
-                [self.mainWhiteBoardView remotePubMsg:message];
+                whiteBoardView = self.mainWhiteBoardView;
             }
         }
         else
         {
-            YSWhiteBoardView *whiteBoardView = [self getWhiteBoardViewWithFileId:fileId];
+            whiteBoardView = [self getWhiteBoardViewWithFileId:fileId];
             if (!whiteBoardView)
             {
                 whiteBoardView = [self createWhiteBoardWithFileId:fileId loadFinishedBlock:nil];
                 whiteBoardView.backgroundColor = [UIColor bm_randomColor];
                 [self.mainWhiteBoardView addSubview:whiteBoardView];
                 whiteBoardView.topBar.delegate = self;
-//                whiteBoardView.mainWhiteBoard = self.mainWhiteBoardView;
                 [self addWhiteBoardViewWithWhiteBoardView:whiteBoardView];
             }
-            
-            [whiteBoardView remotePubMsg:message];
         }
+        
+        [self setTheCurrentDocumentFileID:fileId];
+        [whiteBoardView remotePubMsg:message];
         
         return;
     }
@@ -2070,6 +2070,11 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     // 窗口布局
     else if ([msgName isEqualToString:sYSSignalMoreWhiteboardGlobalState])
     {
+        if ([fromId isEqualToString:[YSRoomInterface instance].localUser.peerID])
+        {
+            return;
+        }
+        
         NSString *type = [tDataDic bm_stringForKey:@"type"];
         // 窗口排序
         if ([type isEqualToString:@"sort"])
