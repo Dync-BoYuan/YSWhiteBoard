@@ -32,9 +32,7 @@
 /// 缩放比例
 @property (nonatomic, assign) CGFloat zoomScale;
 
-
 @end
-
 
 @implementation YSCoursewareControlView
 
@@ -46,7 +44,7 @@
         
         self.isAllScreen = NO;
         self.allowTurnPage = YES;
-        self.allowScaling = YES;
+//        self.allowScaling = YES;
         self.totalPage = 1;
         self.currentPage = 1;
         self.zoomScale = 1;
@@ -123,9 +121,7 @@
     
     self.augmentBtn.enabled = YES;
     self.reduceBtn.enabled  = NO;
-    
-    
-    
+        
 }
 
 - (void)layoutSubviews
@@ -303,11 +299,15 @@
     if (allowScaling)
     {
         [self changeZoomScale:self.zoomScale];
+        
+        
+        self.bm_width = 246;
     }
     else
     {
         self.augmentBtn.enabled = NO;
         self.reduceBtn.enabled = NO;
+        self.bm_width = 160;
     }
 }
 

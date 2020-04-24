@@ -25,20 +25,11 @@
     if (self = [super initWithFrame:frame])
     {
         self.backgroundColor = [UIColor colorWithRed:222/255.0 green:234/255.0 blue:255/255.0 alpha:0.8];
-        
-//        self.isAllScreen = NO;
-//        self.allowTurnPage = YES;
-//        self.allowScaling = YES;
-//        self.totalPage = 1;
-//        self.currentPage = 1;
-//        self.zoomScale = 1;
-        
-        [self setupUI];
-        
         self.layer.cornerRadius = frame.size.height/2;
         self.layer.masksToBounds = YES;
+
+        [self setupUI];
     }
-    
     return self;
 }
 
