@@ -74,6 +74,7 @@
     [_displayView addSubview:_pdfView];
     
     _imageView = [[UIImageView alloc] init];
+    _imageView.userInteractionEnabled = YES;
     [_displayView addSubview:_imageView];
     
     
