@@ -1669,20 +1669,23 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     
     [dict setValue:myselfDict forKey:@"myself"];
     
-    NSDictionary *msgList = [dict objectForKey:@"msglist"];
-    for (NSString *key in msgList.allKeys)
-    {
-        NSDictionary *msgDic = [msgList bm_dictionaryForKey:key];
-
-        [self roomWhiteBoardOnRemotePubMsgWithMessage:msgDic inList:YES];
-    }
-
-    NSSortDescriptor *desc = [[NSSortDescriptor alloc] initWithKey:@"seq" ascending:YES];
-    // 历史msgList如果有ShowPage信令，需要主动发给H5去刷新当前课件
     BOOL show = NO;
+    NSDictionary *msgList = [dict objectForKey:@"msglist"];
+    NSSortDescriptor *desc = [[NSSortDescriptor alloc] initWithKey:@"seq" ascending:YES];
     NSArray *msgArray = [[msgList allValues] sortedArrayUsingDescriptors:@[ desc ]];
+
+//    for (NSString *key in msgList.allKeys)
+//    {
+//        NSDictionary *msgDic = [msgList bm_dictionaryForKey:key];
+//
+//        [self roomWhiteBoardOnRemotePubMsgWithMessage:msgDic inList:YES];
+//    }
+
     for (NSDictionary *msgDic in msgArray)
     {
+        [self roomWhiteBoardOnRemotePubMsgWithMessage:msgDic inList:YES];
+        
+        // 历史msgList如果有ShowPage信令，需要主动发给H5去刷新当前课件
         if ([[msgDic objectForKey:@"name"] isEqualToString:sYSSignalShowPage] || [[msgDic objectForKey:@"name"] isEqualToString:sYSSignalExtendShowPage])
         {
             show = YES;
@@ -1784,7 +1787,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 {
     NSDictionary *dict = notification.userInfo;
     NSArray *dicArray = [dict bm_arrayForKey:YSWhiteBoardNotificationUserInfoKey];
-    
+
     for (NSDictionary *dic in dicArray)
     {
         if (dic && [dic isKindOfClass:NSDictionary.class])

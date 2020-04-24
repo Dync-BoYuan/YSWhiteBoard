@@ -66,6 +66,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 - (instancetype)initWithFrame:(CGRect)frame fileId:(NSString *)fileId loadFinishedBlock:(nullable  wbLoadFinishedBlock)loadFinishedBlock;
+- (instancetype)initWithFrame:(CGRect)frame fileId:(NSString *)fileId isMedia:(BOOL)isMedia mediaType:(YSWhiteBordMediaType)mediaType loadFinishedBlock:(nullable  wbLoadFinishedBlock)loadFinishedBlock;
 
 /// 更新服务器地址
 - (void)updateWebAddressInfo:(NSDictionary *)message;
