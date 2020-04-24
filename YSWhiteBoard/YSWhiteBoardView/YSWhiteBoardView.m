@@ -272,6 +272,12 @@
     if (self != [YSWhiteBoardManager shareInstance].mainWhiteBoardView)
     {
         NSDictionary *message = self.positionData;
+        
+//        if ([[message bm_stringForKey:@"type"] isEqualToString:@"full"] && ![message bm_boolForKey:@"full"])
+//        {
+//            message = self.beforeFullScreenData;
+//        }
+        
         //宽，高值在主白板上的比例
         CGFloat scaleWidth = [message bm_floatForKey:@"width"];
         CGFloat scaleHeight = [message bm_floatForKey:@"height"];
@@ -296,10 +302,12 @@
         if ([[message bm_stringForKey:@"type"] isEqualToString:@"full"] && [message bm_boolForKey:@"full"])
         {
             frame = CGRectMake(x, y-30, width, height+30);
+            self.whiteBoardControlView.hidden = NO;
         }
         else
         {
             frame = CGRectMake(x, y, width, height);
+            self.whiteBoardControlView.hidden = YES;
         }
         
     }
@@ -1395,17 +1403,21 @@
 /// 由全屏还原的按钮
 - (void)whiteBoardfullScreenReturn
 {
-//    self.frame = self.topFullScreenFrame;
-//    self.whiteBoardControlView.hidden = YES;
-//    [self refreshWhiteBoard];
+    NSDictionary * dict = self.beforeFullScreenData;
+    
+    if (![dict bm_isNotEmpty])
+    {
+        dict = self.positionData;
+    }
     
     //====  信令  ====
     // x,y值在主白板上的比例
-    CGFloat scaleLeft = self.bm_originX / (self.superview.bm_width - self.bm_width);
-    CGFloat scaleTop = self.bm_originY / (self.superview.bm_height - self.bm_height);
+    CGFloat scaleLeft = [dict bm_floatForKey:@"x"];
+    CGFloat scaleTop = [dict bm_floatForKey:@"y"];
+    
     // 宽，高值在主白板上的比例
-    CGFloat scaleWidth = self.bm_width / self.superview.bm_width;
-    CGFloat scaleHeight = self.bm_height / self.superview.bm_height;
+    CGFloat scaleWidth = [dict bm_floatForKey:@"width"];
+    CGFloat scaleHeight = [dict bm_floatForKey:@"height"];
     
     NSString * msgID = [NSString stringWithFormat:@"MoreWhiteboardState_%@", self.whiteBoardId];
     NSDictionary * data = @{@"x":@(scaleLeft),@"y":@(scaleTop),@"width":@(scaleWidth),@"height":@(scaleHeight),@"small":@NO,@"full":@NO,@"type":@"full",@"instanceId":self.whiteBoardId};
@@ -1417,7 +1429,6 @@
 /// 删除按钮
 - (void)deleteWhiteBoardView
 {
-//    [[YSWhiteBoardManager shareInstance] removeWhiteBoardViewWithFileId:self.fileId];
     NSString *msgID = [NSString stringWithFormat:@"%@%@", sYSSignalDocumentFilePage_ExtendShowPage, self.whiteBoardId];
     NSDictionary *data = @{@"sourceInstanceId" : self.whiteBoardId};
     [[YSRoomInterface instance] delMsg:sYSSignalExtendShowPage msgID:msgID toID:YSRoomPubMsgTellAll data:data completion:nil];
