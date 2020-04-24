@@ -25,6 +25,20 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)getSourceInstanceIdFromFileId:(NSString *)fileId;
 + (NSString *)getwhiteboardIDFromFileId:(NSString *)fileId;
 
++ (int)pubWhiteBoardMsg:(NSString *)msgName
+                  msgID:(NSString *)msgID
+                   data:(NSDictionary * _Nullable)dataDic
+          extensionData:(NSDictionary * _Nullable)extensionData
+        associatedMsgID:(NSString * _Nullable)associatedMsgID
+       associatedUserID:(NSString * _Nullable)associatedUserID
+                expires:(NSTimeInterval)expires
+             completion:(completion_block _Nullable)completion;
+
++ (int)delWhiteBoardMsg:(NSString *)msgName
+                  msgID:(NSString *)msgID
+                   data:(NSObject * _Nullable)data
+             completion:(completion_block _Nullable)completion;
+
 @end
 
 NS_ASSUME_NONNULL_END

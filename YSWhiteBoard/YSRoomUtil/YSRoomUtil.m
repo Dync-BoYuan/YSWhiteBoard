@@ -156,6 +156,57 @@
     }
 }
 
++ (int)pubWhiteBoardMsg:(NSString *)msgName
+                  msgID:(NSString *)msgID
+                   data:(NSDictionary * _Nullable)dataDic
+          extensionData:(NSDictionary * _Nullable)extensionData
+        associatedMsgID:(NSString * _Nullable)associatedMsgID
+       associatedUserID:(NSString * _Nullable)associatedUserID
+                expires:(NSTimeInterval)expires
+             completion:(completion_block _Nullable)completion
+{
+    if ([msgName isEqualToString:sYSSignalShowPage] || [msgName isEqualToString:sYSSignalExtendShowPage] || [msgName isEqualToString:sYSSignalMoreWhiteboardState] || [msgName isEqualToString:sYSSignalMoreWhiteboardGlobalState])
+    {
+        NSString *tellWho = [YSRoomInterface instance].localUser.peerID;
+        BOOL save = NO;
+        if ([YSWhiteBoardManager shareInstance].isBeginClass)
+        {
+            if ([YSRoomInterface instance].localUser.role == YSUserType_Teacher)
+            {
+                tellWho = YSRoomPubMsgTellAll;
+                save = YES;
+            }
+        }
+        
+        NSData *jsonData = [NSJSONSerialization dataWithJSONObject:dataDic options:NSJSONWritingPrettyPrinted error:nil];
 
+        NSString *dataString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
 
+        return [[YSRoomInterface instance] pubMsg:msgName msgID:msgID toID:tellWho data:dataString save:save extensionData:extensionData associatedMsgID:associatedMsgID associatedUserID:associatedUserID expires:expires completion:completion];
+    }
+    
+    return -1;
+}
+
++ (int)delWhiteBoardMsg:(NSString *)msgName
+                  msgID:(NSString *)msgID
+                   data:(NSDictionary * _Nullable)dataDic
+             completion:(completion_block _Nullable)completion
+{
+    if ([msgName isEqualToString:sYSSignalShowPage] || [msgName isEqualToString:sYSSignalExtendShowPage])
+    {
+        NSString *tellWho = [YSRoomInterface instance].localUser.peerID;
+        if ([YSWhiteBoardManager shareInstance].isBeginClass)
+        {
+            if ([YSRoomInterface instance].localUser.role == YSUserType_Teacher)
+            {
+                tellWho = YSRoomPubMsgTellAll;
+            }
+        }
+        
+        return [[YSRoomInterface instance] delMsg:msgName msgID:msgID toID:tellWho data:dataDic completion:completion];
+    }
+    
+    return -1;
+}
 @end

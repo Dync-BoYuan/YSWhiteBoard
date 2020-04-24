@@ -392,7 +392,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
             NSDictionary * data = @{@"x":@(scaleLeft),@"y":@(scaleTop),@"width":@(scaleWidth),@"height":@(scaleHeight),@"small":@NO,@"full":@NO,@"type":@"drag",@"instanceId":whiteBoardView.whiteBoardId};
             NSString * associatedMsgID = [NSString stringWithFormat:@"DocumentFilePage_ExtendShowPage_%@", whiteBoardView.whiteBoardId];
             
-            [[YSRoomInterface instance] pubMsg:sYSSignalMoreWhiteboardState msgID:msgID toID:YSRoomPubMsgTellAll data:data save:YES associatedMsgID:associatedMsgID associatedUserID:nil expires:0 completion:nil];
+            [YSRoomUtil pubWhiteBoardMsg:sYSSignalMoreWhiteboardState msgID:msgID data:data extensionData:nil associatedMsgID:associatedMsgID associatedUserID:nil expires:0 completion:nil];
             
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
                 [self.dragImageView removeFromSuperview];
@@ -489,7 +489,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         NSDictionary * data = @{@"x":@(scaleLeft),@"y":@(scaleTop),@"width":@(scaleWidth),@"height":@(scaleHeight),@"small":@NO,@"full":@NO,@"type":@"resize",@"instanceId":whiteBoard.whiteBoardId};
         NSString * associatedMsgID = [NSString stringWithFormat:@"DocumentFilePage_ExtendShowPage_%@",whiteBoard.whiteBoardId];
         
-        [[YSRoomInterface instance] pubMsg:sYSSignalMoreWhiteboardState msgID:msgID toID:YSRoomPubMsgTellAll data:data save:YES associatedMsgID:associatedMsgID associatedUserID:nil expires:0 completion:nil];
+        [YSRoomUtil pubWhiteBoardMsg:sYSSignalMoreWhiteboardState msgID:msgID data:data extensionData:nil associatedMsgID:associatedMsgID associatedUserID:nil expires:0 completion:nil];
         
         [self.dragImageView removeFromSuperview];
         self.dragImageView = nil;
@@ -960,7 +960,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
             }
             NSDictionary *data = @{ @"type" : @"sort", @"instanceId" : instanceId, @"sort" : whiteboardIdList, @"hideAll" : @(NO)};
 
-            [[YSRoomInterface instance] pubMsg:sYSSignalMoreWhiteboardGlobalState msgID:sYSSignalMoreWhiteboardGlobalState toID:YSRoomPubMsgTellAll data:data save:YES completion:nil];
+            [YSRoomUtil pubWhiteBoardMsg:sYSSignalMoreWhiteboardGlobalState msgID:sYSSignalMoreWhiteboardGlobalState data:data extensionData:nil associatedMsgID:nil associatedUserID:nil expires:0 completion:nil];
         }
     }
 }
@@ -1162,7 +1162,28 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 /// 切换课件
 - (void)changeCourseWithFileId:(NSString *)fileId
 {
-    [self changeCourseWithFileId:fileId toID:YSRoomPubMsgTellAll save:YES];
+    YSFileModel *fileModel = [self getDocumentWithFileID:fileId];
+    if (!fileModel)
+    {
+        return;
+    }
+    
+    NSString *sourceInstanceId = [YSRoomUtil getSourceInstanceIdFromFileId:fileId];
+    NSDictionary *fileDic = [YSFileModel fileDataDocDic:fileModel sourceInstanceId:sourceInstanceId];
+    
+    if (self.roomUseType == YSRoomUseTypeLiveRoom)
+    {
+        [YSRoomUtil pubWhiteBoardMsg:sYSSignalShowPage msgID:sYSSignalDocumentFilePage_ShowPage data:fileDic extensionData:nil associatedMsgID:nil associatedUserID:nil expires:0 completion:nil];
+    }
+    else
+    {
+        NSString *msgID = [NSString stringWithFormat:@"%@%@", sYSSignalDocumentFilePage_ExtendShowPage, [YSRoomUtil getwhiteboardIDFromFileId:fileId]];
+
+        NSMutableDictionary *fileData = [[NSMutableDictionary alloc] initWithDictionary:fileDic];
+        [fileData bm_setString:[YSRoomUtil getwhiteboardIDFromFileId:fileId] forKey:@"sourceInstanceId"];
+        
+        [YSRoomUtil pubWhiteBoardMsg:sYSSignalExtendShowPage msgID:msgID data:fileDic extensionData:nil associatedMsgID:nil associatedUserID:nil expires:0 completion:nil];
+    }
 }
 
 - (void)changeCourseWithFileId:(NSString *)fileId toID:(NSString *)toID save:(BOOL)save
@@ -1702,7 +1723,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
                 fileid = @"0";
             }
             [self setTheCurrentDocumentFileID:fileid];
-            break;
+            //break;
         }
     }
     
