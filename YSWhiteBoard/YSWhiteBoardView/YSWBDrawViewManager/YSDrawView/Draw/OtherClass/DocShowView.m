@@ -254,6 +254,11 @@
     
     if (_isPenetration == YES) {
         
+        if ([YSRoomInterface instance].localUser.role == YSUserType_Teacher)
+        {
+            [[YSWhiteBoardManager shareInstance] setTheCurrentDocumentFileID:self.ysDrawView.fileid];
+        }
+        
         return nil;
     }
     else {

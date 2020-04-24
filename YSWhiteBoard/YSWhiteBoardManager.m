@@ -911,6 +911,11 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 
 - (void)setTheCurrentDocumentFileID:(NSString *)fileId
 {
+    if ([fileId isEqualToString:_currentFileId])
+    {
+        return;
+    }
+    
     _currentFileId = fileId;
     
     YSWhiteBoardView *whiteBoardView = self.mainWhiteBoardView;
