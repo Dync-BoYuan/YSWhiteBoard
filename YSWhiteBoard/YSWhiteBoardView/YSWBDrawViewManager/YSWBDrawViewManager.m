@@ -700,72 +700,69 @@
         return;
     }
 
-    if (!associatedMsgID || [associatedMsgID hasPrefix:@"CaptureImg"])
-    { // 加入截屏绘制
-        if ([msgName isEqualToString:@"ClassBegin"] && [msgID isEqualToString:@"ClassBegin"])
+    if ([msgName isEqualToString:@"ClassBegin"] && [msgID isEqualToString:@"ClassBegin"])
+    {
+        if (!isDel)
         {
-            if (!isDel)
-            {
-                //上课
-            }
-            else
-            {
-                //下课
-                [self.fileView.ysDrawView.rtDrawView clearDataAfterClass];
-                // 下课隐藏 工具栏
-                [self clearAfterClass];
-            }
+            //上课
         }
-        //大白板翻页
-        else if ([msgName isEqualToString:sYSSignalShowPage] || [msgName isEqualToString:sYSSignalExtendShowPage])
+        else
         {
+            //下课
             [self.fileView.ysDrawView.rtDrawView clearDataAfterClass];
-            [self drawOnView:self.fileView.ysDrawView.drawView withData:data updateImmediately:YES];
-            
-            return;
+            // 下课隐藏 工具栏
+            [self clearAfterClass];
         }
-        //大白板绘制
-        else if ([msgName isEqualToString:sYSSignalSharpsChange])
-        {
-            if ([data[@"eventType"] isEqualToString:@"laserMarkEvent"])
-            { // 激光笔
-                if (![associatedMsgID hasPrefix:@"CaptureImg_"])
-                {
-                    [self laserPen:data];
-                }
+    }
+    //大白板翻页
+    else if ([msgName isEqualToString:sYSSignalShowPage] || [msgName isEqualToString:sYSSignalExtendShowPage])
+    {
+        [self.fileView.ysDrawView.rtDrawView clearDataAfterClass];
+        [self drawOnView:self.fileView.ysDrawView.drawView withData:data updateImmediately:YES];
+        
+        return;
+    }
+    //大白板绘制
+    else if ([msgName isEqualToString:sYSSignalSharpsChange])
+    {
+        if ([data[@"eventType"] isEqualToString:@"laserMarkEvent"])
+        { // 激光笔
+            if (![associatedMsgID hasPrefix:@"CaptureImg_"])
+            {
+                [self laserPen:data];
             }
-            else
-            { // 绘制相关
-                NSString *ID     = [dictionary objectForKey:@"id"];
-                NSString *pageID = [ID componentsSeparatedByString:@"_"].lastObject;
-                NSString *fileID = [[ID componentsSeparatedByString:@"_"]
-                    objectAtIndex:[ID componentsSeparatedByString:@"_"].count - 2];
+        }
+        else
+        { // 绘制相关
+            NSString *ID     = [dictionary objectForKey:@"id"];
+            NSString *pageID = [ID componentsSeparatedByString:@"_"].lastObject;
+            NSString *fileID = [[ID componentsSeparatedByString:@"_"]
+                objectAtIndex:[ID componentsSeparatedByString:@"_"].count - 2];
 
-                NSString *whiteboardID = [data bm_stringForKey:sWhiteboardID];
+            NSString *whiteboardID = [data bm_stringForKey:sWhiteboardID];
 
-                if (isDel)
-                {
-                    // 此处的 delmsg  来源 于撤销 删除上一条pubmsg
-                    // delMsg的data字段，在回放中是不可用的 会直接取用 对应 pubmsg 里的 data 数据
-                    // 导致数据异常 此处修复异常数据
+            if (isDel)
+            {
+                // 此处的 delmsg  来源 于撤销 删除上一条pubmsg
+                // delMsg的data字段，在回放中是不可用的 会直接取用 对应 pubmsg 里的 data 数据
+                // 导致数据异常 此处修复异常数据
 
-                    [data setObject:@"undoEvent" forKey:@"eventType"];
-                }
-                
-                NSString *checkWhiteboardID = [YSRoomUtil getwhiteboardIDFromFileId:fileID];
-                BOOL isWhiteBoard = [whiteboardID isEqualToString:checkWhiteboardID];
-                if (isWhiteBoard)
-                {
-                    [self.fileView.ysDrawView.drawView switchFileID:fileID
-                                                 andCurrentPage:pageID.intValue
-                                              updateImmediately:YES];
-                    [self drawOnView:self.fileView.ysDrawView.drawView
-                                 withData:data
-                        updateImmediately:YES];
-                }
-
-                return;
+                [data setObject:@"undoEvent" forKey:@"eventType"];
             }
+            
+            NSString *checkWhiteboardID = [YSRoomUtil getwhiteboardIDFromFileId:fileID];
+            BOOL isWhiteBoard = [whiteboardID isEqualToString:checkWhiteboardID];
+            if (isWhiteBoard)
+            {
+                [self.fileView.ysDrawView.drawView switchFileID:fileID
+                                             andCurrentPage:pageID.intValue
+                                          updateImmediately:YES];
+                [self drawOnView:self.fileView.ysDrawView.drawView
+                             withData:data
+                    updateImmediately:YES];
+            }
+
+            return;
         }
     }
 }
