@@ -1895,7 +1895,17 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         self.isBeginClass = YES;
         self.beginClassMessage = message;
         
-        [self removeAllWhiteBoardView];
+        if ([YSWhiteBoardManager shareInstance].roomUseType == YSRoomUseTypeLiveRoom)
+        {
+            if (!inlist)
+            {
+                [self changeCourseWithFileId:self.currentFileId];
+            }
+        }
+        else
+        {
+            [self removeAllWhiteBoardView];
+        }
     }
     
     long ts = (long)[message bm_uintForKey:@"ts"];
