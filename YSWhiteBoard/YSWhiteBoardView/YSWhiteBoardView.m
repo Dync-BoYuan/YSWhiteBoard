@@ -456,6 +456,8 @@
                 NSInteger totalPage = [fileDataDic bm_intForKey:@"pagenum"];
                 NSInteger currentPage = [fileDataDic bm_intForKey:@"currpage"];
                 
+                self.pageControlView.allowScaling = YES;
+                self.pageControlView.bm_centerX = self.bm_width * 0.5f;
                 [self.pageControlView sc_setTotalPage:totalPage currentPage:currentPage isWhiteBoard:[self.fileId isEqualToString:@"0"]];
             }
         }
@@ -601,7 +603,8 @@
             [self.drawViewManager updateWBRatio:ratio];
         }
     }
-    
+    self.pageControlView.allowScaling = NO;
+    self.pageControlView.bm_centerX = self.bm_width * 0.5f;
     [self.pageControlView sc_setTotalPage:_totalPage currentPage:_currentPage canPrevPage:prevPage canNextPage:nextPage isWhiteBoard:[self.fileId isEqualToString:@"0"]];
         
     if (self.delegate && [self.delegate respondsToSelector:@selector(onWBViewWebViewManagerStateUpdate:withState:)])
