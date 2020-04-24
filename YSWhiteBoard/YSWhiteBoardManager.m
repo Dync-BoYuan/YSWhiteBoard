@@ -913,14 +913,18 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 {
     _currentFileId = fileId;
     
+    YSWhiteBoardView *whiteBoardView = self.mainWhiteBoardView;
     if (![fileId isEqualToString:@"0"])
     {
-        YSWhiteBoardView *whiteBoardView = [self getWhiteBoardViewWithFileId:fileId];
+        whiteBoardView = [self getWhiteBoardViewWithFileId:fileId];
         if (whiteBoardView)
         {
             [whiteBoardView bm_bringToFront];
         }
-        
+    }
+    
+    if ([YSRoomInterface instance].localUser.peerID == YSUserType_Teacher)
+    {
         NSArray *subviews = self.mainWhiteBoardView.subviews;
         NSMutableArray *whiteboardIdList = [[NSMutableArray alloc] init];
         for (UIView *view in subviews)
@@ -932,12 +936,17 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
             }
         }
         
-//        if ([whiteboardIdList bm_isNotEmpty])
-//        {
-//            NSDictionary *data = @{ @"type" : @"sort", @"instanceId" : whiteBoardView.whiteBoardId, @"sort" : whiteboardIdList, @"hideAll":@(false)};
-//
-//            [[YSRoomInterface instance] pubMsg:sYSSignalMoreWhiteboardGlobalState msgID:sYSSignalMoreWhiteboardGlobalState toID:YSRoomPubMsgTellAll data:data save:YES completion:nil];
-//        }
+        if ([whiteboardIdList bm_isNotEmpty])
+        {
+            NSString *instanceId = whiteBoardView.whiteBoardId;
+            if (![instanceId bm_isNotEmpty])
+            {
+                instanceId = @"";
+            }
+            NSDictionary *data = @{ @"type" : @"sort", @"instanceId" : whiteBoardView.whiteBoardId, @"sort" : whiteboardIdList, @"hideAll" : @(NO)};
+
+            [[YSRoomInterface instance] pubMsg:sYSSignalMoreWhiteboardGlobalState msgID:sYSSignalMoreWhiteboardGlobalState toID:YSRoomPubMsgTellAll data:data save:YES completion:nil];
+        }
     }
 }
 
@@ -1037,6 +1046,19 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     }
     return nil;
 }
+
+- (YSWhiteBoardView *)getWhiteBoardViewWithWhiteBoardId:(NSString *)whiteBoardId
+{
+    for (YSWhiteBoardView *whiteBoardView in self.coursewareViewList)
+    {
+        if ([whiteBoardView.whiteBoardId isEqualToString:whiteBoardId])
+        {
+            return whiteBoardView;
+        }
+    }
+    return nil;
+}
+
 
 #pragma mark  删除课件窗口
 - (void)removeWhiteBoardViewWithFileId:(NSString *)fileId
@@ -2034,11 +2056,37 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         
         return;
     }
+    // 小白板上的UI信令
     else if ([msgName isEqualToString:sYSSignalMoreWhiteboardState])
-    {//小白板上的UI信令
+    {
         [self receiveMessageToMoveAndZoomWith:tDataDic WithInlist:inlist];
+        return;
     }
-    
+    // 窗口布局
+    else if ([msgName isEqualToString:sYSSignalMoreWhiteboardGlobalState])
+    {
+        NSString *type = [tDataDic bm_stringForKey:@"type"];
+        // 窗口排序
+        if ([type isEqualToString:@"sort"])
+        {
+            NSArray *sort = [tDataDic bm_arrayForKey:@"sort"];
+            for (NSString *whiteBoardId in sort)
+            {
+                YSWhiteBoardView *whiteBoardView = [self getWhiteBoardViewWithWhiteBoardId:whiteBoardId];
+                if (whiteBoardView)
+                {
+                    [whiteBoardView bm_bringToFront];
+                }
+            }
+        }
+        // 全部显示隐藏
+        else if ([type isEqualToString:@"visibleToggle"])
+        {
+            
+        }
+        
+        return;
+    }
     
     if (self.mainWhiteBoardView)
     {
