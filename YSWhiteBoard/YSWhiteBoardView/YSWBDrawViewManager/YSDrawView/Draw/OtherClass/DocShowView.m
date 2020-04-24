@@ -240,7 +240,7 @@
     NSString *dataString = [[NSString alloc] initWithData:shapeData encoding:NSUTF8StringEncoding];
     NSString *s1 = [dataString stringByReplacingOccurrencesOfString:@"\n" withString:@""];
 //    NSString *s2 = [s1 stringByReplacingOccurrencesOfString:@" " withString:@""];
-    NSString *associatedMsgID = [NSString stringWithFormat:@"%@%@%@", sYSSignalDocumentFilePage_ExtendShowPage, YSWhiteBoardId_Header, fileid];
+    NSString *associatedMsgID = [NSString stringWithFormat:@"%@%@", sYSSignalDocumentFilePage_ExtendShowPage, [YSRoomUtil getwhiteboardIDFromFileId:fileid]];
 
     [[YSRoomInterface instance] pubMsg:sYSSignalSharpsChange msgID:shapeID toID:YSRoomPubMsgTellAll data:s1 save:YES extensionData:@{} associatedMsgID:associatedMsgID associatedUserID:nil expires:0 completion:^(NSError *error) {
         NSLog(@"%@",error);

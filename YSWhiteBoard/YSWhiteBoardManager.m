@@ -1154,7 +1154,11 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     }
     else
     {
-        NSString *msgID = [NSString stringWithFormat:@"%@%@%@", sYSSignalDocumentFilePage_ExtendShowPage, YSWhiteBoardId_Header, fileId];
+        NSString *msgID = [NSString stringWithFormat:@"%@%@", sYSSignalDocumentFilePage_ExtendShowPage, [YSRoomUtil getwhiteboardIDFromFileId:fileId]];
+
+        NSMutableDictionary *fileData = [[NSMutableDictionary alloc] initWithDictionary:fileDic];
+        [fileData bm_setString:[YSRoomUtil getwhiteboardIDFromFileId:fileId] forKey:@"sourceInstanceId"];
+
         [[YSRoomInterface instance] pubMsg:sYSSignalExtendShowPage
                                      msgID:msgID
                                       toID:toID
@@ -1669,11 +1673,13 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         YSFileModel *fileModel = [self getDocumentWithFileID:fileId];
         NSDictionary *fileDic = [YSFileModel fileDataDocDic:fileModel sourceInstanceId:nil];
         
-        NSString *msgID = [NSString stringWithFormat:@"%@%@%@", sYSSignalDocumentFilePage_ExtendShowPage, YSWhiteBoardId_Header, fileId];
+        NSString *msgID = [NSString stringWithFormat:@"%@%@", sYSSignalDocumentFilePage_ExtendShowPage, [YSRoomUtil getwhiteboardIDFromFileId:fileId]];
+        NSMutableDictionary *fileData = [[NSMutableDictionary alloc] initWithDictionary:fileDic];
+        [fileData bm_setString:[YSRoomUtil getwhiteboardIDFromFileId:fileId] forKey:@"sourceInstanceId"];
         [[YSRoomInterface instance] pubMsg:sYSSignalExtendShowPage
                                      msgID:msgID
                                       toID:[YSRoomInterface instance].localUser.peerID
-                                      data:fileDic
+                                      data:fileData
                                       save:NO
                              extensionData:nil
                            associatedMsgID:nil
