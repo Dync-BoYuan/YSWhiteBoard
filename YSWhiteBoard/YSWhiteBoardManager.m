@@ -1471,6 +1471,10 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         {
             self.roomConfig = [[YSRoomConfiguration alloc] initWithConfigurationString:chairmancontrol];
         }
+        if ([YSRoomInterface instance].localUser.role != YSUserType_Teacher)
+        {
+            self.mainWhiteBoardView.collectBtn.hidden = YES;
+        }
     }
 }
 
