@@ -1368,9 +1368,13 @@
 - (void)coursewarefullScreen:(BOOL)isAllScreen
 {
   
-    NSDictionary * data = @{@"x":@0,@"y":@0,@"width":@1,@"height":@1,@"small":@NO,@"full":@YES,@"type":@"full",@"instanceId":self.whiteBoardId};
+//    NSDictionary * data = @{@"x":@0,@"y":@0,@"width":@1,@"height":@1,@"small":@NO,@"full":@YES,@"type":@"full",@"instanceId":self.whiteBoardId};
     
-    
+    if ([self.delegate respondsToSelector:@selector(onWBViewFullScreen:wbView:)])
+    {
+        /// 课件全屏
+        [self.delegate onWBViewFullScreen:isAllScreen wbView:self];
+    }
 }
 
 /// 上一页

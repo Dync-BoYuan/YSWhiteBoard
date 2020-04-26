@@ -153,7 +153,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// 课件缩放
 - (void)onWWBViewDrawViewManagerZoomScaleChanged:(YSWhiteBoardView *)whiteBoardView zoomScale:(CGFloat)zoomScale;
-
+/// 课件全屏
+- (void)onWBViewFullScreen:(BOOL)isAllScreen wbView:(YSWhiteBoardView *)whiteBoardView;
 ///拖拽手势事件  拖拽右下角缩放View
 - (void)panToZoomWhiteBoardView:(YSWhiteBoardView *)whiteBoard withGestureRecognizer:(UIPanGestureRecognizer *)pan;
 

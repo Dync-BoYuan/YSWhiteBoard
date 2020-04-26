@@ -2218,5 +2218,12 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     }
 }
 
-
+/// 课件全屏
+- (void)onWBViewFullScreen:(BOOL)isAllScreen wbView:(YSWhiteBoardView *)whiteBoardView
+{
+    if (self.wbDelegate && [self.wbDelegate respondsToSelector:@selector(onWhiteBoardFullScreen:)])
+    {
+        [self.wbDelegate onWhiteBoardFullScreen:isAllScreen];
+    }
+}
 @end

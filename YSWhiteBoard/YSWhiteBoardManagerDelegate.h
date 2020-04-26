@@ -33,7 +33,8 @@
 - (void)onWhiteBoardSlideLoadTimeout:(NSString *)fileId withState:(NSDictionary *)dic;
 /// 课件缩放
 - (void)onWhiteBoardZoomScaleChanged:(NSString *)fileId zoomScale:(CGFloat)zoomScale;
-
+/// 课件全屏
+- (void)onWhiteBoardFullScreen:(BOOL)isAllScreen;
 
 
 
