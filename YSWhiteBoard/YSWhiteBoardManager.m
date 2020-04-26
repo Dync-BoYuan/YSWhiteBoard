@@ -255,8 +255,19 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     }
     CGRect frame = CGRectMake(whiteBoardViewCurrentLeft, whiteBoardViewCurrentTop, self.whiteBoardViewDefaultSize.width, self.whiteBoardViewDefaultSize.height);
     
+    YSWhiteBoardView *mainWhiteBoardView = self.mainWhiteBoardView;
+    
+    CGFloat x = whiteBoardViewCurrentLeft / (self.mainWhiteBoardView.bm_width - frame.size.width);
+    CGFloat y = whiteBoardViewCurrentTop / (self.mainWhiteBoardView.bm_height - frame.size.height);
+    CGFloat scaleWidth = frame.size.width / self.mainWhiteBoardView.bm_width;
+    CGFloat scaleHeight = frame.size.height / self.mainWhiteBoardView.bm_height;
+    
+    NSDictionary * positionData = @{@"x":@(x),@"y":@(y),@"width":@(scaleWidth),@"height":@(scaleHeight)};
+    
     YSWhiteBoardView *whiteBoardView = [[YSWhiteBoardView alloc] initWithFrame:frame fileId:fileId loadFinishedBlock:loadFinishedBlock];
     whiteBoardView.delegate = self;
+    whiteBoardView.positionData = positionData;
+    whiteBoardView.mainWhiteBoard = self.mainWhiteBoardView;
     
     if (self.isBeginClass)
     {
@@ -1419,6 +1430,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         {
             self.roomConfig = [[YSRoomConfiguration alloc] initWithConfigurationString:chairmancontrol];
         }
+                
         if ([YSRoomInterface instance].localUser.role != YSUserType_Teacher)
         {
             self.mainWhiteBoardView.collectBtn.hidden = YES;
