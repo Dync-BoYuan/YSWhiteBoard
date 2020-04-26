@@ -302,41 +302,49 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
     CGRect frame = self.frame;
     if (self != [YSWhiteBoardManager shareInstance].mainWhiteBoardView)
     {
-        NSDictionary *message = self.positionData;
-                
-        //宽，高值在主白板上的比例
-        CGFloat scaleWidth = [message bm_floatForKey:@"width"];
-        CGFloat scaleHeight = [message bm_floatForKey:@"height"];
-        
-        CGFloat width = scaleWidth * self.mainWhiteBoard.bm_width;
-        CGFloat height = scaleHeight * self.mainWhiteBoard.bm_height;
-        
-        if (!width || !height)
+        if (self.pageControlView.isAllScreen)
         {
-            width = self.bm_width;
-            height = self.bm_height;
-        }
-        
-        //x,y值在主白板上的比例
-        CGFloat scaleLeft = [message bm_floatForKey:@"x"];
-        CGFloat scaleTop = [message bm_floatForKey:@"y"];
-        
-        CGFloat x = scaleLeft * (self.mainWhiteBoard.bm_width - width);
-        CGFloat y = scaleTop * (self.mainWhiteBoard.bm_height - height);
-
-        
-        if ([[message bm_stringForKey:@"type"] isEqualToString:@"full"] && [message bm_boolForKey:@"full"])
-        {
-            frame = CGRectMake(x, y-30, width, height+30);
-            self.whiteBoardControlView.hidden = NO;
+            frame = CGRectMake(0, -30, BMUI_SCREEN_WIDTH, BMUI_SCREEN_HEIGHT+30);
         }
         else
         {
-            frame = CGRectMake(x, y, width, height);
-            self.whiteBoardControlView.hidden = YES;
+            NSDictionary *message = self.positionData;
+            
+            if ([[message bm_stringForKey:@"type"] isEqualToString:@"full"] && [message bm_boolForKey:@"full"])
+            {
+                frame = CGRectMake(0, -30, self.mainWhiteBoard.bm_width, self.mainWhiteBoard.bm_height+30);
+                self.whiteBoardControlView.hidden = NO;
+                [self bm_bringToFront];
+            }
+            else
+            {
+                //宽，高值在主白板上的比例
+                CGFloat scaleWidth = [message bm_floatForKey:@"width"];
+                CGFloat scaleHeight = [message bm_floatForKey:@"height"];
+                
+                CGFloat width = scaleWidth * self.mainWhiteBoard.bm_width;
+                CGFloat height = scaleHeight * self.mainWhiteBoard.bm_height;
+                
+                if (!width || !height)
+                {
+                    width = self.bm_width;
+                    height = self.bm_height;
+                }
+                
+                //x,y值在主白板上的比例
+                CGFloat scaleLeft = [message bm_floatForKey:@"x"];
+                CGFloat scaleTop = [message bm_floatForKey:@"y"];
+                
+                CGFloat x = scaleLeft * (self.mainWhiteBoard.bm_width - width);
+                CGFloat y = scaleTop * (self.mainWhiteBoard.bm_height - height);
+                
+                frame = CGRectMake(x, y, width, height);
+                self.whiteBoardControlView.hidden = YES;
+                self.mainWhiteBoard.pageControlView.isAllScreen = NO;
+            }
         }
-        
     }
+    
     [self refreshWhiteBoardWithFrame:frame];
 }
 
