@@ -653,10 +653,11 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 {
     CGFloat height = self.mainWhiteBoardView.bm_size.height * 0.6f;
     CGFloat width = height / 3.0f * 5.0f;
-    self.whiteBoardViewDefaultSize = CGSizeMake(width, height);
 
-    [self.mainWhiteBoardView refreshWhiteBoard];
+    self.whiteBoardViewDefaultSize = CGSizeMake(width, height);
     
+    [self.mainWhiteBoardView refreshWhiteBoard];
+        
     for (YSWhiteBoardView *whiteBoardView in self.coursewareViewList)
     {
         [whiteBoardView refreshWhiteBoard];
