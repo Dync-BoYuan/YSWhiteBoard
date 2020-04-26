@@ -456,15 +456,47 @@
 
     NSString *url = [dataDic bm_stringForKey:@"url"];
     BOOL isvideo = [dataDic bm_boolForKey:@"video"];
-    NSString *toID = YSRoomPubMsgTellAll;
     NSDictionary *param = [dataDic bm_dictionaryForKey:@"attributes"];
 
-#warning 播放课件内视频
-    [[YSRoomInterface instance] startShareMediaFile:url
-                                          isVideo:isvideo
-                                             toID:toID
-                                       attributes:param
-                                            block:nil];
+    if ([YSWhiteBoardManager shareInstance].mediaFileModel)
+    {
+        [[YSRoomInterface instance] stopShareMediaFile:^(NSError *error) {
+            if (!error)
+            {
+                NSString *toID;
+                if ([YSWhiteBoardManager shareInstance].isBeginClass)
+                {
+                    toID = YSRoomPubMsgTellAll;
+                }
+                else
+                {
+                    toID = [YSRoomInterface instance].localUser.peerID;
+                }
+                [[YSRoomInterface instance] startShareMediaFile:url
+                                                      isVideo:isvideo
+                                                         toID:toID
+                                                   attributes:param
+                                                        block:nil];
+            }
+        }];
+    }
+    else
+    {
+        NSString *toID;
+        if ([YSWhiteBoardManager shareInstance].isBeginClass)
+        {
+            toID = YSRoomPubMsgTellAll;
+        }
+        else
+        {
+            toID = [YSRoomInterface instance].localUser.peerID;
+        }
+        [[YSRoomInterface instance] startShareMediaFile:url
+                                              isVideo:isvideo
+                                                 toID:toID
+                                           attributes:param
+                                                block:nil];
+    }
 }
 
 - (NSMutableDictionary *)audioDic
@@ -545,7 +577,7 @@
         }
     }
     
-    [_audioDic removeAllObjects];
+    [self.audioDic removeAllObjects];
 }
 
 - (void)setProperty:(id)aMessageBody

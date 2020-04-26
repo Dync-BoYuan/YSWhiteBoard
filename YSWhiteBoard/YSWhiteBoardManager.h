@@ -12,6 +12,7 @@
 
 #import "YSWhiteBoardView.h"
 #import "YSFileModel.h"
+#import "YSMediaFileModel.h"
 
 #import "YSBrushToolsManager.h"
 
@@ -41,6 +42,10 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, readonly) NSMutableArray <NSDictionary *> *docmentDicList;
 /// 当前激活文档id
 @property (nonatomic, strong, readonly) NSString *currentFileId;
+/// 当前播放的媒体课件
+@property (nonatomic, strong, readonly) YSMediaFileModel *mediaFileModel;
+/// 当前播放的媒体课件发送者peerId
+@property (nonatomic, strong, readonly) NSString *mediaFileSenderPeerId;
 
 /// 主白板
 @property (nonatomic, strong, readonly) YSWhiteBoardView *mainWhiteBoardView;

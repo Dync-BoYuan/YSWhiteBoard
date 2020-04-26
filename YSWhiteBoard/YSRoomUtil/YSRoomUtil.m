@@ -37,6 +37,19 @@
     return @"ch";
 }
 
++ (BOOL)checkDataType:(id)data
+{
+    if (!data)
+    {
+        return YES;
+    }
+    if ([data isKindOfClass:[NSNumber class]] || [data isKindOfClass:[NSString class]] || [data isKindOfClass:[NSDictionary class]]  || [data isKindOfClass:[NSArray class]])
+    {
+        return YES;
+    }
+    return NO;
+}
+
 + (NSDictionary *)convertWithData:(id)data
 {
     if (!data)
@@ -68,6 +81,30 @@
     }
     
     return dataDic;
+}
+
++ (BOOL)checkIsMedia:(NSString *)filetype
+{
+    if ([filetype isEqualToString:@"mp3"]
+        || [filetype isEqualToString:@"mp4"]
+        || [filetype isEqualToString:@"webm"]
+        || [filetype isEqualToString:@"ogg"]
+        || [filetype isEqualToString:@"wav"])
+    {
+        return YES;
+    }
+    
+    return NO;
+}
+
++ (BOOL)checkIsVideo:(NSString *)filetype
+{
+    if ([filetype isEqualToString:@"mp4"] || [filetype isEqualToString:@"webm"])
+    {
+        return YES;
+    }
+    
+    return NO;
 }
 
 + (NSString *)jsonStringWithDictionary:(NSDictionary *)dict
@@ -209,4 +246,23 @@
     
     return -1;
 }
+
++ (NSString*)absoluteFileUrl:(NSString*)fileUrl withServerDic:(NSDictionary *)serverDic
+{
+    NSString *http = [serverDic bm_stringForKey:YSWhiteBoardWebProtocolKey];
+    NSString *host = [serverDic bm_stringForKey:YSWhiteBoardWebHostKey];
+    NSInteger port = [serverDic bm_intForKey:YSWhiteBoardWebPortKey];
+    
+    NSString *tUrl = [NSString stringWithFormat:@"%@://%@:%@%@", http, host, @(port), fileUrl];
+    NSString *tdeletePathExtension = tUrl.stringByDeletingPathExtension;
+    NSString *tNewURLString = [NSString stringWithFormat:@"%@-1.%@", tdeletePathExtension, tUrl.pathExtension];
+    NSArray *tArray = [tNewURLString componentsSeparatedByString:@"/"];
+    if ([tArray count] < 4)
+    {
+        return @"";
+    }
+    NSString *tNewURLString2 = [NSString stringWithFormat:@"%@//%@/%@/%@", [tArray objectAtIndex:0], [tArray objectAtIndex:1], [tArray objectAtIndex:2], [tArray objectAtIndex:3]];
+    return tNewURLString2;
+}
+
 @end

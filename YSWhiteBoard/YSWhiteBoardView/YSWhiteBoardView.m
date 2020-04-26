@@ -14,6 +14,11 @@
 
 #define YSTopViewHeight         (30.0f)
 
+static const CGFloat kMp3_Width_iPhone = 55.0f;
+static const CGFloat kMp3_Width_iPad = 70.0f;
+#define MP3VIEW_WIDTH               ([UIDevice bm_isiPad] ? kMp3_Width_iPad : kMp3_Width_iPhone)
+
+
 @interface YSWhiteBoardView ()
 <
     YSWBWebViewManagerDelegate,
@@ -68,6 +73,7 @@
 //@property (nonatomic, assign)CGRect whiteBoardFrame;
 
 
+@property (nonatomic, strong) UIImageView *playMp3ImageView;
 
 @end
 
@@ -125,7 +131,7 @@
         {
             topViewHeight = YSTopViewHeight;
             
-            YSFileModel * model = [[YSWhiteBoardManager shareInstance]getDocumentWithFileID:self.fileId];
+            YSFileModel *model = [[YSWhiteBoardManager shareInstance] getDocumentWithFileID:self.fileId];
             
             YSWhiteBoardTopBar *topBar = [[YSWhiteBoardTopBar alloc] initWithFrame:CGRectMake(0, 0, frame.size.width, YSTopViewHeight)];
             topBar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
@@ -168,38 +174,39 @@
         self.pageControlView.bm_centerX = frame.size.width * 0.5f;
         self.pageControlView.bm_bottom = frame.size.height - 20;
             
-        //拖拽
+        // 拖拽
         UIPanGestureRecognizer *panGestureRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(dragPageControlView:)];
         [self.pageControlView addGestureRecognizer:panGestureRecognizer];
 
         if (!isMainWhiteBoard)
         {
-            UIView * dragZoomView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, 40, 40)];
+            UIView *dragZoomView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, 40, 40)];
             dragZoomView.backgroundColor = UIColor.clearColor;
             dragZoomView.bm_right = frame.size.width;
             dragZoomView.bm_bottom = frame.size.height;
             self.dragZoomView = dragZoomView;
             [self addSubview:dragZoomView];
             
-            UIPanGestureRecognizer * panGesture = [[UIPanGestureRecognizer alloc]initWithTarget:self action:@selector(panGestureToZoomView:)];
+            UIPanGestureRecognizer *panGesture = [[UIPanGestureRecognizer alloc]initWithTarget:self action:@selector(panGestureToZoomView:)];
             [dragZoomView addGestureRecognizer:panGesture];
             
-            
-            YSWhiteBoardControlView * whiteBoardControlView = [[YSWhiteBoardControlView alloc] initWithFrame:CGRectMake(self.bm_width - 50 - 80, pageControlView.bm_originY, 80, 34)];
+            YSWhiteBoardControlView *whiteBoardControlView = [[YSWhiteBoardControlView alloc] initWithFrame:CGRectMake(self.bm_width - 50 - 80, pageControlView.bm_originY, 80, 34)];
             whiteBoardControlView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin;
             [self addSubview:whiteBoardControlView];
             self.whiteBoardControlView = whiteBoardControlView;
             self.whiteBoardControlView.delegate = self;
             whiteBoardControlView.hidden = YES;
             
-            UITapGestureRecognizer *oneTap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(changeToCurrentBWView:)];
+            UITapGestureRecognizer *oneTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(changeToCurrentBWView:)];
             oneTap.numberOfTapsRequired = 1;
             [self.whiteBoardContentView addGestureRecognizer:oneTap];
+            
+            [self makeMp3Animation];
         }
         else
         {
-            //最小化时的收藏夹按钮
-            UIButton * collectBtn = [[UIButton alloc]initWithFrame:CGRectMake(frame.size.width-40-26, frame.size.height-90, 40, 40)];
+            // 最小化时的收藏夹按钮
+            UIButton *collectBtn = [[UIButton alloc]initWithFrame:CGRectMake(frame.size.width-40-26, frame.size.height-90, 40, 40)];
             collectBtn.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin;
             [collectBtn setImage:[UIImage imageNamed:@"SplitScreen_leaveMessage_normal"] forState:UIControlStateNormal];
             [collectBtn setImage:[UIImage imageNamed:@"SplitScreen_leaveMessage_selected"] forState:UIControlStateSelected];
@@ -211,6 +218,25 @@
     }
     
     return self;
+}
+
+- (void)makeMp3Animation
+{
+    UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(15.0f, self.bm_bottom - (MP3VIEW_WIDTH+15.0f), MP3VIEW_WIDTH, MP3VIEW_WIDTH)];
+    
+    NSMutableArray *imageArray = [[NSMutableArray alloc] init];
+    for (NSUInteger i=1; i<=50; i++)
+    {
+        NSString *imageName = [NSString stringWithFormat:@"main_playmp3_%02lu", (unsigned long)i];
+        [imageArray addObject:imageName];
+    }
+    
+    [imageView bm_animationWithImageArray:imageArray duration:2 repeatCount:0];
+    
+    imageView.hidden = YES;
+    self.playMp3ImageView = imageView;
+    
+    [self addSubview:self.playMp3ImageView];
 }
 
 - (void)changeToCurrentBWView:(UITapGestureRecognizer *)tapGesture
@@ -1432,5 +1458,29 @@
     NSDictionary *data = @{@"sourceInstanceId" : self.whiteBoardId};
     [YSRoomUtil delWhiteBoardMsg:sYSSignalExtendShowPage msgID:msgID data:data completion:nil];
 }
+
+
+#pragma mark -
+#pragma mark Mp3Func
+
+- (void)onPlayMp3
+{
+    [self.playMp3ImageView bm_bringToFront];
+    
+    self.playMp3ImageView.hidden = NO;
+    [self.playMp3ImageView startAnimating];
+}
+
+- (void)onPauseMp3
+{
+    [self.playMp3ImageView stopAnimating];
+}
+
+- (void)onStopMp3
+{
+    self.playMp3ImageView.hidden = YES;
+    [self.playMp3ImageView stopAnimating];
+}
+
 
 @end
