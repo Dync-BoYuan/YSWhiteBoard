@@ -172,40 +172,43 @@
         UIPanGestureRecognizer *panGestureRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(dragPageControlView:)];
         [self.pageControlView addGestureRecognizer:panGestureRecognizer];
 
-        if (!isMainWhiteBoard && [YSRoomInterface instance].localUser.role == YSUserType_Teacher)
+        if ([YSRoomInterface instance].localUser.role == YSUserType_Teacher)
         {
-            UIView * dragZoomView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, 40, 40)];
-            dragZoomView.backgroundColor = UIColor.clearColor;
-            dragZoomView.bm_right = frame.size.width;
-            dragZoomView.bm_bottom = frame.size.height;
-            self.dragZoomView = dragZoomView;
-            [self addSubview:dragZoomView];
-            
-            UIPanGestureRecognizer * panGesture = [[UIPanGestureRecognizer alloc]initWithTarget:self action:@selector(panGestureToZoomView:)];
-            [dragZoomView addGestureRecognizer:panGesture];
+            if (!isMainWhiteBoard)
+            {
+                UIView * dragZoomView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, 40, 40)];
+                dragZoomView.backgroundColor = UIColor.clearColor;
+                dragZoomView.bm_right = frame.size.width;
+                dragZoomView.bm_bottom = frame.size.height;
+                self.dragZoomView = dragZoomView;
+                [self addSubview:dragZoomView];
+                
+                UIPanGestureRecognizer * panGesture = [[UIPanGestureRecognizer alloc]initWithTarget:self action:@selector(panGestureToZoomView:)];
+                [dragZoomView addGestureRecognizer:panGesture];
 
-            YSWhiteBoardControlView * whiteBoardControlView = [[YSWhiteBoardControlView alloc] initWithFrame:CGRectMake(self.bm_width - 50 - 80, pageControlView.bm_originY, 80, 34)];
-            whiteBoardControlView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin;
-            [self addSubview:whiteBoardControlView];
-            self.whiteBoardControlView = whiteBoardControlView;
-            self.whiteBoardControlView.delegate = self;
-            whiteBoardControlView.hidden = YES;
-            
-            UITapGestureRecognizer *oneTap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(changeToCurrentBWView:)];
-            oneTap.numberOfTapsRequired = 1;
-            [self.whiteBoardContentView addGestureRecognizer:oneTap];
-        }
-        else
-        {
-            //最小化时的收藏夹按钮
-            UIButton * collectBtn = [[UIButton alloc]initWithFrame:CGRectMake(frame.size.width-40-26, frame.size.height-90, 40, 40)];
-            collectBtn.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin;
-            [collectBtn setImage:[UIImage imageNamed:@"SplitScreen_leaveMessage_normal"] forState:UIControlStateNormal];
-            [collectBtn setImage:[UIImage imageNamed:@"SplitScreen_leaveMessage_selected"] forState:UIControlStateSelected];
-            collectBtn.contentMode = UIViewContentModeScaleAspectFill;
-            [collectBtn addTarget:self action:@selector(collectButtonsClick:) forControlEvents:UIControlEventTouchUpInside];
-            [self addSubview:collectBtn];
-            self.collectBtn = collectBtn;
+                YSWhiteBoardControlView * whiteBoardControlView = [[YSWhiteBoardControlView alloc] initWithFrame:CGRectMake(self.bm_width - 50 - 80, pageControlView.bm_originY, 80, 34)];
+                whiteBoardControlView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin;
+                [self addSubview:whiteBoardControlView];
+                self.whiteBoardControlView = whiteBoardControlView;
+                self.whiteBoardControlView.delegate = self;
+                whiteBoardControlView.hidden = YES;
+                
+                UITapGestureRecognizer *oneTap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(changeToCurrentBWView:)];
+                oneTap.numberOfTapsRequired = 1;
+                [self.whiteBoardContentView addGestureRecognizer:oneTap];
+            }
+            else
+            {
+                //最小化时的收藏夹按钮
+                UIButton * collectBtn = [[UIButton alloc]initWithFrame:CGRectMake(frame.size.width-40-26, frame.size.height-90, 40, 40)];
+                collectBtn.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin;
+                [collectBtn setImage:[UIImage imageNamed:@"SplitScreen_leaveMessage_normal"] forState:UIControlStateNormal];
+                [collectBtn setImage:[UIImage imageNamed:@"SplitScreen_leaveMessage_selected"] forState:UIControlStateSelected];
+                collectBtn.contentMode = UIViewContentModeScaleAspectFill;
+                [collectBtn addTarget:self action:@selector(collectButtonsClick:) forControlEvents:UIControlEventTouchUpInside];
+                [self addSubview:collectBtn];
+                self.collectBtn = collectBtn;
+            }
         }
     }
     
@@ -1365,6 +1368,9 @@
 - (void)coursewarefullScreen:(BOOL)isAllScreen
 {
   
+    NSDictionary * data = @{@"x":@0,@"y":@0,@"width":@1,@"height":@1,@"small":@NO,@"full":@YES,@"type":@"full",@"instanceId":self.whiteBoardId};
+    
+    
 }
 
 /// 上一页
