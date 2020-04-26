@@ -172,7 +172,7 @@
         UIPanGestureRecognizer *panGestureRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(dragPageControlView:)];
         [self.pageControlView addGestureRecognizer:panGestureRecognizer];
 
-        if (!isMainWhiteBoard)
+        if (!isMainWhiteBoard && [YSRoomInterface instance].localUser.role == YSUserType_Teacher)
         {
             UIView * dragZoomView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, 40, 40)];
             dragZoomView.backgroundColor = UIColor.clearColor;
@@ -183,8 +183,7 @@
             
             UIPanGestureRecognizer * panGesture = [[UIPanGestureRecognizer alloc]initWithTarget:self action:@selector(panGestureToZoomView:)];
             [dragZoomView addGestureRecognizer:panGesture];
-            
-            
+
             YSWhiteBoardControlView * whiteBoardControlView = [[YSWhiteBoardControlView alloc] initWithFrame:CGRectMake(self.bm_width - 50 - 80, pageControlView.bm_originY, 80, 34)];
             whiteBoardControlView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin;
             [self addSubview:whiteBoardControlView];
@@ -272,18 +271,13 @@
     if (self != [YSWhiteBoardManager shareInstance].mainWhiteBoardView)
     {
         NSDictionary *message = self.positionData;
-        
-//        if ([[message bm_stringForKey:@"type"] isEqualToString:@"full"] && ![message bm_boolForKey:@"full"])
-//        {
-//            message = self.beforeFullScreenData;
-//        }
-        
+                
         //宽，高值在主白板上的比例
         CGFloat scaleWidth = [message bm_floatForKey:@"width"];
         CGFloat scaleHeight = [message bm_floatForKey:@"height"];
         
-        CGFloat width = scaleWidth * self.superview.bm_width;
-        CGFloat height = scaleHeight * self.superview.bm_height;
+        CGFloat width = scaleWidth * self.mainWhiteBoard.bm_width;
+        CGFloat height = scaleHeight * self.mainWhiteBoard.bm_height;
         
         if (!width || !height)
         {
@@ -295,8 +289,8 @@
         CGFloat scaleLeft = [message bm_floatForKey:@"x"];
         CGFloat scaleTop = [message bm_floatForKey:@"y"];
         
-        CGFloat x = scaleLeft * (self.superview.bm_width - width);
-        CGFloat y = scaleTop * (self.superview.bm_height - height);
+        CGFloat x = scaleLeft * (self.mainWhiteBoard.bm_width - width);
+        CGFloat y = scaleTop * (self.mainWhiteBoard.bm_height - height);
 
         
         if ([[message bm_stringForKey:@"type"] isEqualToString:@"full"] && [message bm_boolForKey:@"full"])
@@ -1165,15 +1159,15 @@
         return;
     }
     
-    YSUserRoleType role = [YSRoomInterface instance].localUser.role;
-    
-    if (role == YSUserType_Teacher)
-    {
+//    YSUserRoleType role = [YSRoomInterface instance].localUser.role;
+//
+//    if (role == YSUserType_Teacher)
+//    {
         if ([self.delegate respondsToSelector:@selector(panToZoomWhiteBoardView:withGestureRecognizer:)])
         {
             [self.delegate panToZoomWhiteBoardView:self withGestureRecognizer:pan];
         }
-    }
+//    }
 }
 
 - (void)dragPageControlView:(UIPanGestureRecognizer *)pan
