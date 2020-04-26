@@ -7,7 +7,6 @@
 //
 
 #import "YSWhiteBoardManager.h"
-#import "YSFileModel.h"
 #import "YSWBLogger.h"
 #import "YSWhiteBoardTopBar.h"
 
@@ -91,6 +90,12 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 
 /// 当前激活文档id
 @property (nonatomic, strong, setter=setTheCurrentDocumentFileID:) NSString *currentFileId;
+
+/// 当前播放的媒体课件
+@property (nonatomic, strong) YSMediaFileModel *mediaFileModel;
+/// 当前播放的媒体课件发送者peerId
+@property (nonatomic, strong) NSString *mediaFileSenderPeerId;
+
 
 // UI
 @property (nonatomic, assign) CGSize whiteBoardViewDefaultSize;
@@ -230,6 +235,14 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 {
     self.wbDelegate = delegate;
     self.configration = config;
+    
+//    NSDictionary *whiteBoardConfig = @{
+//        YSWhiteBoardWebProtocolKey : YSLive_Http,
+//        YSWhiteBoardWebHostKey : host,
+//        YSWhiteBoardWebPortKey : @(port),
+//        YSWhiteBoardPlayBackKey : @(NO),
+//    };
+
 }
 
 - (YSWhiteBoardView *)createMainWhiteBoardWithFrame:(CGRect)frame
@@ -1107,6 +1120,62 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         return;
     }
     
+    if (fileModel.isMedia)
+    {
+        BOOL isVideo = [YSRoomUtil checkIsVideo:fileModel.filetype];
+        NSDictionary *sendDic = @{@"filename": fileModel.filename,
+                                  @"fileid": fileModel.fileid,
+                                  @"pauseWhenOver": @(true),
+                                  @"type": @"media",
+                                  @"source": @"mediaFileList"
+                                };
+        
+        NSString *url = [YSRoomUtil absoluteFileUrl:fileModel.swfpath withServerDic:self.serverAddressInfoDic];
+        
+        if (self.mediaFileModel)
+        {
+            // 切换相同媒体时，暂停或继续播放
+            if ([self.mediaFileModel.fileid isEqualToString:fileModel.fileid])
+            {
+                BOOL isPause = self.mediaFileModel.isPause;
+                [[YSRoomInterface instance] pauseMediaFile:!isPause];
+                
+                return;
+            }
+
+            [[YSRoomInterface instance] stopShareMediaFile:^(NSError *error) {
+                if (!error)
+                {
+                    NSString *toID;
+                    if ([YSWhiteBoardManager shareInstance].isBeginClass)
+                    {
+                        toID = YSRoomPubMsgTellAll;
+                    }
+                    else
+                    {
+                        toID = [YSRoomInterface instance].localUser.peerID;
+                    }
+                    [[YSRoomInterface instance] startShareMediaFile:url isVideo:isVideo toID:toID attributes:sendDic block:nil];
+                }
+            }];
+        }
+        else
+        {
+            NSString *toID;
+            if ([YSWhiteBoardManager shareInstance].isBeginClass)
+            {
+                toID = YSRoomPubMsgTellAll;
+            }
+            else
+            {
+                toID = [YSRoomInterface instance].localUser.peerID;
+            }
+            [[YSRoomInterface instance] startShareMediaFile:url isVideo:isVideo toID:toID attributes:sendDic block:nil];
+        }
+        
+        return;
+    }
+    
     NSString *sourceInstanceId = [YSRoomUtil getSourceInstanceIdFromFileId:fileId];
     NSDictionary *fileDic = [YSFileModel fileDataDocDic:fileModel sourceInstanceId:sourceInstanceId];
     
@@ -1410,6 +1479,12 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     
     // 关于画笔消息列表的通知
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(roomWhiteBoardOnMsgList:) name:YSWhiteBoardOnMsgListNotification object:nil];
+    
+    // 媒体课件相关
+    // 媒体流发布状态
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(roomWhiteBoardOnShareMediaState:) name:YSWhiteBoardOnShareMediaStateNotification object:nil];
+    // 更新媒体流的信息
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(roomWhiteBoardOnUpdateMediaStream:) name:YSWhiteBoardUpdateMediaStreamNotification object:nil];
 }
 
 /// checkRoom相关通知
@@ -2169,6 +2244,86 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         [whiteBoardView remoteDelMsg:message];
     }
 }
+
+// 媒体流发布状态
+- (void)roomWhiteBoardOnShareMediaState:(NSNotification *)notification
+{
+    NSDictionary *message = notification.userInfo;
+    
+    NSString *peerID = [message bm_stringForKey:YSWhiteBoardOnShareMediaStateExtensionIdKey];
+    YSMediaState mediaState = [message bm_intForKey:YSWhiteBoardOnShareMediaStateKey];
+    NSDictionary *mediaDic = [message bm_dictionaryForKey:YSWhiteBoardOnShareMediaStateExtensionMsgKey];
+
+    if (![peerID bm_isNotEmpty])
+    {
+        return;
+    }
+
+    self.mediaFileSenderPeerId = peerID;
+    
+    if (mediaState == YSMedia_Pulished)
+    {
+        YSMediaFileModel *mediaFileModel = [YSMediaFileModel mediaFileModelWithDic:mediaDic];
+        if (!mediaFileModel)
+        {
+            return;
+        }
+        
+        self.mediaFileModel = mediaFileModel;
+        
+        [self playMediaFile];
+    }
+    else
+    {
+        [self stopMediaFile];
+
+        self.mediaFileModel = nil;
+        self.mediaFileSenderPeerId = nil;
+    }
+}
+
+// 更新媒体流的信息
+- (void)roomWhiteBoardOnUpdateMediaStream:(NSNotification *)notification
+{
+    NSDictionary *message = notification.userInfo;
+    
+    NSTimeInterval duration = [message bm_doubleForKey:YSWhiteBoardUpadteMediaStreamDurationKey];
+    NSTimeInterval pos = [message bm_doubleForKey:YSWhiteBoardUpadteMediaStreamPositionKey];
+    BOOL isPlay = [message bm_boolForKey:YSWhiteBoardUpadteMediaStreamPlayingKey];
+    
+    [self onRoomUpdateMediaStream:duration pos:pos isPlay:isPlay];
+}
+
+- (void)playMediaFile
+{
+    
+}
+
+- (void)stopMediaFile
+{
+    
+}
+
+- (void)onRoomUpdateMediaStream:(NSTimeInterval)duration pos:(NSTimeInterval)pos isPlay:(BOOL)isPlay
+{
+    if (pos == duration)
+    {
+        [[YSRoomInterface instance] stopShareMediaFile:nil];
+        return;
+    }
+
+}
+
+- (void)pauseMediaFile
+{
+    
+}
+
+- (void)continueMediaFile
+{
+    
+}
+
 
 
 #pragma -

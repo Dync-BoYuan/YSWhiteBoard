@@ -1,0 +1,11 @@
+/*
+ Meetings.strings
+ Meetings
+ 
+ Created by macmini on 15/2/3.
+ Copyright (c) 2015年 macmini. All rights reserved.
+ */
+
+"YSPreload.downloading" = "正在加载课件";
+"YSPreload.unzipping"   = "正在解压缩课件";
+"YSPreload.skip"        = "跳过";

@@ -30,6 +30,9 @@
 		26ACB4CB2446F7C500C8B149 /* NSURLRequest+YSWhiteBoard.h in Headers */ = {isa = PBXBuildFile; fileRef = 26ACB4C32446F7C500C8B149 /* NSURLRequest+YSWhiteBoard.h */; };
 		26ACB4CC2446F7C500C8B149 /* YSWhiteBordHttpDNSUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 26ACB4C42446F7C500C8B149 /* YSWhiteBordHttpDNSUtil.m */; };
 		8732B8D524270E18005BEB99 /* YSWhiteBoard.h in Headers */ = {isa = PBXBuildFile; fileRef = 8732B8D324270E18005BEB99 /* YSWhiteBoard.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		877F39592455290C0086D7E2 /* YSWhiteBoardResources.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 877F39582455290C0086D7E2 /* YSWhiteBoardResources.bundle */; };
+		877F395C24555DDC0086D7E2 /* YSMediaFileModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 877F395A24555DDC0086D7E2 /* YSMediaFileModel.h */; };
+		877F395D24555DDC0086D7E2 /* YSMediaFileModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 877F395B24555DDC0086D7E2 /* YSMediaFileModel.m */; };
 		87AD1600242721F000EAE233 /* YSWhiteBoardManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 87AD15FE242721F000EAE233 /* YSWhiteBoardManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		87AD1601242721F000EAE233 /* YSWhiteBoardManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 87AD15FF242721F000EAE233 /* YSWhiteBoardManager.m */; };
 		87AD16192427554900EAE233 /* YSRoomConfiguration.h in Headers */ = {isa = PBXBuildFile; fileRef = 87AD16172427554900EAE233 /* YSRoomConfiguration.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -153,6 +156,9 @@
 		8732B8D024270E18005BEB99 /* YSWhiteBoard.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = YSWhiteBoard.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		8732B8D324270E18005BEB99 /* YSWhiteBoard.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YSWhiteBoard.h; sourceTree = "<group>"; };
 		8732B8D424270E18005BEB99 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		877F39582455290C0086D7E2 /* YSWhiteBoardResources.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = YSWhiteBoardResources.bundle; sourceTree = "<group>"; };
+		877F395A24555DDC0086D7E2 /* YSMediaFileModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YSMediaFileModel.h; sourceTree = "<group>"; };
+		877F395B24555DDC0086D7E2 /* YSMediaFileModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YSMediaFileModel.m; sourceTree = "<group>"; };
 		87AD15FE242721F000EAE233 /* YSWhiteBoardManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YSWhiteBoardManager.h; sourceTree = "<group>"; };
 		87AD15FF242721F000EAE233 /* YSWhiteBoardManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YSWhiteBoardManager.m; sourceTree = "<group>"; };
 		87AD1610242725EB00EAE233 /* YSWhiteBoardMacro.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YSWhiteBoardMacro.h; sourceTree = "<group>"; };
@@ -389,6 +395,7 @@
 				87AD15FE242721F000EAE233 /* YSWhiteBoardManager.h */,
 				87AD15FF242721F000EAE233 /* YSWhiteBoardManager.m */,
 				041CEADB24514C3E00E07723 /* YSWhiteBoardImage.xcassets */,
+				877F39582455290C0086D7E2 /* YSWhiteBoardResources.bundle */,
 				8732B8D424270E18005BEB99 /* Info.plist */,
 			);
 			path = YSWhiteBoard;
@@ -533,6 +540,8 @@
 			children = (
 				87C8B0E82429BCD20016848E /* YSFileModel.h */,
 				87C8B0E72429BCD20016848E /* YSFileModel.m */,
+				877F395A24555DDC0086D7E2 /* YSMediaFileModel.h */,
+				877F395B24555DDC0086D7E2 /* YSMediaFileModel.m */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -685,6 +694,7 @@
 				87AD162924284E8E00EAE233 /* YSRoomUtil.h in Headers */,
 				87C8B0862429B9150016848E /* YSWhiteBoardEnum.h in Headers */,
 				87AD163E2428B68400EAE233 /* YSWBWebViewManager.h in Headers */,
+				877F395C24555DDC0086D7E2 /* YSMediaFileModel.h in Headers */,
 				87AD163C2428B68400EAE233 /* YSWBDrawViewManager.h in Headers */,
 				26ACB4CA2446F7C500C8B149 /* NSURLProtocol+YSWhiteBoard.h in Headers */,
 				87C8B125242C3ED00016848E /* YSDownloader.h in Headers */,
@@ -788,6 +798,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				877F39592455290C0086D7E2 /* YSWhiteBoardResources.bundle in Resources */,
 				041CEADC24514C3E00E07723 /* YSWhiteBoardImage.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -838,6 +849,7 @@
 				87C8B0BE2429B9D20016848E /* VYSDImageCache.m in Sources */,
 				87AD16412428B68400EAE233 /* YSWKWebViewWeakDelegate.m in Sources */,
 				87AD16452428B6AB00EAE233 /* YSWhiteBoardView.m in Sources */,
+				877F395D24555DDC0086D7E2 /* YSMediaFileModel.m in Sources */,
 				87C8B122242C3ED00016848E /* YSPreloadProgressView.m in Sources */,
 				87C8B0B52429B9D20016848E /* VYSDWebImageDownloaderOperation.m in Sources */,
 				87C8B1092429BCD20016848E /* DocUnderView.m in Sources */,
