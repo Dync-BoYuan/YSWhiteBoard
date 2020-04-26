@@ -120,13 +120,6 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
         self.isLoadingFinish = NO;
         topViewHeight = 0;
 
-        if (isMedia)
-        {
-            self.bm_size = CGSizeMake(100, 100);
-            self.backgroundColor = [UIColor greenColor];
-            return self;
-        }
-
         if (!isMainWhiteBoard)
         {
             topViewHeight = YSTopViewHeight;
@@ -151,36 +144,43 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
             [self makeMp3Animation];
         }
         
-        self.webViewManager = [[YSWBWebViewManager alloc] init];
-        self.webViewManager.delegate = self;
-        
         CGRect contentFrame = CGRectMake(0, topViewHeight, frame.size.width, frame.size.height-topViewHeight);
         UIView *whiteBoardContentView = [[UIView alloc] initWithFrame:contentFrame];
         [self addSubview:whiteBoardContentView];
         self.whiteBoardContentView = whiteBoardContentView;
         self.whiteBoardContentView.backgroundColor = YSWhiteBoard_BackGroudColor;
         
-        self.bgImageView = [[UIImageView alloc] init];
-        [self.whiteBoardContentView addSubview:self.bgImageView];
-        self.bgImageView.frame = self.whiteBoardContentView.bounds;
-        self.bgImageView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-        self.bgImageView.contentMode = UIViewContentModeScaleAspectFit;
+        UITapGestureRecognizer *oneTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(changeToCurrentBWView:)];
+        oneTap.numberOfTapsRequired = 1;
+        [self.whiteBoardContentView addGestureRecognizer:oneTap];
 
-        self.wbView = [self.webViewManager createWhiteBoardWithFrame:whiteBoardContentView.bounds loadFinishedBlock:loadFinishedBlock];
-        [self.whiteBoardContentView addSubview:self.wbView];
-
-        self.drawViewManager = [[YSWBDrawViewManager alloc] initWithBackView:whiteBoardContentView webView:self.wbView];
-
-        YSCoursewareControlView * pageControlView = [[YSCoursewareControlView alloc]initWithFrame:CGRectMake(0, 0, 246, 34)];
-        pageControlView.delegate = self;
-        [self addSubview:pageControlView];
-        self.pageControlView = pageControlView;
-        self.pageControlView.bm_centerX = frame.size.width * 0.5f;
-        self.pageControlView.bm_bottom = frame.size.height - 20;
-        
-        // 拖拽
-        UIPanGestureRecognizer *panGestureRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(dragPageControlView:)];
-        [self.pageControlView addGestureRecognizer:panGestureRecognizer];
+        if (!isMedia)
+        {
+            self.bgImageView = [[UIImageView alloc] init];
+            [self.whiteBoardContentView addSubview:self.bgImageView];
+            self.bgImageView.frame = self.whiteBoardContentView.bounds;
+            self.bgImageView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+            self.bgImageView.contentMode = UIViewContentModeScaleAspectFit;
+            
+            self.webViewManager = [[YSWBWebViewManager alloc] init];
+            self.webViewManager.delegate = self;
+            
+            self.wbView = [self.webViewManager createWhiteBoardWithFrame:whiteBoardContentView.bounds loadFinishedBlock:loadFinishedBlock];
+            [self.whiteBoardContentView addSubview:self.wbView];
+            
+            self.drawViewManager = [[YSWBDrawViewManager alloc] initWithBackView:whiteBoardContentView webView:self.wbView];
+            
+            YSCoursewareControlView *pageControlView = [[YSCoursewareControlView alloc] initWithFrame:CGRectMake(0, 0, 246, 34)];
+            pageControlView.delegate = self;
+            [self addSubview:pageControlView];
+            self.pageControlView = pageControlView;
+            self.pageControlView.bm_centerX = frame.size.width * 0.5f;
+            self.pageControlView.bm_bottom = frame.size.height - 20;
+            
+            // 拖拽
+            UIPanGestureRecognizer *panGestureRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(dragPageControlView:)];
+            [self.pageControlView addGestureRecognizer:panGestureRecognizer];
+        }
 
         if ([YSRoomInterface instance].localUser.role == YSUserType_Teacher)
         {
@@ -196,16 +196,15 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
                 UIPanGestureRecognizer *panGesture = [[UIPanGestureRecognizer alloc]initWithTarget:self action:@selector(panGestureToZoomView:)];
                 [dragZoomView addGestureRecognizer:panGesture];
 
-                YSWhiteBoardControlView *whiteBoardControlView = [[YSWhiteBoardControlView alloc] initWithFrame:CGRectMake(self.bm_width - 50 - 80, pageControlView.bm_originY, 80, 34)];
-                whiteBoardControlView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin;
-                [self addSubview:whiteBoardControlView];
-                self.whiteBoardControlView = whiteBoardControlView;
-                self.whiteBoardControlView.delegate = self;
-                whiteBoardControlView.hidden = YES;
-                
-            UITapGestureRecognizer *oneTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(changeToCurrentBWView:)];
-                oneTap.numberOfTapsRequired = 1;
-                [self.whiteBoardContentView addGestureRecognizer:oneTap];
+                if (!isMedia)
+                {
+                    YSWhiteBoardControlView *whiteBoardControlView = [[YSWhiteBoardControlView alloc] initWithFrame:CGRectMake(self.bm_width - 50 - 80, self.pageControlView.bm_originY, 80, 34)];
+                    whiteBoardControlView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin;
+                    [self addSubview:whiteBoardControlView];
+                    self.whiteBoardControlView = whiteBoardControlView;
+                    self.whiteBoardControlView.delegate = self;
+                    whiteBoardControlView.hidden = YES;
+                }
             }
             else
             {
