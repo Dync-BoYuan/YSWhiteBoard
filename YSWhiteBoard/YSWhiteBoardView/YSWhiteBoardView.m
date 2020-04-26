@@ -1370,7 +1370,11 @@
 /// 全屏 复原 回调
 - (void)coursewarefullScreen:(BOOL)isAllScreen
 {
-  
+    if ([self.delegate respondsToSelector:@selector(onWBViewFullScreen:wbView:)])
+    {
+        /// 课件全屏
+        [self.delegate onWBViewFullScreen:isAllScreen wbView:self];
+    }
 }
 
 /// 上一页
