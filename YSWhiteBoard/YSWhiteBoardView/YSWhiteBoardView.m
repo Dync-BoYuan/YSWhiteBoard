@@ -146,6 +146,10 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
                 [weakSelf topBarButtonClick:sender];
             };
         }
+        else
+        {
+            [self makeMp3Animation];
+        }
         
         self.webViewManager = [[YSWBWebViewManager alloc] init];
         self.webViewManager.delegate = self;
@@ -173,47 +177,48 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
         self.pageControlView = pageControlView;
         self.pageControlView.bm_centerX = frame.size.width * 0.5f;
         self.pageControlView.bm_bottom = frame.size.height - 20;
-            
+        
         // 拖拽
         UIPanGestureRecognizer *panGestureRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(dragPageControlView:)];
         [self.pageControlView addGestureRecognizer:panGestureRecognizer];
 
-        if (!isMainWhiteBoard)
+        if ([YSRoomInterface instance].localUser.role == YSUserType_Teacher)
         {
-            UIView *dragZoomView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, 40, 40)];
-            dragZoomView.backgroundColor = UIColor.clearColor;
-            dragZoomView.bm_right = frame.size.width;
-            dragZoomView.bm_bottom = frame.size.height;
-            self.dragZoomView = dragZoomView;
-            [self addSubview:dragZoomView];
-            
-            UIPanGestureRecognizer *panGesture = [[UIPanGestureRecognizer alloc]initWithTarget:self action:@selector(panGestureToZoomView:)];
-            [dragZoomView addGestureRecognizer:panGesture];
-            
-            YSWhiteBoardControlView *whiteBoardControlView = [[YSWhiteBoardControlView alloc] initWithFrame:CGRectMake(self.bm_width - 50 - 80, pageControlView.bm_originY, 80, 34)];
-            whiteBoardControlView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin;
-            [self addSubview:whiteBoardControlView];
-            self.whiteBoardControlView = whiteBoardControlView;
-            self.whiteBoardControlView.delegate = self;
-            whiteBoardControlView.hidden = YES;
-            
+            if (!isMainWhiteBoard)
+            {
+                UIView *dragZoomView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, 40, 40)];
+                dragZoomView.backgroundColor = UIColor.clearColor;
+                dragZoomView.bm_right = frame.size.width;
+                dragZoomView.bm_bottom = frame.size.height;
+                self.dragZoomView = dragZoomView;
+                [self addSubview:dragZoomView];
+                
+                UIPanGestureRecognizer *panGesture = [[UIPanGestureRecognizer alloc]initWithTarget:self action:@selector(panGestureToZoomView:)];
+                [dragZoomView addGestureRecognizer:panGesture];
+
+                YSWhiteBoardControlView *whiteBoardControlView = [[YSWhiteBoardControlView alloc] initWithFrame:CGRectMake(self.bm_width - 50 - 80, pageControlView.bm_originY, 80, 34)];
+                whiteBoardControlView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin;
+                [self addSubview:whiteBoardControlView];
+                self.whiteBoardControlView = whiteBoardControlView;
+                self.whiteBoardControlView.delegate = self;
+                whiteBoardControlView.hidden = YES;
+                
             UITapGestureRecognizer *oneTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(changeToCurrentBWView:)];
-            oneTap.numberOfTapsRequired = 1;
-            [self.whiteBoardContentView addGestureRecognizer:oneTap];
-            
-            [self makeMp3Animation];
-        }
-        else
-        {
-            // 最小化时的收藏夹按钮
-            UIButton *collectBtn = [[UIButton alloc]initWithFrame:CGRectMake(frame.size.width-40-26, frame.size.height-90, 40, 40)];
-            collectBtn.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin;
-            [collectBtn setImage:[UIImage imageNamed:@"SplitScreen_leaveMessage_normal"] forState:UIControlStateNormal];
-            [collectBtn setImage:[UIImage imageNamed:@"SplitScreen_leaveMessage_selected"] forState:UIControlStateSelected];
-            collectBtn.contentMode = UIViewContentModeScaleAspectFill;
-            [collectBtn addTarget:self action:@selector(collectButtonsClick:) forControlEvents:UIControlEventTouchUpInside];
-            [self addSubview:collectBtn];
-            self.collectBtn = collectBtn;
+                oneTap.numberOfTapsRequired = 1;
+                [self.whiteBoardContentView addGestureRecognizer:oneTap];
+            }
+            else
+            {
+                // 最小化时的收藏夹按钮
+                UIButton *collectBtn = [[UIButton alloc]initWithFrame:CGRectMake(frame.size.width-40-26, frame.size.height-90, 40, 40)];
+                collectBtn.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin;
+                [collectBtn setImage:[UIImage imageNamed:@"SplitScreen_leaveMessage_normal"] forState:UIControlStateNormal];
+                [collectBtn setImage:[UIImage imageNamed:@"SplitScreen_leaveMessage_selected"] forState:UIControlStateSelected];
+                collectBtn.contentMode = UIViewContentModeScaleAspectFill;
+                [collectBtn addTarget:self action:@selector(collectButtonsClick:) forControlEvents:UIControlEventTouchUpInside];
+                [self addSubview:collectBtn];
+                self.collectBtn = collectBtn;
+            }
         }
     }
     
@@ -298,18 +303,13 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
     if (self != [YSWhiteBoardManager shareInstance].mainWhiteBoardView)
     {
         NSDictionary *message = self.positionData;
-        
-//        if ([[message bm_stringForKey:@"type"] isEqualToString:@"full"] && ![message bm_boolForKey:@"full"])
-//        {
-//            message = self.beforeFullScreenData;
-//        }
-        
+                
         //宽，高值在主白板上的比例
         CGFloat scaleWidth = [message bm_floatForKey:@"width"];
         CGFloat scaleHeight = [message bm_floatForKey:@"height"];
         
-        CGFloat width = scaleWidth * self.superview.bm_width;
-        CGFloat height = scaleHeight * self.superview.bm_height;
+        CGFloat width = scaleWidth * self.mainWhiteBoard.bm_width;
+        CGFloat height = scaleHeight * self.mainWhiteBoard.bm_height;
         
         if (!width || !height)
         {
@@ -321,8 +321,8 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
         CGFloat scaleLeft = [message bm_floatForKey:@"x"];
         CGFloat scaleTop = [message bm_floatForKey:@"y"];
         
-        CGFloat x = scaleLeft * (self.superview.bm_width - width);
-        CGFloat y = scaleTop * (self.superview.bm_height - height);
+        CGFloat x = scaleLeft * (self.mainWhiteBoard.bm_width - width);
+        CGFloat y = scaleTop * (self.mainWhiteBoard.bm_height - height);
 
         
         if ([[message bm_stringForKey:@"type"] isEqualToString:@"full"] && [message bm_boolForKey:@"full"])
@@ -1191,15 +1191,15 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
         return;
     }
     
-    YSUserRoleType role = [YSRoomInterface instance].localUser.role;
-    
-    if (role == YSUserType_Teacher)
-    {
+//    YSUserRoleType role = [YSRoomInterface instance].localUser.role;
+//
+//    if (role == YSUserType_Teacher)
+//    {
         if ([self.delegate respondsToSelector:@selector(panToZoomWhiteBoardView:withGestureRecognizer:)])
         {
             [self.delegate panToZoomWhiteBoardView:self withGestureRecognizer:pan];
         }
-    }
+//    }
 }
 
 - (void)dragPageControlView:(UIPanGestureRecognizer *)pan
@@ -1397,6 +1397,13 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
 - (void)coursewarefullScreen:(BOOL)isAllScreen
 {
   
+//    NSDictionary * data = @{@"x":@0,@"y":@0,@"width":@1,@"height":@1,@"small":@NO,@"full":@YES,@"type":@"full",@"instanceId":self.whiteBoardId};
+    
+    if ([self.delegate respondsToSelector:@selector(onWBViewFullScreen:wbView:)])
+    {
+        /// 课件全屏
+        [self.delegate onWBViewFullScreen:isAllScreen wbView:self];
+    }
 }
 
 /// 上一页

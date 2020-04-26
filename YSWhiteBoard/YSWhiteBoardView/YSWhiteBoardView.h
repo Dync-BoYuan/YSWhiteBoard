@@ -50,8 +50,8 @@ NS_ASSUME_NONNULL_BEGIN
 /// 小白板全屏时的复原，删除的工具条
 @property (nonatomic, strong) YSWhiteBoardControlView *whiteBoardControlView;
 
-/// 主白板的bounce
-//@property (nonatomic, strong)YSWhiteBoardView *mainWhiteBoard;
+/// 主白板的
+@property (nonatomic, strong)YSWhiteBoardView *mainWhiteBoard;
 
 /// 小白板点击topbar上全屏前的位置信令的值
 @property (nonatomic, strong)NSDictionary *beforeFullScreenData;
@@ -153,7 +153,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// 课件缩放
 - (void)onWWBViewDrawViewManagerZoomScaleChanged:(YSWhiteBoardView *)whiteBoardView zoomScale:(CGFloat)zoomScale;
-
+/// 课件全屏
+- (void)onWBViewFullScreen:(BOOL)isAllScreen wbView:(YSWhiteBoardView *)whiteBoardView;
 ///拖拽手势事件  拖拽右下角缩放View
 - (void)panToZoomWhiteBoardView:(YSWhiteBoardView *)whiteBoard withGestureRecognizer:(UIPanGestureRecognizer *)pan;
 

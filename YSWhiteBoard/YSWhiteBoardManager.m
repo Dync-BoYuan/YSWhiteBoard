@@ -268,8 +268,19 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     }
     CGRect frame = CGRectMake(whiteBoardViewCurrentLeft, whiteBoardViewCurrentTop, self.whiteBoardViewDefaultSize.width, self.whiteBoardViewDefaultSize.height);
     
+    YSWhiteBoardView *mainWhiteBoardView = self.mainWhiteBoardView;
+    
+    CGFloat x = whiteBoardViewCurrentLeft / (self.mainWhiteBoardView.bm_width - frame.size.width);
+    CGFloat y = whiteBoardViewCurrentTop / (self.mainWhiteBoardView.bm_height - frame.size.height);
+    CGFloat scaleWidth = frame.size.width / self.mainWhiteBoardView.bm_width;
+    CGFloat scaleHeight = frame.size.height / self.mainWhiteBoardView.bm_height;
+    
+    NSDictionary * positionData = @{@"x":@(x),@"y":@(y),@"width":@(scaleWidth),@"height":@(scaleHeight)};
+    
     YSWhiteBoardView *whiteBoardView = [[YSWhiteBoardView alloc] initWithFrame:frame fileId:fileId loadFinishedBlock:loadFinishedBlock];
     whiteBoardView.delegate = self;
+    whiteBoardView.positionData = positionData;
+    whiteBoardView.mainWhiteBoard = self.mainWhiteBoardView;
     
     if (self.isBeginClass)
     {
@@ -1494,10 +1505,6 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         {
             self.roomConfig = [[YSRoomConfiguration alloc] initWithConfigurationString:chairmancontrol];
         }
-        if ([YSRoomInterface instance].localUser.role != YSUserType_Teacher)
-        {
-            self.mainWhiteBoardView.collectBtn.hidden = YES;
-        }
     }
 }
 
@@ -1732,6 +1739,18 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     if (!show)
     {
         [self changeCourseWithFileId:self.currentFileId toID:[YSRoomInterface instance].localUser.peerID save:NO];
+        
+        // 学生默认课件最大化
+        if (self.roomUseType != YSRoomUseTypeLiveRoom && [YSRoomInterface instance].localUser.role == YSUserType_Student)
+        {
+#warning 最大化
+            NSString *whiteBoardId = [YSRoomUtil getwhiteboardIDFromFileId:self.currentFileId];
+            NSString * msgID = [NSString stringWithFormat:@"MoreWhiteboardState_%@", whiteBoardId];
+            NSDictionary * data = @{@"x":@0,@"y":@0,@"width":@1,@"height":@1,@"small":@NO,@"full":@YES,@"type":@"full",@"instanceId":whiteBoardId};
+            NSString * associatedMsgID = [NSString stringWithFormat:@"DocumentFilePage_ExtendShowPage_%@", whiteBoardId];
+            
+            [YSRoomUtil pubWhiteBoardMsg:sYSSignalMoreWhiteboardState msgID:msgID data:data extensionData:nil associatedMsgID:associatedMsgID associatedUserID:nil expires:0 completion:nil];
+        }
     }
     
     if (self.roomUseType != YSRoomUseTypeLiveRoom && ![self.currentFileId isEqualToString:@"0"])
@@ -1753,17 +1772,6 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
                           associatedUserID:nil
                                    expires:0
                                 completion:nil];
-        // 学生默认课件最大化
-        if ([YSRoomInterface instance].localUser.role == YSUserType_Student)
-        {
-#warning 最大化
-            NSString *whiteBoardId = [YSRoomUtil getwhiteboardIDFromFileId:self.currentFileId];
-            NSString * msgID = [NSString stringWithFormat:@"MoreWhiteboardState_%@", whiteBoardId];
-            NSDictionary * data = @{@"x":@0,@"y":@0,@"width":@1,@"height":@1,@"small":@NO,@"full":@YES,@"type":@"full",@"instanceId":whiteBoardId};
-            NSString * associatedMsgID = [NSString stringWithFormat:@"DocumentFilePage_ExtendShowPage_%@", whiteBoardId];
-            
-            [YSRoomUtil pubWhiteBoardMsg:sYSSignalMoreWhiteboardState msgID:msgID data:data extensionData:nil associatedMsgID:associatedMsgID associatedUserID:nil expires:0 completion:nil];
-        }
     }
 }
 
@@ -2365,5 +2373,12 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     }
 }
 
-
+/// 课件全屏
+- (void)onWBViewFullScreen:(BOOL)isAllScreen wbView:(YSWhiteBoardView *)whiteBoardView
+{
+    if (self.wbDelegate && [self.wbDelegate respondsToSelector:@selector(onWhiteBoardFullScreen:)])
+    {
+        [self.wbDelegate onWhiteBoardFullScreen:isAllScreen];
+    }
+}
 @end
