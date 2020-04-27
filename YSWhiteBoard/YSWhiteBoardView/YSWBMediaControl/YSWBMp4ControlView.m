@@ -124,9 +124,9 @@
 {
     BMLog(@"sliderViewEnd: %@ ===========================", @(sender.value));
 
-    if ([self.delegate respondsToSelector:@selector(sliderYSMp4ControlView:)])
+    if ([self.delegate respondsToSelector:@selector(mediaControlviewSlider:)])
     {
-        [self.delegate sliderYSMp4ControlView:sender.value * self.duration];
+        [self.delegate mediaControlviewSlider:sender.value * self.duration];
     }
     
     [[YSRoomInterface instance] pauseMediaFile:NO];
@@ -135,9 +135,9 @@
 - (void)playBtnClicked:(UIButton *)btn
 {
     btn.selected = !btn.selected;
-    if ([self.delegate respondsToSelector:@selector(playYSMp4ControlViewPlay:)])
+    if ([self.delegate respondsToSelector:@selector(mediaControlviewPlay:)])
     {
-        [self.delegate playYSMp4ControlViewPlay:btn.selected];
+        [self.delegate mediaControlviewPlay:btn.selected];
     }
 }
 

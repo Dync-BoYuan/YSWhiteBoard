@@ -7,20 +7,13 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "YSWBMediaControlviewDelegate.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@protocol YSWBMp4ControlViewDelegate <NSObject>
-
-- (void)playYSMp4ControlViewPlay:(BOOL)isPlay;
-
-- (void)sliderYSMp4ControlView:(NSInteger)value;
-
-@end
-
 @interface YSWBMp4ControlView : UIView
 
-@property (nonatomic, weak) id <YSWBMp4ControlViewDelegate> delegate;
+@property (nonatomic, weak) id <YSWBMediaControlviewDelegate> delegate;
 @property (nonatomic, assign) BOOL isPlay;
 
 - (void)setMediaStream:(NSTimeInterval)duration

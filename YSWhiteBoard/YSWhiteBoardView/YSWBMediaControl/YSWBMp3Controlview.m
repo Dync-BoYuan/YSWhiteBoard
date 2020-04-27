@@ -161,9 +161,9 @@
 {
     BMLog(@"sliderViewEnd: %@ ===========================", @(sender.value));
 
-    if ([self.delegate respondsToSelector:@selector(sliderMp3ControlView:)])
+    if ([self.delegate respondsToSelector:@selector(mediaControlviewSlider:)])
     {
-        [self.delegate sliderMp3ControlView:sender.value * self.duration];
+        [self.delegate mediaControlviewSlider:sender.value * self.duration];
     }
     
     [[YSRoomInterface instance] pauseMediaFile:NO];
@@ -172,17 +172,17 @@
 - (void)playBtnClicked:(UIButton *)btn
 {
     btn.selected = !btn.selected;
-    if ([self.delegate respondsToSelector:@selector(playMp3ControlViewPlay:)])
+    if ([self.delegate respondsToSelector:@selector(mediaControlviewPlay:)])
     {
-        [self.delegate playMp3ControlViewPlay:btn.selected];
+        [self.delegate mediaControlviewPlay:btn.selected];
     }
 }
 
 - (void)closeBtnClicked:(UIButton *)btn
 {
-    if ([self.delegate respondsToSelector:@selector(closeMp3ControlView)])
+    if ([self.delegate respondsToSelector:@selector(mediaControlviewClose)])
     {
-        [self.delegate closeMp3ControlView];
+        [self.delegate mediaControlviewClose];
     }
 }
 

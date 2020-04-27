@@ -39,6 +39,7 @@
 		877F39592455290C0086D7E2 /* YSWhiteBoardResources.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 877F39582455290C0086D7E2 /* YSWhiteBoardResources.bundle */; };
 		877F395C24555DDC0086D7E2 /* YSMediaFileModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 877F395A24555DDC0086D7E2 /* YSMediaFileModel.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		877F395D24555DDC0086D7E2 /* YSMediaFileModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 877F395B24555DDC0086D7E2 /* YSMediaFileModel.m */; };
+		877F395F2456B0D10086D7E2 /* YSWBMediaControlviewDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 877F395E2456ACB20086D7E2 /* YSWBMediaControlviewDelegate.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		87AD1600242721F000EAE233 /* YSWhiteBoardManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 87AD15FE242721F000EAE233 /* YSWhiteBoardManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		87AD1601242721F000EAE233 /* YSWhiteBoardManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 87AD15FF242721F000EAE233 /* YSWhiteBoardManager.m */; };
 		87AD16192427554900EAE233 /* YSRoomConfiguration.h in Headers */ = {isa = PBXBuildFile; fileRef = 87AD16172427554900EAE233 /* YSRoomConfiguration.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -171,6 +172,7 @@
 		877F39582455290C0086D7E2 /* YSWhiteBoardResources.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = YSWhiteBoardResources.bundle; sourceTree = "<group>"; };
 		877F395A24555DDC0086D7E2 /* YSMediaFileModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YSMediaFileModel.h; sourceTree = "<group>"; };
 		877F395B24555DDC0086D7E2 /* YSMediaFileModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YSMediaFileModel.m; sourceTree = "<group>"; };
+		877F395E2456ACB20086D7E2 /* YSWBMediaControlviewDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YSWBMediaControlviewDelegate.h; sourceTree = "<group>"; };
 		87AD15FE242721F000EAE233 /* YSWhiteBoardManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YSWhiteBoardManager.h; sourceTree = "<group>"; };
 		87AD15FF242721F000EAE233 /* YSWhiteBoardManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YSWhiteBoardManager.m; sourceTree = "<group>"; };
 		87AD1610242725EB00EAE233 /* YSWhiteBoardMacro.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YSWhiteBoardMacro.h; sourceTree = "<group>"; };
@@ -365,6 +367,7 @@
 			children = (
 				263C8A25245599BA00FDA6E8 /* YSWBMediaSlider.h */,
 				263C8A22245599BA00FDA6E8 /* YSWBMediaSlider.m */,
+				877F395E2456ACB20086D7E2 /* YSWBMediaControlviewDelegate.h */,
 				263C8A20245599BA00FDA6E8 /* YSWBMp3Controlview.h */,
 				263C8A24245599BA00FDA6E8 /* YSWBMp3Controlview.m */,
 				263C8A21245599BA00FDA6E8 /* YSWBMp4ControlView.h */,
@@ -704,6 +707,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				877F395F2456B0D10086D7E2 /* YSWBMediaControlviewDelegate.h in Headers */,
 				877F395C24555DDC0086D7E2 /* YSMediaFileModel.h in Headers */,
 				041CEADF245169A300E07723 /* YSWhiteBoardControlView.h in Headers */,
 				263C8A27245599BA00FDA6E8 /* YSWBMp4ControlView.h in Headers */,
