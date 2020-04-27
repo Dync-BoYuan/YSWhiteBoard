@@ -55,10 +55,6 @@
  */
 @property (nonatomic, copy) NSString *filecategory;
 
-
-/// 是否播放中
-@property (nonatomic, assign) BOOL isPlaying;
-
 - (void)dynamicpptUpdate;
 
 + (NSDictionary *)fileDataDocDic:(YSFileModel *)aDefaultDocment sourceInstanceId:(NSString *)sourceInstanceId;

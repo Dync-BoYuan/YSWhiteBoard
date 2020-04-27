@@ -25,6 +25,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, readonly) NSString *whiteBoardId;
 @property (nonatomic, strong, readonly) NSString *fileId;
 
+/// 媒体课件窗口
+@property (nonatomic, assign, readonly) BOOL isMediaView;
+
 /// 当前页码
 @property (nonatomic, assign, readonly) NSUInteger currentPage;
 /// 总页码
@@ -132,6 +135,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)freshBrushToolConfigs;
 
 
+#pragma -
+#pragma mark 视频控制
+
+- (void)setMediaStream:(NSTimeInterval)duration pos:(NSTimeInterval)pos isPlay:(BOOL)isPlay fileName:(nonnull NSString *)fileName;
 
 @end
 

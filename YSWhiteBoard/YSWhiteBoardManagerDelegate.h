@@ -37,12 +37,12 @@
 - (void)onWhiteBoardFullScreen:(BOOL)isAllScreen;
 
 
-
 #pragma mark - 课件事件
 
-/// 切剑课件
+/// 切换课件
 - (void)onWhiteBoardChangedFileWithFileList:(NSArray *)fileList;
-
+/// 媒体播放状态
+- (void)onWhiteBoardChangedMediaFileStateWithFileId:(NSString *)fileId state:(YSWhiteBordMediaState)state;
 
 
 

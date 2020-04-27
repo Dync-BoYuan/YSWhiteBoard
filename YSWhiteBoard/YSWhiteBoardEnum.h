@@ -29,6 +29,17 @@ typedef NS_ENUM(NSUInteger, YSWhiteBordMediaType)
     YSWhiteBordMediaType_Audio
 };
 
+// 白板文档媒体类型
+typedef NS_ENUM(NSUInteger, YSWhiteBordMediaState)
+{
+    /// 停止
+    YSWhiteBordMediaState_Stop = 0,
+    /// 播放
+    YSWhiteBordMediaState_Play,
+    /// 暂停
+    YSWhiteBordMediaState_Pause,
+};
+
 typedef NS_ENUM(NSInteger, YSEvent)
 {
     YSEventShowPage        = 0,    //增加文档

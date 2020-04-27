@@ -144,15 +144,21 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 
 - (void)clearAllData
 {
-    [self.mainWhiteBoardView destroy];
-    
     for (YSWhiteBoardView *whiteBoardView in self.coursewareViewList)
     {
+        if (whiteBoardView.isMediaView)
+        {
+            [self stopMediaFile];
+        }
+        
         [whiteBoardView destroy];
     }
     [self.coursewareViewList removeAllObjects];
     self.coursewareViewList = nil;
 
+    [self.mainWhiteBoardView bm_removeAllSubviews];
+    [self.mainWhiteBoardView destroy];
+    
     self.docmentList = nil;
     self.wbDelegate = nil;
     
@@ -1048,7 +1054,10 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         NSMutableArray *fileList = [[NSMutableArray alloc] init];
         for (YSWhiteBoardView *whiteBoardView in self.coursewareViewList)
         {
-            [fileList addObject:whiteBoardView.fileId];
+            if (!whiteBoardView.isMediaView)
+            {
+                [fileList addObject:whiteBoardView.fileId];
+            }
         }
         
         if (![fileList containsObject:self.mainWhiteBoardView.fileId])
@@ -1119,6 +1128,11 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
             [whiteBoardView removeFromSuperview];
         }
         
+        if (whiteBoardView.isMediaView)
+        {
+            [self stopMediaFile];
+        }
+        
         [whiteBoardView destroy];
         
         if (self.wbDelegate && [self.wbDelegate respondsToSelector:@selector(onWhiteBoardChangedFileWithFileList:)])
@@ -1147,6 +1161,11 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         if (whiteBoardView.superview)
         {
             [whiteBoardView removeFromSuperview];
+        }
+        
+        if (whiteBoardView.isMediaView)
+        {
+            [self stopMediaFile];
         }
         
         [whiteBoardView destroy];
@@ -2347,9 +2366,6 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     else
     {
         [self stopMediaFile];
-
-        self.mediaFileModel = nil;
-        self.mediaFileSenderPeerId = nil;
     }
 }
 
@@ -2392,6 +2408,11 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
             [self onPlayMp3];
         }
     }
+    
+    if (self.wbDelegate && [self.wbDelegate respondsToSelector:@selector(onWhiteBoardChangedMediaFileStateWithFileId:state:)])
+    {
+        [self.wbDelegate onWhiteBoardChangedMediaFileStateWithFileId:self.mediaFileModel.fileid state:YSWhiteBordMediaState_Play];
+    }
 }
 
 - (void)stopMediaFile
@@ -2417,6 +2438,14 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
             [self onStopMp3];
         }
     }
+    
+    self.mediaFileModel = nil;
+    self.mediaFileSenderPeerId = nil;
+    
+    if (self.wbDelegate && [self.wbDelegate respondsToSelector:@selector(onWhiteBoardChangedMediaFileStateWithFileId:state:)])
+    {
+        [self.wbDelegate onWhiteBoardChangedMediaFileStateWithFileId:self.mediaFileModel.fileid state:YSWhiteBordMediaState_Stop];
+    }
 }
 
 - (void)onRoomUpdateMediaStream:(NSTimeInterval)duration pos:(NSTimeInterval)pos isPlay:(BOOL)isPlay
@@ -2426,7 +2455,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     {
         if (pos == duration)
         {
-            [[YSRoomInterface instance] stopShareMediaFile:nil];
+            [self stopMediaFile];
             self.isMediaDrag = NO;
             return;
         }
@@ -2451,8 +2480,10 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     YSUserRoleType role = [YSRoomInterface instance].localUser.role;
     if (self.mediaFileModel.isVideo)
     {
-
-        
+        if (role == YSUserType_Teacher)
+        {
+            [self.mp4WhiteBoardView setMediaStream:duration pos:pos isPlay:NO fileName:self.mediaFileModel.filename];
+        }
     }
     else if (self.mediaFileModel.isAudio)
     {
@@ -2465,6 +2496,11 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
             [self onPauseMp3];
         }
     }
+    
+    if (self.wbDelegate && [self.wbDelegate respondsToSelector:@selector(onWhiteBoardChangedMediaFileStateWithFileId:state:)])
+    {
+        [self.wbDelegate onWhiteBoardChangedMediaFileStateWithFileId:self.mediaFileModel.fileid state:YSWhiteBordMediaState_Pause];
+    }
 }
 
 - (void)continueMediaMediaStream:(NSTimeInterval)duration pos:(NSTimeInterval)pos
@@ -2472,8 +2508,10 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     YSUserRoleType role = [YSRoomInterface instance].localUser.role;
     if (self.mediaFileModel.isVideo)
     {
-
-        
+        if (role == YSUserType_Teacher)
+        {
+            [self.mp4WhiteBoardView setMediaStream:duration pos:pos isPlay:YES fileName:self.mediaFileModel.filename];
+        }
     }
     else if (self.mediaFileModel.isAudio)
     {
@@ -2485,6 +2523,11 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         {
             [self onPlayMp3];
         }
+    }
+    
+    if (self.wbDelegate && [self.wbDelegate respondsToSelector:@selector(onWhiteBoardChangedMediaFileStateWithFileId:state:)])
+    {
+        [self.wbDelegate onWhiteBoardChangedMediaFileStateWithFileId:self.mediaFileModel.fileid state:YSWhiteBordMediaState_Play];
     }
 }
 

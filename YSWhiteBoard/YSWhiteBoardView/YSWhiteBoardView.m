@@ -32,6 +32,9 @@
 @property (nonatomic, strong) NSString *whiteBoardId;
 @property (nonatomic, strong) NSString *fileId;
 
+/// 媒体课件窗口
+@property (nonatomic, assign) BOOL isMediaView;
+
 /// 白板背景容器
 @property (nonatomic, strong) UIView *whiteBoardContentView;
 /// 白板背景图
@@ -100,6 +103,8 @@
     if (self)
     {
         self.fileId = fileId;
+        self.isMediaView = isMedia;
+        
         if ([fileId isEqualToString:@"0"])
         {
             isMainWhiteBoard = YES;
@@ -1179,6 +1184,15 @@
 {
     [self.webViewManager refreshWhiteBoardWithFrame:self.whiteBoardContentView.bounds];
 }
+
+#pragma -
+#pragma mark 视频控制
+
+- (void)setMediaStream:(NSTimeInterval)duration pos:(NSTimeInterval)pos isPlay:(BOOL)isPlay fileName:(nonnull NSString *)fileName
+{
+    [self.mp4ControlView setMediaStream:duration pos:pos isPlay:isPlay fileName:fileName];
+}
+
 
 #pragma mark 拖拽右下角缩放View
 
