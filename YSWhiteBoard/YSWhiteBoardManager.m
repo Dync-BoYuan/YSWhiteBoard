@@ -43,8 +43,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 @interface YSWhiteBoardManager ()
 <
     YSWhiteBoardViewDelegate,
-    YSWhiteBoardTopBarDelegate,
-    YSWBMp3ControlviewDelegate
+    YSWhiteBoardTopBarDelegate
 >
 {
 //    /// 页面加载完成, 是否需要缓存标识
@@ -2511,41 +2510,24 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     [self.playMp3ImageView stopAnimating];
 }
 
-#pragma mark -YSMp3ControlViewDelegate
+#pragma mark -YSWBMediaControlviewDelegate
 
-- (void)playMp3ControlViewPlay:(BOOL)isPlay
+- (void)mediaControlviewPlay:(BOOL)isPlay
 {
     [[YSRoomInterface instance] pauseMediaFile:isPlay];
 }
 
-- (void)sliderMp3ControlView:(NSTimeInterval)value
+- (void)mediaControlviewSlider:(NSTimeInterval)value
 {
     self.isMediaDrag = YES;
     [[YSRoomInterface instance] seekMediaFile:value];
 }
 
-- (void)closeMp3ControlView
+- (void)mediaControlviewClose
 {
     [[YSRoomInterface instance] stopShareMediaFile:nil];
 }
 
-#pragma mark -YSMp4ControlViewDelegate
-
-- (void)playYSMp4ControlViewPlay:(BOOL)isPlay
-{
-    [[YSRoomInterface instance] pauseMediaFile:isPlay];
-}
-
-- (void)sliderYSMp4ControlView:(NSInteger)value
-{
-    self.isMediaDrag = YES;
-    [[YSRoomInterface instance] pauseMediaFile:YES];
-    BOOL success = [[YSRoomInterface instance] seekMediaFile:value] == 0;
-    if (success)
-    {
-        [[YSRoomInterface instance] pauseMediaFile:NO];
-    }
-}
 
 #pragma -
 #pragma mark YSWhiteBoardViewDelegate

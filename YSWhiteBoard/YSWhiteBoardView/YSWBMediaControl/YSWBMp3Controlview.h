@@ -7,20 +7,12 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "YSWBMediaControlviewDelegate.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@protocol YSWBMp3ControlviewDelegate <NSObject>
-
-- (void)playMp3ControlViewPlay:(BOOL)isPlay;
-
-- (void)sliderMp3ControlView:(NSTimeInterval)value;
-- (void)closeMp3ControlView;
-
-@end
-
 @interface YSWBMp3Controlview : UIView
-@property (nonatomic, weak) id <YSWBMp3ControlviewDelegate> delegate;
+@property (nonatomic, weak) id <YSWBMediaControlviewDelegate> delegate;
 @property (nonatomic, strong) UIButton *playBtn;
 
 @property (nonatomic, assign) BOOL isPlay;
