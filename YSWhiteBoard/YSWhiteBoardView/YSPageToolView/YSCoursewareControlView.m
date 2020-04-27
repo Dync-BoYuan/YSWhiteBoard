@@ -58,8 +58,10 @@
 
 - (void)setupUI
 {
+    CGFloat btnHeight = 24;
+    
     //刷新按钮
-    UIButton * frashBtn = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, 30, 30)];
+    UIButton * frashBtn = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, btnHeight, btnHeight)];
     [frashBtn setImage:[UIImage imageNamed:@"WhiteBoardFrash_normal"] forState:UIControlStateNormal];
     [frashBtn setImage:[UIImage imageNamed:@"WhiteBoardFrash_selected"] forState:UIControlStateHighlighted];
     [frashBtn addTarget:self action:@selector(buttonsClick:) forControlEvents:UIControlEventTouchUpInside];
@@ -68,7 +70,7 @@
     self.frashBtn = frashBtn;
     
     //全屏按钮
-    UIButton * allScreenBtn = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, 30, 30)];
+    UIButton * allScreenBtn = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, btnHeight, btnHeight)];
     [allScreenBtn setImage:[UIImage imageNamed:@"WhiteBoardControl_allScreen_normal"] forState:UIControlStateNormal];
     [allScreenBtn setImage:[UIImage imageNamed:@"WhiteBoardControl_allScreen_highlighted"] forState:UIControlStateHighlighted];
     [allScreenBtn addTarget:self action:@selector(buttonsClick:) forControlEvents:UIControlEventTouchUpInside];
@@ -80,7 +82,7 @@
     UIButton * leftTurnBtn = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, 17, 25)];
     [leftTurnBtn setImage:[UIImage imageNamed:@"WhiteBoardControl_leftTurn_normal"] forState:UIControlStateNormal];
     [leftTurnBtn setImage:[UIImage imageNamed:@"WhiteBoardControl_leftTurn_highlighted"] forState:UIControlStateHighlighted];
-    [leftTurnBtn setImage:[UIImage imageNamed:@"sc_pagecontrol_leftTurn_disabled"] forState:UIControlStateDisabled];
+    [leftTurnBtn setImage:[UIImage imageNamed:@"WhiteBoardControl_leftTurn_disable"] forState:UIControlStateDisabled];
     leftTurnBtn.enabled = NO;
     [leftTurnBtn addTarget:self action:@selector(buttonsClick:) forControlEvents:UIControlEventTouchUpInside];
     leftTurnBtn.tag = 3;
@@ -88,7 +90,7 @@
     self.leftTurnBtn = leftTurnBtn;
     
     //页码
-    UILabel * pageLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 50, 34)];
+    UILabel * pageLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 50, 28)];
     pageLabel.textColor = [UIColor bm_colorWithHex:0x5A8CDC];
     pageLabel.textAlignment = NSTextAlignmentCenter;
     pageLabel.font = [UIFont systemFontOfSize:16];
@@ -97,9 +99,9 @@
     
     //右翻页按钮
     UIButton * rightTurnBtn = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, 17, 25)];
-    [rightTurnBtn setImage:[UIImage imageNamed:@"sc_pagecontrol_rightTurn_normal"] forState:UIControlStateNormal];
+    [rightTurnBtn setImage:[UIImage imageNamed:@"WhiteBoardControl_rightTurn_normal"] forState:UIControlStateNormal];
     [rightTurnBtn setImage:[UIImage imageNamed:@"WhiteBoardControl_rightTurn_highlighted"] forState:UIControlStateHighlighted];
-    [rightTurnBtn setImage:[UIImage imageNamed:@"WhiteBoardControl_rightTurn_normal"] forState:UIControlStateDisabled];
+    [rightTurnBtn setImage:[UIImage imageNamed:@"WhiteBoardControl_rightTurn_disable"] forState:UIControlStateDisabled];
     rightTurnBtn.enabled = NO;
     [rightTurnBtn addTarget:self action:@selector(buttonsClick:) forControlEvents:UIControlEventTouchUpInside];
     rightTurnBtn.tag = 4;
@@ -107,20 +109,20 @@
     self.rightTurnBtn = rightTurnBtn;
     
     //放大按钮
-    UIButton * augmentBtn = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, 30, 30)];
+    UIButton * augmentBtn = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, btnHeight, btnHeight)];
     [augmentBtn setImage:[UIImage imageNamed:@"SplitScreen_enlarge_normal"] forState:UIControlStateNormal];
     [augmentBtn setImage:[UIImage imageNamed:@"SplitScreen_enlarge_highlighted"] forState:UIControlStateHighlighted];
-    [augmentBtn setImage:[UIImage imageNamed:@"sc_pagecontrol_augment_disabled"] forState:UIControlStateDisabled];
+    [augmentBtn setImage:[UIImage imageNamed:@"SplitScreen_enlarge_disabled"] forState:UIControlStateDisabled];
     [augmentBtn addTarget:self action:@selector(buttonsClick:) forControlEvents:UIControlEventTouchUpInside];
     augmentBtn.tag = 5;
     [self addSubview:augmentBtn];
     self.augmentBtn = augmentBtn;
     
     //缩小按钮
-    UIButton * reduceBtn = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, 30, 30)];
+    UIButton * reduceBtn = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, btnHeight, btnHeight)];
     [reduceBtn setImage:[UIImage imageNamed:@"SplitScreen_minimize_normal"] forState:UIControlStateNormal];
     [reduceBtn setImage:[UIImage imageNamed:@"SplitScreen_minimize_highlighted"] forState:UIControlStateHighlighted];
-    [reduceBtn setImage:[UIImage imageNamed:@"sc_pagecontrol_reduce_disabled"] forState:UIControlStateDisabled];
+    [reduceBtn setImage:[UIImage imageNamed:@"SplitScreen_minimize_disable"] forState:UIControlStateDisabled];
     [reduceBtn addTarget:self action:@selector(buttonsClick:) forControlEvents:UIControlEventTouchUpInside];
     reduceBtn.tag = 6;
     [self addSubview:reduceBtn];
@@ -291,8 +293,8 @@
     _isAllScreen = isAllScreen;
     if (isAllScreen)
     {
-        [self.allScreenBtn setImage:[UIImage imageNamed:@"sc_pagecontrol_normalScreen_normal"] forState:UIControlStateNormal];
-        [self.allScreenBtn setImage:[UIImage imageNamed:@"sc_pagecontrol_normalScreen_highlighted"] forState:UIControlStateHighlighted];
+        [self.allScreenBtn setImage:[UIImage imageNamed:@"WhiteBoardControl_normalScreen_normal"] forState:UIControlStateNormal];
+        [self.allScreenBtn setImage:[UIImage imageNamed:@"WhiteBoardControl_normalScreen_highLighed"] forState:UIControlStateHighlighted];
     }
     else
     {
@@ -326,13 +328,13 @@
         [self changeZoomScale:self.zoomScale];
         
         
-        self.bm_width = 256;
+        self.bm_width = 232;
     }
     else
     {
         self.augmentBtn.enabled = NO;
         self.reduceBtn.enabled = NO;
-        self.bm_width = 180;
+        self.bm_width = 168;
     }
 }
 

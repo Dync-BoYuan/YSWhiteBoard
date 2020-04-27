@@ -166,7 +166,7 @@
             
             self.drawViewManager = [[YSWBDrawViewManager alloc] initWithBackView:whiteBoardContentView webView:self.wbView];
             
-            YSCoursewareControlView *pageControlView = [[YSCoursewareControlView alloc] initWithFrame:CGRectMake(0, 0, 256, 34)];
+            YSCoursewareControlView *pageControlView = [[YSCoursewareControlView alloc] initWithFrame:CGRectMake(0, 0, 232, 28)];
             pageControlView.delegate = self;
             [self addSubview:pageControlView];
             self.pageControlView = pageControlView;
@@ -194,7 +194,7 @@
 
                 if (!isMedia)
                 {
-                    YSWhiteBoardControlView *whiteBoardControlView = [[YSWhiteBoardControlView alloc] initWithFrame:CGRectMake(self.bm_width - 50 - 80, self.pageControlView.bm_originY, 80, 34)];
+                    YSWhiteBoardControlView *whiteBoardControlView = [[YSWhiteBoardControlView alloc] initWithFrame:CGRectMake(self.bm_width - 70 - 70, self.pageControlView.bm_originY, 70, 28)];
                     whiteBoardControlView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin;
                     [self addSubview:whiteBoardControlView];
                     self.whiteBoardControlView = whiteBoardControlView;

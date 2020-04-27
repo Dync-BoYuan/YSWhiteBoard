@@ -35,8 +35,11 @@
 
 - (void)setupUI
 {
+    
+    CGFloat btnHeight = 24;
+    
     //由全屏还原的按钮
-    UIButton * returnBtn = [[UIButton alloc]initWithFrame:CGRectMake(3, 0, 30, 30)];
+    UIButton * returnBtn = [[UIButton alloc]initWithFrame:CGRectMake(3, 0, btnHeight, btnHeight)];
     [returnBtn setImage:[UIImage imageNamed:@"SplitScreen_recovery"] forState:UIControlStateNormal];
     returnBtn.contentMode = UIViewContentModeScaleAspectFill;
     [returnBtn addTarget:self action:@selector(buttonsClick:) forControlEvents:UIControlEventTouchUpInside];
@@ -45,7 +48,7 @@
     self.returnBtn = returnBtn;
     
     //删除按钮
-    UIButton * cancleBtn = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, 30, 30)];
+    UIButton * cancleBtn = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, btnHeight, btnHeight)];
     [cancleBtn setImage:[UIImage imageNamed:@"SplitScreen_close"] forState:UIControlStateNormal];
     cancleBtn.contentMode = UIViewContentModeScaleAspectFill;
     [cancleBtn addTarget:self action:@selector(buttonsClick:) forControlEvents:UIControlEventTouchUpInside];
