@@ -1191,7 +1191,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         return;
     }
     
-    if (fileModel.isMedia)
+    if ([YSRoomUtil checkIsMedia:fileModel.filetype])
     {
         BOOL isVideo = [YSRoomUtil checkIsVideo:fileModel.filetype];
         NSDictionary *sendDic = @{@"filename": fileModel.filename,
