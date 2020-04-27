@@ -58,7 +58,7 @@
     closeBtn.hidden = YES;
     
     ///全屏
-    UIButton *fullScreenBtn = [[UIButton alloc]initWithFrame:CGRectMake(closeBtn.bm_originX - self.bm_height - 20, 5, self.bm_height-5, self.bm_height-5)];
+    UIButton *fullScreenBtn = [[UIButton alloc]initWithFrame:CGRectMake(closeBtn.bm_originX - self.bm_height - 10, 5, self.bm_height-5, self.bm_height-5)];
     fullScreenBtn.bm_centerY = self.bm_height/2;
     [fullScreenBtn addTarget:self action:@selector(buttonsClick:) forControlEvents:UIControlEventTouchUpInside];
     [fullScreenBtn setImage:[UIImage imageNamed:@"SplitScreen_fullScreen"] forState:UIControlStateNormal];
@@ -70,10 +70,10 @@
     fullScreenBtn.hidden = YES;
     
     ///最小化
-    UIButton *minimizeBtn = [[UIButton alloc]initWithFrame:CGRectMake(fullScreenBtn.bm_originX - self.bm_height - 20, 5, self.bm_height-5, self.bm_height-5)];
+    UIButton *minimizeBtn = [[UIButton alloc]initWithFrame:CGRectMake(fullScreenBtn.bm_originX - self.bm_height - 10, 5, self.bm_height-5, self.bm_height-5)];
     minimizeBtn.bm_centerY = self.bm_height/2;
     [minimizeBtn addTarget:self action:@selector(buttonsClick:) forControlEvents:UIControlEventTouchUpInside];
-    [minimizeBtn setImage:[UIImage imageNamed:@"SplitScreen_minimize"] forState:UIControlStateNormal];
+    [minimizeBtn setImage:[UIImage imageNamed:@"SplitScreen_minimize_normal"] forState:UIControlStateNormal];
     minimizeBtn.contentMode = UIViewContentModeScaleAspectFill;
     minimizeBtn.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin;
     minimizeBtn.tag = 1;
@@ -91,7 +91,7 @@
     [self addSubview:titleLabel];
     titleLabel.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     self.titleLabel = titleLabel;
-    
+        
     if ([YSRoomInterface instance].localUser.role == YSUserType_Teacher)
     {
         closeBtn.hidden = NO;
