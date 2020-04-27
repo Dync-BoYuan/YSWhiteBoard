@@ -16,10 +16,14 @@
 
 #import "YSBrushToolsManager.h"
 
+#import "YSWBMp4Controlview.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface YSWhiteBoardManager : NSObject
+<
+    YSWBMp4ControlViewDelegate
+>
 
 @property (nonatomic, weak, readonly) id <YSWhiteBoardManagerDelegate> wbDelegate;
 /// 配置项

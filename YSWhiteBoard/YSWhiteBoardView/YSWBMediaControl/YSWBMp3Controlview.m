@@ -8,13 +8,14 @@
 
 #import "YSWBMp3Controlview.h"
 #import "YSWBMediaSlider.h"
+
 @interface YSWBMp3Controlview ()
 
 //@property (nonatomic, strong) UIButton *playBtn;
 @property (nonatomic, strong) UILabel *nameLabel;
 @property (nonatomic, strong) UILabel *timeLabel;
 @property (nonatomic, strong) YSWBMediaSlider *sliderView;
-@property (nonatomic, assign) NSInteger duration;
+@property (nonatomic, assign) NSTimeInterval duration;
 @property (nonatomic, strong) UIButton *closeBtn;
 
 @end
@@ -192,8 +193,8 @@
         return @"00:00";
     }
 
-    NSUInteger min = count/BMSECONDS_IN_MINUTE;
-    NSUInteger second = count%BMSECONDS_IN_MINUTE;
+    NSUInteger min = count / BMSECONDS_IN_MINUTE;
+    NSUInteger second = count % BMSECONDS_IN_MINUTE;
     return [NSString stringWithFormat:@"%02ld:%02ld", (long)min, (long)second];
 }
 

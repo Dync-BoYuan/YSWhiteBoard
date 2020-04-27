@@ -10,14 +10,9 @@
 #import "YSRoomUtil.h"
 #import "YSFileModel.h"
 #import <objc/message.h>
-
+#import "YSWBMp4Controlview.h"
 
 #define YSTopViewHeight         (30.0f)
-
-static const CGFloat kMp3_Width_iPhone = 55.0f;
-static const CGFloat kMp3_Width_iPad = 70.0f;
-#define MP3VIEW_WIDTH               ([UIDevice bm_isiPad] ? kMp3_Width_iPad : kMp3_Width_iPhone)
-
 
 @interface YSWhiteBoardView ()
 <
@@ -72,8 +67,8 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
 /// 小白板点击控制条全屏前的frame
 //@property (nonatomic, assign)CGRect whiteBoardFrame;
 
-
-@property (nonatomic, strong) UIImageView *playMp3ImageView;
+/// 视频播放控制
+@property (nonatomic, strong) YSWBMp4ControlView *mp4ControlView;
 
 @end
 
@@ -139,10 +134,6 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
                 [weakSelf topBarButtonClick:sender];
             };
         }
-        else
-        {
-            [self makeMp3Animation];
-        }
         
         CGRect contentFrame = CGRectMake(0, topViewHeight, frame.size.width, frame.size.height-topViewHeight);
         UIView *whiteBoardContentView = [[UIView alloc] initWithFrame:contentFrame];
@@ -205,6 +196,10 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
                     self.whiteBoardControlView.delegate = self;
                     whiteBoardControlView.hidden = YES;
                 }
+                else
+                {
+                    [self makeMp4ControlView];
+                }
             }
             else
             {
@@ -224,23 +219,20 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
     return self;
 }
 
-- (void)makeMp3Animation
+- (void)makeMp4ControlView
 {
-    UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(15.0f, self.bm_bottom - (MP3VIEW_WIDTH+15.0f), MP3VIEW_WIDTH, MP3VIEW_WIDTH)];
+    self.mp4ControlView = [[YSWBMp4ControlView alloc] init];
+    self.mp4ControlView.frame = CGRectMake(30, 0, self.bm_width - 60, 74);
+    self.mp4ControlView.bm_bottom = self.bm_height - 23;
+    [self addSubview:self.mp4ControlView];
     
-    NSMutableArray *imageArray = [[NSMutableArray alloc] init];
-    for (NSUInteger i=1; i<=50; i++)
-    {
-        NSString *imageName = [NSString stringWithFormat:@"main_playmp3_%02lu", (unsigned long)i];
-        [imageArray addObject:imageName];
-    }
-    
-    [imageView bm_animationWithImageArray:imageArray duration:2 repeatCount:0];
-    
-    imageView.hidden = YES;
-    self.playMp3ImageView = imageView;
-    
-    [self addSubview:self.playMp3ImageView];
+    self.mp4ControlView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+
+    self.mp4ControlView.backgroundColor = [UIColor bm_colorWithHex:0x6D7278 alpha:0.39];
+    [self.mp4ControlView bm_roundedRect:37];
+
+    self.mp4ControlView.hidden = YES;
+    self.mp4ControlView.delegate = [YSWhiteBoardManager shareInstance];
 }
 
 - (void)changeToCurrentBWView:(UITapGestureRecognizer *)tapGesture
@@ -1485,29 +1477,5 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
     NSDictionary *data = @{@"sourceInstanceId" : self.whiteBoardId};
     [YSRoomUtil delWhiteBoardMsg:sYSSignalExtendShowPage msgID:msgID data:data completion:nil];
 }
-
-
-#pragma mark -
-#pragma mark Mp3Func
-
-- (void)onPlayMp3
-{
-    [self.playMp3ImageView bm_bringToFront];
-    
-    self.playMp3ImageView.hidden = NO;
-    [self.playMp3ImageView startAnimating];
-}
-
-- (void)onPauseMp3
-{
-    [self.playMp3ImageView stopAnimating];
-}
-
-- (void)onStopMp3
-{
-    self.playMp3ImageView.hidden = YES;
-    [self.playMp3ImageView stopAnimating];
-}
-
 
 @end

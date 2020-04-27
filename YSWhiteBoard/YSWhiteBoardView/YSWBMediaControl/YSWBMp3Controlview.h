@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)playMp3ControlViewPlay:(BOOL)isPlay;
 
-- (void)sliderMp3ControlView:(NSInteger)value;
+- (void)sliderMp3ControlView:(NSTimeInterval)value;
 - (void)closeMp3ControlView;
 
 @end
