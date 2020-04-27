@@ -2349,7 +2349,9 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         self.mp4WhiteBoardView.topBar.delegate = self;
         [self addWhiteBoardViewWithWhiteBoardView:self.mp4WhiteBoardView];
 
+        BMWeakSelf
         [[YSRoomInterface instance] playMediaFile:self.mediaFileSenderPeerId renderType:YSRenderMode_fit window:self.mp4WhiteBoardView.whiteBoardContentView completion:^(NSError *error) {
+            [weakSelf.mp4WhiteBoardView setMediaStream:0 pos:0 isPlay:NO fileName:self.mediaFileModel.filename];
         }];
     }
     else if (self.mediaFileModel.isAudio)
