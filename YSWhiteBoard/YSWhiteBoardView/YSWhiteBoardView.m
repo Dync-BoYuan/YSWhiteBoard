@@ -166,7 +166,7 @@
             
             self.drawViewManager = [[YSWBDrawViewManager alloc] initWithBackView:whiteBoardContentView webView:self.wbView];
             
-            YSCoursewareControlView *pageControlView = [[YSCoursewareControlView alloc] initWithFrame:CGRectMake(0, 0, 246, 34)];
+            YSCoursewareControlView *pageControlView = [[YSCoursewareControlView alloc] initWithFrame:CGRectMake(0, 0, 256, 34)];
             pageControlView.delegate = self;
             [self addSubview:pageControlView];
             self.pageControlView = pageControlView;
@@ -1402,6 +1402,13 @@
 
 
 #pragma mark YSCoursewareControlViewDelegate
+
+/// 刷新课件
+- (void)coursewareFrashBtnClick:(UIButton *)sender
+{
+    
+}
+
 /// 全屏 复原 回调
 - (void)coursewarefullScreen:(BOOL)isAllScreen
 {

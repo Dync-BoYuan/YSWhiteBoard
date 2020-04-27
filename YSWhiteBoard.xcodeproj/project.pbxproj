@@ -19,7 +19,7 @@
 		042F2F972435DD3E00838154 /* YSCoursewareControlView.h in Headers */ = {isa = PBXBuildFile; fileRef = 042F2F952435DD3E00838154 /* YSCoursewareControlView.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		042F2F982435DD3E00838154 /* YSCoursewareControlView.m in Sources */ = {isa = PBXBuildFile; fileRef = 042F2F962435DD3E00838154 /* YSCoursewareControlView.m */; };
 		044733A22456C47E009ACB27 /* YSWhiteBoardTopBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 044733A02456C47E009ACB27 /* YSWhiteBoardTopBar.m */; };
-		044733A32456C47E009ACB27 /* YSWhiteBoardTopBar.h in Headers */ = {isa = PBXBuildFile; fileRef = 044733A12456C47E009ACB27 /* YSWhiteBoardTopBar.h */; };
+		044733A42456C9F4009ACB27 /* YSWhiteBoardTopBar.h in Headers */ = {isa = PBXBuildFile; fileRef = 044733A12456C47E009ACB27 /* YSWhiteBoardTopBar.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		263C8A26245599BA00FDA6E8 /* YSWBMp3Controlview.h in Headers */ = {isa = PBXBuildFile; fileRef = 263C8A20245599BA00FDA6E8 /* YSWBMp3Controlview.h */; };
 		263C8A27245599BA00FDA6E8 /* YSWBMp4ControlView.h in Headers */ = {isa = PBXBuildFile; fileRef = 263C8A21245599BA00FDA6E8 /* YSWBMp4ControlView.h */; };
 		263C8A28245599BA00FDA6E8 /* YSWBMediaSlider.m in Sources */ = {isa = PBXBuildFile; fileRef = 263C8A22245599BA00FDA6E8 /* YSWBMediaSlider.m */; };
@@ -699,6 +699,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				044733A42456C9F4009ACB27 /* YSWhiteBoardTopBar.h in Headers */,
 				877F395F2456B0D10086D7E2 /* YSWBMediaControlviewDelegate.h in Headers */,
 				877F395C24555DDC0086D7E2 /* YSMediaFileModel.h in Headers */,
 				041CEADF245169A300E07723 /* YSWhiteBoardControlView.h in Headers */,
@@ -748,7 +749,6 @@
 				8732B8D524270E18005BEB99 /* YSWhiteBoard.h in Headers */,
 				87C8B0C22429B9D20016848E /* NSImage+VYWebCache.h in Headers */,
 				87C8B10F2429BCD20016848E /* DrawLine.h in Headers */,
-				044733A32456C47E009ACB27 /* YSWhiteBoardTopBar.h in Headers */,
 				87C8B10B2429BCD20016848E /* DrawView.h in Headers */,
 				87C8B0C42429B9D20016848E /* UIImage+VYWebP.h in Headers */,
 				87C8B11B2429BCD20016848E /* DrawBase.h in Headers */,

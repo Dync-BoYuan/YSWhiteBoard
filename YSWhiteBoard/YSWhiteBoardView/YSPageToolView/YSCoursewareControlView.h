@@ -12,6 +12,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol YSCoursewareControlViewDelegate <NSObject>
 
+/// 刷新课件
+- (void)coursewareFrashBtnClick:(UIButton *)sender;
 /// 全屏 复原 回调
 - (void)coursewarefullScreen:(BOOL)isAllScreen;
 /// 上一页

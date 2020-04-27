@@ -11,6 +11,8 @@
 
 @interface YSCoursewareControlView ()
 
+///刷新按钮
+@property (nonatomic, weak) UIButton *frashBtn;
 ///全屏按钮
 @property (nonatomic, weak) UIButton *allScreenBtn;
 ///左翻页按钮
@@ -23,8 +25,6 @@
 @property (nonatomic, weak) UIButton *augmentBtn;
 ///缩小按钮
 @property (nonatomic, weak) UIButton *reduceBtn;
-
-
 /// 总页数
 @property (nonatomic, assign) NSInteger totalPage;
 /// 当前页
@@ -58,28 +58,37 @@
 
 - (void)setupUI
 {
+    //刷新按钮
+    UIButton * frashBtn = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, 30, 30)];
+    [frashBtn setImage:[UIImage imageNamed:@"WhiteBoardFrash_normal"] forState:UIControlStateNormal];
+    [frashBtn setImage:[UIImage imageNamed:@"WhiteBoardFrash_selected"] forState:UIControlStateHighlighted];
+    [frashBtn addTarget:self action:@selector(buttonsClick:) forControlEvents:UIControlEventTouchUpInside];
+    frashBtn.tag = 1;
+    [self addSubview:frashBtn];
+    self.frashBtn = frashBtn;
+    
     //全屏按钮
     UIButton * allScreenBtn = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, 30, 30)];
-    [allScreenBtn setImage:[UIImage imageNamed:@"sc_pagecontrol_allScreen_normal"] forState:UIControlStateNormal];
-    [allScreenBtn setImage:[UIImage imageNamed:@"sc_pagecontrol_allScreen_highlighted"] forState:UIControlStateHighlighted];
+    [allScreenBtn setImage:[UIImage imageNamed:@"WhiteBoardControl_allScreen_normal"] forState:UIControlStateNormal];
+    [allScreenBtn setImage:[UIImage imageNamed:@"WhiteBoardControl_allScreen_highlighted"] forState:UIControlStateHighlighted];
     [allScreenBtn addTarget:self action:@selector(buttonsClick:) forControlEvents:UIControlEventTouchUpInside];
-    allScreenBtn.tag = 1;
+    allScreenBtn.tag = 2;
     [self addSubview:allScreenBtn];
     self.allScreenBtn = allScreenBtn;
     
     //左翻页按钮
     UIButton * leftTurnBtn = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, 17, 25)];
-    [leftTurnBtn setImage:[UIImage imageNamed:@"sc_pagecontrol_leftTurn_normal"] forState:UIControlStateNormal];
-    [leftTurnBtn setImage:[UIImage imageNamed:@"sc_pagecontrol_leftTurn_highlighted"] forState:UIControlStateHighlighted];
+    [leftTurnBtn setImage:[UIImage imageNamed:@"WhiteBoardControl_leftTurn_normal"] forState:UIControlStateNormal];
+    [leftTurnBtn setImage:[UIImage imageNamed:@"WhiteBoardControl_leftTurn_highlighted"] forState:UIControlStateHighlighted];
     [leftTurnBtn setImage:[UIImage imageNamed:@"sc_pagecontrol_leftTurn_disabled"] forState:UIControlStateDisabled];
     leftTurnBtn.enabled = NO;
     [leftTurnBtn addTarget:self action:@selector(buttonsClick:) forControlEvents:UIControlEventTouchUpInside];
-    leftTurnBtn.tag = 2;
+    leftTurnBtn.tag = 3;
     [self addSubview:leftTurnBtn];
     self.leftTurnBtn = leftTurnBtn;
     
     //页码
-    UILabel * pageLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 70, 34)];
+    UILabel * pageLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 50, 34)];
     pageLabel.textColor = [UIColor bm_colorWithHex:0x5A8CDC];
     pageLabel.textAlignment = NSTextAlignmentCenter;
     pageLabel.font = [UIFont systemFontOfSize:16];
@@ -89,31 +98,31 @@
     //右翻页按钮
     UIButton * rightTurnBtn = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, 17, 25)];
     [rightTurnBtn setImage:[UIImage imageNamed:@"sc_pagecontrol_rightTurn_normal"] forState:UIControlStateNormal];
-    [rightTurnBtn setImage:[UIImage imageNamed:@"sc_pagecontrol_rightTurn_highlighted"] forState:UIControlStateHighlighted];
-    [rightTurnBtn setImage:[UIImage imageNamed:@"sc_pagecontrol_rightTurn_disabled"] forState:UIControlStateDisabled];
+    [rightTurnBtn setImage:[UIImage imageNamed:@"WhiteBoardControl_rightTurn_highlighted"] forState:UIControlStateHighlighted];
+    [rightTurnBtn setImage:[UIImage imageNamed:@"WhiteBoardControl_rightTurn_normal"] forState:UIControlStateDisabled];
     rightTurnBtn.enabled = NO;
     [rightTurnBtn addTarget:self action:@selector(buttonsClick:) forControlEvents:UIControlEventTouchUpInside];
-    rightTurnBtn.tag = 3;
+    rightTurnBtn.tag = 4;
     [self addSubview:rightTurnBtn];
     self.rightTurnBtn = rightTurnBtn;
     
     //放大按钮
     UIButton * augmentBtn = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, 30, 30)];
-    [augmentBtn setImage:[UIImage imageNamed:@"sc_pagecontrol_augment_normal"] forState:UIControlStateNormal];
-    [augmentBtn setImage:[UIImage imageNamed:@"sc_pagecontrol_augment_highlighted"] forState:UIControlStateHighlighted];
+    [augmentBtn setImage:[UIImage imageNamed:@"SplitScreen_enlarge_normal"] forState:UIControlStateNormal];
+    [augmentBtn setImage:[UIImage imageNamed:@"SplitScreen_enlarge_highlighted"] forState:UIControlStateHighlighted];
     [augmentBtn setImage:[UIImage imageNamed:@"sc_pagecontrol_augment_disabled"] forState:UIControlStateDisabled];
     [augmentBtn addTarget:self action:@selector(buttonsClick:) forControlEvents:UIControlEventTouchUpInside];
-    augmentBtn.tag = 4;
+    augmentBtn.tag = 5;
     [self addSubview:augmentBtn];
     self.augmentBtn = augmentBtn;
     
     //缩小按钮
     UIButton * reduceBtn = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, 30, 30)];
-    [reduceBtn setImage:[UIImage imageNamed:@"sc_pagecontrol_reduce_normal"] forState:UIControlStateNormal];
-    [reduceBtn setImage:[UIImage imageNamed:@"sc_pagecontrol_reduce_highlighted"] forState:UIControlStateHighlighted];
+    [reduceBtn setImage:[UIImage imageNamed:@"SplitScreen_minimize_normal"] forState:UIControlStateNormal];
+    [reduceBtn setImage:[UIImage imageNamed:@"SplitScreen_minimize_highlighted"] forState:UIControlStateHighlighted];
     [reduceBtn setImage:[UIImage imageNamed:@"sc_pagecontrol_reduce_disabled"] forState:UIControlStateDisabled];
     [reduceBtn addTarget:self action:@selector(buttonsClick:) forControlEvents:UIControlEventTouchUpInside];
-    reduceBtn.tag = 5;
+    reduceBtn.tag = 6;
     [self addSubview:reduceBtn];
     self.reduceBtn = reduceBtn;
     
@@ -126,23 +135,22 @@
 {
     [super layoutSubviews];
     
-    self.allScreenBtn.bm_left = 3;
-    self.allScreenBtn.bm_centerY = self.bm_height * 0.5;
+    self.frashBtn.bm_left = 3;
+    
+    self.allScreenBtn.bm_left = self.frashBtn.bm_right + 10;;
     
     self.leftTurnBtn.bm_left = self.allScreenBtn.bm_right + 8;
-    self.leftTurnBtn.bm_centerY = self.bm_height * 0.5;
     
     self.pageLabel.bm_left = self.leftTurnBtn.bm_right + 5;
-    self.pageLabel.bm_centerY = self.bm_height * 0.5;
     
     self.rightTurnBtn.bm_left = self.pageLabel.bm_right + 5;
-    self.rightTurnBtn.bm_centerY = self.bm_height * 0.5;
     
     self.augmentBtn.bm_left = self.rightTurnBtn.bm_right + 8;
-    self.augmentBtn.bm_centerY = self.bm_height * 0.5;
     
-    self.reduceBtn.bm_left = self.augmentBtn.bm_right + 20;
-    self.reduceBtn.bm_centerY = self.bm_height * 0.5;
+    self.reduceBtn.bm_left = self.augmentBtn.bm_right + 10;
+    
+    self.frashBtn.bm_centerY = self.allScreenBtn.bm_centerY = self.leftTurnBtn.bm_centerY = self.pageLabel.bm_centerY = self.rightTurnBtn.bm_centerY = self.augmentBtn.bm_centerY = self.reduceBtn.bm_centerY = self.bm_height * 0.5;
+    
 }
 
 - (void)buttonsClick:(UIButton *)sender
@@ -150,6 +158,19 @@
     switch (sender.tag)
     {
         case 1:
+        {//刷新课件
+            
+            if (!sender.selected)
+            {
+                sender.selected = !sender.selected;
+                if ([self.delegate respondsToSelector:@selector(coursewareFrashBtnClick:)])
+                {
+                    [self.delegate coursewareFrashBtnClick:sender];
+                }
+            }
+        }
+            break;
+        case 2:
         {//全屏
             self.isAllScreen = !self.isAllScreen;
             
@@ -164,7 +185,7 @@
             }
         }
             break;
-        case 2:
+        case 3:
         {//左翻页
             self.leftTurnBtn.enabled = (self.currentPage > 1);
             self.rightTurnBtn.enabled = self.currentPage < self.totalPage;
@@ -174,7 +195,7 @@
             }
         }
             break;
-        case 3:
+        case 4:
         {//右翻页
             self.leftTurnBtn.enabled = (self.currentPage > 1);
             self.rightTurnBtn.enabled = self.currentPage < self.totalPage;
@@ -184,7 +205,7 @@
             }
         }
             break;
-        case 4:
+        case 5:
         {//放大
             if ([self.delegate respondsToSelector:@selector(coursewareToEnlarge)])
             {
@@ -192,7 +213,7 @@
             }
         }
             break;
-        case 5:
+        case 6:
         {//缩小
             if ([self.delegate respondsToSelector:@selector(coursewareToNarrow)])
             {
@@ -275,8 +296,8 @@
     }
     else
     {
-        [self.allScreenBtn setImage:[UIImage imageNamed:@"sc_pagecontrol_allScreen_normal"] forState:UIControlStateNormal];
-        [self.allScreenBtn setImage:[UIImage imageNamed:@"sc_pagecontrol_allScreen_highlighted"] forState:UIControlStateHighlighted];
+        [self.allScreenBtn setImage:[UIImage imageNamed:@"WhiteBoardControl_allScreen_normal"] forState:UIControlStateNormal];
+        [self.allScreenBtn setImage:[UIImage imageNamed:@"WhiteBoardControl_allScreen_highlighted"] forState:UIControlStateHighlighted];
     }
 }
 // 是否可以翻页  (未开课前通过权限判断是否可以翻页  上课后永久不可以翻页)
@@ -305,13 +326,13 @@
         [self changeZoomScale:self.zoomScale];
         
         
-        self.bm_width = 246;
+        self.bm_width = 256;
     }
     else
     {
         self.augmentBtn.enabled = NO;
         self.reduceBtn.enabled = NO;
-        self.bm_width = 160;
+        self.bm_width = 180;
     }
 }
 
