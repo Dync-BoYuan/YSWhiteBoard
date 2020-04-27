@@ -1360,7 +1360,6 @@
         {//最小化
             
             YSWhiteBoardView * mainWhiteBoard = (YSWhiteBoardView *)self.superview;
-            
             mainWhiteBoard.collectBtn.selected = YES;
             
             NSString * msgID = [NSString stringWithFormat:@"MoreWhiteboardState_%@", self.whiteBoardId];
@@ -1372,7 +1371,6 @@
             break;
         case 2:
         {//全屏
-
             // ====  信令  ====
             NSString * msgID = [NSString stringWithFormat:@"MoreWhiteboardState_%@", self.whiteBoardId];
             
@@ -1408,7 +1406,7 @@
 {
     if ([self.delegate respondsToSelector:@selector(onWBViewFullScreen:wbView:)])
     {
-        /// 课件全屏
+        // 课件全屏
         [self.delegate onWBViewFullScreen:isAllScreen wbView:self];
     }
 }
@@ -1442,7 +1440,6 @@
 /// 由全屏还原的按钮
 - (void)whiteBoardfullScreenReturn
 {
-
     NSDictionary * dict = self.positionData;
     //====  信令  ====
     // x,y值在主白板上的比例
