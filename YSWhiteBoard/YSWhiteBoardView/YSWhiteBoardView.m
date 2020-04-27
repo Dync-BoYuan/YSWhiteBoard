@@ -318,12 +318,12 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
             else
             {
                 //宽，高值在主白板上的比例
-                CGFloat scaleWidth = [message bm_floatForKey:@"width"];
+//                CGFloat scaleWidth = [message bm_floatForKey:@"width"];
                 CGFloat scaleHeight = [message bm_floatForKey:@"height"];
                 
-                CGFloat width = scaleWidth * self.mainWhiteBoard.bm_width;
                 CGFloat height = scaleHeight * self.mainWhiteBoard.bm_height;
-                
+//                CGFloat width = scaleWidth * self.mainWhiteBoard.bm_width;
+                CGFloat width = height *5/3;
                 if (!width || !height)
                 {
                     width = self.bm_width;
@@ -339,7 +339,6 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
                 
                 frame = CGRectMake(x, y, width, height);
                 self.whiteBoardControlView.hidden = YES;
-                self.mainWhiteBoard.pageControlView.isAllScreen = NO;
             }
         }
     }
@@ -1307,6 +1306,7 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
 //                whiteBoardView.hidden = YES;
                 
                 NSString * msgID = [NSString stringWithFormat:@"MoreWhiteboardState_%@", whiteBoardView.whiteBoardId];
+                
                 NSDictionary * data = @{@"x":@0,@"y":@0,@"width":@1,@"height":@1,@"small":@YES,@"full":@NO,@"type":@"small",@"instanceId":whiteBoardView.whiteBoardId};
                 NSString * associatedMsgID = [NSString stringWithFormat:@"DocumentFilePage_ExtendShowPage_%@", whiteBoardView.whiteBoardId];
                 
@@ -1323,11 +1323,19 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
 //                whiteBoardView.hidden = NO;
                 
                 // x,y值在主白板上的比例
-                CGFloat scaleLeft = whiteBoardView.bm_originX / (whiteBoardView.superview.bm_width - whiteBoardView.bm_width);
-                CGFloat scaleTop = whiteBoardView.bm_originY / (whiteBoardView.superview.bm_height - whiteBoardView.bm_height);
+//                CGFloat scaleLeft = whiteBoardView.bm_originX / (whiteBoardView.superview.bm_width - whiteBoardView.bm_width);
+//                CGFloat scaleTop = whiteBoardView.bm_originY / (whiteBoardView.superview.bm_height - whiteBoardView.bm_height);
+//                // 宽，高值在主白板上的比例
+//                CGFloat scaleWidth = whiteBoardView.bm_width / whiteBoardView.superview.bm_width;
+//                CGFloat scaleHeight = whiteBoardView.bm_height / whiteBoardView.superview.bm_height;
+                
+                // x,y值在主白板上的比例
+                CGFloat scaleLeft = [whiteBoardView.positionData bm_floatForKey:@"x"];
+                CGFloat scaleTop = [whiteBoardView.positionData bm_floatForKey:@"y"];
+                
                 // 宽，高值在主白板上的比例
-                CGFloat scaleWidth = whiteBoardView.bm_width / whiteBoardView.superview.bm_width;
-                CGFloat scaleHeight = whiteBoardView.bm_height / whiteBoardView.superview.bm_height;
+                CGFloat scaleWidth = [whiteBoardView.positionData bm_floatForKey:@"width"];
+                CGFloat scaleHeight = [whiteBoardView.positionData bm_floatForKey:@"height"];
                 
                 NSString * msgID = [NSString stringWithFormat:@"MoreWhiteboardState_%@", whiteBoardView.whiteBoardId];
                 NSDictionary * data = @{@"x":@(scaleLeft),@"y":@(scaleTop),@"width":@(scaleWidth),@"height":@(scaleHeight),@"small":@NO,@"full":@NO,@"type":@"small",@"instanceId":whiteBoardView.whiteBoardId};
@@ -1374,15 +1382,20 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
             break;
         case 2:
         {//全屏
-//            self.topFullScreenFrame = self.frame;
-            
-//            self.frame = CGRectMake(0, -YSTopViewHeight, self.mainWhiteBoard.bm_width, self.mainWhiteBoard.bm_height + YSTopViewHeight);
-//            self.whiteBoardControlView.hidden = NO;
-//            [self refreshWhiteBoard];
-            
+
             // ====  信令  ====
             NSString * msgID = [NSString stringWithFormat:@"MoreWhiteboardState_%@", self.whiteBoardId];
-            NSDictionary * data = @{@"x":@0,@"y":@0,@"width":@1,@"height":@1,@"small":@NO,@"full":@YES,@"type":@"full",@"instanceId":self.whiteBoardId};
+            
+            //x,y值在主白板上的比例
+            CGFloat scaleLeft = [self.positionData bm_floatForKey:@"x"];
+            CGFloat scaleTop = [self.positionData bm_floatForKey:@"y"];
+            
+            //宽，高值在主白板上的比例
+            CGFloat scaleWidth = [self.positionData bm_floatForKey:@"width"];
+            CGFloat scaleHeight = [self.positionData bm_floatForKey:@"height"];
+            
+            
+            NSDictionary * data = @{@"x":@(scaleLeft),@"y":@(scaleTop),@"width":@(scaleWidth),@"height":@(scaleHeight),@"small":@NO,@"full":@YES,@"type":@"full",@"instanceId":self.whiteBoardId};
             NSString * associatedMsgID = [NSString stringWithFormat:@"DocumentFilePage_ExtendShowPage_%@", self.whiteBoardId];
             
             [YSRoomUtil pubWhiteBoardMsg:sYSSignalMoreWhiteboardState msgID:msgID data:data extensionData:nil associatedMsgID:associatedMsgID associatedUserID:nil expires:0 completion:nil];
@@ -1442,13 +1455,13 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
 /// 由全屏还原的按钮
 - (void)whiteBoardfullScreenReturn
 {
-    NSDictionary * dict = self.beforeFullScreenData;
-    
-    if (![dict bm_isNotEmpty])
-    {
-        dict = self.positionData;
-    }
-    
+//    NSDictionary * dict = self.beforeFullScreenData;
+//
+//    if (![dict bm_isNotEmpty])
+//    {
+//        dict = self.positionData;
+//    }
+    NSDictionary * dict = self.positionData;
     //====  信令  ====
     // x,y值在主白板上的比例
     CGFloat scaleLeft = [dict bm_floatForKey:@"x"];

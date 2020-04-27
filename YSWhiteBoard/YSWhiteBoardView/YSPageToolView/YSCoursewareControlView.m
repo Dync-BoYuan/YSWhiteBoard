@@ -154,6 +154,12 @@
         case 1:
         {//全屏
             self.isAllScreen = !self.isAllScreen;
+            
+            if ((self != [YSWhiteBoardManager shareInstance].mainWhiteBoardView.pageControlView))
+            {
+                [YSWhiteBoardManager shareInstance].mainWhiteBoardView.pageControlView.isAllScreen = self.isAllScreen;
+            }
+            
             if ([self.delegate respondsToSelector:@selector(coursewarefullScreen:)])
             {
                 [self.delegate coursewarefullScreen:self.isAllScreen];

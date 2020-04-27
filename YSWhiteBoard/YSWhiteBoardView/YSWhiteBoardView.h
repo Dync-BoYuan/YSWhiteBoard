@@ -54,7 +54,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong)YSWhiteBoardView *mainWhiteBoard;
 
 /// 小白板点击topbar上全屏前的位置信令的值
-@property (nonatomic, strong)NSDictionary *beforeFullScreenData;
+//@property (nonatomic, strong)NSDictionary *beforeFullScreenData;
 
 ///最小化时的收藏夹按钮
 @property (nonatomic, strong) UIButton * collectBtn;

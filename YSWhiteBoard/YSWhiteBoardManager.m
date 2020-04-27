@@ -585,15 +585,15 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
             if (full)
             {
                 
-                if (![whiteBoardView.positionData bm_isNotEmpty])
-                {
-                    CGFloat scaleWidth = whiteBoardView.bm_width / self.mainWhiteBoardView.bm_width;
-                    CGFloat scaleHeight = whiteBoardView.bm_height / self.mainWhiteBoardView.bm_height;
-                    
-                    whiteBoardView.positionData = @{@"x":@0,@"y":@0,@"width":@(scaleWidth),@"height":@(scaleHeight)};
-                }
-                
-                whiteBoardView.beforeFullScreenData = whiteBoardView.positionData;
+//                if (![whiteBoardView.positionData bm_isNotEmpty])
+//                {
+//                    CGFloat scaleWidth = whiteBoardView.bm_width / self.mainWhiteBoardView.bm_width;
+//                    CGFloat scaleHeight = whiteBoardView.bm_height / self.mainWhiteBoardView.bm_height;
+//                    
+//                    whiteBoardView.positionData = @{@"x":@0,@"y":@0,@"width":@(scaleWidth),@"height":@(scaleHeight)};
+//                }
+//                
+//                whiteBoardView.beforeFullScreenData = whiteBoardView.positionData;
                 whiteBoardView.positionData = message;
                 [whiteBoardView refreshWhiteBoard];
             }
