@@ -146,11 +146,6 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 {
     for (YSWhiteBoardView *whiteBoardView in self.coursewareViewList)
     {
-        if (whiteBoardView.isMediaView)
-        {
-            [self stopMediaFile];
-        }
-        
         [whiteBoardView destroy];
     }
     [self.coursewareViewList removeAllObjects];
@@ -1095,11 +1090,6 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
             [whiteBoardView removeFromSuperview];
         }
         
-        if (whiteBoardView.isMediaView)
-        {
-            [self stopMediaFile];
-        }
-        
         [whiteBoardView destroy];
         
         if (self.wbDelegate && [self.wbDelegate respondsToSelector:@selector(onWhiteBoardChangedFileWithFileList:)])
@@ -1128,11 +1118,6 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         if (whiteBoardView.superview)
         {
             [whiteBoardView removeFromSuperview];
-        }
-        
-        if (whiteBoardView.isMediaView)
-        {
-            [self stopMediaFile];
         }
         
         [whiteBoardView destroy];
@@ -2422,7 +2407,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     {
         if (pos == duration)
         {
-            [self stopMediaFile];
+            [[YSRoomInterface instance] stopShareMediaFile:nil];
             self.isMediaDrag = NO;
             return;
         }

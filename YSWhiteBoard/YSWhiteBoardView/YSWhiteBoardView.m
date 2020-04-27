@@ -1463,9 +1463,16 @@
 /// 删除按钮
 - (void)deleteWhiteBoardView
 {
-    NSString *msgID = [NSString stringWithFormat:@"%@%@", sYSSignalDocumentFilePage_ExtendShowPage, self.whiteBoardId];
-    NSDictionary *data = @{@"sourceInstanceId" : self.whiteBoardId};
-    [YSRoomUtil delWhiteBoardMsg:sYSSignalExtendShowPage msgID:msgID data:data completion:nil];
+    if (self.isMediaView)
+    {
+        [[YSRoomInterface instance] stopShareMediaFile:nil];
+    }
+    else
+    {
+        NSString *msgID = [NSString stringWithFormat:@"%@%@", sYSSignalDocumentFilePage_ExtendShowPage, self.whiteBoardId];
+        NSDictionary *data = @{@"sourceInstanceId" : self.whiteBoardId};
+        [YSRoomUtil delWhiteBoardMsg:sYSSignalExtendShowPage msgID:msgID data:data completion:nil];
+    }
 }
 
 @end

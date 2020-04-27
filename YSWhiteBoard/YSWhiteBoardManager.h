@@ -61,7 +61,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign, readonly) BOOL isUpdateWebAddressInfo;
 
 /// 课件窗口列表
-@property (nonatomic, strong) NSMutableArray <YSWhiteBoardView *> *coursewareViewList;
+@property (nullable, nonatomic, strong) NSMutableArray <YSWhiteBoardView *> *coursewareViewList;
 
 
 + (void)destroy;
