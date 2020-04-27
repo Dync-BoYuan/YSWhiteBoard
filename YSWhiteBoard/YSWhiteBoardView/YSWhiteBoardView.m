@@ -511,6 +511,8 @@
     
     if (([msgName isEqualToString:sYSSignalShowPage] || [msgName isEqualToString:sYSSignalExtendShowPage]))
     {
+        self.pageControlView.frashBtn.selected = NO;
+        
         id data = [tDataDic bm_dictionaryForKey:@"filedata"];
         NSDictionary *fileDataDic = [YSRoomUtil convertWithData:data];
         
@@ -702,6 +704,7 @@
 {
     self.isLoadingFinish = [dic[@"notice"] isEqualToString:@"loadSuccess"];
 
+    self.pageControlView.frashBtn.selected = NO;
     // 通知刷新白板
     [self refreshWhiteBoard];
     
@@ -1404,9 +1407,9 @@
 #pragma mark YSCoursewareControlViewDelegate
 
 /// 刷新课件
-- (void)coursewareFrashBtnClick:(UIButton *)sender
+- (void)coursewareFrashBtnClick
 {
-    
+    [self freshCurrentCourse];
 }
 
 /// 全屏 复原 回调

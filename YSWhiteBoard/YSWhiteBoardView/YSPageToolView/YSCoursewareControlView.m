@@ -11,8 +11,7 @@
 
 @interface YSCoursewareControlView ()
 
-///刷新按钮
-@property (nonatomic, weak) UIButton *frashBtn;
+
 ///全屏按钮
 @property (nonatomic, weak) UIButton *allScreenBtn;
 ///左翻页按钮
@@ -63,7 +62,7 @@
     //刷新按钮
     UIButton * frashBtn = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, btnHeight, btnHeight)];
     [frashBtn setImage:[UIImage imageNamed:@"WhiteBoardFrash_normal"] forState:UIControlStateNormal];
-    [frashBtn setImage:[UIImage imageNamed:@"WhiteBoardFrash_selected"] forState:UIControlStateHighlighted];
+    [frashBtn setImage:[UIImage imageNamed:@"WhiteBoardFrash_selected"] forState:UIControlStateSelected];
     [frashBtn addTarget:self action:@selector(buttonsClick:) forControlEvents:UIControlEventTouchUpInside];
     frashBtn.tag = 1;
     [self addSubview:frashBtn];
@@ -165,10 +164,17 @@
             if (!sender.selected)
             {
                 sender.selected = !sender.selected;
-                if ([self.delegate respondsToSelector:@selector(coursewareFrashBtnClick:)])
+                if ([self.delegate respondsToSelector:@selector(coursewareFrashBtnClick)])
                 {
-                    [self.delegate coursewareFrashBtnClick:sender];
+                    [self.delegate coursewareFrashBtnClick];
                 }
+                
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                    if (sender.selected)
+                    {
+                        sender.selected = NO;
+                    }
+                });
             }
         }
             break;
