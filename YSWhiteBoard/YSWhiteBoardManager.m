@@ -469,29 +469,35 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         
         self.dragImageView.frame = CGRectMake(dragImageViewX, dragImageViewY, whiteBoardView.bm_width, whiteBoardView.bm_height);
         
-        if (pan.state == UIGestureRecognizerStateEnded)
-        {
-            whiteBoardView.frame = self.dragImageView.frame;
-            
-            // x,y值在主白板上的比例
-            CGFloat scaleLeft = whiteBoardView.bm_originX / (self.mainWhiteBoardView.bm_width - whiteBoardView.bm_width);
-            CGFloat scaleTop = whiteBoardView.bm_originY / (self.mainWhiteBoardView.bm_height - whiteBoardView.bm_height);
-            // 宽，高值在主白板上的比例
-            CGFloat scaleWidth = whiteBoardView.bm_width / self.mainWhiteBoardView.bm_width;
-            CGFloat scaleHeight = whiteBoardView.bm_height / self.mainWhiteBoardView.bm_height;
-            
-            NSString * msgID = [NSString stringWithFormat:@"MoreWhiteboardState_%@", whiteBoardView.whiteBoardId];
-            NSDictionary * data = @{@"x":@(scaleLeft),@"y":@(scaleTop),@"width":@(scaleWidth),@"height":@(scaleHeight),@"small":@NO,@"full":@NO,@"type":@"drag",@"instanceId":whiteBoardView.whiteBoardId};
-            NSString * associatedMsgID = [NSString stringWithFormat:@"DocumentFilePage_ExtendShowPage_%@", whiteBoardView.whiteBoardId];
-            
-            [YSRoomUtil pubWhiteBoardMsg:sYSSignalMoreWhiteboardState msgID:msgID data:data extensionData:nil associatedMsgID:associatedMsgID associatedUserID:nil expires:0 completion:nil];
-            
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                [self.dragImageView removeFromSuperview];
-                self.dragImageView = nil;
-                self.isDraging = NO;
-            });
-        }
+    if (pan.state == UIGestureRecognizerStateEnded)
+    {
+        whiteBoardView.frame = self.dragImageView.frame;
+        
+        // x,y值在主白板上的比例
+        CGFloat scaleLeft = whiteBoardView.bm_originX / (self.mainWhiteBoardView.bm_width - whiteBoardView.bm_width);
+        CGFloat scaleTop = whiteBoardView.bm_originY / (self.mainWhiteBoardView.bm_height - whiteBoardView.bm_height);
+        // 宽，高值在主白板上的比例
+        CGFloat scaleWidth = whiteBoardView.bm_width / self.mainWhiteBoardView.bm_width;
+        CGFloat scaleHeight = whiteBoardView.bm_height / self.mainWhiteBoardView.bm_height;
+        
+        NSString * msgID = [NSString stringWithFormat:@"MoreWhiteboardState_%@", whiteBoardView.whiteBoardId];
+        NSDictionary * data = @{@"x":@(scaleLeft),@"y":@(scaleTop),@"width":@(scaleWidth),@"height":@(scaleHeight),@"small":@NO,@"full":@NO,@"type":@"drag",@"instanceId":whiteBoardView.whiteBoardId};
+        NSString * associatedMsgID = [NSString stringWithFormat:@"DocumentFilePage_ExtendShowPage_%@", whiteBoardView.whiteBoardId];
+        
+        [YSRoomUtil pubWhiteBoardMsg:sYSSignalMoreWhiteboardState msgID:msgID data:data extensionData:nil associatedMsgID:associatedMsgID associatedUserID:nil expires:0 completion:nil];
+        
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            [self.dragImageView removeFromSuperview];
+            self.dragImageView = nil;
+            self.isDraging = NO;
+        });
+    }
+    else if (pan.state == UIGestureRecognizerStateCancelled)
+    {
+        [self.dragImageView removeFromSuperview];
+        self.dragImageView = nil;
+    }
+    
 }
 
 #pragma mark 拖拽手势事件  拖拽右下角缩放View
