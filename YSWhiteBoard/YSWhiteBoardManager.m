@@ -313,7 +313,8 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     [self.mainWhiteBoardView changeWhiteBoardBackgroudColor:YSWhiteBoard_MainBackGroudColor];
     
     [self makeMp3Animation];
-
+    [self makeMp3ControlView];
+    
     return self.mainWhiteBoardView;
 }
 
@@ -2421,7 +2422,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         }
     }
     
-    if (self.isMediaDrag)
+    if (!self.isMediaDrag)
     {
         if (isPlay)
         {

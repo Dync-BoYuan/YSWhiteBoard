@@ -1194,6 +1194,7 @@
 
 - (void)setMediaStream:(NSTimeInterval)duration pos:(NSTimeInterval)pos isPlay:(BOOL)isPlay fileName:(nonnull NSString *)fileName
 {
+    self.mp4ControlView.hidden = NO;
     [self.mp4ControlView bm_bringToFront];
     [self.mp4ControlView setMediaStream:duration pos:pos isPlay:isPlay fileName:fileName];
 }
