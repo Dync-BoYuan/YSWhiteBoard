@@ -343,9 +343,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         return nil;
     }
     CGRect frame = CGRectMake(whiteBoardViewCurrentLeft, whiteBoardViewCurrentTop, self.whiteBoardViewDefaultSize.width, self.whiteBoardViewDefaultSize.height);
-    
-    YSWhiteBoardView *mainWhiteBoardView = self.mainWhiteBoardView;
-    
+        
     CGFloat x = whiteBoardViewCurrentLeft / (self.mainWhiteBoardView.bm_width - frame.size.width);
     CGFloat y = whiteBoardViewCurrentTop / (self.mainWhiteBoardView.bm_height - frame.size.height);
     CGFloat scaleWidth = frame.size.width / self.mainWhiteBoardView.bm_width;
@@ -373,9 +371,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     [whiteBoardView refreshWhiteBoard];
 
     [self makeCurrentWhiteBoardViewPoint];
-    
-//    whiteBoardView.mainWhiteBoard = self.mainWhiteBoardView;
-    
+        
     return whiteBoardView;
 }
 
@@ -499,7 +495,6 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
                 [self.dragImageView removeFromSuperview];
                 self.dragImageView = nil;
                 self.isDraging = NO;
-                //[whiteBoardView bm_bringToFront];
             });
         }
 }
@@ -595,7 +590,6 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         [self.dragImageView removeFromSuperview];
         self.dragImageView = nil;
         self.isDragZooming = NO;
-        //[whiteBoard bm_bringToFront];
     }
 }
 
@@ -645,41 +639,15 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         }
         else if ([type isEqualToString:@"small"])
         {//最小化
-            BOOL small = [message bm_boolForKey:@"small"];
-            if (small)
-            {
-                whiteBoardView.hidden = YES;
-            }
-            else
-            {
-                whiteBoardView.hidden = NO;
-            }
-        }
+
+            whiteBoardView.hidden = [message bm_boolForKey:@"small"];
+            return;
+         }
         else if ([type isEqualToString:@"full"])
         {//最大化
-                        
-            BOOL full = [message bm_boolForKey:@"full"];
-            if (full)
-            {
-                
-//                if (![whiteBoardView.positionData bm_isNotEmpty])
-//                {
-//                    CGFloat scaleWidth = whiteBoardView.bm_width / self.mainWhiteBoardView.bm_width;
-//                    CGFloat scaleHeight = whiteBoardView.bm_height / self.mainWhiteBoardView.bm_height;
-//                    
-//                    whiteBoardView.positionData = @{@"x":@0,@"y":@0,@"width":@(scaleWidth),@"height":@(scaleHeight)};
-//                }
-//                
-//                whiteBoardView.beforeFullScreenData = whiteBoardView.positionData;
-                whiteBoardView.positionData = message;
-                [whiteBoardView refreshWhiteBoard];
-            }
-            else
-            {
-                whiteBoardView.positionData = message;
-                                
-                [whiteBoardView refreshWhiteBoard];
-            }
+ 
+            whiteBoardView.positionData = message;
+            [whiteBoardView refreshWhiteBoard];
         }
     }
     
@@ -751,7 +719,6 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     for (YSWhiteBoardView *whiteBoardView in self.coursewareViewList)
     {
         [whiteBoardView refreshWhiteBoard];
-//        whiteBoardView.mainWhiteBoard = self.mainWhiteBoardView;
     }
 }
 

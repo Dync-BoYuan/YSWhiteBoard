@@ -298,14 +298,15 @@
     CGRect frame = self.frame;
     if (self != [YSWhiteBoardManager shareInstance].mainWhiteBoardView)
     {
+        NSDictionary *message = self.positionData;
+
         if (self.pageControlView.isAllScreen)
         {
             frame = CGRectMake(0, -30, BMUI_SCREEN_WIDTH, BMUI_SCREEN_HEIGHT+30);
+            self.whiteBoardControlView.hidden = YES;
         }
         else
         {
-            NSDictionary *message = self.positionData;
-            
             if ([[message bm_stringForKey:@"type"] isEqualToString:@"full"] && [message bm_boolForKey:@"full"])
             {
                 frame = CGRectMake(0, -30, self.mainWhiteBoard.bm_width, self.mainWhiteBoard.bm_height+30);
@@ -1203,15 +1204,10 @@
         return;
     }
     
-//    YSUserRoleType role = [YSRoomInterface instance].localUser.role;
-//
-//    if (role == YSUserType_Teacher)
-//    {
-        if ([self.delegate respondsToSelector:@selector(panToZoomWhiteBoardView:withGestureRecognizer:)])
-        {
-            [self.delegate panToZoomWhiteBoardView:self withGestureRecognizer:pan];
-        }
-//    }
+    if ([self.delegate respondsToSelector:@selector(panToZoomWhiteBoardView:withGestureRecognizer:)])
+    {
+        [self.delegate panToZoomWhiteBoardView:self withGestureRecognizer:pan];
+    }
 }
 
 - (void)dragPageControlView:(UIPanGestureRecognizer *)pan
@@ -1309,7 +1305,6 @@
             YSWhiteBoardView * whiteBoardView = coursewareViewList[i];
             if (!whiteBoardView.hidden)
             {
-//                whiteBoardView.hidden = YES;
                 
                 NSString * msgID = [NSString stringWithFormat:@"MoreWhiteboardState_%@", whiteBoardView.whiteBoardId];
                 
@@ -1326,15 +1321,6 @@
         {
             for (YSWhiteBoardView * whiteBoardView in coursewareViewList)
             {
-//                whiteBoardView.hidden = NO;
-                
-                // x,y值在主白板上的比例
-//                CGFloat scaleLeft = whiteBoardView.bm_originX / (whiteBoardView.superview.bm_width - whiteBoardView.bm_width);
-//                CGFloat scaleTop = whiteBoardView.bm_originY / (whiteBoardView.superview.bm_height - whiteBoardView.bm_height);
-//                // 宽，高值在主白板上的比例
-//                CGFloat scaleWidth = whiteBoardView.bm_width / whiteBoardView.superview.bm_width;
-//                CGFloat scaleHeight = whiteBoardView.bm_height / whiteBoardView.superview.bm_height;
-                
                 // x,y值在主白板上的比例
                 CGFloat scaleLeft = [whiteBoardView.positionData bm_floatForKey:@"x"];
                 CGFloat scaleTop = [whiteBoardView.positionData bm_floatForKey:@"y"];
@@ -1356,7 +1342,6 @@
     {
         for (YSWhiteBoardView * whiteBoardView in coursewareViewList)
         {
-//            whiteBoardView.hidden = YES;
             NSString * msgID = [NSString stringWithFormat:@"MoreWhiteboardState_%@", whiteBoardView.whiteBoardId];
             NSDictionary * data = @{@"x":@0,@"y":@0,@"width":@1,@"height":@1,@"small":@YES,@"full":@NO,@"type":@"small",@"instanceId":whiteBoardView.whiteBoardId};
             NSString * associatedMsgID = [NSString stringWithFormat:@"DocumentFilePage_ExtendShowPage_%@", whiteBoardView.whiteBoardId];
@@ -1373,7 +1358,6 @@
     switch (sender.tag) {
         case 1:
         {//最小化
-//            self.hidden = YES;
             
             YSWhiteBoardView * mainWhiteBoard = (YSWhiteBoardView *)self.superview;
             
@@ -1422,9 +1406,6 @@
 /// 全屏 复原 回调
 - (void)coursewarefullScreen:(BOOL)isAllScreen
 {
-  
-//    NSDictionary * data = @{@"x":@0,@"y":@0,@"width":@1,@"height":@1,@"small":@NO,@"full":@YES,@"type":@"full",@"instanceId":self.whiteBoardId};
-    
     if ([self.delegate respondsToSelector:@selector(onWBViewFullScreen:wbView:)])
     {
         /// 课件全屏
@@ -1461,12 +1442,7 @@
 /// 由全屏还原的按钮
 - (void)whiteBoardfullScreenReturn
 {
-//    NSDictionary * dict = self.beforeFullScreenData;
-//
-//    if (![dict bm_isNotEmpty])
-//    {
-//        dict = self.positionData;
-//    }
+
     NSDictionary * dict = self.positionData;
     //====  信令  ====
     // x,y值在主白板上的比例
