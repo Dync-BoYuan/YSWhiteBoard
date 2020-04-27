@@ -227,14 +227,14 @@
 - (void)makeMp4ControlView
 {
     self.mp4ControlView = [[YSWBMp4ControlView alloc] init];
-    self.mp4ControlView.frame = CGRectMake(30, 0, self.bm_width - 60, 74);
+    self.mp4ControlView.frame = CGRectMake(30, 0, self.bm_width - 60, 46);
     self.mp4ControlView.bm_bottom = self.bm_height - 23;
     [self addSubview:self.mp4ControlView];
     
     self.mp4ControlView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
 
     self.mp4ControlView.backgroundColor = [UIColor bm_colorWithHex:0x6D7278 alpha:0.39];
-    [self.mp4ControlView bm_roundedRect:37];
+    [self.mp4ControlView bm_roundedRect:23];
 
     self.mp4ControlView.hidden = YES;
     self.mp4ControlView.delegate = [YSWhiteBoardManager shareInstance];
@@ -261,6 +261,7 @@
 
     self.dragZoomView.bm_right = frame.size.width;
     self.dragZoomView.bm_bottom = frame.size.height;
+    self.mp4ControlView.bm_bottom = self.bm_height - 23;
 }
 
 - (void)doMsgCachePool

@@ -33,18 +33,18 @@
 - (void)layoutSubviews
 {
     [super layoutSubviews];
-    self.playBtn.frame = CGRectMake(40, 20, 26, 33);
+    self.playBtn.frame = CGRectMake(20, 11, 20, 20);
 //    self.playBtn.bm_centerY = self.bm_centerY;
     
-    self.nameLabel.frame = CGRectMake( CGRectGetMaxX(self.playBtn.frame) + 12, 18, self.bm_width - 220, 17);
+    self.nameLabel.frame = CGRectMake( CGRectGetMaxX(self.playBtn.frame) + 15, 4, self.bm_width - 140, 10);
 //    self.nameLabel.bm_left = self.playBtn.bm_right + 12;
     
-    self.timeLabel.frame = CGRectMake( 0, 18, 100, 17);
-    self.timeLabel.bm_right = self.bm_right - 60;
+    self.timeLabel.frame = CGRectMake( 0, 4, 60, 10);
+    self.timeLabel.bm_right = self.bm_right - 40;
     
-    self.sliderView.frame = CGRectMake(0, 0,self.bm_width - 120, 10);
+    self.sliderView.frame = CGRectMake(0, 0,self.bm_width - 65, 10);
     self.sliderView.bm_top = self.nameLabel.bm_bottom + 10;
-    self.sliderView.bm_left = self.playBtn.bm_right + 12;
+    self.sliderView.bm_left = self.playBtn.bm_right + 15;
 }
 
 - (void)setup
@@ -60,14 +60,14 @@
     UILabel *nameLabel = [[UILabel alloc] init];
     [self addSubview:nameLabel];
     self.nameLabel = nameLabel;
-    nameLabel.font = [UIFont systemFontOfSize:12];
+    nameLabel.font = [UIFont systemFontOfSize:8];
     nameLabel.textColor = [UIColor whiteColor];
     nameLabel.textAlignment = NSTextAlignmentLeft;
 
     UILabel *timeLabel =  [[UILabel alloc] initWithFrame:CGRectMake( 0, 18, 100, 17)];
     [self addSubview:timeLabel];
     self.timeLabel = timeLabel;
-    timeLabel.font = [UIFont systemFontOfSize:12];
+    timeLabel.font = [UIFont systemFontOfSize:8];
     timeLabel.textColor = [UIColor whiteColor];
     timeLabel.textAlignment = NSTextAlignmentRight;
     
