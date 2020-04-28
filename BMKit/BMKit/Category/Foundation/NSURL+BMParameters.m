@@ -22,7 +22,12 @@
 // 从k=v中获取键值
 - (NSString *)valueFromKeyValue:(NSString *)keyValue atIndex:(NSUInteger)index
 {
-    return [[keyValue componentsSeparatedByString:@"="] objectAtIndex:index];
+    NSArray *values = [keyValue componentsSeparatedByString:@"="];
+    if (values.count > index)
+    {
+        return [values objectAtIndex:index];
+    }
+    return @"";
 }
 
 - (NSDictionary *)queryDictionaryWithKeysValues:(NSString *)keyValues
