@@ -400,7 +400,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     }
 }
 
-- (void)clickToBringVideoToFont:(UIView *)whiteBoard
+- (void)clickToBringVideoToFront:(UIView *)whiteBoard
 {
     YSWhiteBoardView *whiteBoardView = (YSWhiteBoardView *)whiteBoard;
     [self setTheCurrentDocumentFileID:whiteBoardView.fileId];
@@ -1791,7 +1791,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         [self changeCourseWithFileId:self.currentFileId toID:[YSRoomInterface instance].localUser.peerID save:NO];
         
         // 学生默认课件最大化
-        if (self.roomUseType != YSRoomUseTypeLiveRoom && [YSRoomInterface instance].localUser.role == YSUserType_Student)
+        if (self.roomUseType != YSRoomUseTypeLiveRoom)
         {
 #warning 最大化
             NSString *whiteBoardId = [YSRoomUtil getwhiteboardIDFromFileId:self.currentFileId];
@@ -2048,7 +2048,30 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         }
         else
         {
-            [self removeAllWhiteBoardView];
+            if (!inlist)
+            {
+                if ([YSRoomInterface instance].localUser.role == YSUserType_Teacher)
+                {
+                    for (YSWhiteBoardView *whiteBoardView in self.coursewareViewList)
+                    {
+                        [self changeCourseWithFileId:whiteBoardView.fileId];
+                        
+                        NSString * msgID = [NSString stringWithFormat:@"MoreWhiteboardState_%@", whiteBoardView.whiteBoardId];
+                        NSString * associatedMsgID = [NSString stringWithFormat:@"DocumentFilePage_ExtendShowPage_%@", whiteBoardView.whiteBoardId];
+                        
+                        [YSRoomUtil pubWhiteBoardMsg:sYSSignalMoreWhiteboardState msgID:msgID data:whiteBoardView.positionData extensionData:nil associatedMsgID:associatedMsgID associatedUserID:nil expires:0 completion:nil];
+                    }
+                    
+                    if (self.mediaFileModel.isAudio)
+                    {
+                        [self changeCourseWithFileId:self.mediaFileModel.fileid];
+                    }
+                }
+                else
+                {
+                    [self removeAllWhiteBoardView];
+                }
+            }
         }
     }
     
