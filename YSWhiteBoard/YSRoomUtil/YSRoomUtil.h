@@ -35,7 +35,6 @@ NS_ASSUME_NONNULL_BEGIN
                    data:(NSDictionary * _Nullable)dataDic
           extensionData:(NSDictionary * _Nullable)extensionData
         associatedMsgID:(NSString * _Nullable)associatedMsgID
-       associatedUserID:(NSString * _Nullable)associatedUserID
                 expires:(NSTimeInterval)expires
              completion:(completion_block _Nullable)completion;
 

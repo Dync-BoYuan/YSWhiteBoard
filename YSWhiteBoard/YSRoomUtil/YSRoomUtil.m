@@ -198,19 +198,20 @@
                    data:(NSDictionary * _Nullable)dataDic
           extensionData:(NSDictionary * _Nullable)extensionData
         associatedMsgID:(NSString * _Nullable)associatedMsgID
-       associatedUserID:(NSString * _Nullable)associatedUserID
                 expires:(NSTimeInterval)expires
              completion:(completion_block _Nullable)completion
 {
     if ([msgName isEqualToString:sYSSignalShowPage] || [msgName isEqualToString:sYSSignalExtendShowPage] || [msgName isEqualToString:sYSSignalMoreWhiteboardState] || [msgName isEqualToString:sYSSignalMoreWhiteboardGlobalState])
     {
         NSString *tellWho = [YSRoomInterface instance].localUser.peerID;
-        BOOL save = NO;
+        NSString *associatedUserID = [YSRoomInterface instance].localUser.peerID;
+        BOOL save = YES;
         if ([YSWhiteBoardManager shareInstance].isBeginClass)
         {
             if ([YSRoomInterface instance].localUser.role == YSUserType_Teacher)
             {
                 tellWho = YSRoomPubMsgTellAll;
+                associatedUserID = nil;
                 save = YES;
             }
         }

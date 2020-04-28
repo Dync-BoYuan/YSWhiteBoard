@@ -485,7 +485,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         NSDictionary * data = @{@"x":@(scaleLeft),@"y":@(scaleTop),@"width":@(scaleWidth),@"height":@(scaleHeight),@"small":@NO,@"full":@NO,@"type":@"drag",@"instanceId":whiteBoardView.whiteBoardId};
         NSString * associatedMsgID = [NSString stringWithFormat:@"DocumentFilePage_ExtendShowPage_%@", whiteBoardView.whiteBoardId];
         
-        [YSRoomUtil pubWhiteBoardMsg:sYSSignalMoreWhiteboardState msgID:msgID data:data extensionData:nil associatedMsgID:associatedMsgID associatedUserID:nil expires:0 completion:nil];
+        [YSRoomUtil pubWhiteBoardMsg:sYSSignalMoreWhiteboardState msgID:msgID data:data extensionData:nil associatedMsgID:associatedMsgID expires:0 completion:nil];
         
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             [self.dragImageView removeFromSuperview];
@@ -587,7 +587,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         NSDictionary * data = @{@"x":@(scaleLeft),@"y":@(scaleTop),@"width":@(scaleWidth),@"height":@(scaleHeight),@"small":@NO,@"full":@NO,@"type":@"resize",@"instanceId":whiteBoard.whiteBoardId};
         NSString * associatedMsgID = [NSString stringWithFormat:@"DocumentFilePage_ExtendShowPage_%@",whiteBoard.whiteBoardId];
         
-        [YSRoomUtil pubWhiteBoardMsg:sYSSignalMoreWhiteboardState msgID:msgID data:data extensionData:nil associatedMsgID:associatedMsgID associatedUserID:nil expires:0 completion:nil];
+        [YSRoomUtil pubWhiteBoardMsg:sYSSignalMoreWhiteboardState msgID:msgID data:data extensionData:nil associatedMsgID:associatedMsgID expires:0 completion:nil];
         
         [self.dragImageView removeFromSuperview];
         self.dragImageView = nil;
@@ -958,7 +958,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
             }
             NSDictionary *data = @{ @"type" : @"sort", @"instanceId" : instanceId, @"sort" : whiteboardIdList, @"hideAll" : @(NO)};
 
-            [YSRoomUtil pubWhiteBoardMsg:sYSSignalMoreWhiteboardGlobalState msgID:sYSSignalMoreWhiteboardGlobalState data:data extensionData:nil associatedMsgID:nil associatedUserID:nil expires:0 completion:nil];
+            [YSRoomUtil pubWhiteBoardMsg:sYSSignalMoreWhiteboardGlobalState msgID:sYSSignalMoreWhiteboardGlobalState data:data extensionData:nil associatedMsgID:nil expires:0 completion:nil];
         }
     }
 }
@@ -1230,7 +1230,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     
     if (self.roomUseType == YSRoomUseTypeLiveRoom)
     {
-        [YSRoomUtil pubWhiteBoardMsg:sYSSignalShowPage msgID:sYSSignalDocumentFilePage_ShowPage data:fileDic extensionData:nil associatedMsgID:nil associatedUserID:nil expires:0 completion:nil];
+        [YSRoomUtil pubWhiteBoardMsg:sYSSignalShowPage msgID:sYSSignalDocumentFilePage_ShowPage data:fileDic extensionData:nil associatedMsgID:nil expires:0 completion:nil];
     }
     else
     {
@@ -1239,7 +1239,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         NSMutableDictionary *fileData = [[NSMutableDictionary alloc] initWithDictionary:fileDic];
         [fileData bm_setString:[YSRoomUtil getwhiteboardIDFromFileId:fileId] forKey:@"sourceInstanceId"];
         
-        [YSRoomUtil pubWhiteBoardMsg:sYSSignalExtendShowPage msgID:msgID data:fileDic extensionData:nil associatedMsgID:nil associatedUserID:nil expires:0 completion:nil];
+        [YSRoomUtil pubWhiteBoardMsg:sYSSignalExtendShowPage msgID:msgID data:fileDic extensionData:nil associatedMsgID:nil expires:0 completion:nil];
     }
 }
 
@@ -1788,7 +1788,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     
     if (!show)
     {
-        [self changeCourseWithFileId:self.currentFileId toID:[YSRoomInterface instance].localUser.peerID save:NO];
+        [self changeCourseWithFileId:self.currentFileId toID:[YSRoomInterface instance].localUser.peerID save:YES];
         
         // 学生默认课件最大化
         if (self.roomUseType != YSRoomUseTypeLiveRoom)
@@ -1799,7 +1799,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
             NSDictionary * data = @{@"x":@0,@"y":@0,@"width":@1,@"height":@1,@"small":@NO,@"full":@YES,@"type":@"full",@"instanceId":whiteBoardId};
             NSString * associatedMsgID = [NSString stringWithFormat:@"DocumentFilePage_ExtendShowPage_%@", whiteBoardId];
             
-            [YSRoomUtil pubWhiteBoardMsg:sYSSignalMoreWhiteboardState msgID:msgID data:data extensionData:nil associatedMsgID:associatedMsgID associatedUserID:nil expires:0 completion:nil];
+            [YSRoomUtil pubWhiteBoardMsg:sYSSignalMoreWhiteboardState msgID:msgID data:data extensionData:nil associatedMsgID:associatedMsgID expires:0 completion:nil];
         }
     }
     
@@ -1816,10 +1816,10 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
                                      msgID:msgID
                                       toID:[YSRoomInterface instance].localUser.peerID
                                       data:fileData
-                                      save:NO
+                                      save:YES
                              extensionData:nil
                            associatedMsgID:nil
-                          associatedUserID:nil
+                          associatedUserID:[YSRoomInterface instance].localUser.peerID
                                    expires:0
                                 completion:nil];
     }
@@ -2059,7 +2059,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
                         NSString * msgID = [NSString stringWithFormat:@"MoreWhiteboardState_%@", whiteBoardView.whiteBoardId];
                         NSString * associatedMsgID = [NSString stringWithFormat:@"DocumentFilePage_ExtendShowPage_%@", whiteBoardView.whiteBoardId];
                         
-                        [YSRoomUtil pubWhiteBoardMsg:sYSSignalMoreWhiteboardState msgID:msgID data:whiteBoardView.positionData extensionData:nil associatedMsgID:associatedMsgID associatedUserID:nil expires:0 completion:nil];
+                        [YSRoomUtil pubWhiteBoardMsg:sYSSignalMoreWhiteboardState msgID:msgID data:whiteBoardView.positionData extensionData:nil associatedMsgID:associatedMsgID expires:0 completion:nil];
                     }
                     
                     if (self.mediaFileModel.isAudio)

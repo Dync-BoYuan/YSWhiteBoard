@@ -763,13 +763,15 @@
     }
     
     NSString *tellWho = [YSRoomInterface instance].localUser.peerID;
-    BOOL save = NO;
+    NSString *associatedUserID = [YSRoomInterface instance].localUser.peerID;
+    BOOL save = YES;
     if (!freshCurrentCourse && [YSWhiteBoardManager shareInstance].isBeginClass)
     {
         if ([YSRoomInterface instance].localUser.canDraw || [YSRoomInterface instance].localUser.role == YSUserType_Teacher)
         {
             tellWho = YSRoomPubMsgTellAll;
             save = YES;
+            associatedUserID = nil;
         }
     }
     NSData *jsonData = [NSJSONSerialization dataWithJSONObject:dictionary options:NSJSONWritingPrettyPrinted error:nil];
@@ -1326,7 +1328,7 @@
                 NSDictionary * data = @{@"x":@0,@"y":@0,@"width":@1,@"height":@1,@"small":@YES,@"full":@NO,@"type":@"small",@"instanceId":whiteBoardView.whiteBoardId};
                 NSString * associatedMsgID = [NSString stringWithFormat:@"DocumentFilePage_ExtendShowPage_%@", whiteBoardView.whiteBoardId];
                 
-                [YSRoomUtil pubWhiteBoardMsg:sYSSignalMoreWhiteboardState msgID:msgID data:data extensionData:nil associatedMsgID:associatedMsgID associatedUserID:nil expires:0 completion:nil];
+                [YSRoomUtil pubWhiteBoardMsg:sYSSignalMoreWhiteboardState msgID:msgID data:data extensionData:nil associatedMsgID:associatedMsgID expires:0 completion:nil];
                 
                 isHidden = YES;
             }
@@ -1348,7 +1350,7 @@
                 NSDictionary * data = @{@"x":@(scaleLeft),@"y":@(scaleTop),@"width":@(scaleWidth),@"height":@(scaleHeight),@"small":@NO,@"full":@NO,@"type":@"small",@"instanceId":whiteBoardView.whiteBoardId};
                 NSString * associatedMsgID = [NSString stringWithFormat:@"DocumentFilePage_ExtendShowPage_%@", whiteBoardView.whiteBoardId];
                 
-                [YSRoomUtil pubWhiteBoardMsg:sYSSignalMoreWhiteboardState msgID:msgID data:data extensionData:nil associatedMsgID:associatedMsgID associatedUserID:nil expires:0 completion:nil];
+                [YSRoomUtil pubWhiteBoardMsg:sYSSignalMoreWhiteboardState msgID:msgID data:data extensionData:nil associatedMsgID:associatedMsgID expires:0 completion:nil];
             }
             sender.selected = NO;
         }
@@ -1361,7 +1363,7 @@
             NSDictionary * data = @{@"x":@0,@"y":@0,@"width":@1,@"height":@1,@"small":@YES,@"full":@NO,@"type":@"small",@"instanceId":whiteBoardView.whiteBoardId};
             NSString * associatedMsgID = [NSString stringWithFormat:@"DocumentFilePage_ExtendShowPage_%@", whiteBoardView.whiteBoardId];
             
-            [YSRoomUtil pubWhiteBoardMsg:sYSSignalMoreWhiteboardState msgID:msgID data:data extensionData:nil associatedMsgID:associatedMsgID associatedUserID:nil expires:0 completion:nil];
+            [YSRoomUtil pubWhiteBoardMsg:sYSSignalMoreWhiteboardState msgID:msgID data:data extensionData:nil associatedMsgID:associatedMsgID expires:0 completion:nil];
         }
         sender.selected = YES;
     }
@@ -1381,7 +1383,7 @@
             NSDictionary * data = @{@"x":@0,@"y":@0,@"width":@1,@"height":@1,@"small":@YES,@"full":@NO,@"type":@"small",@"instanceId":self.whiteBoardId};
             NSString * associatedMsgID = [NSString stringWithFormat:@"DocumentFilePage_ExtendShowPage_%@", self.whiteBoardId];
             
-            [YSRoomUtil pubWhiteBoardMsg:sYSSignalMoreWhiteboardState msgID:msgID data:data extensionData:nil associatedMsgID:associatedMsgID associatedUserID:nil expires:0 completion:nil];
+            [YSRoomUtil pubWhiteBoardMsg:sYSSignalMoreWhiteboardState msgID:msgID data:data extensionData:nil associatedMsgID:associatedMsgID expires:0 completion:nil];
         }
             break;
         case 2:
@@ -1401,7 +1403,7 @@
             NSDictionary * data = @{@"x":@(scaleLeft),@"y":@(scaleTop),@"width":@(scaleWidth),@"height":@(scaleHeight),@"small":@NO,@"full":@YES,@"type":@"full",@"instanceId":self.whiteBoardId};
             NSString * associatedMsgID = [NSString stringWithFormat:@"DocumentFilePage_ExtendShowPage_%@", self.whiteBoardId];
             
-            [YSRoomUtil pubWhiteBoardMsg:sYSSignalMoreWhiteboardState msgID:msgID data:data extensionData:nil associatedMsgID:associatedMsgID associatedUserID:nil expires:0 completion:nil];
+            [YSRoomUtil pubWhiteBoardMsg:sYSSignalMoreWhiteboardState msgID:msgID data:data extensionData:nil associatedMsgID:associatedMsgID expires:0 completion:nil];
         }
             break;
         case 3:
@@ -1476,7 +1478,7 @@
     NSDictionary * data = @{@"x":@(scaleLeft),@"y":@(scaleTop),@"width":@(scaleWidth),@"height":@(scaleHeight),@"small":@NO,@"full":@NO,@"type":@"full",@"instanceId":self.whiteBoardId};
     NSString * associatedMsgID = [NSString stringWithFormat:@"DocumentFilePage_ExtendShowPage_%@", self.whiteBoardId];
     
-    [YSRoomUtil pubWhiteBoardMsg:sYSSignalMoreWhiteboardState msgID:msgID data:data extensionData:nil associatedMsgID:associatedMsgID associatedUserID:nil expires:0 completion:nil];
+    [YSRoomUtil pubWhiteBoardMsg:sYSSignalMoreWhiteboardState msgID:msgID data:data extensionData:nil associatedMsgID:associatedMsgID expires:0 completion:nil];
 }
 
 /// 删除按钮
