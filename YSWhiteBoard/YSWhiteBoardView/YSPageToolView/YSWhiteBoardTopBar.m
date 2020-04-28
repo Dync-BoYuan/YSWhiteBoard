@@ -91,7 +91,7 @@
     [self addSubview:titleLabel];
     titleLabel.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     self.titleLabel = titleLabel;
-        
+         
     if ([YSRoomInterface instance].localUser.role == YSUserType_Teacher)
     {
         closeBtn.hidden = NO;
@@ -141,9 +141,9 @@
         return;
     }
     
-    if ([self.delegate respondsToSelector:@selector(clickToBringVideoToFont:)])
+    if ([self.delegate respondsToSelector:@selector(clickToBringVideoToFront:)])
     {
-        [self.delegate clickToBringVideoToFont:self.superview];
+        [self.delegate clickToBringVideoToFront:self.superview];
     }
 }
 

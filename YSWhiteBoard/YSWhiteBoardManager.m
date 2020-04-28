@@ -400,7 +400,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     }
 }
 
-- (void)clickToBringVideoToFont:(UIView *)whiteBoard
+- (void)clickToBringVideoToFront:(UIView *)whiteBoard
 {
     YSWhiteBoardView *whiteBoardView = (YSWhiteBoardView *)whiteBoard;
     [self setTheCurrentDocumentFileID:whiteBoardView.fileId];
