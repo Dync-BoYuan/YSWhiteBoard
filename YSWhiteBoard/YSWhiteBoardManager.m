@@ -130,7 +130,6 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 @property (nonatomic, strong) UIImageView *playMp3ImageView;
 /// 判断音视频进度是否在拖动
 @property (nonatomic, assign) BOOL isMediaDrag;
-@property (nonatomic, assign) BOOL stopMediaPlay;
 
 @end
 
@@ -2385,62 +2384,29 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     YSUserRoleType role = [YSRoomInterface instance].localUser.role;
     if (self.mediaFileModel.isVideo)
     {
-        if (self.stopMediaPlay)
-        {
-            [self.mp4WhiteBoardView setMediaStream:0 pos:0 isPlay:NO fileName:self.mediaFileModel.filename];
-        }
-        else
-        {
-            [self removeWhiteBoardViewWithWhiteBoardView:self.mp4WhiteBoardView];
+        [self removeWhiteBoardViewWithWhiteBoardView:self.mp4WhiteBoardView];
             self.mp4WhiteBoardView = nil;
-        }
     }
     else if (self.mediaFileModel.isAudio)
     {
-        if (self.stopMediaPlay)
+        if (role == YSUserType_Teacher)
         {
-            if (role == YSUserType_Teacher)
-            {
-                [self.mp3ControlView setMediaStream:0 pos:0 isPlay:NO fileName:self.mediaFileModel.filename];
-            }
-            else
-            {
-                [self onPauseMp3];
-            }
+            self.mp3ControlView.isPlay = NO;
+            self.mp3ControlView.hidden = YES;
         }
         else
         {
-            if (role == YSUserType_Teacher)
-            {
-                self.mp3ControlView.isPlay = NO;
-                self.mp3ControlView.hidden = YES;
-            }
-            else
-            {
-                [self onStopMp3];
-            }
+            [self onStopMp3];
         }
     }
     
-    if (self.stopMediaPlay)
+    if (self.wbDelegate && [self.wbDelegate respondsToSelector:@selector(onWhiteBoardChangedMediaFileStateWithFileId:state:)])
     {
-        if (self.wbDelegate && [self.wbDelegate respondsToSelector:@selector(onWhiteBoardChangedMediaFileStateWithFileId:state:)])
-        {
-            [self.wbDelegate onWhiteBoardChangedMediaFileStateWithFileId:self.mediaFileModel.fileid state:YSWhiteBordMediaState_Pause];
-        }
-    }
-    else
-    {
-        if (self.wbDelegate && [self.wbDelegate respondsToSelector:@selector(onWhiteBoardChangedMediaFileStateWithFileId:state:)])
-        {
-            [self.wbDelegate onWhiteBoardChangedMediaFileStateWithFileId:self.mediaFileModel.fileid state:YSWhiteBordMediaState_Stop];
-        }
-        
-        self.mediaFileModel = nil;
-        self.mediaFileSenderPeerId = nil;
+        [self.wbDelegate onWhiteBoardChangedMediaFileStateWithFileId:self.mediaFileModel.fileid state:YSWhiteBordMediaState_Stop];
     }
     
-    self.stopMediaPlay = NO;
+    self.mediaFileModel = nil;
+    self.mediaFileSenderPeerId = nil;
 }
 
 - (void)onRoomUpdateMediaStream:(NSTimeInterval)duration pos:(NSTimeInterval)pos isPlay:(BOOL)isPlay
@@ -2450,8 +2416,8 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     {
         if (pos == duration)
         {
-            self.stopMediaPlay = YES;
-            [[YSRoomInterface instance] stopShareMediaFile:nil];
+            [[YSRoomInterface instance] pauseMediaFile:NO];
+            [[YSRoomInterface instance] seekMediaFile:0];
             self.isMediaDrag = NO;
             return;
         }
