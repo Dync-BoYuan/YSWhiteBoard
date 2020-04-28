@@ -239,6 +239,12 @@
 
 - (void)sc_setTotalPage:(NSInteger)total currentPage:(NSInteger)currentPage isWhiteBoard:(BOOL)isWhiteBoard
 {
+    
+    if ([YSWhiteBoardManager shareInstance].isBeginClass && [YSRoomInterface instance].localUser.role != YSUserType_Teacher)
+    {
+        self.allowTurnPage = NO;
+    }
+    
     self.totalPage = total;
     if (self.totalPage < 1)
     {
@@ -267,6 +273,10 @@
 
 - (void)sc_setTotalPage:(NSInteger)total currentPage:(NSInteger)currentPage canPrevPage:(BOOL)canPrevPage canNextPage:(BOOL)canNextPage isWhiteBoard:(BOOL)isWhiteBoard
 {
+    if ([YSWhiteBoardManager shareInstance].isBeginClass && [YSRoomInterface instance].localUser.role != YSUserType_Teacher)
+    {
+        self.allowTurnPage = NO;
+    }
     self.totalPage = total;
     if (self.totalPage < 1)
     {
