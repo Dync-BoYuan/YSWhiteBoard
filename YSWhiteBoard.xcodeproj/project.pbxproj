@@ -40,6 +40,8 @@
 		877F395C24555DDC0086D7E2 /* YSMediaFileModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 877F395A24555DDC0086D7E2 /* YSMediaFileModel.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		877F395D24555DDC0086D7E2 /* YSMediaFileModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 877F395B24555DDC0086D7E2 /* YSMediaFileModel.m */; };
 		877F395F2456B0D10086D7E2 /* YSWBMediaControlviewDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 877F395E2456ACB20086D7E2 /* YSWBMediaControlviewDelegate.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		877F39682457E4EB0086D7E2 /* YSWBMediaMarkView.h in Headers */ = {isa = PBXBuildFile; fileRef = 877F39662457E4EB0086D7E2 /* YSWBMediaMarkView.h */; };
+		877F39692457E4EB0086D7E2 /* YSWBMediaMarkView.m in Sources */ = {isa = PBXBuildFile; fileRef = 877F39672457E4EB0086D7E2 /* YSWBMediaMarkView.m */; };
 		87AD1600242721F000EAE233 /* YSWhiteBoardManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 87AD15FE242721F000EAE233 /* YSWhiteBoardManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		87AD1601242721F000EAE233 /* YSWhiteBoardManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 87AD15FF242721F000EAE233 /* YSWhiteBoardManager.m */; };
 		87AD16192427554900EAE233 /* YSRoomConfiguration.h in Headers */ = {isa = PBXBuildFile; fileRef = 87AD16172427554900EAE233 /* YSRoomConfiguration.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -173,6 +175,8 @@
 		877F395A24555DDC0086D7E2 /* YSMediaFileModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YSMediaFileModel.h; sourceTree = "<group>"; };
 		877F395B24555DDC0086D7E2 /* YSMediaFileModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YSMediaFileModel.m; sourceTree = "<group>"; };
 		877F395E2456ACB20086D7E2 /* YSWBMediaControlviewDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YSWBMediaControlviewDelegate.h; sourceTree = "<group>"; };
+		877F39662457E4EB0086D7E2 /* YSWBMediaMarkView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YSWBMediaMarkView.h; sourceTree = "<group>"; };
+		877F39672457E4EB0086D7E2 /* YSWBMediaMarkView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YSWBMediaMarkView.m; sourceTree = "<group>"; };
 		87AD15FE242721F000EAE233 /* YSWhiteBoardManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YSWhiteBoardManager.h; sourceTree = "<group>"; };
 		87AD15FF242721F000EAE233 /* YSWhiteBoardManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YSWhiteBoardManager.m; sourceTree = "<group>"; };
 		87AD1610242725EB00EAE233 /* YSWhiteBoardMacro.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YSWhiteBoardMacro.h; sourceTree = "<group>"; };
@@ -422,6 +426,15 @@
 			path = YSWhiteBoard;
 			sourceTree = "<group>";
 		};
+		877F39652457E4EB0086D7E2 /* YSWBMediaMarkView */ = {
+			isa = PBXGroup;
+			children = (
+				877F39662457E4EB0086D7E2 /* YSWBMediaMarkView.h */,
+				877F39672457E4EB0086D7E2 /* YSWBMediaMarkView.m */,
+			);
+			path = YSWBMediaMarkView;
+			sourceTree = "<group>";
+		};
 		87AD16022427232000EAE233 /* YSLib */ = {
 			isa = PBXGroup;
 			children = (
@@ -448,6 +461,7 @@
 			isa = PBXGroup;
 			children = (
 				263C8A1F245599BA00FDA6E8 /* YSWBMediaControl */,
+				877F39652457E4EB0086D7E2 /* YSWBMediaMarkView */,
 				042F2F942435DC3500838154 /* YSPageToolView */,
 				0408126E243588EA00900963 /* YSBrushToolsManager */,
 				87AD16342428B68400EAE233 /* YSWBDrawViewManager */,
@@ -717,6 +731,7 @@
 				87C8B1062429BCD20016848E /* YSFileModel.h in Headers */,
 				87AD1600242721F000EAE233 /* YSWhiteBoardManager.h in Headers */,
 				87AD162924284E8E00EAE233 /* YSRoomUtil.h in Headers */,
+				877F39682457E4EB0086D7E2 /* YSWBMediaMarkView.h in Headers */,
 				87C8B0862429B9150016848E /* YSWhiteBoardEnum.h in Headers */,
 				87AD163E2428B68400EAE233 /* YSWBWebViewManager.h in Headers */,
 				87AD163C2428B68400EAE233 /* YSWBDrawViewManager.h in Headers */,
@@ -873,6 +888,7 @@
 				87C8B1122429BCD20016848E /* DrawRectangle.m in Sources */,
 				26ACB4CC2446F7C500C8B149 /* YSWhiteBordHttpDNSUtil.m in Sources */,
 				87C8B1052429BCD20016848E /* YSFileModel.m in Sources */,
+				877F39692457E4EB0086D7E2 /* YSWBMediaMarkView.m in Sources */,
 				87C8B0D12429B9D20016848E /* UIView+VYWebCache.m in Sources */,
 				87C8B0C62429B9D20016848E /* UIImage+VYGIF.m in Sources */,
 				87C8B0BE2429B9D20016848E /* VYSDImageCache.m in Sources */,

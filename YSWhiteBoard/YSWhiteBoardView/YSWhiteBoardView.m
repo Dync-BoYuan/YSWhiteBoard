@@ -11,6 +11,7 @@
 #import "YSFileModel.h"
 #import <objc/message.h>
 #import "YSWBMp4Controlview.h"
+#import "YSWBMediaMarkView.h"
 
 #define YSTopViewHeight         (30.0f)
 
@@ -73,6 +74,10 @@
 /// 视频播放控制
 @property (nonatomic, strong) YSWBMp4ControlView *mp4ControlView;
 
+/// 白板视频标注视图
+@property (nonatomic, strong) YSWBMediaMarkView *mediaMarkView;
+@property (nonatomic, strong) NSMutableArray <NSDictionary *> *mediaMarkSharpsDatas;
+
 @end
 
 @implementation YSWhiteBoardView
@@ -118,6 +123,12 @@
         
         self.cacheMsgPool = [NSMutableArray array];
         self.isLoadingFinish = NO;
+        if (self.isMediaView)
+        {
+            self.isLoadingFinish = YES;
+            self.mediaMarkSharpsDatas = [NSMutableArray array];
+        }
+        
         topViewHeight = 0;
 
         if (!isMainWhiteBoard)
@@ -191,17 +202,15 @@
                 
                 UIPanGestureRecognizer *panGesture = [[UIPanGestureRecognizer alloc]initWithTarget:self action:@selector(panGestureToZoomView:)];
                 [dragZoomView addGestureRecognizer:panGesture];
-
-                if (!isMedia)
-                {
-                    YSWhiteBoardControlView *whiteBoardControlView = [[YSWhiteBoardControlView alloc] initWithFrame:CGRectMake(self.bm_width - 70 - 70, self.pageControlView.bm_originY, 70, 28)];
-                    whiteBoardControlView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin;
-                    [self addSubview:whiteBoardControlView];
-                    self.whiteBoardControlView = whiteBoardControlView;
-                    self.whiteBoardControlView.delegate = self;
-                    whiteBoardControlView.hidden = YES;
-                }
-                else
+                
+                YSWhiteBoardControlView *whiteBoardControlView = [[YSWhiteBoardControlView alloc] initWithFrame:CGRectMake(self.bm_width - 70 - 70, self.pageControlView.bm_originY, 70, 28)];
+                whiteBoardControlView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin;
+                [self addSubview:whiteBoardControlView];
+                self.whiteBoardControlView = whiteBoardControlView;
+                self.whiteBoardControlView.delegate = self;
+                whiteBoardControlView.hidden = YES;
+                
+                if (self.isMediaView)
                 {
                     [self makeMp4ControlView];
                 }
@@ -1484,5 +1493,47 @@
         [YSRoomUtil delWhiteBoardMsg:sYSSignalExtendShowPage msgID:msgID data:data completion:nil];
     }
 }
+
+
+#pragma -
+#pragma mark 白板视频标注
+
+/// 显示白板视频标注
+- (void)showVideoWhiteboardWithData:(NSDictionary *)data videoRatio:(CGFloat)videoRatio
+{
+    if (self.mediaMarkView.superview)
+    {
+        [self.mediaMarkView removeFromSuperview];
+    }
+    
+    self.mediaMarkView = [[YSWBMediaMarkView alloc] initWithFrame:self.bounds];
+    [self addSubview:self.mediaMarkView];
+    
+    [self.mediaMarkView freshViewWithSavedSharpsData:self.mediaMarkSharpsDatas videoRatio:videoRatio];
+}
+
+/// 绘制白板视频标注
+- (void)drawVideoWhiteboardWithData:(NSDictionary *)data inList:(BOOL)inlist
+{
+    if (inlist)
+    {
+        [self.mediaMarkSharpsDatas addObject:data];
+    }
+    else
+    {
+        [self.mediaMarkView freshViewWithData:data savedSharpsData:self.mediaMarkSharpsDatas];
+        [self.mediaMarkSharpsDatas removeAllObjects];
+    }
+}
+
+/// 隐藏白板视频标注
+- (void)hideVideoWhiteboard
+{
+    if (self.mediaMarkView.superview)
+    {
+        [self.mediaMarkView removeFromSuperview];
+    }
+}
+
 
 @end

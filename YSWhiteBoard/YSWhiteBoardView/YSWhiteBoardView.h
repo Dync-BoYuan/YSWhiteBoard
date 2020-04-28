@@ -140,6 +140,17 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setMediaStream:(NSTimeInterval)duration pos:(NSTimeInterval)pos isPlay:(BOOL)isPlay fileName:(nonnull NSString *)fileName;
 
+
+#pragma -
+#pragma mark 白板视频标注
+
+/// 显示白板视频标注
+- (void)showVideoWhiteboardWithData:(NSDictionary *)data videoRatio:(CGFloat)videoRatio;
+/// 绘制白板视频标注
+- (void)drawVideoWhiteboardWithData:(NSDictionary *)data inList:(BOOL)inlist;
+/// 隐藏白板视频标注
+- (void)hideVideoWhiteboard;
+
 @end
 
 
