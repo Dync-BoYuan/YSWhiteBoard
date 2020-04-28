@@ -1791,7 +1791,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         [self changeCourseWithFileId:self.currentFileId toID:[YSRoomInterface instance].localUser.peerID save:NO];
         
         // 学生默认课件最大化
-        if (self.roomUseType != YSRoomUseTypeLiveRoom && [YSRoomInterface instance].localUser.role == YSUserType_Student)
+        if (self.roomUseType != YSRoomUseTypeLiveRoom)
         {
 #warning 最大化
             NSString *whiteBoardId = [YSRoomUtil getwhiteboardIDFromFileId:self.currentFileId];
@@ -2048,7 +2048,25 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         }
         else
         {
-            [self removeAllWhiteBoardView];
+            if (!inlist)
+            {
+                if ([YSRoomInterface instance].localUser.role == YSUserType_Teacher)
+                {
+                    for (YSWhiteBoardView *whiteBoardView in self.coursewareViewList)
+                    {
+                        [self changeCourseWithFileId:whiteBoardView.fileId];
+                    }
+                    
+                    if (self.mediaFileModel.isAudio)
+                    {
+                        [self changeCourseWithFileId:self.mediaFileModel.fileid];
+                    }
+                }
+                else
+                {
+                    [self removeAllWhiteBoardView];
+                }
+            }
         }
     }
     

@@ -35,7 +35,6 @@
 
 - (void)setupUI
 {
-    
     CGFloat btnHeight = 24;
     
     //由全屏还原的按钮
