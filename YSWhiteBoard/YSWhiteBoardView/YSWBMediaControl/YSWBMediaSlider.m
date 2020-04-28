@@ -27,21 +27,21 @@
 //}
 //
 ///// 设置thumb（滑块）尺寸
-- (CGRect)thumbRectForBounds:(CGRect)bounds trackRect:(CGRect)rect value:(float)value
-{
-    
-    CGFloat Ww = 8;
-    CGFloat margin = Ww *.5f + 2;
-    /// 滑块的滑动区域宽度
-    CGFloat maxWidth = CGRectGetWidth(rect) + 2 * margin;
-    /// 每次偏移量
-    CGFloat offset = (maxWidth - Ww)/(self.maximumValue - self.minimumValue);
-    
-    CGFloat H = 10;
-    CGFloat Y = (bounds.size.height - H ) *.5f;
-    CGFloat W = Ww;
-    CGFloat X = CGRectGetMinX(rect) - margin + offset *(value-self.minimumValue);
-    CGRect r =  CGRectMake(X, Y, W, H);
-    return r;
-}
+//- (CGRect)thumbRectForBounds:(CGRect)bounds trackRect:(CGRect)rect value:(float)value
+//{
+//    
+//    CGFloat Ww = 8;
+//    CGFloat margin = Ww *.5f + 2;
+//    /// 滑块的滑动区域宽度
+//    CGFloat maxWidth = CGRectGetWidth(rect) + 2 * margin;
+//    /// 每次偏移量
+//    CGFloat offset = (maxWidth - Ww)/(self.maximumValue - self.minimumValue);
+//    
+//    CGFloat H = 10;
+//    CGFloat Y = (bounds.size.height - H ) *.5f;
+//    CGFloat W = Ww;
+//    CGFloat X = CGRectGetMinX(rect) - margin + offset *(value-self.minimumValue);
+//    CGRect r =  CGRectMake(X, Y, W, H);
+//    return r;
+//}
 @end

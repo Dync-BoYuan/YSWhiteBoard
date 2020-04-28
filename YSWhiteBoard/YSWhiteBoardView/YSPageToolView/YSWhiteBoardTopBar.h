@@ -17,7 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 ///拖拽手势事件
 - (void)panToMoveWhiteBoardView:(UIView *)whiteBoard withGestureRecognizer:(UIPanGestureRecognizer *)pan;
 
-- (void)clickToBringVideoToFont:(UIView *)whiteBoard;
+- (void)clickToBringVideoToFront:(UIView *)whiteBoard;
 
 @end
 

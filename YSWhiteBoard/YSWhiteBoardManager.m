@@ -311,7 +311,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     self.mainWhiteBoardView = [[YSWhiteBoardView alloc] initWithFrame:frame fileId:@"0" loadFinishedBlock:loadFinishedBlock];
     self.mainWhiteBoardView.delegate = self;
     [self.mainWhiteBoardView changeWhiteBoardBackgroudColor:YSWhiteBoard_MainBackGroudColor];
-    
+
     [self makeMp3Animation];
     [self makeMp3ControlView];
     
@@ -340,17 +340,21 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     }
     CGRect frame = CGRectMake(whiteBoardViewCurrentLeft, whiteBoardViewCurrentTop, self.whiteBoardViewDefaultSize.width, self.whiteBoardViewDefaultSize.height);
         
-    CGFloat x = whiteBoardViewCurrentLeft / (self.mainWhiteBoardView.bm_width - frame.size.width);
-    CGFloat y = whiteBoardViewCurrentTop / (self.mainWhiteBoardView.bm_height - frame.size.height);
-    CGFloat scaleWidth = frame.size.width / self.mainWhiteBoardView.bm_width;
-    CGFloat scaleHeight = frame.size.height / self.mainWhiteBoardView.bm_height;
-    
-    NSDictionary * positionData = @{@"x":@(x),@"y":@(y),@"width":@(scaleWidth),@"height":@(scaleHeight)};
+
     
     YSWhiteBoardView *whiteBoardView = [[YSWhiteBoardView alloc] initWithFrame:frame fileId:fileId isMedia:isMedia mediaType:YSWhiteBordMediaType_Video loadFinishedBlock:loadFinishedBlock];
     
     whiteBoardView.delegate = self;
-    whiteBoardView.positionData = positionData;
+    if (!whiteBoardView.positionData)
+    {
+        CGFloat x = whiteBoardViewCurrentLeft / (self.mainWhiteBoardView.bm_width - frame.size.width);
+        CGFloat y = whiteBoardViewCurrentTop / (self.mainWhiteBoardView.bm_height - frame.size.height);
+        CGFloat scaleWidth = frame.size.width / self.mainWhiteBoardView.bm_width;
+        CGFloat scaleHeight = frame.size.height / self.mainWhiteBoardView.bm_height;
+        
+        NSDictionary * positionData = @{@"x":@(x),@"y":@(y),@"width":@(scaleWidth),@"height":@(scaleHeight)};
+        whiteBoardView.positionData = positionData;
+    }
     whiteBoardView.mainWhiteBoard = self.mainWhiteBoardView;
     
     if (self.isBeginClass)
@@ -400,7 +404,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     }
 }
 
-- (void)clickToBringVideoToFont:(UIView *)whiteBoard
+- (void)clickToBringVideoToFront:(UIView *)whiteBoard
 {
     YSWhiteBoardView *whiteBoardView = (YSWhiteBoardView *)whiteBoard;
     [self setTheCurrentDocumentFileID:whiteBoardView.fileId];
@@ -1796,7 +1800,26 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 #warning 最大化
             NSString *whiteBoardId = [YSRoomUtil getwhiteboardIDFromFileId:self.currentFileId];
             NSString * msgID = [NSString stringWithFormat:@"MoreWhiteboardState_%@", whiteBoardId];
-            NSDictionary * data = @{@"x":@0,@"y":@0,@"width":@1,@"height":@1,@"small":@NO,@"full":@YES,@"type":@"full",@"instanceId":whiteBoardId};
+            
+//            NSDictionary *dict = self.mainWhiteBoardView.positionData;
+//
+//            // x,y值在主白板上的比例
+//            CGFloat scaleLeft = [dict bm_floatForKey:@"x"];
+//            CGFloat scaleTop = [dict bm_floatForKey:@"y"];
+//
+//            // 宽，高值在主白板上的比例
+//            CGFloat scaleWidth = [dict bm_floatForKey:@"width"];
+//            CGFloat scaleHeight = [dict bm_floatForKey:@"height"];
+            
+//            CGRect frame = CGRectMake(whiteBoardViewCurrentLeft, whiteBoardViewCurrentTop, self.whiteBoardViewDefaultSize.width, self.whiteBoardViewDefaultSize.height);
+                
+            CGFloat scaleLeft = whiteBoardViewCurrentLeft / (self.mainWhiteBoardView.bm_width - self.whiteBoardViewDefaultSize.width);
+            CGFloat scaleTop = whiteBoardViewCurrentTop / (self.mainWhiteBoardView.bm_height - self.whiteBoardViewDefaultSize.height);
+            CGFloat scaleWidth = self.whiteBoardViewDefaultSize.width / self.mainWhiteBoardView.bm_width;
+            CGFloat scaleHeight = self.whiteBoardViewDefaultSize.height / self.mainWhiteBoardView.bm_height;
+            
+            
+            NSDictionary * data = @{@"x":@(scaleLeft),@"y":@(scaleTop),@"width":@(scaleWidth),@"height":@(scaleHeight),@"small":@NO,@"full":@YES,@"type":@"full",@"instanceId":whiteBoardId};
             NSString * associatedMsgID = [NSString stringWithFormat:@"DocumentFilePage_ExtendShowPage_%@", whiteBoardId];
             
             [YSRoomUtil pubWhiteBoardMsg:sYSSignalMoreWhiteboardState msgID:msgID data:data extensionData:nil associatedMsgID:associatedMsgID expires:0 completion:nil];
