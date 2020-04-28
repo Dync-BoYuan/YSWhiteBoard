@@ -235,7 +235,6 @@
 
 - (void)makeMp4ControlView
 {
-    
     self.mp4ControlView = [[YSWBMp4ControlView alloc] init];
     self.mp4ControlView.frame = CGRectMake(30, 0, self.bm_width - 60, 46);
     self.mp4ControlView.bm_bottom = self.bm_height - 23;
@@ -250,10 +249,12 @@
     self.mp4ControlView.delegate = [YSWhiteBoardManager shareInstance];
     [self performSelector:@selector(hideMp4ControlView) withObject:nil afterDelay:2.0f];
 }
+
 - (void)hideMp4ControlView
 {
     self.mp4ControlView.hidden = YES;
 }
+
 - (void)changeToCurrentBWView:(UITapGestureRecognizer *)tapGesture
 {
     if ([YSRoomInterface instance].localUser.role == YSUserType_Teacher)
@@ -621,7 +622,7 @@
     
     // 更新地址
     [self updateWebAddressInfo:[YSWhiteBoardManager shareInstance].serverAddressInfoDic];
-        
+    
 //    if (self.drawViewManager)
 //    {
 //        // 更新白板数据
@@ -794,12 +795,12 @@
     
     if ([YSWhiteBoardManager shareInstance].roomUseType == YSRoomUseTypeLiveRoom)
     {
-        [[YSRoomInterface instance] pubMsg:sYSSignalShowPage msgID:sYSSignalDocumentFilePage_ShowPage toID:tellWho data:dataString save:save extensionData:@{} associatedMsgID:nil associatedUserID:nil expires:0 completion:nil];
+        [[YSRoomInterface instance] pubMsg:sYSSignalShowPage msgID:sYSSignalDocumentFilePage_ShowPage toID:tellWho data:dataString save:save extensionData:@{} associatedMsgID:nil associatedUserID:associatedUserID expires:0 completion:nil];
     }
     else
     {
         NSString *msgID = [NSString stringWithFormat:@"%@%@", sYSSignalDocumentFilePage_ExtendShowPage, self.whiteBoardId];
-        [[YSRoomInterface instance] pubMsg:sYSSignalExtendShowPage msgID:msgID toID:tellWho data:dataString save:save extensionData:@{} associatedMsgID:nil associatedUserID:nil expires:0 completion:nil];
+        [[YSRoomInterface instance] pubMsg:sYSSignalExtendShowPage msgID:msgID toID:tellWho data:dataString save:save extensionData:@{} associatedMsgID:nil associatedUserID:associatedUserID expires:0 completion:nil];
     }
 }
 
