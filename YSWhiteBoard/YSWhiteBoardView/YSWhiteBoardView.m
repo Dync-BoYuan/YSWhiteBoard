@@ -235,6 +235,7 @@
 
 - (void)makeMp4ControlView
 {
+    
     self.mp4ControlView = [[YSWBMp4ControlView alloc] init];
     self.mp4ControlView.frame = CGRectMake(30, 0, self.bm_width - 60, 46);
     self.mp4ControlView.bm_bottom = self.bm_height - 23;
@@ -247,12 +248,25 @@
 
     self.mp4ControlView.hidden = YES;
     self.mp4ControlView.delegate = [YSWhiteBoardManager shareInstance];
+    [self performSelector:@selector(hideMp4ControlView) withObject:nil afterDelay:2.0f];
 }
-
+- (void)hideMp4ControlView
+{
+    self.mp4ControlView.hidden = YES;
+}
 - (void)changeToCurrentBWView:(UITapGestureRecognizer *)tapGesture
 {
     if ([YSRoomInterface instance].localUser.role == YSUserType_Teacher)
     {
+        if (self.isMediaView)
+        {
+            self.mp4ControlView.hidden = !self.mp4ControlView.hidden;
+            if (!self.mp4ControlView.hidden)
+            {
+                [self performSelector:@selector(hideMp4ControlView) withObject:nil afterDelay:2.0f];
+            }
+        }
+
         [[YSWhiteBoardManager shareInstance] setTheCurrentDocumentFileID:self.fileId];
     }
 }
@@ -1204,7 +1218,7 @@
 
 - (void)setMediaStream:(NSTimeInterval)duration pos:(NSTimeInterval)pos isPlay:(BOOL)isPlay fileName:(nonnull NSString *)fileName
 {
-    self.mp4ControlView.hidden = NO;
+    //self.mp4ControlView.hidden = NO;
     [self.mp4ControlView bm_bringToFront];
     [self.mp4ControlView setMediaStream:duration pos:pos isPlay:isPlay fileName:fileName];
 }
