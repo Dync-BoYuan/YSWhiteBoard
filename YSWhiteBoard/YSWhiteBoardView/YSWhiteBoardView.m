@@ -202,17 +202,15 @@
                 
                 UIPanGestureRecognizer *panGesture = [[UIPanGestureRecognizer alloc]initWithTarget:self action:@selector(panGestureToZoomView:)];
                 [dragZoomView addGestureRecognizer:panGesture];
-
-                if (!isMedia)
-                {
-                    YSWhiteBoardControlView *whiteBoardControlView = [[YSWhiteBoardControlView alloc] initWithFrame:CGRectMake(self.bm_width - 70 - 70, self.pageControlView.bm_originY, 70, 28)];
-                    whiteBoardControlView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin;
-                    [self addSubview:whiteBoardControlView];
-                    self.whiteBoardControlView = whiteBoardControlView;
-                    self.whiteBoardControlView.delegate = self;
-                    whiteBoardControlView.hidden = YES;
-                }
-                else
+                
+                YSWhiteBoardControlView *whiteBoardControlView = [[YSWhiteBoardControlView alloc] initWithFrame:CGRectMake(self.bm_width - 70 - 70, self.pageControlView.bm_originY, 70, 28)];
+                whiteBoardControlView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin;
+                [self addSubview:whiteBoardControlView];
+                self.whiteBoardControlView = whiteBoardControlView;
+                self.whiteBoardControlView.delegate = self;
+                whiteBoardControlView.hidden = YES;
+                
+                if (self.isMediaView)
                 {
                     [self makeMp4ControlView];
                 }
