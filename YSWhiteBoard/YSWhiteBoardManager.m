@@ -2055,6 +2055,11 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
                     for (YSWhiteBoardView *whiteBoardView in self.coursewareViewList)
                     {
                         [self changeCourseWithFileId:whiteBoardView.fileId];
+                        
+                        NSString * msgID = [NSString stringWithFormat:@"MoreWhiteboardState_%@", whiteBoardView.whiteBoardId];
+                        NSString * associatedMsgID = [NSString stringWithFormat:@"DocumentFilePage_ExtendShowPage_%@", whiteBoardView.whiteBoardId];
+                        
+                        [YSRoomUtil pubWhiteBoardMsg:sYSSignalMoreWhiteboardState msgID:msgID data:whiteBoardView.positionData extensionData:nil associatedMsgID:associatedMsgID associatedUserID:nil expires:0 completion:nil];
                     }
                     
                     if (self.mediaFileModel.isAudio)
