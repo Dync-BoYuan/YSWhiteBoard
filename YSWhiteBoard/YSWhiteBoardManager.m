@@ -2129,8 +2129,33 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         
         return;
     }
+    /// 白板视频标注
+    else if ([msgName isEqualToString:sYSSignalVideoWhiteboard])
+    {
+        if (![tDataDic bm_isNotEmptyDictionary])
+        {
+            return;
+        }
+        
+        CGFloat videoRatio = [tDataDic bm_doubleForKey:@"videoRatio"];
+        [self.mp4WhiteBoardView showVideoWhiteboardWithData:tDataDic videoRatio:videoRatio];
+
+        return;
+    }
     else if ([msgName isEqualToString:sYSSignalSharpsChange])
     {
+        if ([tDataDic bm_isNotEmptyDictionary])
+        {
+            /// 白板视频标注数据
+            NSString *whiteboardID = [tDataDic bm_stringTrimForKey:@"whiteboardID"];
+            if ([whiteboardID isEqualToString:YSVideoWhiteboard_Id])
+            {
+                [self.mp4WhiteBoardView drawVideoWhiteboardWithData:tDataDic inList:inlist];
+                
+                return;
+            }
+        }
+        
         if ([msgId containsString:@"###_SharpsChange"])
         {
             NSArray *components = [msgId componentsSeparatedByString:@"_"];
@@ -2275,6 +2300,13 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
             [self removeWhiteBoardViewWithFileId:fileId];
         }
         
+        return;
+    }
+    /// 白板视频标注
+    else if ([msgName isEqualToString:sYSSignalVideoWhiteboard])
+    {
+        [self.mp4WhiteBoardView hideVideoWhiteboard];
+
         return;
     }
 

@@ -142,6 +142,9 @@ static  NSString *const sYSSignalActionShow             = @"show";
 /// 更换画笔工具
 static  NSString *const sYSSignalSharpsChange           = @"SharpsChange";
 
+/// 白板视频标注
+#define YSVideoWhiteboard_Id                            @"videoDrawBoard"
+static  NSString *const sYSSignalVideoWhiteboard        = @"VideoWhiteboard";
 
 static  NSString *const sYSSignalH5DocumentAction       = @"H5DocumentAction";
 static  NSString *const sYSSignalNewPptTriggerActionClick = @"NewPptTriggerActionClick";
