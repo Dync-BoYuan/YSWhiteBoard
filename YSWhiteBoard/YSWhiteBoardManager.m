@@ -942,30 +942,48 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     
     if ([YSRoomInterface instance].localUser.role == YSUserType_Teacher)
     {
-        NSArray *subviews = self.mainWhiteBoardView.subviews;
-        NSMutableArray *whiteboardIdList = [[NSMutableArray alloc] init];
-        for (UIView *view in subviews)
-        {
-            if ([view isKindOfClass:[YSWhiteBoardView class]])
-            {
-                YSWhiteBoardView *whiteBoardView1 = (YSWhiteBoardView *)view;
-                [whiteboardIdList addObject:whiteBoardView1.whiteBoardId];
-            }
-        }
-        
-        if ([whiteboardIdList bm_isNotEmpty])
-        {
-            NSString *instanceId = whiteBoardView.whiteBoardId;
-            if (![instanceId bm_isNotEmpty])
-            {
-                instanceId = @"";
-            }
-            NSDictionary *data = @{ @"type" : @"sort", @"instanceId" : instanceId, @"sort" : whiteboardIdList, @"hideAll" : @(NO)};
-
-            [YSRoomUtil pubWhiteBoardMsg:sYSSignalMoreWhiteboardGlobalState msgID:sYSSignalMoreWhiteboardGlobalState data:data extensionData:nil associatedMsgID:nil expires:0 completion:nil];
-        }
+        [self sendArrangeWhiteBoardView];
     }
 }
+
+- (NSArray *)getWhiteBoardViewArrangeList
+{
+    NSArray *subviews = self.mainWhiteBoardView.subviews;
+    NSMutableArray *whiteboardIdList = [[NSMutableArray alloc] init];
+    for (UIView *view in subviews)
+    {
+        if ([view isKindOfClass:[YSWhiteBoardView class]])
+        {
+            YSWhiteBoardView *whiteBoardView1 = (YSWhiteBoardView *)view;
+            [whiteboardIdList addObject:whiteBoardView1.whiteBoardId];
+        }
+    }
+    
+    return whiteboardIdList;
+}
+
+- (void)sendArrangeWhiteBoardView
+{
+    NSArray *arrangeList = [self getWhiteBoardViewArrangeList];
+    [self sendArrangeWhiteBoardViewWithArrangeList:arrangeList];
+}
+
+- (void)sendArrangeWhiteBoardViewWithArrangeList:(NSArray *)arrangeWhiteboardIdList
+{
+    if ([arrangeWhiteboardIdList bm_isNotEmpty])
+    {
+        YSWhiteBoardView *whiteBoardView = [self getWhiteBoardViewWithFileId:self.currentFileId];
+        NSString *instanceId = whiteBoardView.whiteBoardId;
+        if (![instanceId bm_isNotEmpty])
+        {
+            instanceId = @"";
+        }
+        NSDictionary *data = @{ @"type" : @"sort", @"instanceId" : instanceId, @"sort" : arrangeWhiteboardIdList, @"hideAll" : @(NO)};
+
+        [YSRoomUtil pubWhiteBoardMsg:sYSSignalMoreWhiteboardGlobalState msgID:sYSSignalMoreWhiteboardGlobalState data:data extensionData:nil associatedMsgID:nil expires:0 completion:nil];
+    }
+}
+
 
 - (YSFileModel *)currentFile
 {
@@ -2075,6 +2093,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
             {
                 if ([YSRoomInterface instance].localUser.role == YSUserType_Teacher)
                 {
+                    NSArray *arrangeList = [self getWhiteBoardViewArrangeList];
                     for (YSWhiteBoardView *whiteBoardView in self.coursewareViewList)
                     {
                         [self changeCourseWithFileId:whiteBoardView.fileId];
@@ -2089,6 +2108,8 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
                     {
                         [self changeCourseWithFileId:self.mediaFileModel.fileid];
                     }
+                    
+                    [self sendArrangeWhiteBoardViewWithArrangeList:arrangeList];
                 }
                 else
                 {
