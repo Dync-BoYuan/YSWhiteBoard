@@ -620,7 +620,7 @@
     self.loadingH5Fished = YES;
     
     // 更新地址
-    [[YSWhiteBoardManager shareInstance] updateWebAddressInfo];
+    [self updateWebAddressInfo:[YSWhiteBoardManager shareInstance].serverAddressInfoDic];
         
 //    if (self.drawViewManager)
 //    {
