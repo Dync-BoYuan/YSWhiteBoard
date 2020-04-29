@@ -210,7 +210,7 @@
     {
         NSString *tellWho = [YSRoomInterface instance].localUser.peerID;
         NSString *associatedUserID = [YSRoomInterface instance].localUser.peerID;
-        BOOL save = YES;
+        BOOL save = NO;
         if ([YSWhiteBoardManager shareInstance].isBeginClass)
         {
             if ([YSRoomInterface instance].localUser.role == YSUserType_Teacher)
@@ -220,6 +220,8 @@
                 save = YES;
             }
         }
+        
+        //initiative
         
         NSData *jsonData = [NSJSONSerialization dataWithJSONObject:dataDic options:NSJSONWritingPrettyPrinted error:nil];
 

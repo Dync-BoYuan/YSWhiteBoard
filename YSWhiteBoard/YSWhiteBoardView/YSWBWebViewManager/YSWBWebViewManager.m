@@ -233,16 +233,16 @@
     
     if ([message.name isEqualToString:sYSSignalPubMsg])
     {
-        [self onPubMsg:message.body];
+        [self onJsPubMsg:message.body];
     }
     else if ([message.name isEqualToString:sYSSignalDelMsg])
     {
-        [self onDelMsg:message.body];
+        [self onJsDelMsg:message.body];
     }
     // 页面加载完成
     else if ([message.name isEqualToString:sYSSignalOnPageFinished])
     {
-        [self onPageFinished];
+        [self onJsPageFinished];
     }
     else if ([message.name isEqualToString:sYSSignalPrintLogMessage])
     {
@@ -250,7 +250,7 @@
     }
     else if ([message.name isEqualToString:sYSSignalPublishNetworkMedia])
     {
-        [self onPublishNetworkMedia:message.body];
+        [self onJsPublishNetworkMedia:message.body];
     }
     else if ([message.name isEqualToString:sYSSignalUnpublishNetworkMedia])
     {
@@ -263,7 +263,7 @@
     }
     else if ([message.name isEqualToString:sYSSignalSetProperty])
     {
-        [self setProperty:message.body];
+        [self setJsProperty:message.body];
 
     }
     else if ([message.name isEqualToString:sYSSignalSendActionCommand])
@@ -284,7 +284,7 @@
     }
 }
 
-- (void)onPubMsg:(NSDictionary *)aJs
+- (void)onJsPubMsg:(NSDictionary *)aJs
 {
     NSString *msgString = [aJs bm_stringForKey:@"data"];
     if (![msgString bm_isNotEmpty])
@@ -338,7 +338,7 @@
     }
     
     NSLog(@"onPubMsg msgName:%@", msgName);
-    
+#warning onJsPubMsg
     [[YSRoomInterface instance] pubMsg:msgName
                                  msgID:msgId
                                   toID:toId
@@ -351,7 +351,7 @@
                             completion:nil];
 }
 
-- (void)onDelMsg:(NSDictionary *)aJs
+- (void)onJsDelMsg:(NSDictionary *)aJs
 {
     NSString *msgString = [aJs bm_stringForKey:@"data"];
     if (![msgString bm_isNotEmpty])
@@ -385,7 +385,7 @@
 
 #pragma mark 页面加载完成
 
-- (void)onPageFinished
+- (void)onJsPageFinished
 {
     NSMutableDictionary *msgDic = [NSMutableDictionary dictionary];
 
@@ -434,7 +434,7 @@
     }];
 }
 /// app中play PPT中的media
-- (void)onPublishNetworkMedia:(NSDictionary *)videoData
+- (void)onJsPublishNetworkMedia:(NSDictionary *)videoData
 {
     //    publishNetworkMediaJson = {url:url , audio:audio , video:video
     //    ,attributes:{source:'dynamicPPT' , filename:filename , fileid:fileid , toID:toID ,
@@ -580,7 +580,7 @@
     [self.audioDic removeAllObjects];
 }
 
-- (void)setProperty:(id)aMessageBody
+- (void)setJsProperty:(id)aMessageBody
 {
     if (![aMessageBody bm_isNotEmptyDictionary])
     {
@@ -721,7 +721,7 @@
         return;
     }
 
-    [self onPublishNetworkMedia:aMessageBody];
+    [self onJsPublishNetworkMedia:aMessageBody];
 }
 
 
