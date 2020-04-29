@@ -2098,7 +2098,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         self.isBeginClass = YES;
         self.beginClassMessage = message;
         
-        if ([YSWhiteBoardManager shareInstance].roomUseType == YSRoomUseTypeLiveRoom)
+        if (self.roomUseType == YSRoomUseTypeLiveRoom)
         {
             if (!inlist)
             {
@@ -2220,6 +2220,10 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     /// 白板视频标注
     else if ([msgName isEqualToString:sYSSignalVideoWhiteboard])
     {
+        if (self.roomUseType == YSRoomUseTypeLiveRoom)
+        {
+            return;
+        }
         if (![tDataDic bm_isNotEmptyDictionary])
         {
             return;
@@ -2238,6 +2242,11 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
             NSString *whiteboardID = [tDataDic bm_stringTrimForKey:@"whiteboardID"];
             if ([whiteboardID isEqualToString:YSVideoWhiteboard_Id])
             {
+                if (self.roomUseType == YSRoomUseTypeLiveRoom)
+                {
+                    return;
+                }
+                
                 [self.mp4WhiteBoardView drawVideoWhiteboardWithData:tDataDic inList:inlist];
                 
                 return;
@@ -2403,6 +2412,10 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     /// 白板视频标注
     else if ([msgName isEqualToString:sYSSignalVideoWhiteboard])
     {
+        if (self.roomUseType == YSRoomUseTypeLiveRoom)
+        {
+            return;
+        }
         [self.mp4WhiteBoardView hideVideoWhiteboard];
 
         return;
@@ -2427,6 +2440,10 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 // 媒体流发布状态
 - (void)roomWhiteBoardOnShareMediaState:(NSNotification *)notification
 {
+    if (self.roomUseType == YSRoomUseTypeLiveRoom)
+    {
+        return;
+    }
     NSDictionary *message = notification.userInfo;
     
     NSString *peerID = [message bm_stringForKey:YSWhiteBoardOnShareMediaStateExtensionIdKey];
@@ -2461,6 +2478,11 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 // 更新媒体流的信息
 - (void)roomWhiteBoardOnUpdateMediaStream:(NSNotification *)notification
 {
+    if (self.roomUseType == YSRoomUseTypeLiveRoom)
+    {
+        return;
+    }
+    
     NSDictionary *message = notification.userInfo;
     
     NSTimeInterval duration = [message bm_doubleForKey:YSWhiteBoardUpadteMediaStreamDurationKey];
