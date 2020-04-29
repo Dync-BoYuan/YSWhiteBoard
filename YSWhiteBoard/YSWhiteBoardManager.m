@@ -1844,18 +1844,6 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 #warning 最大化
             NSString *whiteBoardId = [YSRoomUtil getwhiteboardIDFromFileId:self.currentFileId];
             NSString *msgID = [NSString stringWithFormat:@"MoreWhiteboardState_%@", whiteBoardId];
-            
-//            NSDictionary *dict = self.mainWhiteBoardView.positionData;
-//
-//            // x,y值在主白板上的比例
-//            CGFloat scaleLeft = [dict bm_floatForKey:@"x"];
-//            CGFloat scaleTop = [dict bm_floatForKey:@"y"];
-//
-//            // 宽，高值在主白板上的比例
-//            CGFloat scaleWidth = [dict bm_floatForKey:@"width"];
-//            CGFloat scaleHeight = [dict bm_floatForKey:@"height"];
-            
-//            CGRect frame = CGRectMake(whiteBoardViewCurrentLeft, whiteBoardViewCurrentTop, self.whiteBoardViewDefaultSize.width, self.whiteBoardViewDefaultSize.height);
                 
             CGFloat scaleLeft = whiteBoardViewCurrentLeft / (self.mainWhiteBoardView.bm_width - self.whiteBoardViewDefaultSize.width);
             CGFloat scaleTop = whiteBoardViewCurrentTop / (self.mainWhiteBoardView.bm_height - self.whiteBoardViewDefaultSize.height);
