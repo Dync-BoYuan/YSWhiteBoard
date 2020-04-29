@@ -156,7 +156,8 @@
     
     NSMutableDictionary *dic = [NSJSONSerialization JSONObjectWithData:shapeData options:NSJSONReadingMutableContainers error:nil];
     
-    [dic setObject:self.drawView.fileid forKey:@"whiteboardID"];
+    NSString *whiteboardID = [YSRoomUtil getwhiteboardIDFromFileId:self.drawView.fileid];
+    [dic setObject:whiteboardID forKey:@"whiteboardID"];
     [dic setObject:@(false) forKey:@"isBaseboard"];
     
     [dic setObject:[YSRoomInterface instance].localUser.nickName forKey:@"nickname"];

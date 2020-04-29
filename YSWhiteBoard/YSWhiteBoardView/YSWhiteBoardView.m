@@ -113,7 +113,7 @@
         if ([fileId isEqualToString:@"0"])
         {
             isMainWhiteBoard = YES;
-            self.whiteBoardId = @"default";
+            self.whiteBoardId = YSDefaultWhiteBoardId;
         }
         else
         {
@@ -795,6 +795,8 @@
         return;
     }
     
+    [dictionary setObject:self.whiteBoardId forKey:@"sourceInstanceId"];
+    
     NSString *tellWho = [YSRoomInterface instance].localUser.peerID;
     NSString *associatedUserID = [YSRoomInterface instance].localUser.peerID;
     BOOL save = YES;
@@ -1000,7 +1002,7 @@
                 // 白板加页需发送
                 NSString *json = [YSRoomUtil jsonStringWithDictionary:@{@"totalPage":@(self.currentPage),
                                                                   @"fileid":@(0),
-                                                                  @"sourceInstanceId":@"default"
+                                                                  @"sourceInstanceId":YSDefaultWhiteBoardId
                                                                   }];
                 [[YSRoomInterface instance] pubMsg:sYSSignalWBPageCount msgID:sYSSignalWBPageCount toID:YSRoomPubMsgTellAll data:json save:YES completion:nil];
             }
@@ -1508,9 +1510,9 @@
     CGFloat scaleWidth = [dict bm_floatForKey:@"width"];
     CGFloat scaleHeight = [dict bm_floatForKey:@"height"];
     
-    NSString * msgID = [NSString stringWithFormat:@"MoreWhiteboardState_%@", self.whiteBoardId];
-    NSDictionary * data = @{@"x":@(scaleLeft),@"y":@(scaleTop),@"width":@(scaleWidth),@"height":@(scaleHeight),@"small":@NO,@"full":@NO,@"type":@"full",@"instanceId":self.whiteBoardId};
-    NSString * associatedMsgID = [NSString stringWithFormat:@"DocumentFilePage_ExtendShowPage_%@", self.whiteBoardId];
+    NSString *msgID = [NSString stringWithFormat:@"MoreWhiteboardState_%@", self.whiteBoardId];
+    NSDictionary *data = @{@"x":@(scaleLeft),@"y":@(scaleTop),@"width":@(scaleWidth),@"height":@(scaleHeight),@"small":@NO,@"full":@NO,@"type":@"full",@"instanceId":self.whiteBoardId};
+    NSString *associatedMsgID = [NSString stringWithFormat:@"DocumentFilePage_ExtendShowPage_%@", self.whiteBoardId];
     
     [YSRoomUtil pubWhiteBoardMsg:sYSSignalMoreWhiteboardState msgID:msgID data:data extensionData:nil associatedMsgID:associatedMsgID expires:0 completion:nil];
 }
