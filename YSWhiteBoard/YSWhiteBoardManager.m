@@ -339,9 +339,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         return nil;
     }
     CGRect frame = CGRectMake(whiteBoardViewCurrentLeft, whiteBoardViewCurrentTop, self.whiteBoardViewDefaultSize.width, self.whiteBoardViewDefaultSize.height);
-        
-
-    
+            
     YSWhiteBoardView *whiteBoardView = [[YSWhiteBoardView alloc] initWithFrame:frame fileId:fileId isMedia:isMedia mediaType:YSWhiteBordMediaType_Video loadFinishedBlock:loadFinishedBlock];
     
     whiteBoardView.delegate = self;
@@ -372,6 +370,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 
     [self makeCurrentWhiteBoardViewPoint];
         
+    
     return whiteBoardView;
 }
 
@@ -631,15 +630,8 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     {
         NSString * type = [message bm_stringForKey:@"type"];
         
-        if ([type isEqualToString:@"drag"])
-        {//拖拽
-
-            whiteBoardView.positionData = message;
-            [whiteBoardView refreshWhiteBoard];
-        }
-        else if ([type isEqualToString:@"resize"])
-        {//缩放
-
+        if ([type isEqualToString:@"drag"] || [type isEqualToString:@"resize"])
+        {
             whiteBoardView.positionData = message;
             [whiteBoardView refreshWhiteBoard];
         }
@@ -649,15 +641,20 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
             whiteBoardView.hidden = [message bm_boolForKey:@"small"];
             return;
          }
-        else if ([type isEqualToString:@"full"])
+        else if ([type isEqualToString:@"full"] || [type isEqualToString:@"init"])
         {//最大化
  
             whiteBoardView.positionData = message;
             [whiteBoardView refreshWhiteBoard];
+            
+            if ( [message bm_boolForKey:@"full"])
+            {
+                [whiteBoardView bm_bringToFront];
+            }
         }
     }
     
-    [self setTheCurrentDocumentFileID:whiteBoardView.fileId];
+    [self setTheCurrentDocumentFileID:fileId];
 }
 
 #pragma mark - 课件列表管理
@@ -1584,6 +1581,28 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         {
             self.roomConfig = [[YSRoomConfiguration alloc] initWithConfigurationString:chairmancontrol];
         }
+        
+        
+        if (self.roomUseType == YSRoomUseTypeLiveRoom)
+        {
+            self.mainWhiteBoardView.pageControlView.hidden = YES;
+        }
+        
+        if ([YSRoomInterface instance].localUser.role != YSUserType_Teacher)
+        {
+            self.mainWhiteBoardView.collectBtn.hidden = YES;
+            
+            NSDictionary *properties = [[YSRoomInterface instance].localUser.properties bm_dictionaryForKey:@"properties"];
+            
+            if ([properties bm_boolForKey:@"candraw"])
+            {
+                self.mainWhiteBoardView.pageControlView.allowTurnPage = YES;
+            }
+            else
+            {
+                self.mainWhiteBoardView.pageControlView.allowTurnPage = NO;
+            }
+        }
     }
 }
 
@@ -1825,18 +1844,6 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 #warning 最大化
             NSString *whiteBoardId = [YSRoomUtil getwhiteboardIDFromFileId:self.currentFileId];
             NSString *msgID = [NSString stringWithFormat:@"MoreWhiteboardState_%@", whiteBoardId];
-            
-//            NSDictionary *dict = self.mainWhiteBoardView.positionData;
-//
-//            // x,y值在主白板上的比例
-//            CGFloat scaleLeft = [dict bm_floatForKey:@"x"];
-//            CGFloat scaleTop = [dict bm_floatForKey:@"y"];
-//
-//            // 宽，高值在主白板上的比例
-//            CGFloat scaleWidth = [dict bm_floatForKey:@"width"];
-//            CGFloat scaleHeight = [dict bm_floatForKey:@"height"];
-            
-//            CGRect frame = CGRectMake(whiteBoardViewCurrentLeft, whiteBoardViewCurrentTop, self.whiteBoardViewDefaultSize.width, self.whiteBoardViewDefaultSize.height);
                 
             CGFloat scaleLeft = whiteBoardViewCurrentLeft / (self.mainWhiteBoardView.bm_width - self.whiteBoardViewDefaultSize.width);
             CGFloat scaleTop = whiteBoardViewCurrentTop / (self.mainWhiteBoardView.bm_height - self.whiteBoardViewDefaultSize.height);
@@ -2087,7 +2094,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         self.isBeginClass = YES;
         self.beginClassMessage = message;
         
-        if ([YSWhiteBoardManager shareInstance].roomUseType == YSRoomUseTypeLiveRoom)
+        if (self.roomUseType == YSRoomUseTypeLiveRoom)
         {
             if (!inlist)
             {
@@ -2129,6 +2136,9 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     long ts = (long)[message bm_uintForKey:@"ts"];
     NSString *fromId = [message objectForKey:@"fromID"];
     NSObject *data = [message objectForKey:@"data"];
+    
+    NSString *fromId11 = [YSRoomInterface instance].localUser.peerID;
+    
 //    if (self.wbDelegate && [self.wbDelegate respondsToSelector:@selector(onWhiteBroadPubMsgWithMsgID:msgName:data:fromID:inList:ts:)])
 //    {
 //        [self.wbDelegate onWhiteBroadPubMsgWithMsgID:msgId msgName:msgName data:data fromID:fromId inList:inlist ts:ts];
@@ -2206,6 +2216,10 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     /// 白板视频标注
     else if ([msgName isEqualToString:sYSSignalVideoWhiteboard])
     {
+        if (self.roomUseType == YSRoomUseTypeLiveRoom)
+        {
+            return;
+        }
         if (![tDataDic bm_isNotEmptyDictionary])
         {
             return;
@@ -2224,6 +2238,11 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
             NSString *whiteboardID = [tDataDic bm_stringTrimForKey:@"whiteboardID"];
             if ([whiteboardID isEqualToString:YSVideoWhiteboard_Id])
             {
+                if (self.roomUseType == YSRoomUseTypeLiveRoom)
+                {
+                    return;
+                }
+                
                 [self.mp4WhiteBoardView drawVideoWhiteboardWithData:tDataDic inList:inlist];
                 
                 return;
@@ -2389,6 +2408,10 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     /// 白板视频标注
     else if ([msgName isEqualToString:sYSSignalVideoWhiteboard])
     {
+        if (self.roomUseType == YSRoomUseTypeLiveRoom)
+        {
+            return;
+        }
         [self.mp4WhiteBoardView hideVideoWhiteboard];
 
         return;
@@ -2413,6 +2436,10 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 // 媒体流发布状态
 - (void)roomWhiteBoardOnShareMediaState:(NSNotification *)notification
 {
+    if (self.roomUseType == YSRoomUseTypeLiveRoom)
+    {
+        return;
+    }
     NSDictionary *message = notification.userInfo;
     
     NSString *peerID = [message bm_stringForKey:YSWhiteBoardOnShareMediaStateExtensionIdKey];
@@ -2447,6 +2474,11 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 // 更新媒体流的信息
 - (void)roomWhiteBoardOnUpdateMediaStream:(NSNotification *)notification
 {
+    if (self.roomUseType == YSRoomUseTypeLiveRoom)
+    {
+        return;
+    }
+    
     NSDictionary *message = notification.userInfo;
     
     NSTimeInterval duration = [message bm_doubleForKey:YSWhiteBoardUpadteMediaStreamDurationKey];

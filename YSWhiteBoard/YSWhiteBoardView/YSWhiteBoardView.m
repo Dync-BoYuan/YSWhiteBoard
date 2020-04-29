@@ -177,16 +177,20 @@
             
             self.drawViewManager = [[YSWBDrawViewManager alloc] initWithBackView:whiteBoardContentView webView:self.wbView];
             
-            YSCoursewareControlView *pageControlView = [[YSCoursewareControlView alloc] initWithFrame:CGRectMake(0, 0, 232, 28)];
-            pageControlView.delegate = self;
-            [self addSubview:pageControlView];
-            self.pageControlView = pageControlView;
-            self.pageControlView.bm_centerX = frame.size.width * 0.5f;
-            self.pageControlView.bm_bottom = frame.size.height - 20;
             
-            // 拖拽
-            UIPanGestureRecognizer *panGestureRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(dragPageControlView:)];
-            [self.pageControlView addGestureRecognizer:panGestureRecognizer];
+            if ([YSWhiteBoardManager shareInstance].roomUseType != YSRoomUseTypeLiveRoom)
+            {
+                YSCoursewareControlView *pageControlView = [[YSCoursewareControlView alloc] initWithFrame:CGRectMake(0, 0, 232, 28)];
+                pageControlView.delegate = self;
+                [self addSubview:pageControlView];
+                self.pageControlView = pageControlView;
+                self.pageControlView.bm_centerX = frame.size.width * 0.5f;
+                self.pageControlView.bm_bottom = frame.size.height - 20;
+                
+                // 拖拽
+                UIPanGestureRecognizer *panGestureRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(dragPageControlView:)];
+                [self.pageControlView addGestureRecognizer:panGestureRecognizer];
+            }
         }
 
         if ([YSRoomInterface instance].localUser.role == YSUserType_Teacher)
@@ -329,14 +333,17 @@
         {
             frame = CGRectMake(0, -30, BMUI_SCREEN_WIDTH, BMUI_SCREEN_HEIGHT+30);
             self.whiteBoardControlView.hidden = YES;
+//            [self bm_bringToFront];
         }
         else
         {
-            if ([[message bm_stringForKey:@"type"] isEqualToString:@"full"] && [message bm_boolForKey:@"full"])
+            NSString * type = [message bm_stringForKey:@"type"];
+            
+            if (([type isEqualToString:@"full"] || [type isEqualToString:@"init"]) && [message bm_boolForKey:@"full"])
             {
                 frame = CGRectMake(0, -30, self.mainWhiteBoard.bm_width, self.mainWhiteBoard.bm_height+30);
                 self.whiteBoardControlView.hidden = NO;
-                [self bm_bringToFront];
+//                [self bm_bringToFront];
             }
             else
             {
@@ -475,6 +482,23 @@
     {
         [self.drawViewManager updateProperty:message];
     }
+       NSDictionary *properties = [message bm_dictionaryForKey:@"properties"];
+       if (![properties bm_isNotEmptyDictionary])
+       {
+           return;
+       }
+
+       if ([properties bm_containsObjectForKey:@"candraw"])
+       {
+           if ([properties bm_boolForKey:@"candraw"])
+           {
+               self.pageControlView.allowTurnPage = YES;
+           }
+           else
+           {
+               self.pageControlView.allowTurnPage = NO;
+           }
+       }
 }
 
 /// 收到远端pubMsg消息通知
@@ -1463,6 +1487,7 @@
     {
         // 课件全屏
         [self.delegate onWBViewFullScreen:isAllScreen wbView:self];
+        [self bm_bringToFront];
     }
 }
 
