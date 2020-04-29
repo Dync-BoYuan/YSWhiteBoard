@@ -630,15 +630,8 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     {
         NSString * type = [message bm_stringForKey:@"type"];
         
-        if ([type isEqualToString:@"drag"])
-        {//拖拽
-
-            whiteBoardView.positionData = message;
-            [whiteBoardView refreshWhiteBoard];
-        }
-        else if ([type isEqualToString:@"resize"])
-        {//缩放
-
+        if ([type isEqualToString:@"drag"] || [type isEqualToString:@"resize"])
+        {
             whiteBoardView.positionData = message;
             [whiteBoardView refreshWhiteBoard];
         }
@@ -648,7 +641,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
             whiteBoardView.hidden = [message bm_boolForKey:@"small"];
             return;
          }
-        else if ([type isEqualToString:@"full"])
+        else if ([type isEqualToString:@"full"] || [type isEqualToString:@"init"])
         {//最大化
  
             whiteBoardView.positionData = message;
@@ -658,7 +651,6 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
             {
                 [whiteBoardView bm_bringToFront];
             }
-            
         }
     }
     
@@ -2142,6 +2134,9 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     long ts = (long)[message bm_uintForKey:@"ts"];
     NSString *fromId = [message objectForKey:@"fromID"];
     NSObject *data = [message objectForKey:@"data"];
+    
+    NSString *fromId11 = [YSRoomInterface instance].localUser.peerID;
+    
 //    if (self.wbDelegate && [self.wbDelegate respondsToSelector:@selector(onWhiteBroadPubMsgWithMsgID:msgName:data:fromID:inList:ts:)])
 //    {
 //        [self.wbDelegate onWhiteBroadPubMsgWithMsgID:msgId msgName:msgName data:data fromID:fromId inList:inlist ts:ts];
