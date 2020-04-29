@@ -1280,7 +1280,10 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     {
         NSString *sourceInstanceId = YSDefaultWhiteBoardId;
         NSDictionary *fileDic = [YSFileModel fileDataDocDic:fileModel sourceInstanceId:sourceInstanceId];
-        
+        NSMutableDictionary *dic = [NSMutableDictionary dictionaryWithDictionary:fileDic];
+        [dic bm_setBool:YES forKey:@"initiative"];
+        fileDic = dic;
+
         [[YSRoomInterface instance] pubMsg:sYSSignalShowPage
                                      msgID:sYSSignalDocumentFilePage_ShowPage
                                       toID:toID
@@ -1296,7 +1299,10 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     {
         NSString *sourceInstanceId = [YSRoomUtil getSourceInstanceIdFromFileId:fileId];
         NSDictionary *fileDic = [YSFileModel fileDataDocDic:fileModel sourceInstanceId:sourceInstanceId];
-        
+        NSMutableDictionary *dic = [NSMutableDictionary dictionaryWithDictionary:fileDic];
+        [dic bm_setBool:YES forKey:@"initiative"];
+        fileDic = dic;
+
         NSString *msgID = [NSString stringWithFormat:@"%@%@", sYSSignalDocumentFilePage_ExtendShowPage, [YSRoomUtil getwhiteboardIDFromFileId:fileId]];
 
         NSMutableDictionary *fileData = [[NSMutableDictionary alloc] initWithDictionary:fileDic];
@@ -1854,9 +1860,10 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         YSFileModel *fileModel = [self getDocumentWithFileID:fileId];
         NSDictionary *fileDic = [YSFileModel fileDataDocDic:fileModel sourceInstanceId:nil];
         
-        NSString *msgID = [NSString stringWithFormat:@"%@%@", sYSSignalDocumentFilePage_ExtendShowPage, [YSRoomUtil getwhiteboardIDFromFileId:fileId]];
+        NSString *msgID = [NSString stringWithFormat:@"%@%@", sYSSignalDocumentFilePage_ExtendShowPage, YSDefaultWhiteBoardId];
         NSMutableDictionary *fileData = [[NSMutableDictionary alloc] initWithDictionary:fileDic];
-        [fileData bm_setString:[YSRoomUtil getwhiteboardIDFromFileId:fileId] forKey:@"sourceInstanceId"];
+        [fileData bm_setString:YSDefaultWhiteBoardId forKey:@"sourceInstanceId"];
+        [fileData bm_setBool:YES forKey:@"initiative"];
         [[YSRoomInterface instance] pubMsg:sYSSignalExtendShowPage
                                      msgID:msgID
                                       toID:[YSRoomInterface instance].localUser.peerID
