@@ -161,7 +161,7 @@
 + (NSString *)getFileIdFromSourceInstanceId:(NSString *)sourceInstanceId
 {
     NSString *fileId = nil;
-    if ([sourceInstanceId isEqualToString:@"default"])
+    if ([sourceInstanceId isEqualToString:YSDefaultWhiteBoardId])
     {
         fileId = @"0";
     }
@@ -184,10 +184,15 @@
 {
     if ([fileId isEqualToString:@"0"])
     {
-       return  @"default";
+       return YSDefaultWhiteBoardId;
     }
     else
     {
+        if ([YSWhiteBoardManager shareInstance].roomUseType == YSRoomUseTypeLiveRoom)
+        {
+            return YSDefaultWhiteBoardId;
+        }
+        
         NSString *whiteboardID = [NSString stringWithFormat:@"%@%@", YSWhiteBoardId_Header, fileId];
         return whiteboardID;
     }

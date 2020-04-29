@@ -60,7 +60,7 @@
 {
     if (![sourceInstanceId bm_isNotEmpty])
     {
-        sourceInstanceId = @"default";
+        sourceInstanceId = YSDefaultWhiteBoardId;
     }
     if (!aDefaultDocment)
     {
@@ -71,7 +71,7 @@
                                    @"isH5Document":@(false),
                                    @"action":@"",
                                    @"fileid":@(0),
-                                   @"sourceInstanceId":@"default",
+                                   @"sourceInstanceId":YSDefaultWhiteBoardId,
                                    @"mediaType":@"",
                                    @"isMedia":@(false),
                                    @"filedata":@{

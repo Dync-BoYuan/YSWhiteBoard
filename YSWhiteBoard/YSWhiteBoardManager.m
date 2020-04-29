@@ -603,14 +603,14 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 
 - (void)receiveMessageToMoveAndZoomWith:(NSDictionary *)message WithInlist:(BOOL)inlist
 {
-    NSString * instanceId = [message bm_stringForKey:@"instanceId"];
+    NSString *instanceId = [message bm_stringForKey:@"instanceId"];
     NSString *fileId = [YSRoomUtil getFileIdFromSourceInstanceId:instanceId];
-    if (!fileId)
+    if (!fileId || [fileId isEqualToString:YSDefaultWhiteBoardId])
     {
         return;
     }
     
-    YSWhiteBoardView * whiteBoardView = [self getWhiteBoardViewWithFileId:fileId];
+    YSWhiteBoardView *whiteBoardView = [self getWhiteBoardViewWithFileId:fileId];
     if (!whiteBoardView)
     {
         return;
@@ -1250,7 +1250,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     
     if (self.roomUseType == YSRoomUseTypeLiveRoom)
     {
-        NSString *sourceInstanceId = @"default";
+        NSString *sourceInstanceId = YSDefaultWhiteBoardId;
         NSDictionary *fileDic = [YSFileModel fileDataDocDic:fileModel sourceInstanceId:sourceInstanceId];
         
         [YSRoomUtil pubWhiteBoardMsg:sYSSignalShowPage msgID:sYSSignalDocumentFilePage_ShowPage data:fileDic extensionData:nil associatedMsgID:nil expires:0 completion:nil];
@@ -1278,7 +1278,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     
     if (self.roomUseType == YSRoomUseTypeLiveRoom)
     {
-        NSString *sourceInstanceId = @"default";
+        NSString *sourceInstanceId = YSDefaultWhiteBoardId;
         NSDictionary *fileDic = [YSFileModel fileDataDocDic:fileModel sourceInstanceId:sourceInstanceId];
         
         [[YSRoomInterface instance] pubMsg:sYSSignalShowPage
@@ -2267,10 +2267,20 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         
         if (fileId)
         {
-            YSWhiteBoardView *whiteBoardView = [self getWhiteBoardViewWithFileId:fileId];
-            if (whiteBoardView)
+            if ([fileId isEqualToString:YSDefaultWhiteBoardId])
             {
-                [whiteBoardView remotePubMsg:message];
+                 if (self.mainWhiteBoardView)
+                {
+                    [self.mainWhiteBoardView remotePubMsg:message];
+                }
+            }
+            else
+            {
+                YSWhiteBoardView *whiteBoardView = [self getWhiteBoardViewWithFileId:fileId];
+                if (whiteBoardView)
+                {
+                    [whiteBoardView remotePubMsg:message];
+                }
             }
         }
         
@@ -2355,7 +2365,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
             NSString *sourceInstanceId = [tDataDic bm_stringForKey:@"sourceInstanceId"];
             if (sourceInstanceId)
             {
-                if ([sourceInstanceId isEqualToString:@"default"])
+                if ([sourceInstanceId isEqualToString:YSDefaultWhiteBoardId])
                 {
                     return;
                 }

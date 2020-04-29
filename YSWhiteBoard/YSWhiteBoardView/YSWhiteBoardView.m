@@ -113,7 +113,7 @@
         if ([fileId isEqualToString:@"0"])
         {
             isMainWhiteBoard = YES;
-            self.whiteBoardId = @"default";
+            self.whiteBoardId = YSDefaultWhiteBoardId;
         }
         else
         {
@@ -984,7 +984,7 @@
                 // 白板加页需发送
                 NSString *json = [YSRoomUtil jsonStringWithDictionary:@{@"totalPage":@(self.currentPage),
                                                                   @"fileid":@(0),
-                                                                  @"sourceInstanceId":@"default"
+                                                                  @"sourceInstanceId":YSDefaultWhiteBoardId
                                                                   }];
                 [[YSRoomInterface instance] pubMsg:sYSSignalWBPageCount msgID:sYSSignalWBPageCount toID:YSRoomPubMsgTellAll data:json save:YES completion:nil];
             }
