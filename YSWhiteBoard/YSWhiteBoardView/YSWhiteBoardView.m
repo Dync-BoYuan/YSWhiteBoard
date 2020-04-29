@@ -177,16 +177,20 @@
             
             self.drawViewManager = [[YSWBDrawViewManager alloc] initWithBackView:whiteBoardContentView webView:self.wbView];
             
-            YSCoursewareControlView *pageControlView = [[YSCoursewareControlView alloc] initWithFrame:CGRectMake(0, 0, 232, 28)];
-            pageControlView.delegate = self;
-            [self addSubview:pageControlView];
-            self.pageControlView = pageControlView;
-            self.pageControlView.bm_centerX = frame.size.width * 0.5f;
-            self.pageControlView.bm_bottom = frame.size.height - 20;
             
-            // 拖拽
-            UIPanGestureRecognizer *panGestureRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(dragPageControlView:)];
-            [self.pageControlView addGestureRecognizer:panGestureRecognizer];
+            if ([YSWhiteBoardManager shareInstance].roomUseType != YSRoomUseTypeLiveRoom)
+            {
+                YSCoursewareControlView *pageControlView = [[YSCoursewareControlView alloc] initWithFrame:CGRectMake(0, 0, 232, 28)];
+                pageControlView.delegate = self;
+                [self addSubview:pageControlView];
+                self.pageControlView = pageControlView;
+                self.pageControlView.bm_centerX = frame.size.width * 0.5f;
+                self.pageControlView.bm_bottom = frame.size.height - 20;
+                
+                // 拖拽
+                UIPanGestureRecognizer *panGestureRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(dragPageControlView:)];
+                [self.pageControlView addGestureRecognizer:panGestureRecognizer];
+            }
         }
 
         if ([YSRoomInterface instance].localUser.role == YSUserType_Teacher)
