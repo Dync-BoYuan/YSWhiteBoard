@@ -1262,8 +1262,6 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         
         NSString *msgID = [NSString stringWithFormat:@"%@%@", sYSSignalDocumentFilePage_ExtendShowPage, [YSRoomUtil getwhiteboardIDFromFileId:fileId]];
 
-        NSMutableDictionary *fileData = [[NSMutableDictionary alloc] initWithDictionary:fileDic];
-        
         [YSRoomUtil pubWhiteBoardMsg:sYSSignalExtendShowPage msgID:msgID data:fileDic extensionData:nil associatedMsgID:nil expires:0 completion:nil];
     }
 }
@@ -1304,8 +1302,6 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         fileDic = dic;
 
         NSString *msgID = [NSString stringWithFormat:@"%@%@", sYSSignalDocumentFilePage_ExtendShowPage, [YSRoomUtil getwhiteboardIDFromFileId:fileId]];
-
-        NSMutableDictionary *fileData = [[NSMutableDictionary alloc] initWithDictionary:fileDic];
 
         [[YSRoomInterface instance] pubMsg:sYSSignalExtendShowPage
                                      msgID:msgID
@@ -1949,8 +1945,8 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 // 大并发房间用户上台通知
 - (void)roomWhiteBoardOnBigRoomUserPublished:(NSNotification *)notification
 {
-    NSDictionary *dict = notification.userInfo;
-    NSDictionary *message = [dict objectForKey:YSWhiteBoardNotificationUserInfoKey];
+//    NSDictionary *dict = notification.userInfo;
+//    NSDictionary *message = [dict objectForKey:YSWhiteBoardNotificationUserInfoKey];
 }
 
 // 用户属性改变通知
