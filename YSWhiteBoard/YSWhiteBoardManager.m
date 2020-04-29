@@ -485,9 +485,9 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         CGFloat scaleWidth = whiteBoardView.bm_width / self.mainWhiteBoardView.bm_width;
         CGFloat scaleHeight = whiteBoardView.bm_height / self.mainWhiteBoardView.bm_height;
         
-        NSString * msgID = [NSString stringWithFormat:@"MoreWhiteboardState_%@", whiteBoardView.whiteBoardId];
+        NSString *msgID = [NSString stringWithFormat:@"MoreWhiteboardState_%@", whiteBoardView.whiteBoardId];
         NSDictionary * data = @{@"x":@(scaleLeft),@"y":@(scaleTop),@"width":@(scaleWidth),@"height":@(scaleHeight),@"small":@NO,@"full":@NO,@"type":@"drag",@"instanceId":whiteBoardView.whiteBoardId};
-        NSString * associatedMsgID = [NSString stringWithFormat:@"DocumentFilePage_ExtendShowPage_%@", whiteBoardView.whiteBoardId];
+        NSString *associatedMsgID = [NSString stringWithFormat:@"DocumentFilePage_ExtendShowPage_%@", whiteBoardView.whiteBoardId];
         
         [YSRoomUtil pubWhiteBoardMsg:sYSSignalMoreWhiteboardState msgID:msgID data:data extensionData:nil associatedMsgID:associatedMsgID expires:0 completion:nil];
         
@@ -587,9 +587,9 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         CGFloat scaleWidth = dragImageViewW / self.mainWhiteBoardView.bm_width;
         CGFloat scaleHeight = dragImageViewH / self.mainWhiteBoardView.bm_height;
         
-        NSString * msgID = [NSString stringWithFormat:@"MoreWhiteboardState_%@",whiteBoard.whiteBoardId];
+        NSString *msgID = [NSString stringWithFormat:@"MoreWhiteboardState_%@", whiteBoard.whiteBoardId];
         NSDictionary * data = @{@"x":@(scaleLeft),@"y":@(scaleTop),@"width":@(scaleWidth),@"height":@(scaleHeight),@"small":@NO,@"full":@NO,@"type":@"resize",@"instanceId":whiteBoard.whiteBoardId};
-        NSString * associatedMsgID = [NSString stringWithFormat:@"DocumentFilePage_ExtendShowPage_%@",whiteBoard.whiteBoardId];
+        NSString *associatedMsgID = [NSString stringWithFormat:@"DocumentFilePage_ExtendShowPage_%@", whiteBoard.whiteBoardId];
         
         [YSRoomUtil pubWhiteBoardMsg:sYSSignalMoreWhiteboardState msgID:msgID data:data extensionData:nil associatedMsgID:associatedMsgID expires:0 completion:nil];
         
@@ -979,8 +979,9 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
             instanceId = @"";
         }
         NSDictionary *data = @{ @"type" : @"sort", @"instanceId" : instanceId, @"sort" : arrangeWhiteboardIdList, @"hideAll" : @(NO)};
+        NSString *associatedMsgID = [NSString stringWithFormat:@"DocumentFilePage_ExtendShowPage_%@", whiteBoardView.whiteBoardId];
 
-        [YSRoomUtil pubWhiteBoardMsg:sYSSignalMoreWhiteboardGlobalState msgID:sYSSignalMoreWhiteboardGlobalState data:data extensionData:nil associatedMsgID:nil expires:0 completion:nil];
+        [YSRoomUtil pubWhiteBoardMsg:sYSSignalMoreWhiteboardGlobalState msgID:sYSSignalMoreWhiteboardGlobalState data:data extensionData:nil associatedMsgID:associatedMsgID expires:0 completion:nil];
     }
 }
 
@@ -1247,19 +1248,21 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         return;
     }
     
-    NSString *sourceInstanceId = [YSRoomUtil getSourceInstanceIdFromFileId:fileId];
-    NSDictionary *fileDic = [YSFileModel fileDataDocDic:fileModel sourceInstanceId:sourceInstanceId];
-    
     if (self.roomUseType == YSRoomUseTypeLiveRoom)
     {
+        NSString *sourceInstanceId = @"default";
+        NSDictionary *fileDic = [YSFileModel fileDataDocDic:fileModel sourceInstanceId:sourceInstanceId];
+        
         [YSRoomUtil pubWhiteBoardMsg:sYSSignalShowPage msgID:sYSSignalDocumentFilePage_ShowPage data:fileDic extensionData:nil associatedMsgID:nil expires:0 completion:nil];
     }
     else
     {
+        NSString *sourceInstanceId = [YSRoomUtil getSourceInstanceIdFromFileId:fileId];
+        NSDictionary *fileDic = [YSFileModel fileDataDocDic:fileModel sourceInstanceId:sourceInstanceId];
+        
         NSString *msgID = [NSString stringWithFormat:@"%@%@", sYSSignalDocumentFilePage_ExtendShowPage, [YSRoomUtil getwhiteboardIDFromFileId:fileId]];
 
         NSMutableDictionary *fileData = [[NSMutableDictionary alloc] initWithDictionary:fileDic];
-        [fileData bm_setString:[YSRoomUtil getwhiteboardIDFromFileId:fileId] forKey:@"sourceInstanceId"];
         
         [YSRoomUtil pubWhiteBoardMsg:sYSSignalExtendShowPage msgID:msgID data:fileDic extensionData:nil associatedMsgID:nil expires:0 completion:nil];
     }
@@ -1273,11 +1276,11 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         return;
     }
     
-    NSString *sourceInstanceId = [YSRoomUtil getSourceInstanceIdFromFileId:fileId];
-    NSDictionary *fileDic = [YSFileModel fileDataDocDic:fileModel sourceInstanceId:sourceInstanceId];
-    
     if (self.roomUseType == YSRoomUseTypeLiveRoom)
     {
+        NSString *sourceInstanceId = @"default";
+        NSDictionary *fileDic = [YSFileModel fileDataDocDic:fileModel sourceInstanceId:sourceInstanceId];
+        
         [[YSRoomInterface instance] pubMsg:sYSSignalShowPage
                                      msgID:sYSSignalDocumentFilePage_ShowPage
                                       toID:toID
@@ -1291,10 +1294,12 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     }
     else
     {
+        NSString *sourceInstanceId = [YSRoomUtil getSourceInstanceIdFromFileId:fileId];
+        NSDictionary *fileDic = [YSFileModel fileDataDocDic:fileModel sourceInstanceId:sourceInstanceId];
+        
         NSString *msgID = [NSString stringWithFormat:@"%@%@", sYSSignalDocumentFilePage_ExtendShowPage, [YSRoomUtil getwhiteboardIDFromFileId:fileId]];
 
         NSMutableDictionary *fileData = [[NSMutableDictionary alloc] initWithDictionary:fileDic];
-        [fileData bm_setString:[YSRoomUtil getwhiteboardIDFromFileId:fileId] forKey:@"sourceInstanceId"];
 
         [[YSRoomInterface instance] pubMsg:sYSSignalExtendShowPage
                                      msgID:msgID
@@ -1817,7 +1822,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         {
 #warning 最大化
             NSString *whiteBoardId = [YSRoomUtil getwhiteboardIDFromFileId:self.currentFileId];
-            NSString * msgID = [NSString stringWithFormat:@"MoreWhiteboardState_%@", whiteBoardId];
+            NSString *msgID = [NSString stringWithFormat:@"MoreWhiteboardState_%@", whiteBoardId];
             
 //            NSDictionary *dict = self.mainWhiteBoardView.positionData;
 //
@@ -1836,9 +1841,8 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
             CGFloat scaleWidth = self.whiteBoardViewDefaultSize.width / self.mainWhiteBoardView.bm_width;
             CGFloat scaleHeight = self.whiteBoardViewDefaultSize.height / self.mainWhiteBoardView.bm_height;
             
-            
             NSDictionary * data = @{@"x":@(scaleLeft),@"y":@(scaleTop),@"width":@(scaleWidth),@"height":@(scaleHeight),@"small":@NO,@"full":@YES,@"type":@"full",@"instanceId":whiteBoardId};
-            NSString * associatedMsgID = [NSString stringWithFormat:@"DocumentFilePage_ExtendShowPage_%@", whiteBoardId];
+            NSString *associatedMsgID = [NSString stringWithFormat:@"DocumentFilePage_ExtendShowPage_%@", whiteBoardId];
             
             [YSRoomUtil pubWhiteBoardMsg:sYSSignalMoreWhiteboardState msgID:msgID data:data extensionData:nil associatedMsgID:associatedMsgID expires:0 completion:nil];
         }
@@ -2098,8 +2102,8 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
                     {
                         [self changeCourseWithFileId:whiteBoardView.fileId];
                         
-                        NSString * msgID = [NSString stringWithFormat:@"MoreWhiteboardState_%@", whiteBoardView.whiteBoardId];
-                        NSString * associatedMsgID = [NSString stringWithFormat:@"DocumentFilePage_ExtendShowPage_%@", whiteBoardView.whiteBoardId];
+                        NSString *msgID = [NSString stringWithFormat:@"MoreWhiteboardState_%@", whiteBoardView.whiteBoardId];
+                        NSString *associatedMsgID = [NSString stringWithFormat:@"DocumentFilePage_ExtendShowPage_%@", whiteBoardView.whiteBoardId];
                         
                         [YSRoomUtil pubWhiteBoardMsg:sYSSignalMoreWhiteboardState msgID:msgID data:whiteBoardView.positionData extensionData:nil associatedMsgID:associatedMsgID expires:0 completion:nil];
                     }

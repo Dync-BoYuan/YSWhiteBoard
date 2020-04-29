@@ -345,8 +345,8 @@
                                   data:tData
                                   save:YES
                          extensionData:pubDict
-                       associatedMsgID:nil
-                      associatedUserID:nil
+                       associatedMsgID:associatedMsgID
+                      associatedUserID:associatedUserID
                                expires:0
                             completion:nil];
 }
