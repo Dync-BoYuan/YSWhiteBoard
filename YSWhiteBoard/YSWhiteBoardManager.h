@@ -141,6 +141,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 ///删除课件窗口
 - (void)removeWhiteBoardViewWithFileId:(NSString *)fileId;
+- (void)removeWhiteBoardViewWithWhiteBoardView:(YSWhiteBoardView *)whiteBoardView;
+
 
 - (CGFloat)currentDocumentZoomScale;
 - (CGFloat)documentZoomScaleWithFileId:(NSString *)fileId;

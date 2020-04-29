@@ -221,7 +221,12 @@
             }
         }
         
-        //initiative
+        if ([msgName isEqualToString:sYSSignalShowPage] || [msgName isEqualToString:sYSSignalExtendShowPage])
+        {
+            NSMutableDictionary *dic = [NSMutableDictionary dictionaryWithDictionary:dataDic];
+            [dic bm_setBool:YES forKey:@"initiative"];
+            dataDic = dic;
+        }
         
         NSData *jsonData = [NSJSONSerialization dataWithJSONObject:dataDic options:NSJSONWritingPrettyPrinted error:nil];
 

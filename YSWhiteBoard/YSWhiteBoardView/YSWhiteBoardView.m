@@ -795,8 +795,9 @@
         return;
     }
     
-    [dictionary setObject:self.whiteBoardId forKey:@"sourceInstanceId"];
-    
+    [dictionary bm_setString:self.whiteBoardId forKey:@"sourceInstanceId"];
+    [dictionary bm_setBool:YES forKey:@"initiative"];
+
     NSString *tellWho = [YSRoomInterface instance].localUser.peerID;
     NSString *associatedUserID = [YSRoomInterface instance].localUser.peerID;
     BOOL save = NO;
@@ -1013,6 +1014,7 @@
                     self.currentPage--;
                     return;
                 }
+            }
             else
             {
                 NSMutableDictionary *filedata = [NSMutableDictionary dictionaryWithDictionary:[self.drawViewManager.fileDictionary objectForKey:@"filedata"]];
@@ -1077,6 +1079,11 @@
 
         NSString *sourceInstanceId = self.whiteBoardId;
         NSDictionary *dic = [YSFileModel fileDataDocDic:file currentPage:pageNum sourceInstanceId:sourceInstanceId];
+
+        NSMutableDictionary *dic1 = [NSMutableDictionary dictionaryWithDictionary:dic];
+        [dic1 bm_setBool:YES forKey:@"initiative"];
+        dic = dic1;
+
         if ([YSWhiteBoardManager shareInstance].roomUseType == YSRoomUseTypeLiveRoom)
         {
             NSDictionary *tParamDicDefault = @{
@@ -1273,83 +1280,83 @@
 {
     
     UIView *dragView = pan.view;
-       if (pan.state == UIGestureRecognizerStateBegan)
-       {
-           
-       }
-       else if (pan.state == UIGestureRecognizerStateChanged)
-       {
-           CGPoint location = [pan locationInView:self];
-           
-           if (location.y < self.topBar.bm_height || location.y > self.bm_height)
-           {
-               return;
-           }
-           
-           CGPoint translation = [pan translationInView:self];
-           
-           dragView.center = CGPointMake(dragView.center.x + translation.x, dragView.center.y + translation.y);
-           [pan setTranslation:CGPointZero inView:self];
-       }
-       else if (pan.state == UIGestureRecognizerStateEnded || pan.state == UIGestureRecognizerStateCancelled)
-       {
-           CGRect currentFrame = dragView.frame;//self.chatBtn.frame;
-           
-           if (currentFrame.origin.x < 0) {
-               
-               currentFrame.origin.x = 0;
-               if (currentFrame.origin.y < self.topBar.bm_height)
-               {
-                   currentFrame.origin.y = self.topBar.bm_height + 4;
-               }
-               else if ((currentFrame.origin.y + currentFrame.size.height) > self.bounds.size.height)
-               {
-                   currentFrame.origin.y = self.bounds.size.height - currentFrame.size.height;
-               }
-               [UIView animateWithDuration:BMDEFAULT_DELAY_TIME animations:^{
-                   dragView.frame = currentFrame;
-               }];
-               
-               return;
-           }
-           
-           if ((currentFrame.origin.x + currentFrame.size.width) > self.bounds.size.width)
-           {
-               currentFrame.origin.x = self.bounds.size.width - currentFrame.size.width;
-               if (currentFrame.origin.y < self.topBar.bm_height)
-               {
-                   currentFrame.origin.y = self.topBar.bm_height + 4;
-               }
-               else if ((currentFrame.origin.y + currentFrame.size.height) > self.bounds.size.height)
-               {
-                   currentFrame.origin.y = self.bounds.size.height - currentFrame.size.height;
-               }
-               [UIView animateWithDuration:BMDEFAULT_DELAY_TIME animations:^{
-                   dragView.frame = currentFrame;
-               }];
-               
-               return;
-           }
-           
-           if (currentFrame.origin.y < self.topBar.bm_height)
-           {
-               currentFrame.origin.y = self.topBar.bm_height + 4;
-               [UIView animateWithDuration:BMDEFAULT_DELAY_TIME animations:^{
-                   dragView.frame = currentFrame;
-               }];
-               return;
-           }
-           
-           if ((currentFrame.origin.y + currentFrame.size.height) > self.bounds.size.height)
-           {
-               currentFrame.origin.y = self.bounds.size.height - currentFrame.size.height;
-               [UIView animateWithDuration:BMDEFAULT_DELAY_TIME animations:^{
-                   dragView.frame = currentFrame;
-               }];
-               
-               return;
-           }
-       }
+    if (pan.state == UIGestureRecognizerStateBegan)
+    {
+        
+    }
+    else if (pan.state == UIGestureRecognizerStateChanged)
+    {
+        CGPoint location = [pan locationInView:self];
+        
+        if (location.y < self.topBar.bm_height || location.y > self.bm_height)
+        {
+            return;
+        }
+        
+        CGPoint translation = [pan translationInView:self];
+        
+        dragView.center = CGPointMake(dragView.center.x + translation.x, dragView.center.y + translation.y);
+        [pan setTranslation:CGPointZero inView:self];
+    }
+    else if (pan.state == UIGestureRecognizerStateEnded || pan.state == UIGestureRecognizerStateCancelled)
+    {
+        CGRect currentFrame = dragView.frame;//self.chatBtn.frame;
+        
+        if (currentFrame.origin.x < 0) {
+            
+            currentFrame.origin.x = 0;
+            if (currentFrame.origin.y < self.topBar.bm_height)
+            {
+                currentFrame.origin.y = self.topBar.bm_height + 4;
+            }
+            else if ((currentFrame.origin.y + currentFrame.size.height) > self.bounds.size.height)
+            {
+                currentFrame.origin.y = self.bounds.size.height - currentFrame.size.height;
+            }
+            [UIView animateWithDuration:BMDEFAULT_DELAY_TIME animations:^{
+                dragView.frame = currentFrame;
+            }];
+            
+            return;
+        }
+        
+        if ((currentFrame.origin.x + currentFrame.size.width) > self.bounds.size.width)
+        {
+            currentFrame.origin.x = self.bounds.size.width - currentFrame.size.width;
+            if (currentFrame.origin.y < self.topBar.bm_height)
+            {
+                currentFrame.origin.y = self.topBar.bm_height + 4;
+            }
+            else if ((currentFrame.origin.y + currentFrame.size.height) > self.bounds.size.height)
+            {
+                currentFrame.origin.y = self.bounds.size.height - currentFrame.size.height;
+            }
+            [UIView animateWithDuration:BMDEFAULT_DELAY_TIME animations:^{
+                dragView.frame = currentFrame;
+            }];
+            
+            return;
+        }
+        
+        if (currentFrame.origin.y < self.topBar.bm_height)
+        {
+            currentFrame.origin.y = self.topBar.bm_height + 4;
+            [UIView animateWithDuration:BMDEFAULT_DELAY_TIME animations:^{
+                dragView.frame = currentFrame;
+            }];
+            return;
+        }
+        
+        if ((currentFrame.origin.y + currentFrame.size.height) > self.bounds.size.height)
+        {
+            currentFrame.origin.y = self.bounds.size.height - currentFrame.size.height;
+            [UIView animateWithDuration:BMDEFAULT_DELAY_TIME animations:^{
+                dragView.frame = currentFrame;
+            }];
+            
+            return;
+        }
+    }
 }
 
 - (void)collectButtonsClick:(UIButton *)sender
@@ -1542,7 +1549,7 @@
     }
     else
     {
-        [[YSWhiteBoardManager shareInstance] removeWhiteBoardViewWithFileId:self.fileId];
+        [[YSWhiteBoardManager shareInstance] removeWhiteBoardViewWithWhiteBoardView:self];
     }
 }
 
