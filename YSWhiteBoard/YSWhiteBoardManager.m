@@ -339,9 +339,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         return nil;
     }
     CGRect frame = CGRectMake(whiteBoardViewCurrentLeft, whiteBoardViewCurrentTop, self.whiteBoardViewDefaultSize.width, self.whiteBoardViewDefaultSize.height);
-        
-
-    
+            
     YSWhiteBoardView *whiteBoardView = [[YSWhiteBoardView alloc] initWithFrame:frame fileId:fileId isMedia:isMedia mediaType:YSWhiteBordMediaType_Video loadFinishedBlock:loadFinishedBlock];
     
     whiteBoardView.delegate = self;
@@ -372,6 +370,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 
     [self makeCurrentWhiteBoardViewPoint];
         
+    
     return whiteBoardView;
 }
 
@@ -654,10 +653,16 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
  
             whiteBoardView.positionData = message;
             [whiteBoardView refreshWhiteBoard];
+            
+            if ( [message bm_boolForKey:@"full"])
+            {
+                [whiteBoardView bm_bringToFront];
+            }
+            
         }
     }
     
-    [self setTheCurrentDocumentFileID:whiteBoardView.fileId];
+    [self setTheCurrentDocumentFileID:fileId];
 }
 
 #pragma mark - 课件列表管理
@@ -1576,6 +1581,22 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         if ([chairmancontrol bm_isNotEmpty])
         {
             self.roomConfig = [[YSRoomConfiguration alloc] initWithConfigurationString:chairmancontrol];
+        }
+        
+        if ([YSRoomInterface instance].localUser.role != YSUserType_Teacher)
+        {
+            self.mainWhiteBoardView.collectBtn.hidden = YES;
+            
+            NSDictionary *properties = [[YSRoomInterface instance].localUser.properties bm_dictionaryForKey:@"properties"];
+            
+            if ([properties bm_boolForKey:@"candraw"])
+            {
+                self.mainWhiteBoardView.pageControlView.allowTurnPage = YES;
+            }
+            else
+            {
+                self.mainWhiteBoardView.pageControlView.allowTurnPage = NO;
+            }
         }
     }
 }

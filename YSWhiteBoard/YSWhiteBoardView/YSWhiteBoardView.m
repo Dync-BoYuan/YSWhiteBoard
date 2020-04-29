@@ -329,6 +329,7 @@
         {
             frame = CGRectMake(0, -30, BMUI_SCREEN_WIDTH, BMUI_SCREEN_HEIGHT+30);
             self.whiteBoardControlView.hidden = YES;
+//            [self bm_bringToFront];
         }
         else
         {
@@ -336,7 +337,7 @@
             {
                 frame = CGRectMake(0, -30, self.mainWhiteBoard.bm_width, self.mainWhiteBoard.bm_height+30);
                 self.whiteBoardControlView.hidden = NO;
-                [self bm_bringToFront];
+//                [self bm_bringToFront];
             }
             else
             {
@@ -475,6 +476,23 @@
     {
         [self.drawViewManager updateProperty:message];
     }
+       NSDictionary *properties = [message bm_dictionaryForKey:@"properties"];
+       if (![properties bm_isNotEmptyDictionary])
+       {
+           return;
+       }
+
+       if ([properties bm_containsObjectForKey:@"candraw"])
+       {
+           if ([properties bm_boolForKey:@"candraw"])
+           {
+               self.pageControlView.allowTurnPage = YES;
+           }
+           else
+           {
+               self.pageControlView.allowTurnPage = NO;
+           }
+       }
 }
 
 /// 收到远端pubMsg消息通知
@@ -1447,6 +1465,7 @@
     {
         // 课件全屏
         [self.delegate onWBViewFullScreen:isAllScreen wbView:self];
+        [self bm_bringToFront];
     }
 }
 
