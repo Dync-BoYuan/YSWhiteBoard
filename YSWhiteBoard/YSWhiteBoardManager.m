@@ -1293,7 +1293,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
                                       save:save
                              extensionData:nil
                            associatedMsgID:nil
-                          associatedUserID:nil
+                          associatedUserID:toID
                                    expires:0
                                 completion:nil];
     }
@@ -1313,7 +1313,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
                                       save:save
                              extensionData:nil
                            associatedMsgID:nil
-                          associatedUserID:nil
+                          associatedUserID:toID
                                    expires:0
                                 completion:nil];
     }
@@ -1836,7 +1836,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     
     if (!show)
     {
-        [self changeCourseWithFileId:self.currentFileId toID:[YSRoomInterface instance].localUser.peerID save:YES];
+        [self changeCourseWithFileId:self.currentFileId toID:[YSRoomInterface instance].localUser.peerID save:NO];
         
         // 学生默认课件最大化
         if (self.roomUseType != YSRoomUseTypeLiveRoom)
@@ -1870,7 +1870,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
                                      msgID:msgID
                                       toID:[YSRoomInterface instance].localUser.peerID
                                       data:fileData
-                                      save:YES
+                                      save:NO
                              extensionData:nil
                            associatedMsgID:nil
                           associatedUserID:[YSRoomInterface instance].localUser.peerID

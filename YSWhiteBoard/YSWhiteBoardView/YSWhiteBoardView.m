@@ -799,7 +799,7 @@
     
     NSString *tellWho = [YSRoomInterface instance].localUser.peerID;
     NSString *associatedUserID = [YSRoomInterface instance].localUser.peerID;
-    BOOL save = YES;
+    BOOL save = NO;
     if (!freshCurrentCourse && [YSWhiteBoardManager shareInstance].isBeginClass)
     {
         if ([YSRoomInterface instance].localUser.canDraw || [YSRoomInterface instance].localUser.role == YSUserType_Teacher)
@@ -994,18 +994,25 @@
             self.currentPage++;
             if (self.currentPage > self.totalPage)
             {
-                NSMutableDictionary *filedata = [NSMutableDictionary dictionaryWithDictionary:[self.drawViewManager.fileDictionary objectForKey:@"filedata"]];
-                [filedata setObject:@(self.currentPage) forKey:@"currpage"];
-                [filedata setObject:@(self.currentPage) forKey:@"pagenum"];
-                [self.drawViewManager.fileDictionary setObject:filedata forKey:@"filedata"];
-                
-                // 白板加页需发送
-                NSString *json = [YSRoomUtil jsonStringWithDictionary:@{@"totalPage":@(self.currentPage),
-                                                                  @"fileid":@(0),
-                                                                  @"sourceInstanceId":YSDefaultWhiteBoardId
-                                                                  }];
-                [[YSRoomInterface instance] pubMsg:sYSSignalWBPageCount msgID:sYSSignalWBPageCount toID:YSRoomPubMsgTellAll data:json save:YES completion:nil];
-            }
+                if ([YSWhiteBoardManager shareInstance].isBeginClass)
+                {
+                    NSMutableDictionary *filedata = [NSMutableDictionary dictionaryWithDictionary:[self.drawViewManager.fileDictionary objectForKey:@"filedata"]];
+                    [filedata setObject:@(self.currentPage) forKey:@"currpage"];
+                    [filedata setObject:@(self.currentPage) forKey:@"pagenum"];
+                    [self.drawViewManager.fileDictionary setObject:filedata forKey:@"filedata"];
+                    
+                    // 白板加页需发送
+                    NSString *json = [YSRoomUtil jsonStringWithDictionary:@{@"totalPage":@(self.currentPage),
+                                                                      @"fileid":@(0),
+                                                                      @"sourceInstanceId":YSDefaultWhiteBoardId
+                                                                      }];
+                    [[YSRoomInterface instance] pubMsg:sYSSignalWBPageCount msgID:sYSSignalWBPageCount toID:YSRoomPubMsgTellAll data:json save:YES completion:nil];
+                }
+                else
+                {
+                    self.currentPage--;
+                    return;
+                }
             else
             {
                 NSMutableDictionary *filedata = [NSMutableDictionary dictionaryWithDictionary:[self.drawViewManager.fileDictionary objectForKey:@"filedata"]];
@@ -1520,15 +1527,22 @@
 /// 删除按钮
 - (void)deleteWhiteBoardView
 {
-    if (self.isMediaView)
+    if ([YSWhiteBoardManager shareInstance].isBeginClass)
     {
-        [[YSRoomInterface instance] stopShareMediaFile:nil];
+        if (self.isMediaView)
+        {
+            [[YSRoomInterface instance] stopShareMediaFile:nil];
+        }
+        else
+        {
+            NSString *msgID = [NSString stringWithFormat:@"%@%@", sYSSignalDocumentFilePage_ExtendShowPage, self.whiteBoardId];
+            NSDictionary *data = @{@"sourceInstanceId" : self.whiteBoardId};
+            [YSRoomUtil delWhiteBoardMsg:sYSSignalExtendShowPage msgID:msgID data:data completion:nil];
+        }
     }
     else
     {
-        NSString *msgID = [NSString stringWithFormat:@"%@%@", sYSSignalDocumentFilePage_ExtendShowPage, self.whiteBoardId];
-        NSDictionary *data = @{@"sourceInstanceId" : self.whiteBoardId};
-        [YSRoomUtil delWhiteBoardMsg:sYSSignalExtendShowPage msgID:msgID data:data completion:nil];
+        [[YSWhiteBoardManager shareInstance] removeWhiteBoardViewWithFileId:self.fileId];
     }
 }
 

@@ -117,7 +117,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// 切换课件
 - (void)changeCourseWithFileId:(NSString *)fileId;
-- (void)changeCourseWithFileId:(NSString *)fileId toID:(NSString *)toID save:(BOOL)save;
 
 /// 课件 上一页
 - (void)whiteBoardPrePage;
