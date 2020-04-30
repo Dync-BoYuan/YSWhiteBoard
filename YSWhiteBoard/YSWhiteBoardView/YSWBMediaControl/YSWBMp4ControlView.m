@@ -39,16 +39,18 @@
     self.nameLabel.frame = CGRectMake( CGRectGetMaxX(self.playBtn.frame) + 15, 4, self.bm_width - 140, 10);
 //    self.nameLabel.bm_left = self.playBtn.bm_right + 12;
     
-    self.timeLabel.frame = CGRectMake( 0, 4, 60, 10);
-    self.timeLabel.bm_right = self.bm_right - 40;
+    self.timeLabel.frame = CGRectMake(CGRectGetMaxX(self.nameLabel.frame) + 10 , 4, self.bm_width - self.nameLabel.bm_right - 30, 10);
+//    self.timeLabel.bm_right = self.bm_right - 40;
     
-    self.sliderView.frame = CGRectMake(0, 0,self.bm_width - 65, 10);
+    self.sliderView.frame = CGRectMake(0, 0, self.bm_width - 65, 10);
     self.sliderView.bm_top = self.nameLabel.bm_bottom + 10;
     self.sliderView.bm_left = self.playBtn.bm_right + 15;
 }
 
 - (void)setup
 {
+    
+    self.backgroundColor = [UIColor bm_colorWithHex:0x6D7278 alpha:0.39];
     UIButton *playBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     [self addSubview:playBtn];
 
@@ -144,6 +146,22 @@
     {
         [self.delegate mediaControlviewPlay:btn.selected];
     }
+}
+
+- (void)hideMp4ControlViewOutsidePause:(BOOL)hide
+{
+    if (hide)
+    {
+        self.backgroundColor = [UIColor clearColor];
+    }
+    else
+    {
+        self.backgroundColor = [UIColor bm_colorWithHex:0x6D7278 alpha:0.39];
+    }
+    self.nameLabel.hidden = hide;
+    self.timeLabel.hidden = hide;
+    self.sliderView.hidden = hide;
+
 }
 
 - (NSString *)countDownStringDateFromTs:(NSUInteger)count

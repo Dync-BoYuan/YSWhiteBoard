@@ -15,7 +15,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, weak) id <YSWBMediaControlviewDelegate> delegate;
 @property (nonatomic, assign) BOOL isPlay;
-
+/// 隐藏除暂停按钮以外的所有View
+- (void)hideMp4ControlViewOutsidePause:(BOOL)hide;
 - (void)setMediaStream:(NSTimeInterval)duration
                    pos:(NSTimeInterval)pos
                 isPlay:(BOOL)isPlay
