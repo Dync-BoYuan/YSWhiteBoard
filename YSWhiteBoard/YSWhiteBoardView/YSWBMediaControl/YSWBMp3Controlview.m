@@ -123,20 +123,25 @@
 
 - (void)setMediaStream:(NSTimeInterval)duration pos:(NSTimeInterval)pos isPlay:(BOOL)isPlay fileName:(nonnull NSString *)fileName
 {
-    self.duration = duration;
-    self.nameLabel.text = fileName;
-    NSInteger current = pos;
-    if (current <= 0)
+    if (isPlay)
     {
-        current = 0;
+        self.duration = duration;
+        self.nameLabel.text = fileName;
+        NSInteger current = pos;
+        if (current <= 0)
+        {
+            current = 0;
+        }
+        NSString *currentTime = [self countDownStringDateFromTs:current/1000];
+        NSString *totalTime = [self countDownStringDateFromTs:duration/1000];
+        self.timeLabel.text = [NSString stringWithFormat:@"%@/%@",currentTime,totalTime];
+        
+        CGFloat value = pos / duration;
+        [self.sliderView setValue:value animated:NO];
     }
-    NSString *currentTime = [self countDownStringDateFromTs:current/1000];
-    NSString *totalTime = [self countDownStringDateFromTs:duration/1000];
-    self.timeLabel.text = [NSString stringWithFormat:@"%@/%@",currentTime,totalTime];
-    
-    CGFloat value = pos / duration;
+
     self.isPlay = isPlay;
-    [self.sliderView setValue:value animated:NO];
+    
 }
 
 - (void)setIsPlay:(BOOL)isPlay
