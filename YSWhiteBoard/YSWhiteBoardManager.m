@@ -941,6 +941,9 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     {
         [self sendArrangeWhiteBoardView];
     }
+    
+    /// MP3控制条置于最上层（*MP3会被盖住）
+    [self.mp3ControlView bm_bringToFront];
 }
 
 - (NSArray *)getWhiteBoardViewArrangeList
