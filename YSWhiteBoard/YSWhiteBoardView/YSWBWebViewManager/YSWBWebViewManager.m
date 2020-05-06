@@ -144,6 +144,18 @@
     [cache setDiskCapacity:0];
     [cache setMemoryCapacity:0];
 
+    // 清除部分，可以自己设置
+    // NSSet *websiteDataTypes= [NSSet setWithArray:types];
+    // 清除所有
+    NSSet *websiteDataTypes = [WKWebsiteDataStore allWebsiteDataTypes];
+    //// Date from
+    NSDate *dateFrom = [NSDate dateWithTimeIntervalSince1970:0];
+    //// Execute
+    [[WKWebsiteDataStore defaultDataStore] removeDataOfTypes:websiteDataTypes modifiedSince:dateFrom completionHandler:^{
+        // Done
+        NSLog(@"清除缓存完毕");
+    }];
+    
     // webview暂停加载
     [webView stopLoading];
 }
