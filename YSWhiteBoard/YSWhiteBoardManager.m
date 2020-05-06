@@ -598,6 +598,9 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     }
 }
 
+
+
+
 ///接收信令进行拖拽和缩放
 
 - (void)receiveMessageToMoveAndZoomWith:(NSDictionary *)message WithInlist:(BOOL)inlist
@@ -924,7 +927,12 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     {
         return;
     }
+    UIView *firstResponder = [self.mainWhiteBoardView bm_firstResponder];
     
+    if (firstResponder.tag == YSWHITEBOARD_TEXTVIEWTAG)
+    {
+        [self.mainWhiteBoardView endEditing:YES];
+    }
     _currentFileId = fileId;
     
     YSWhiteBoardView *whiteBoardView = self.mainWhiteBoardView;
@@ -941,6 +949,18 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     {
         [self sendArrangeWhiteBoardView];
     }
+    
+//    for (YSWhiteBoardView *view in self.coursewareViewList)
+//    {
+//        if (view.fileId == fileId)
+//        {
+//            view.topBar.backgroundColor = YSWhiteBoard_TopBarBackGroudColor;
+//        }
+//        else
+//        {
+//            view.topBar.backgroundColor = YSWhiteBoard_TopBarBackGroudColor;
+//        }
+//    }
 }
 
 - (NSArray *)getWhiteBoardViewArrangeList
@@ -1094,6 +1114,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     }
     return nil;
 }
+
 
 
 #pragma mark  删除课件窗口
@@ -1476,6 +1497,13 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 - (void)didSelectDrawType:(YSDrawType)type color:(NSString *)hexColor widthProgress:(CGFloat)progress
 {
     [self.brushToolsManager didSelectDrawType:type color:hexColor widthProgress:progress];
+    
+    if (type == YSDrawTypeClear)
+    {
+        YSWhiteBoardView *whiteBoardView = [self getWhiteBoardViewWithFileId:self.currentFileId];
+        [whiteBoardView didSelectDrawType:type color:hexColor widthProgress:progress];
+        return;
+    }
     
     if (self.mainWhiteBoardView)
     {
@@ -2317,6 +2345,9 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     // 窗口布局
     else if ([msgName isEqualToString:sYSSignalMoreWhiteboardGlobalState])
     {
+        
+        NSString * ddd = [YSRoomInterface instance].localUser.peerID;
+        
         if ([fromId isEqualToString:[YSRoomInterface instance].localUser.peerID])
         {
             return;
