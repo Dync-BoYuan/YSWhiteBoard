@@ -1067,15 +1067,15 @@
         {
             self.selectMouse = YES;
 
-            [self setWorkMode:YSWorkModeViewer];
-
-            NSNumber *isDynamicPPT = [self.fileDictionary objectForKey:@"isDynamicPPT"];
-            NSNumber *isH5Document = [self.fileDictionary objectForKey:@"isH5Document"];
-
-            if ((isDynamicPPT.intValue == 1) || (isH5Document.intValue == 1))
-            {
-                self.fileView.ysDrawView.rtDrawView.mode = YSWorkModeViewer;
-            }
+//            [self setWorkMode:YSWorkModeViewer];
+//
+//            NSNumber *isDynamicPPT = [self.fileDictionary objectForKey:@"isDynamicPPT"];
+//            NSNumber *isH5Document = [self.fileDictionary objectForKey:@"isH5Document"];
+//
+//            if ((isDynamicPPT.intValue == 1) || (isH5Document.intValue == 1))
+//            {
+//                self.fileView.ysDrawView.rtDrawView.mode = YSWorkModeViewer;
+//            }
 
             break;
         }
@@ -1110,23 +1110,20 @@
     {
         self.fileView.isPenetration = self.showOnWeb && self.selectMouse;
     }
-    // 画布显示不显示和当前是否选中了鼠标按钮有关系，如果选中了鼠标隐藏画布
+
+    if (self.showOnWeb)
+    {
+        self.fileView.hidden = (type == YSNativeToolTypeMouse);
+    }
     else
     {
-        if (self.showOnWeb)
+        if ([self.bwContentView.fileId isEqualToString:@"0"])
         {
-            self.fileView.hidden = (type == YSNativeToolTypeMouse);
+            self.fileView.ysDrawView.drawView.hidden = NO;
         }
         else
         {
-            if ([self.bwContentView.fileId isEqualToString:@"0"])
-            {
-                self.fileView.ysDrawView.drawView.hidden = NO;
-            }
-            else
-            {
-                self.fileView.ysDrawView.drawView.hidden = (type == YSNativeToolTypeMouse);
-            }
+            self.fileView.ysDrawView.drawView.hidden = (type == YSNativeToolTypeMouse);
         }
     }
 }
