@@ -322,6 +322,8 @@
         NSString *func = dic[kYSMethodNameKey];
         SEL funcSel = NSSelectorFromString(func);
 
+        NSLog(@"===================doMsgCachePool: %@", func);
+
         NSMutableArray *params = [NSMutableArray array];
         if ([[dic allKeys] containsObject:kYSParameterKey])
         {
@@ -482,6 +484,8 @@
 {
     if (!self.loadingH5Fished)
     {
+        NSLog(@"===================cacheMsgPool userPropertyChanged");
+        
         NSString *methodName = NSStringFromSelector(@selector(userPropertyChanged:));
         NSMutableDictionary *dic = [NSMutableDictionary dictionary];
         [dic setValue:methodName forKey:kYSMethodNameKey];
@@ -490,6 +494,8 @@
         
         return;
     }
+
+    NSLog(@"===================userPropertyChanged");
 
     if (self.webViewManager)
     {
@@ -524,6 +530,8 @@
 {
     if (!self.loadingH5Fished)
     {
+        NSLog(@"===================cacheMsgPool remotePubMsg");
+        
         NSString *methodName = NSStringFromSelector(@selector(remotePubMsg:));
         NSMutableDictionary *dic = [NSMutableDictionary dictionary];
         [dic setValue:methodName forKey:kYSMethodNameKey];
@@ -539,6 +547,8 @@
     NSObject *data = [message objectForKey:@"data"];
     NSDictionary *tDataDic = [YSRoomUtil convertWithData:data];
 
+    NSLog(@"===================remotePubMsg: %@", msgName);
+    
     if (self.webViewManager)
     {
         BOOL remotePub = YES;
@@ -633,6 +643,8 @@
 
     NSString *msgName = [message bm_stringForKey:@"name"];
 
+    NSLog(@"===================remoteDelMsg: %@", msgName);
+    
     if (self.webViewManager)
     {
         BOOL remotePub = YES;
@@ -654,12 +666,14 @@
 }
 
 
-#pragma -
+#pragma mark -
 #pragma mark YSWBWebViewManagerDelegate
 
 /// H5脚本文件加载初始化完成
 - (void)onWBWebViewManagerPageFinshed
 {
+    NSLog(@"===================onWBWebViewManagerPageFinshed");
+    
     self.loadingH5Fished = YES;
     
     // 更新地址
@@ -682,6 +696,7 @@
 /// Web课件翻页结果
 - (void)onWBWebViewManagerStateUpdate:(NSDictionary *)dic
 {
+    NSLog(@"===================onWBWebViewManagerStateUpdate");
     NSLog(@"%s,message:%@", __func__, dic);
     
     BOOL prevPage = NO;
@@ -770,6 +785,7 @@
 - (void)onWBWebViewManagerLoadedState:(NSDictionary *)dic
 {
     self.isLoadingFinish = [dic[@"notice"] isEqualToString:@"loadSuccess"];
+    NSLog(@"===================onWBWebViewManagerLoadedState: %@", @(self.isLoadingFinish));
 
     self.pageControlView.frashBtn.selected = NO;
     // 通知刷新白板
@@ -793,6 +809,8 @@
     {
         return;
     }
+    
+    NSLog(@"===================onWBWebViewManagerSlideLoadTimeout");
     
     [[NSNotificationCenter defaultCenter] postNotificationName:YSWhiteBoardEventLoadSlideFail object:dic[@"data"]];
     

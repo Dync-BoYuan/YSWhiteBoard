@@ -46,7 +46,7 @@ extern NSString *const YSWhiteBoardPlayBackKey;
 
     #define YSWBHTTPS       @"http"
     #define YSWBPort        @"80"
-    #define PointToHost     @"192.168.1.149:9251"
+    #define PointToHost     @"192.168.1.118:9251"
 
 #endif
 

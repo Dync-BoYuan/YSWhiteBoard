@@ -11,6 +11,21 @@
 #import "YSWBLogger.h"
 #import <objc/message.h>
 
+@implementation WKProcessPool (SharedProcessPool)
+
++ (WKProcessPool *)sharedProcessPool
+{
+    static WKProcessPool *SharedProcessPool;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        SharedProcessPool = [[WKProcessPool alloc] init];
+    });
+    
+    return SharedProcessPool;
+}
+
+@end
+
 @interface YSWBWebViewManager ()
 <
     WKNavigationDelegate,
@@ -152,7 +167,7 @@
         [config.preferences setValue:@(YES) forKey:@"allowFileAccessFromFileURLs"]; //跨域
     }
     // web内容处理池
-    config.processPool = [[WKProcessPool alloc] init];
+    config.processPool = [WKProcessPool sharedProcessPool];
     
     /*
      @property (nonatomic) BOOL mediaPlaybackRequiresUserAction
@@ -457,6 +472,9 @@
     NSString *url = [dataDic bm_stringForKey:@"url"];
     BOOL isvideo = [dataDic bm_boolForKey:@"video"];
     NSDictionary *param = [dataDic bm_dictionaryForKey:@"attributes"];
+    NSString *fileId = [NSString stringWithFormat:@"%@_video", [param bm_stringForKey:@"fileid"]];
+    NSMutableDictionary *paramDic = [NSMutableDictionary dictionaryWithDictionary:param];
+    [paramDic bm_setString:fileId forKey:@"fileid"];
 
     if ([YSWhiteBoardManager shareInstance].mediaFileModel)
     {
@@ -475,7 +493,7 @@
                 [[YSRoomInterface instance] startShareMediaFile:url
                                                       isVideo:isvideo
                                                          toID:toID
-                                                   attributes:param
+                                                   attributes:paramDic
                                                         block:nil];
             }
         }];
@@ -494,7 +512,7 @@
         [[YSRoomInterface instance] startShareMediaFile:url
                                               isVideo:isvideo
                                                  toID:toID
-                                           attributes:param
+                                           attributes:paramDic
                                                 block:nil];
     }
 }

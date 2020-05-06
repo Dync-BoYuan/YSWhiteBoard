@@ -2568,6 +2568,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     {
         return;
     }
+    
     NSDictionary *message = notification.userInfo;
     
     NSString *peerID = [message bm_stringForKey:YSWhiteBoardOnShareMediaStateExtensionIdKey];
