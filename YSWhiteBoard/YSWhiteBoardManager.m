@@ -955,6 +955,20 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     {
         [self sendArrangeWhiteBoardView];
     }
+    
+    for (YSWhiteBoardView * whiteBoard in self.coursewareViewList)
+    {
+        if ([whiteBoard.fileId isEqualToString:fileId])
+        {
+            whiteBoard.topBar.backgroundColor = YSWhiteBoard_TopBarBackGroudColor;
+            [whiteBoard bm_addShadow:3.0f Radius:0.0f BorderColor:YSWhiteBoard_TopBarBackGroudColor ShadowColor:YSWhiteBoard_BackGroudColor Offset:CGSizeMake(1, 2) Opacity:0.6f];
+        }
+        else
+        {
+            whiteBoard.topBar.backgroundColor = [UIColor bm_colorWithHex:0xB6C5EB];
+            [whiteBoard bm_addShadow:3.0f Radius:0.0f BorderColor:[UIColor bm_colorWithHex:0xB6C5EB] ShadowColor:YSWhiteBoard_BackGroudColor Offset:CGSizeMake(1, 2) Opacity:0.6f];
+        }
+    }
 
     /// MP3控制条置于最上层（*MP3会被盖住）
     [self.mp3ControlView bm_bringToFront];
