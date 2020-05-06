@@ -159,7 +159,7 @@ static YSBrushToolsManager *brushTools = nil;
 #pragma mark - 选择画笔工具：类型 && 颜色  &&大小
 - (void)didSelectDrawType:(YSDrawType)type color:(NSString *)hexColor widthProgress:(CGFloat)progress
 {
-    if (self.currentBrushToolType != YSBrushToolTypeMouse)
+    if (self.currentBrushToolType != YSBrushToolTypeMouse && type != YSDrawTypeClear)
     {
         [self changeToolConfigWithToolType:self.currentBrushToolType drawType:type color:hexColor progress:progress];
     }
