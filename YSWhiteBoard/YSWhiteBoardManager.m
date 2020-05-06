@@ -955,6 +955,20 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     {
         [self sendArrangeWhiteBoardView];
     }
+    
+    for (YSWhiteBoardView * whiteBoard in self.coursewareViewList)
+    {
+        if ([whiteBoard.fileId isEqualToString:fileId])
+        {
+            whiteBoard.topBar.backgroundColor = YSWhiteBoard_TopBarBackGroudColor;
+            [whiteBoard bm_addShadow:3.0f Radius:0.0f BorderColor:YSWhiteBoard_TopBarBackGroudColor ShadowColor:YSWhiteBoard_BackGroudColor Offset:CGSizeMake(1, 2) Opacity:0.6f];
+        }
+        else
+        {
+            whiteBoard.topBar.backgroundColor = [UIColor bm_colorWithHex:0xB6C5EB];
+            [whiteBoard bm_addShadow:3.0f Radius:0.0f BorderColor:[UIColor bm_colorWithHex:0xB6C5EB] ShadowColor:YSWhiteBoard_BackGroudColor Offset:CGSizeMake(1, 2) Opacity:0.6f];
+        }
+    }
 
     /// MP3控制条置于最上层（*MP3会被盖住）
     [self.mp3ControlView bm_bringToFront];
@@ -1209,11 +1223,15 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     if ([YSRoomUtil checkIsMedia:fileModel.filetype])
     {
         BOOL isVideo = [YSRoomUtil checkIsVideo:fileModel.filetype];
+        
+        YSWhiteBoardView * view = [self getWhiteBoardViewWithFileId:fileModel.fileid];
+        
         NSDictionary *sendDic = @{@"filename": fileModel.filename,
                                   @"fileid": fileModel.fileid,
                                   @"pauseWhenOver": @(true),
                                   @"type": @"media",
                                   @"source": @"mediaFileList"
+//                                  ,@"whiteboardId":view.whiteBoardId
                                 };
         
         NSString *url = [YSRoomUtil absoluteFileUrl:fileModel.swfpath withServerDic:self.serverAddressInfoDic];
@@ -2443,7 +2461,8 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     else if ([msgName isEqualToString:sYSSignalMoreWhiteboardGlobalState])
     {
         
-        NSString * ddd = [YSRoomInterface instance].localUser.peerID;
+//        NSString * ddd = [YSRoomInterface instance].localUser.peerID;
+//        YSRoomUser *fromeUser = [[YSRoomInterface instance] getRoomUserWithUId:fromId];
         
         if ([fromId isEqualToString:[YSRoomInterface instance].localUser.peerID])
         {
