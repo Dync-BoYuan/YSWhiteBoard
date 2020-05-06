@@ -362,8 +362,12 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     
     if ([self isUserCanDraw])
     {
-        YSBrushToolsConfigs *currentConfig = [YSBrushToolsManager shareInstance].currentConfig;
-        [whiteBoardView didSelectDrawType:currentConfig.drawType color:currentConfig.colorHex widthProgress:currentConfig.progress];
+        NSMutableDictionary *message = [[NSMutableDictionary alloc] init];
+        [message bm_setString:[YSRoomInterface instance].localUser.peerID forKey:@"id"];
+        [message setObject:@{ @"candraw" : @(YES) } forKey:@"properties"];
+        [whiteBoardView userPropertyChanged:message];
+        
+        [whiteBoardView brushToolsDidSelect:[YSBrushToolsManager shareInstance].currentBrushToolType];
     }
 
     [whiteBoardView refreshWhiteBoard];

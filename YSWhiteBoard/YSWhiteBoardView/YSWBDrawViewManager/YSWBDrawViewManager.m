@@ -956,7 +956,6 @@
                             self.wkWebView.hidden = NO;
                             [self.fileView showOnWeb];
                             self.fileView.hidden = self.selectMouse;
-
                         }
                         else
                         {
@@ -1109,7 +1108,7 @@
     // 有穿透画笔配置项不隐藏画布(笔迹) 并响应动态课件事件
     if ([YSWhiteBoardManager shareInstance].roomConfig.isPenCanPenetration == YES)
     {
-        self.fileView.isPenetration = _showOnWeb && _selectMouse;
+        self.fileView.isPenetration = self.showOnWeb && self.selectMouse;
     }
     // 画布显示不显示和当前是否选中了鼠标按钮有关系，如果选中了鼠标隐藏画布
     else
