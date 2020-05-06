@@ -246,7 +246,6 @@
     
     self.mp4ControlView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
 
-    self.mp4ControlView.backgroundColor = [UIColor bm_colorWithHex:0x6D7278 alpha:0.39];
     [self.mp4ControlView bm_roundedRect:23];
 
     self.mp4ControlView.hidden = YES;
@@ -289,7 +288,28 @@
 
     self.dragZoomView.bm_right = frame.size.width;
     self.dragZoomView.bm_bottom = frame.size.height;
-    self.mp4ControlView.bm_bottom = self.bm_height - 23;
+    
+    if (self.isMediaView)
+    {
+        if (self.mp4ControlView.bm_width < 300)
+        {
+            [self.mp4ControlView hideMp4ControlViewOutsidePause:YES];
+        }
+        else
+        {
+            [self.mp4ControlView hideMp4ControlViewOutsidePause:NO];
+        }
+        
+        if ([self.positionData bm_boolForKey:@"full"])
+        {
+            self.mp4ControlView.frame = CGRectMake(80, 0, self.whiteBoardControlView.bm_left - 10 - 80 , 46);
+        }
+        else
+        {
+            self.mp4ControlView.frame = CGRectMake(30, 0, self.bm_width - 60, 46);
+        }
+        self.mp4ControlView.bm_bottom = self.bm_height - 23;
+    }
 }
 
 - (void)doMsgCachePool
