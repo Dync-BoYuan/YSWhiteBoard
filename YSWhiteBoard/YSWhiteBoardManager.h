@@ -102,11 +102,7 @@ NS_ASSUME_NONNULL_BEGIN
 /// 刷新当前白板课件数据
 - (void)freshCurrentCourse;
 
-/// 添加文档
-- (void)addDocumentWithFileDic:(NSDictionary *)file;
-/// 删除文档
-- (void)deleteDocumentWithFileID:(NSString *)fileId;
-
+/// 设置当前课件Id
 - (void)setTheCurrentDocumentFileID:(NSString *)fileId;
 
 - (YSFileModel *)currentFile;
@@ -117,6 +113,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// 切换课件
 - (void)changeCourseWithFileId:(NSString *)fileId;
+/// 添加图片课件
+- (void)addWhiteBordImageCourseWithDic:(NSDictionary *)uplaodDic;
+/// 删除课件
+- (void)deleteCourseWithFileId:(NSString *)fileId;
+- (void)deleteCourseWithFile:(YSFileModel *)fileModel;
 
 /// 课件 上一页
 - (void)whiteBoardPrePage;

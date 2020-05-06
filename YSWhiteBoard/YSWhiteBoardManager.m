@@ -916,6 +916,8 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
             }
         }
     }
+    
+    [self removeWhiteBoardViewWithFileId:fileId];
 }
 
 - (void)setTheCurrentDocumentFileID:(NSString *)fileId
@@ -1165,7 +1167,6 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         
         [self.wbDelegate onWhiteBoardChangedFileWithFileList:fileList];
     }
-
 }
 
 
@@ -1315,6 +1316,92 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
                                 completion:nil];
     }
 }
+
+- (void)addWhiteBordImageCourseWithDic:(NSDictionary *)uplaodDic
+{
+    NSMutableDictionary *docDic = [[NSMutableDictionary alloc] initWithDictionary:uplaodDic];
+    
+    // 0:表示普通文档　１－２动态ppt(1: 第一版动态ppt 2: 新版动态ppt ）  3:h5文档
+    NSUInteger fileprop = [docDic bm_uintForKey:@"fileprop"];
+    BOOL isGeneralFile = fileprop == 0 ? YES : NO;
+    BOOL isDynamicPPT = fileprop == 1 || fileprop == 2 ? YES : NO;
+    BOOL isH5Document = fileprop == 3 ? YES : NO;
+    NSString *mediaType = @"";
+    NSString *filetype = @"jpg";
+    
+    [docDic setObject:filetype forKey:@"filetype"];
+    
+    [self addDocumentWithFileDic:docDic];
+    
+    NSString *fileid = [docDic bm_stringTrimForKey:@"fileid" withDefault:@""];
+    NSString *filename = [docDic bm_stringTrimForKey:@"filename" withDefault:@""];
+    NSUInteger pagenum = [docDic bm_uintForKey:@"pagenum"];
+    NSString *swfpath = [docDic bm_stringTrimForKey:@"swfpath" withDefault:@""];
+    
+    NSString *sourceInstanceId = [YSRoomUtil getSourceInstanceIdFromFileId:fileid];
+    NSInteger isContentDocument = [docDic bm_intForKey:@"isContentDocument"];
+    
+    NSDictionary *tDataDic = @{
+        @"sourceInstanceId":sourceInstanceId,
+        @"isDel" : @(false),
+        @"isGeneralFile" : @(isGeneralFile),
+        @"isDynamicPPT" : @(isDynamicPPT),
+        @"isH5Document" : @(isH5Document),
+        @"mediaType" : mediaType,
+        @"isMedia" : @(false),
+        @"filedata" : @{
+                @"fileid" : fileid,
+                @"currpage" : @(1),
+                @"pagenum" : @(pagenum),
+                @"filetype" : filetype,
+                @"filename" : filename,
+                @"swfpath" : swfpath,
+                @"pptslide" : @(1),
+                @"pptstep" : @(0),
+                @"steptotal" : @(0),
+                @"filecategory":@(0),
+                @"isContentDocument" : @(isContentDocument)
+        }
+    };
+
+    [[YSRoomInterface instance] pubMsg:sYSSignalDocumentChange msgID:sYSSignalDocumentChange toID:YSRoomPubMsgTellAll data:tDataDic save:NO completion:nil];
+
+    if (self.roomUseType == YSRoomUseTypeLiveRoom)
+    {
+        [YSRoomUtil pubWhiteBoardMsg:sYSSignalShowPage msgID:sYSSignalDocumentFilePage_ShowPage data:tDataDic extensionData:nil associatedMsgID:nil expires:0 completion:nil];
+    }
+    else
+    {
+        NSString *msgID = [NSString stringWithFormat:@"%@%@", sYSSignalDocumentFilePage_ExtendShowPage, sourceInstanceId];
+        [YSRoomUtil pubWhiteBoardMsg:sYSSignalExtendShowPage msgID:msgID data:tDataDic extensionData:nil associatedMsgID:nil expires:0 completion:nil];
+    }
+}
+
+- (void)deleteCourseWithFileId:(NSString *)fileId
+{
+    YSFileModel *fileModel = [self getDocumentWithFileID:fileId];
+    
+    if (![fileModel bm_isNotEmpty])
+    {
+        return;
+    }
+    
+    [self deleteCourseWithFile:fileModel];
+}
+
+- (void)deleteCourseWithFile:(YSFileModel *)fileModel
+{
+    if (![fileModel bm_isNotEmpty])
+    {
+        return;
+    }
+    
+    NSDictionary *fileDic = [YSFileModel fileDataDocDic:fileModel sourceInstanceId:nil];
+    NSMutableDictionary *sendDic = [NSMutableDictionary dictionaryWithDictionary:fileDic];
+    [sendDic bm_setBool:YES forKey:@"isDel"];
+    [[YSRoomInterface instance] pubMsg:sYSSignalDocumentChange msgID:sYSSignalDocumentChange toID:YSRoomPubMsgTellAll data:fileDic save:NO completion:nil];
+}
+
 
 /// 课件 上一页
 - (void)whiteBoardPrePage
@@ -2171,6 +2258,21 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         {
             [self addOrReplaceDocumentFile:tDataDic];
         }
+//
+//        if (self.wbDelegate && [self.wbDelegate respondsToSelector:@selector(onWhiteBoardChangedFileWithFileList:)])
+//        {
+//            NSMutableArray *fileList = [[NSMutableArray alloc] init];
+//            for (YSWhiteBoardView *whiteBoardView in self.coursewareViewList)
+//            {
+//                [fileList addObject:whiteBoardView.fileId];
+//            }
+//            if (![fileList containsObject:self.mainWhiteBoardView.fileId])
+//            {
+//                [fileList addObject:self.mainWhiteBoardView.fileId];
+//            }
+//
+//            [self.wbDelegate onWhiteBoardChangedFileWithFileList:fileList];
+//        }
     }
     else if ([msgName isEqualToString:sYSSignalShowPage] || [msgName isEqualToString:sYSSignalExtendShowPage])
     {
