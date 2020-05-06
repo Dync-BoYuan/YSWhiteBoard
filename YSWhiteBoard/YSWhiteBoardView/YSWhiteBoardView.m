@@ -368,11 +368,9 @@
             else
             {
                 //宽，高值在主白板上的比例
-//                CGFloat scaleWidth = [message bm_floatForKey:@"width"];
                 CGFloat scaleHeight = [message bm_floatForKey:@"height"];
                 
                 CGFloat height = scaleHeight * self.mainWhiteBoard.bm_height;
-//                CGFloat width = scaleWidth * self.mainWhiteBoard.bm_width;
                 CGFloat width = height *5/3;
                 if (!width || !height)
                 {

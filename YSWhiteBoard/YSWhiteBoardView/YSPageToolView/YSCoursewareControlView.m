@@ -31,6 +31,9 @@
 /// 缩放比例
 @property (nonatomic, assign) CGFloat zoomScale;
 
+///是否是白板
+@property (nonatomic, assign) BOOL isWhiteBoard;
+
 @end
 
 @implementation YSCoursewareControlView
@@ -239,21 +242,7 @@
 
 - (void)sc_setTotalPage:(NSInteger)total currentPage:(NSInteger)currentPage isWhiteBoard:(BOOL)isWhiteBoard
 {
-
-//    if ([YSRoomInterface instance].localUser.role != YSUserType_Teacher)
-//    {
-//        NSDictionary *properties = [[YSRoomInterface instance].localUser.properties bm_dictionaryForKey:@"properties"];
-//
-//        if ([properties bm_boolForKey:@"candraw"])
-//        {
-//            self.allowTurnPage = YES;
-//        }
-//        else
-//        {
-//            self.allowTurnPage = NO;
-//        }
-//    }
-    
+    self.isWhiteBoard = isWhiteBoard;
     self.totalPage = total;
     if (self.totalPage < 1)
     {
@@ -266,18 +255,6 @@
         self.currentPage = 1;
     }
     self.pageLabel.text = [NSString stringWithFormat:@"%ld / %ld",(long)self.currentPage,(long)self.totalPage];
-//    if (self.allowTurnPage)
-//    {
-//        self.leftTurnBtn.enabled = (self.currentPage > 1);
-//        if (isWhiteBoard)
-//        {
-//            self.rightTurnBtn.enabled = YES;
-//        }
-//        else
-//        {
-//            self.rightTurnBtn.enabled = self.currentPage < self.totalPage;
-//        }
-//    }
     
     YSRoomUser *localUser = [YSRoomInterface instance].localUser;
     
@@ -297,26 +274,12 @@
     else
     {
         self.allowTurnPage = YES;
-    }
-
-    
+    }    
 }
 
 - (void)sc_setTotalPage:(NSInteger)total currentPage:(NSInteger)currentPage canPrevPage:(BOOL)canPrevPage canNextPage:(BOOL)canNextPage isWhiteBoard:(BOOL)isWhiteBoard
 {
-//    if ([YSRoomInterface instance].localUser.role != YSUserType_Teacher)
-//    {
-//        NSDictionary *properties = [[YSRoomInterface instance].localUser.properties bm_dictionaryForKey:@"properties"];
-//
-//        if ([properties bm_boolForKey:@"candraw"])
-//        {
-//            self.allowTurnPage = YES;
-//        }
-//        else
-//        {
-//            self.allowTurnPage = NO;
-//        }
-//    }
+    self.isWhiteBoard = isWhiteBoard;
     self.totalPage = total;
     if (self.totalPage < 1)
     {
@@ -329,18 +292,6 @@
         self.currentPage = 1;
     }
     self.pageLabel.text = [NSString stringWithFormat:@"%ld / %ld",(long)self.currentPage,(long)self.totalPage];
-//    if (self.allowTurnPage)
-//    {
-//        self.leftTurnBtn.enabled = canPrevPage;
-//        if (isWhiteBoard)
-//        {
-//            self.rightTurnBtn.enabled = YES;
-//        }
-//        else
-//        {
-//            self.rightTurnBtn.enabled = canNextPage;
-//        }
-//    }
     
     YSRoomUser *localUser = [YSRoomInterface instance].localUser;
     
@@ -385,7 +336,15 @@
     if (allowTurnPage)
     {
         self.leftTurnBtn.enabled = (self.currentPage > 1);
-        self.rightTurnBtn.enabled = self.currentPage < self.totalPage;
+
+        if ([YSWhiteBoardManager shareInstance].isBeginClass && self.isWhiteBoard && [YSRoomInterface instance].localUser.role == YSUserType_Teacher)
+        {
+            self.rightTurnBtn.enabled = YES;
+        }
+        else
+        {
+            self.rightTurnBtn.enabled = self.currentPage < self.totalPage;
+        }
     }
     else
     {
