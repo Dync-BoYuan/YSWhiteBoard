@@ -457,6 +457,10 @@
     NSString *url = [dataDic bm_stringForKey:@"url"];
     BOOL isvideo = [dataDic bm_boolForKey:@"video"];
     NSDictionary *param = [dataDic bm_dictionaryForKey:@"attributes"];
+    
+    
+//    NSMutableDictionary * mutParam = [param mutableCopy];
+//    mutParam setValue:<#(nullable id)#> forKey:<#(nonnull NSString *)#>
 
     if ([YSWhiteBoardManager shareInstance].mediaFileModel)
     {

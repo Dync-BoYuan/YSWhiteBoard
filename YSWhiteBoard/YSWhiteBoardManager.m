@@ -1223,11 +1223,15 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     if ([YSRoomUtil checkIsMedia:fileModel.filetype])
     {
         BOOL isVideo = [YSRoomUtil checkIsVideo:fileModel.filetype];
+        
+        YSWhiteBoardView * view = [self getWhiteBoardViewWithFileId:fileModel.fileid];
+        
         NSDictionary *sendDic = @{@"filename": fileModel.filename,
                                   @"fileid": fileModel.fileid,
                                   @"pauseWhenOver": @(true),
                                   @"type": @"media",
                                   @"source": @"mediaFileList"
+//                                  ,@"whiteboardId":view.whiteBoardId
                                 };
         
         NSString *url = [YSRoomUtil absoluteFileUrl:fileModel.swfpath withServerDic:self.serverAddressInfoDic];
@@ -2457,7 +2461,8 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     else if ([msgName isEqualToString:sYSSignalMoreWhiteboardGlobalState])
     {
         
-        NSString * ddd = [YSRoomInterface instance].localUser.peerID;
+//        NSString * ddd = [YSRoomInterface instance].localUser.peerID;
+//        YSRoomUser *fromeUser = [[YSRoomInterface instance] getRoomUserWithUId:fromId];
         
         if ([fromId isEqualToString:[YSRoomInterface instance].localUser.peerID])
         {
