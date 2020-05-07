@@ -438,7 +438,7 @@
     }
     
     NSData *data = [NSJSONSerialization dataWithJSONObject:msgDic
-                                                   options:NSJSONWritingPrettyPrinted
+                                                   options:0
                                                      error:nil];
     NSString *strMsg = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
     NSString *js   = [NSString stringWithFormat:@"JsSocket.%@(%@)", WBFakeJsSdkInitInfo, strMsg];
@@ -833,7 +833,7 @@
         else
         {
             NSData *tJsonData = [NSJSONSerialization dataWithJSONObject:message
-                                                                options:NSJSONWritingPrettyPrinted
+                                                                options:0
                                                                   error:nil];
             tJsonDataJsonString =
                 [[NSString alloc] initWithData:tJsonData encoding:NSUTF8StringEncoding];
@@ -881,7 +881,7 @@
     if (cmd)
     {
         NSData *tJsonData = [NSJSONSerialization dataWithJSONObject:cmd
-                                                            options:NSJSONWritingPrettyPrinted
+                                                            options:0
                                                               error:nil];
 
         tJsonDataJsonString =

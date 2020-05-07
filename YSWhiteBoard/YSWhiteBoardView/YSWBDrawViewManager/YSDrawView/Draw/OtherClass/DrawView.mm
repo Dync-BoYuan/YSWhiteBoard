@@ -170,7 +170,7 @@ struct CompareNSString: public std::binary_function<NSString*, NSString*, bool> 
     NSString *key = [NSString stringWithFormat:@"clear_%f", [NSDate date].timeIntervalSince1970];
     NSDictionary *dic = @{@"eventType" : @"clearEvent", @"actionName" : @"ClearAction", @"clearActionId" : key, @"whiteboardID" : whiteboardID, @"nickname" : @"tmp"};
     NSError *error;
-    NSData *data = [NSJSONSerialization dataWithJSONObject:dic options:NSJSONWritingPrettyPrinted error:&error];
+    NSData *data = [NSJSONSerialization dataWithJSONObject:dic options:0 error:&error];
     if (error)
     {
         NSLog(@"error:%@",error);
@@ -243,7 +243,7 @@ struct CompareNSString: public std::binary_function<NSString*, NSString*, bool> 
             NSString *key = [NSString stringWithFormat:@"clear_%f",[NSDate date].timeIntervalSince1970];
             NSDictionary *dic = @{@"eventType" : @"clearEvent", @"actionName" : @"ClearAction", @"clearActionId" : key, @"whiteboardID" : whiteboardID, @"nickname" : @"tmp"};
             NSError *error;
-            NSData *data = [NSJSONSerialization dataWithJSONObject:dic options:NSJSONWritingPrettyPrinted error:&error];
+            NSData *data = [NSJSONSerialization dataWithJSONObject:dic options:0 error:&error];
             if (error) {
                 NSLog(@"error:%@",error);
                 return;
@@ -394,7 +394,7 @@ struct CompareNSString: public std::binary_function<NSString*, NSString*, bool> 
             if (!dic || dic.allKeys.count == 0) {
                 return;
             }
-            NSData *data = [NSJSONSerialization dataWithJSONObject:[_draw serializedData] options:NSJSONWritingPrettyPrinted error:&error];
+            NSData *data = [NSJSONSerialization dataWithJSONObject:[_draw serializedData] options:0 error:&error];
             if (!error) {
                 NSString *outID = [NSString stringWithFormat:@"%@###_SharpsChange_%@_%d", _draw.draw_id, self.fileid, self.pageId];
                 if (_delegate && [_delegate respondsToSelector:@selector(addSharpWithFileID:shapeID:shapeData:)]) {
@@ -524,7 +524,7 @@ struct CompareNSString: public std::binary_function<NSString*, NSString*, bool> 
         if (!dic || dic.allKeys.count == 0) {
             return;
         }
-        NSData *data = [NSJSONSerialization dataWithJSONObject:[_draw serializedData] options:NSJSONWritingPrettyPrinted error:&error];
+        NSData *data = [NSJSONSerialization dataWithJSONObject:[_draw serializedData] options:0 error:&error];
         if (!error) {
             NSString *outID = [NSString stringWithFormat:@"%@###_SharpsChange_%@_%d", _draw.draw_id, self.fileid, self.pageId];
             if (_delegate && [_delegate respondsToSelector:@selector(addSharpWithFileID:shapeID:shapeData:)]) {
