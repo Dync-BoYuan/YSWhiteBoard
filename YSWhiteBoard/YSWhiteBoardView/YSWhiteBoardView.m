@@ -1656,8 +1656,9 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
     if ([self.delegate respondsToSelector:@selector(onWBViewFullScreen:wbView:)])
     {
         // 课件全屏
-        [self.delegate onWBViewFullScreen:isAllScreen wbView:self];
         [self bm_bringToFront];
+        [self.delegate onWBViewFullScreen:isAllScreen wbView:self];
+        
     }
 }
 
