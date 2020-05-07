@@ -1128,6 +1128,22 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
             [whiteBoardView removeFromSuperview];
         }
         
+        if ([self isCanControlWhiteBoardView])
+        {
+            if ([whiteBoardView.fileId isEqualToString:self.currentFileId])
+            {
+                YSWhiteBoardView *lastWhiteBoardView = self.coursewareViewList.lastObject;
+                if (lastWhiteBoardView)
+                {
+                    [self setTheCurrentDocumentFileID:lastWhiteBoardView.fileId];
+                }
+                else
+                {
+                    [self setTheCurrentDocumentFileID:self.mainWhiteBoardView.fileId];
+                }
+            }
+        }
+
         [whiteBoardView destroy];
         whiteBoardView = nil;
         
@@ -1542,6 +1558,11 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 {
     YSRoomUser *localUser = [YSRoomInterface instance].localUser;
     if (localUser.role == YSUserType_Teacher)
+    {
+        return YES;
+    }
+    
+    if (!self.isBeginClass && localUser.role == YSUserType_Student)
     {
         return YES;
     }
