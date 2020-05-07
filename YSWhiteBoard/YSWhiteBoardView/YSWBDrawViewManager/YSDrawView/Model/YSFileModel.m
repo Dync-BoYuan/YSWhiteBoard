@@ -109,19 +109,32 @@
     NSString *downloadpath = aDefaultDocment.downloadpath?aDefaultDocment.downloadpath:@"";
     
     NSString *mediaType     =  @"";
+    NSInteger fileCurrpage = [aDefaultDocment.currpage integerValue];
+    if (fileCurrpage <= 0)
+    {
+        fileCurrpage = 1;
+    }
+    NSInteger filePagenum = [aDefaultDocment.pagenum integerValue];
+    NSInteger filePptslide = [aDefaultDocment.pptslide integerValue];
+    if (filePptslide <= 0)
+    {
+        filePptslide = 1;
+    }
+    NSInteger filePptstep = [aDefaultDocment.pptstep integerValue];
+    NSInteger fileSteptotal = [aDefaultDocment.steptotal integerValue];
+    
     NSMutableDictionary *filedata = [NSMutableDictionary dictionaryWithDictionary:@{
-                                                                                    @"fileid":aDefaultDocment.fileid?aDefaultDocment.fileid:@(0),
-                                                                                    @"filename":aDefaultDocment.filename?aDefaultDocment.filename:@"",
-                                                                                    @"filetype": aDefaultDocment.filetype?aDefaultDocment.filetype:@"",
-                                                                                    
-                                                                                    @"currpage": aDefaultDocment.currpage?aDefaultDocment.currpage:@(1),
-                                                                                    @"pagenum"  : aDefaultDocment.pagenum?aDefaultDocment.pagenum:@"",
-                                                                                    @"pptslide": aDefaultDocment.pptslide?aDefaultDocment.pptslide:@(1),
-                                                                                    @"pptstep":aDefaultDocment.pptstep?aDefaultDocment.pptstep:@(0),
-                                                                                    @"steptotal":aDefaultDocment.steptotal?aDefaultDocment.steptotal:@(0),
-                                                                                    @"isContentDocument":aDefaultDocment.isContentDocument?aDefaultDocment.isContentDocument:@(0),
-                                                                                    @"swfpath"  :  aDefaultDocment.swfpath?aDefaultDocment.swfpath:@""
-                                                                                    }];
+        @"fileid":aDefaultDocment.fileid?aDefaultDocment.fileid:@(0),
+        @"filename":aDefaultDocment.filename?aDefaultDocment.filename:@"",
+        @"filetype": aDefaultDocment.filetype?aDefaultDocment.filetype:@"",
+        @"currpage": @(fileCurrpage),
+        @"pagenum"  : @(filePagenum),
+        @"pptslide": @(filePptslide),
+        @"pptstep": @(filePptstep),
+        @"steptotal": @(fileSteptotal),
+        @"isContentDocument":aDefaultDocment.isContentDocument?aDefaultDocment.isContentDocument:@(0),
+        @"swfpath"  :  aDefaultDocment.swfpath?aDefaultDocment.swfpath:@""
+    }];
     if (currentPage > 0)
     {
         [filedata setObject:@(currentPage) forKey:@"currpage"];
