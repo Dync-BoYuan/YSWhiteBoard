@@ -90,6 +90,9 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 /// 当前激活文档id
 @property (nonatomic, strong, setter=setTheCurrentDocumentFileID:) NSString *currentFileId;
 
+/// 默认文档id
+@property (nonatomic, strong) NSString *defaultFileId;
+
 /// 当前播放的媒体课件
 @property (nonatomic, strong) YSMediaFileModel *mediaFileModel;
 /// 当前播放的媒体课件发送者peerId
@@ -223,6 +226,8 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         
         whiteBoardViewCurrentLeft = YSWhiteBoardDefaultLeft;
         whiteBoardViewCurrentTop = YSWhiteBoardDefaultTop;
+        
+        self.defaultFileId = nil;
 
 #if DEBUG
         NSString *sdkVersion = [NSString stringWithFormat:@"%@", YSWhiteBoardSDKVersionString];
@@ -1301,6 +1306,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     }
     else
     {
+        self.defaultFileId = fileId;
         NSString *sourceInstanceId = [YSRoomUtil getSourceInstanceIdFromFileId:fileId];
         NSDictionary *fileDic = [YSFileModel fileDataDocDic:fileModel sourceInstanceId:sourceInstanceId];
         NSMutableDictionary *dic = [NSMutableDictionary dictionaryWithDictionary:fileDic];
@@ -1939,24 +1945,6 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     if (!show)
     {
         [self changeCourseWithFileId:self.currentFileId toID:[YSRoomInterface instance].localUser.peerID save:NO];
-        
-        // 学生默认课件最大化
-        if (self.roomUseType != YSRoomUseTypeLiveRoom)
-        {
-#warning 最大化
-            NSString *whiteBoardId = [YSRoomUtil getwhiteboardIDFromFileId:self.currentFileId];
-            NSString *msgID = [NSString stringWithFormat:@"MoreWhiteboardState_%@", whiteBoardId];
-                
-            CGFloat scaleLeft = whiteBoardViewCurrentLeft / (self.mainWhiteBoardView.bm_width - self.whiteBoardViewDefaultSize.width);
-            CGFloat scaleTop = whiteBoardViewCurrentTop / (self.mainWhiteBoardView.bm_height - self.whiteBoardViewDefaultSize.height);
-            CGFloat scaleWidth = self.whiteBoardViewDefaultSize.width / self.mainWhiteBoardView.bm_width;
-            CGFloat scaleHeight = self.whiteBoardViewDefaultSize.height / self.mainWhiteBoardView.bm_height;
-            
-            NSDictionary * data = @{@"x":@(scaleLeft),@"y":@(scaleTop),@"width":@(scaleWidth),@"height":@(scaleHeight),@"small":@NO,@"full":@YES,@"type":@"full",@"instanceId":whiteBoardId};
-            NSString *associatedMsgID = [NSString stringWithFormat:@"DocumentFilePage_ExtendShowPage_%@", whiteBoardId];
-            
-            [YSRoomUtil pubWhiteBoardMsg:sYSSignalMoreWhiteboardState msgID:msgID data:data extensionData:nil associatedMsgID:associatedMsgID expires:0 completion:nil];
-        }
     }
     
     if (self.roomUseType != YSRoomUseTypeLiveRoom && ![self.currentFileId isEqualToString:@"0"])
@@ -2325,6 +2313,25 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
                 [self.mainWhiteBoardView addSubview:whiteBoardView];
                 whiteBoardView.topBar.delegate = self;
                 [self addWhiteBoardViewWithWhiteBoardView:whiteBoardView];
+                
+                if ([self.defaultFileId isEqualToString:fileId])
+                {
+                    // 默认课件最大化
+                    NSString *whiteBoardId = [YSRoomUtil getwhiteboardIDFromFileId:self.defaultFileId];
+                    NSString *msgID = [NSString stringWithFormat:@"MoreWhiteboardState_%@", whiteBoardId];
+                    
+                    CGFloat scaleLeft = whiteBoardViewCurrentLeft / (self.mainWhiteBoardView.bm_width - self.whiteBoardViewDefaultSize.width);
+                    CGFloat scaleTop = whiteBoardViewCurrentTop / (self.mainWhiteBoardView.bm_height - self.whiteBoardViewDefaultSize.height);
+                    CGFloat scaleWidth = self.whiteBoardViewDefaultSize.width / self.mainWhiteBoardView.bm_width;
+                    CGFloat scaleHeight = self.whiteBoardViewDefaultSize.height / self.mainWhiteBoardView.bm_height;
+                    
+                    NSDictionary * data = @{@"x":@(scaleLeft),@"y":@(scaleTop),@"width":@(scaleWidth),@"height":@(scaleHeight),@"small":@NO,@"full":@YES,@"type":@"full",@"instanceId":whiteBoardId};
+                    NSString *associatedMsgID = [NSString stringWithFormat:@"DocumentFilePage_ExtendShowPage_%@", whiteBoardId];
+                    
+                    [YSRoomUtil pubWhiteBoardMsg:sYSSignalMoreWhiteboardState msgID:msgID data:data extensionData:nil associatedMsgID:associatedMsgID expires:0 completion:nil];
+                    
+                    self.defaultFileId = nil;
+                }
             }
         }
         
