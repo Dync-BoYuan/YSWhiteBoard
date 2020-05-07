@@ -2697,10 +2697,9 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     YSUserRoleType role = [YSRoomInterface instance].localUser.role;
     if (role == YSUserType_Teacher)
     {
-        if (pos == duration)
+        if (pos >= duration)
         {
-            [[YSRoomInterface instance] pauseMediaFile:NO];
-            [[YSRoomInterface instance] seekMediaFile:0];
+            [[YSRoomInterface instance] stopShareMediaFile:nil];
             self.isMediaDrag = NO;
             return;
         }
