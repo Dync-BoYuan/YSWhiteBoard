@@ -186,6 +186,7 @@
                 self.pageControlView = pageControlView;
                 self.pageControlView.bm_centerX = frame.size.width * 0.5f;
                 self.pageControlView.bm_bottom = frame.size.height - 20;
+                pageControlView.fileId = self.fileId;
                 
                 // 拖拽
                 UIPanGestureRecognizer *panGestureRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(dragPageControlView:)];

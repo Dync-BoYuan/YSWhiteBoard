@@ -46,7 +46,7 @@
         self.layer.cornerRadius = frame.size.height/2;
         self.layer.masksToBounds = YES;
         
-        self.isAllScreen = NO;
+//        self.isAllScreen = NO;
         self.allowTurnPage = YES;
         self.totalPage = 1;
         self.currentPage = 1;
@@ -183,17 +183,11 @@
             break;
         case 2:
         {//全屏
+            if (![[YSWhiteBoardManager shareInstance].currentFileId isEqualToString:self.fileId])
+            {
+                return;
+            }
             self.isAllScreen = !self.isAllScreen;
-            
-            if ((self != [YSWhiteBoardManager shareInstance].mainWhiteBoardView.pageControlView))
-            {
-                [YSWhiteBoardManager shareInstance].mainWhiteBoardView.pageControlView.isAllScreen = self.isAllScreen;
-            }
-            
-            if ([self.delegate respondsToSelector:@selector(coursewarefullScreen:)])
-            {
-                [self.delegate coursewarefullScreen:self.isAllScreen];
-            }
         }
             break;
         case 3:
@@ -328,6 +322,28 @@
         [self.allScreenBtn setImage:[UIImage imageNamed:@"WhiteBoardControl_allScreen_normal"] forState:UIControlStateNormal];
         [self.allScreenBtn setImage:[UIImage imageNamed:@"WhiteBoardControl_allScreen_highlighted"] forState:UIControlStateHighlighted];
     }
+    
+    if ((self != [YSWhiteBoardManager shareInstance].mainWhiteBoardView.pageControlView))
+    {
+        [YSWhiteBoardManager shareInstance].mainWhiteBoardView.pageControlView.isAllScreen = self.isAllScreen;
+        
+        if (!self.isAllScreen)
+        {
+            for (YSWhiteBoardView * view in [YSWhiteBoardManager shareInstance].coursewareViewList)
+            {
+                if (view.pageControlView.isAllScreen)
+                {
+                    view.pageControlView.isAllScreen = NO;
+                }
+            }
+        }
+    }
+    
+    if ([self.delegate respondsToSelector:@selector(coursewarefullScreen:)])
+    {
+        [self.delegate coursewarefullScreen:self.isAllScreen];
+    }
+    
 }
 // 是否可以翻页  (未开课前通过权限判断是否可以翻页  上课后永久不可以翻页)
 - (void)setAllowTurnPage:(BOOL)allowTurnPage
