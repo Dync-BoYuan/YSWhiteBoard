@@ -16,18 +16,12 @@
 #import "NSURLProtocol+YSWhiteBoard.h"
 #endif
 
-#import "YSWBMp3Controlview.h"
-
 #define YSWhiteBoardDefaultFrame        CGRectMake(0, 0, 100, 100)
 #define YSWhiteBoardDefaultLeft         10.0f
 #define YSWhiteBoardDefaultTop          10.0f
 #define YSWhiteBoardDefaultSOffset      10.0f
 #define YSWhiteBoardDefaultLeftOffset   50.0f
 #define YSWhiteBoardDefaultTopOffset    40.0f
-
-static const CGFloat kMp3_Width_iPhone = 55.0f;
-static const CGFloat kMp3_Width_iPad = 70.0f;
-#define MP3VIEW_WIDTH                   ([UIDevice bm_isiPad] ? kMp3_Width_iPad : kMp3_Width_iPhone)
 
 /// SDK版本
 static NSString *YSWhiteBoardSDKVersionString   = @"2.0.0.0";
@@ -123,11 +117,9 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 
 /// 视频窗口
 @property (nonatomic, strong) YSWhiteBoardView *mp4WhiteBoardView;
+/// 音频窗口
+@property (nonatomic, strong) YSWhiteBoardView *mp3WhiteBoardView;
 
-/// MP3播放控制
-@property (nonatomic, strong) YSWBMp3Controlview *mp3ControlView;
-/// MP3播放动画
-@property (nonatomic, strong) UIImageView *playMp3ImageView;
 /// 判断音视频进度是否在拖动
 @property (nonatomic, assign) BOOL isMediaDrag;
 
@@ -261,46 +253,6 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 
 }
 
-- (void)makeMp3Animation
-{
-    UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(15.0f, self.mainWhiteBoardView.bm_height - (MP3VIEW_WIDTH+15.0f), MP3VIEW_WIDTH, MP3VIEW_WIDTH)];
-    
-    NSMutableArray *imageArray = [[NSMutableArray alloc] init];
-    for (NSUInteger i=1; i<=50; i++)
-    {
-        NSString *imageName = [NSString stringWithFormat:@"main_playmp3_%02lu", (unsigned long)i];
-        [imageArray addObject:imageName];
-    }
-    
-    [imageView bm_animationWithImageArray:imageArray duration:2 repeatCount:0];
-    
-    imageView.hidden = YES;
-    self.playMp3ImageView = imageView;
-    
-    [self.mainWhiteBoardView addSubview:self.playMp3ImageView];
-}
-
-- (void)makeMp3ControlView
-{
-    self.mp3ControlView = [[YSWBMp3Controlview alloc] init];
-    self.mp3ControlView.hidden = YES;
-    self.mp3ControlView.delegate = self;
-    self.mp3ControlView.backgroundColor = [UIColor bm_colorWithHex:0x000000 alpha:0.39];
-    [self.mainWhiteBoardView addSubview:self.mp3ControlView];
-    if ([UIDevice bm_isiPad])
-    {
-        self.mp3ControlView.frame = CGRectMake(100, 0, 386, 74);
-        self.mp3ControlView.bm_bottom = self.mainWhiteBoardView.bm_height - 120;
-        [self.mp3ControlView bm_roundedRect:37];
-    }
-    else
-    {
-        self.mp3ControlView.frame = CGRectMake(80, 0, 300, 60);
-        self.mp3ControlView.bm_bottom = self.mainWhiteBoardView.bm_height - 70;
-        [self.mp3ControlView bm_roundedRect:30];
-    }
-}
-
 - (YSWhiteBoardView *)createMainWhiteBoardWithFrame:(CGRect)frame
                         loadFinishedBlock:(wbLoadFinishedBlock)loadFinishedBlock
 {
@@ -312,26 +264,30 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     self.mainWhiteBoardView.delegate = self;
     [self.mainWhiteBoardView changeWhiteBoardBackgroudColor:YSWhiteBoard_MainBackGroudColor];
 
-    [self makeMp3Animation];
-    [self makeMp3ControlView];
-    
     return self.mainWhiteBoardView;
 }
 
 - (YSWhiteBoardView *)createWhiteBoardWithFileId:(NSString *)fileId
                                loadFinishedBlock:(wbLoadFinishedBlock)loadFinishedBlock
 {
-    return [self createWhiteBoardWithFileId:fileId isMedia:NO loadFinishedBlock:loadFinishedBlock];
+    return [self createWhiteBoardWithFileId:fileId isMedia:NO mediaType:0 loadFinishedBlock:loadFinishedBlock];
+}
+
+- (YSWhiteBoardView *)createMp3WhiteBoardWithFileId:(NSString *)fileId
+                                  loadFinishedBlock:(wbLoadFinishedBlock)loadFinishedBlock
+{
+    return [self createWhiteBoardWithFileId:fileId isMedia:YES mediaType:YSWhiteBordMediaType_Audio loadFinishedBlock:loadFinishedBlock];
 }
 
 - (YSWhiteBoardView *)createMp4WhiteBoardWithFileId:(NSString *)fileId
                                   loadFinishedBlock:(wbLoadFinishedBlock)loadFinishedBlock
 {
-    return [self createWhiteBoardWithFileId:fileId isMedia:YES loadFinishedBlock:loadFinishedBlock];
+    return [self createWhiteBoardWithFileId:fileId isMedia:YES mediaType:YSWhiteBordMediaType_Video loadFinishedBlock:loadFinishedBlock];
 }
 
 - (YSWhiteBoardView *)createWhiteBoardWithFileId:(NSString *)fileId
                                          isMedia:(BOOL)isMedia
+                                       mediaType:(YSWhiteBordMediaType)mediaType
                                loadFinishedBlock:(wbLoadFinishedBlock)loadFinishedBlock
 {
     if (![fileId bm_isNotEmpty] || [fileId isEqualToString:@"0"])
@@ -956,7 +912,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         [self sendArrangeWhiteBoardView];
     }
     
-    for (YSWhiteBoardView * whiteBoard in self.coursewareViewList)
+    for (YSWhiteBoardView *whiteBoard in self.coursewareViewList)
     {
         if ([whiteBoard.fileId isEqualToString:fileId])
         {
@@ -975,9 +931,6 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
             }
         }
     }
-
-    /// MP3控制条置于最上层（*MP3会被盖住）
-    [self.mp3ControlView bm_bringToFront];
 }
 
 - (NSArray *)getWhiteBoardViewArrangeList
@@ -1093,8 +1046,6 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         
         [self.wbDelegate onWhiteBoardChangedFileWithFileList:fileList];
     }
-    
-    whiteBoardView.backgroundColor = [UIColor bm_randomColor];
     
     return;
 }
@@ -1231,14 +1182,13 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     {
         BOOL isVideo = [YSRoomUtil checkIsVideo:fileModel.filetype];
         
-        YSWhiteBoardView * view = [self getWhiteBoardViewWithFileId:fileModel.fileid];
-        
+        NSString *instanceId = [YSRoomUtil getSourceInstanceIdFromFileId:fileModel.fileid];
         NSDictionary *sendDic = @{@"filename": fileModel.filename,
                                   @"fileid": fileModel.fileid,
                                   @"pauseWhenOver": @(true),
                                   @"type": @"media",
-                                  @"source": @"mediaFileList"
-//                                  ,@"whiteboardId":view.whiteBoardId
+                                  @"source": @"mediaFileList",
+                                  @"whiteboardId":instanceId
                                 };
         
         NSString *url = [YSRoomUtil absoluteFileUrl:fileModel.swfpath withServerDic:self.serverAddressInfoDic];
@@ -2272,7 +2222,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     NSString *fromId = [message objectForKey:@"fromID"];
     NSObject *data = [message objectForKey:@"data"];
     
-    NSString *fromId11 = [YSRoomInterface instance].localUser.peerID;
+    //NSString *fromId11 = [YSRoomInterface instance].localUser.peerID;
     
 //    if (self.wbDelegate && [self.wbDelegate respondsToSelector:@selector(onWhiteBroadPubMsgWithMsgID:msgName:data:fromID:inList:ts:)])
 //    {
@@ -2672,7 +2622,6 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     if (self.mediaFileModel.isVideo)
     {
         self.mp4WhiteBoardView = [self createMp4WhiteBoardWithFileId:self.mediaFileModel.fileid loadFinishedBlock:nil];
-        [self.mainWhiteBoardView addSubview:self.mp4WhiteBoardView];
         self.mp4WhiteBoardView.topBar.delegate = self;
         [self addWhiteBoardViewWithWhiteBoardView:self.mp4WhiteBoardView];
 
@@ -2683,17 +2632,13 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     }
     else if (self.mediaFileModel.isAudio)
     {
-        [[YSRoomInterface instance] playMediaFile:self.mediaFileSenderPeerId renderType:YSRenderMode_fit window:self.mainWhiteBoardView completion:^(NSError *error) {
+        self.mp3WhiteBoardView = [self createMp3WhiteBoardWithFileId:self.mediaFileModel.fileid loadFinishedBlock:nil];
+        [self addWhiteBoardViewWithWhiteBoardView:self.mp3WhiteBoardView];
+        
+        BMWeakSelf
+        [[YSRoomInterface instance] playMediaFile:self.mediaFileSenderPeerId renderType:YSRenderMode_fit window:self.mp3WhiteBoardView.whiteBoardContentView completion:^(NSError *error) {
+            [weakSelf.mp3WhiteBoardView setMediaStream:0 pos:0 isPlay:NO fileName:self.mediaFileModel.filename];
         }];
-        if (role == YSUserType_Teacher)
-        {
-            self.mp3ControlView.isPlay = YES;
-            self.mp3ControlView.hidden = NO;
-        }
-        else
-        {
-            [self onPlayMp3];
-        }
     }
     
     if (self.wbDelegate && [self.wbDelegate respondsToSelector:@selector(onWhiteBoardChangedMediaFileStateWithFileId:state:)])
@@ -2711,19 +2656,12 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     if (self.mediaFileModel.isVideo)
     {
         [self removeWhiteBoardViewWithWhiteBoardView:self.mp4WhiteBoardView];
-            self.mp4WhiteBoardView = nil;
+        self.mp4WhiteBoardView = nil;
     }
     else if (self.mediaFileModel.isAudio)
     {
-        if (role == YSUserType_Teacher)
-        {
-            self.mp3ControlView.isPlay = NO;
-            self.mp3ControlView.hidden = YES;
-        }
-        else
-        {
-            [self onStopMp3];
-        }
+        [self removeWhiteBoardViewWithWhiteBoardView:self.mp3WhiteBoardView];
+        self.mp3WhiteBoardView = nil;
     }
     
     if (self.wbDelegate && [self.wbDelegate respondsToSelector:@selector(onWhiteBoardChangedMediaFileStateWithFileId:state:)])
@@ -2753,17 +2691,17 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     {
         if (isPlay)
         {
-            [self continueMediaMediaStream:duration pos:pos];
+            [self continueMediaStream:duration pos:pos];
         }
         else
         {
-            [self pauseMediaMediaStream:duration pos:pos];
+            [self pauseMediaStream:duration pos:pos];
         }
     }
     self.isMediaDrag = NO;
 }
 
-- (void)pauseMediaMediaStream:(NSTimeInterval)duration pos:(NSTimeInterval)pos
+- (void)pauseMediaStream:(NSTimeInterval)duration pos:(NSTimeInterval)pos
 {
     YSUserRoleType role = [YSRoomInterface instance].localUser.role;
     if (self.mediaFileModel.isVideo)
@@ -2775,14 +2713,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     }
     else if (self.mediaFileModel.isAudio)
     {
-        if (role == YSUserType_Teacher)
-        {
-            [self.mp3ControlView setMediaStream:duration pos:pos isPlay:NO fileName:self.mediaFileModel.filename];
-        }
-        else
-        {
-            [self onPauseMp3];
-        }
+        [self.mp3WhiteBoardView setMediaStream:duration pos:pos isPlay:NO fileName:self.mediaFileModel.filename];
     }
     
     if (self.wbDelegate && [self.wbDelegate respondsToSelector:@selector(onWhiteBoardChangedMediaFileStateWithFileId:state:)])
@@ -2791,7 +2722,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     }
 }
 
-- (void)continueMediaMediaStream:(NSTimeInterval)duration pos:(NSTimeInterval)pos
+- (void)continueMediaStream:(NSTimeInterval)duration pos:(NSTimeInterval)pos
 {
     YSUserRoleType role = [YSRoomInterface instance].localUser.role;
     if (self.mediaFileModel.isVideo)
@@ -2803,14 +2734,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     }
     else if (self.mediaFileModel.isAudio)
     {
-        if (role == YSUserType_Teacher)
-        {
-            [self.mp3ControlView setMediaStream:duration pos:pos isPlay:YES fileName:self.mediaFileModel.filename];
-        }
-        else
-        {
-            [self onPlayMp3];
-        }
+        [self.mp3WhiteBoardView setMediaStream:duration pos:pos isPlay:YES fileName:self.mediaFileModel.filename];
     }
     
     if (self.wbDelegate && [self.wbDelegate respondsToSelector:@selector(onWhiteBoardChangedMediaFileStateWithFileId:state:)])
@@ -2819,27 +2743,6 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     }
 }
 
-#pragma mark -
-#pragma mark Mp3Func
-
-- (void)onPlayMp3
-{
-    [self.playMp3ImageView bm_bringToFront];
-
-    self.playMp3ImageView.hidden = NO;
-    [self.playMp3ImageView startAnimating];
-}
-
-- (void)onPauseMp3
-{
-    [self.playMp3ImageView stopAnimating];
-}
-
-- (void)onStopMp3
-{
-    self.playMp3ImageView.hidden = YES;
-    [self.playMp3ImageView stopAnimating];
-}
 
 #pragma mark -YSWBMediaControlviewDelegate
 

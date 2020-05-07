@@ -136,7 +136,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 #pragma -
-#pragma mark 视频控制
+#pragma mark 音视频控制
 
 - (void)setMediaStream:(NSTimeInterval)duration pos:(NSTimeInterval)pos isPlay:(BOOL)isPlay fileName:(nonnull NSString *)fileName;
 
