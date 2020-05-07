@@ -2196,6 +2196,9 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         self.isBeginClass = YES;
         self.beginClassMessage = message;
         
+        whiteBoardViewCurrentLeft = YSWhiteBoardDefaultLeft;
+        whiteBoardViewCurrentTop = YSWhiteBoardDefaultTop;
+        
         if (self.roomUseType == YSRoomUseTypeLiveRoom)
         {
             if (!inlist)

@@ -456,7 +456,6 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
         {
             frame = CGRectMake(0, -30, BMUI_SCREEN_WIDTH, BMUI_SCREEN_HEIGHT+30);
             self.whiteBoardControlView.hidden = YES;
-//            [self bm_bringToFront];
         }
         else
         {
@@ -466,7 +465,6 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
             {
                 frame = CGRectMake(0, -30, self.mainWhiteBoard.bm_width, self.mainWhiteBoard.bm_height+30);
                 self.whiteBoardControlView.hidden = NO;
-//                [self bm_bringToFront];
             }
             else
             {
