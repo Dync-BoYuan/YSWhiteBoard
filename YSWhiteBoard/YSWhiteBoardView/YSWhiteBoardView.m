@@ -302,6 +302,9 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
     oneTap.numberOfTapsRequired = 1;
     self.playMp3ImageView.userInteractionEnabled = YES;
     [self.playMp3ImageView addGestureRecognizer:oneTap];
+    
+    UIPanGestureRecognizer *panGesture = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(panGestureToMoveMp3View:)];
+    [self addGestureRecognizer:panGesture];
 }
 
 - (void)makeMp3ControlView

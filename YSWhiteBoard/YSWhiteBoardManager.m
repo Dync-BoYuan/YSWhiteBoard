@@ -944,12 +944,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
             whiteBoard.topBar.isCurrent = NO;
             if (whiteBoard.pageControlView.isAllScreen)
             {
-                whiteBoard.topBar.backgroundColor = [UIColor bm_colorWithHex:0xB6C5EB];
-                [whiteBoard bm_addShadow:3.0f Radius:0.0f BorderColor:[UIColor bm_colorWithHex:0xB6C5EB] ShadowColor:YSWhiteBoard_BackGroudColor Offset:CGSizeMake(1, 2) Opacity:0.6f];
-                if (whiteBoard.pageControlView.isAllScreen)
-                {
-                    whiteBoard.pageControlView.isAllScreen = NO;
-                }
+                whiteBoard.pageControlView.isAllScreen = NO;
             }
         }
     }
@@ -2514,22 +2509,25 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
                 YSWhiteBoardView *whiteBoardView = [self getWhiteBoardViewWithWhiteBoardId:whiteBoardId];
                 if (whiteBoardView)
                 {
-                    if ([instanceId isEqualToString:whiteBoardId])
+                    if (whiteBoardView.mediaType != YSWhiteBordMediaType_Audio)
                     {
-                        whiteBoardView.topBar.backgroundColor = YSWhiteBoard_TopBarBackGroudColor;
-                        [whiteBoardView bm_addShadow:3.0f Radius:0.0f BorderColor:YSWhiteBoard_TopBarBackGroudColor ShadowColor:YSWhiteBoard_BackGroudColor Offset:CGSizeMake(1, 2) Opacity:0.6f];
-                        whiteBoardView.topBar.isCurrent = YES;
-                    }
-                    else
-                    {
-                        whiteBoardView.topBar.backgroundColor = [UIColor bm_colorWithHex:0xB6C5EB];
-                        [whiteBoardView bm_addShadow:3.0f Radius:0.0f BorderColor:[UIColor bm_colorWithHex:0xB6C5EB] ShadowColor:YSWhiteBoard_BackGroudColor Offset:CGSizeMake(1, 2) Opacity:0.6f];
-                        
-                        whiteBoardView.topBar.isCurrent = NO;
-                        
-                        if (whiteBoardView.pageControlView.isAllScreen)
+                        if ([instanceId isEqualToString:whiteBoardId])
                         {
-                            whiteBoardView.pageControlView.isAllScreen = NO;
+                            whiteBoardView.topBar.backgroundColor = YSWhiteBoard_TopBarBackGroudColor;
+                            [whiteBoardView bm_addShadow:3.0f Radius:0.0f BorderColor:YSWhiteBoard_TopBarBackGroudColor ShadowColor:YSWhiteBoard_BackGroudColor Offset:CGSizeMake(1, 2) Opacity:0.6f];
+                            whiteBoardView.topBar.isCurrent = YES;
+                        }
+                        else
+                        {
+                            whiteBoardView.topBar.backgroundColor = [UIColor bm_colorWithHex:0xB6C5EB];
+                            [whiteBoardView bm_addShadow:3.0f Radius:0.0f BorderColor:[UIColor bm_colorWithHex:0xB6C5EB] ShadowColor:YSWhiteBoard_BackGroudColor Offset:CGSizeMake(1, 2) Opacity:0.6f];
+                            
+                            whiteBoardView.topBar.isCurrent = NO;
+                            
+                            if (whiteBoardView.pageControlView.isAllScreen)
+                            {
+                                whiteBoardView.pageControlView.isAllScreen = NO;
+                            }
                         }
                     }
                     [whiteBoardView bm_bringToFront];
