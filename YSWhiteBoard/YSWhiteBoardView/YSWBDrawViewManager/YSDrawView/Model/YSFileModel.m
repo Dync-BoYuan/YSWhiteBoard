@@ -21,12 +21,10 @@
         if ([value isKindOfClass:[NSString class]]) {
             [super setValue:(NSString *)value forKey:key];
         }
-        
-        if ([value isKindOfClass:[NSNumber class]]) {
+        else if ([value isKindOfClass:[NSNumber class]]) {
             [super setValue:[NSString stringWithFormat:@"%@",(NSNumber *)value] forKey:key];
         }
-        
-        if ([value isEqual:[NSNull null]]) {
+        else if ([value isEqual:[NSNull null]]) {
             [super setValue:@"0" forKey:key];
         }
     } else {

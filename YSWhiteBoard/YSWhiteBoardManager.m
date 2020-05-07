@@ -1150,6 +1150,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         }
         
         [whiteBoardView destroy];
+        whiteBoardView = nil;
         
         if (self.wbDelegate && [self.wbDelegate respondsToSelector:@selector(onWhiteBoardChangedFileWithFileList:)])
         {

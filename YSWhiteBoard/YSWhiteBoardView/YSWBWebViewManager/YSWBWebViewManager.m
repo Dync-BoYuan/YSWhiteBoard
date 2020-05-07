@@ -1038,12 +1038,12 @@
         return;
     }
 
+    [self.webView stopLoading];
+    
     //解决音频未销毁的问题
     NSURLRequest *request = [[NSURLRequest alloc] initWithURL:[NSURL URLWithString:@"about:blank"]];
     [self.webView loadRequest:request];
 
-    [self.webView stopLoading];
-    
     self.webView.scrollView.delegate = nil;
     [[self.webView configuration].userContentController removeScriptMessageHandlerForName:sYSSignalPubMsg];
     [[self.webView configuration].userContentController removeScriptMessageHandlerForName:sYSSignalDelMsg];

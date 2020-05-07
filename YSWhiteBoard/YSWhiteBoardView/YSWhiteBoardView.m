@@ -93,8 +93,10 @@
     self.cacheMsgPool = nil;
 
     [self.webViewManager destroy];
+    self.webViewManager = nil;
 
     [self.drawViewManager clearAfterClass];
+    self.drawViewManager = nil;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame fileId:(NSString *)fileId loadFinishedBlock:(wbLoadFinishedBlock)loadFinishedBlock
