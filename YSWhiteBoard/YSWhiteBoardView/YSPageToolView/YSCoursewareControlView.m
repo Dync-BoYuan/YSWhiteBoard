@@ -156,9 +156,6 @@
     
     self.frashBtn.bm_centerY = self.allScreenBtn.bm_centerY = self.leftTurnBtn.bm_centerY = self.pageLabel.bm_centerY = self.rightTurnBtn.bm_centerY = self.augmentBtn.bm_centerY = self.reduceBtn.bm_centerY = self.bm_height * 0.5;
     
-    
-    
-    
 }
 
 - (void)buttonsClick:(UIButton *)sender
