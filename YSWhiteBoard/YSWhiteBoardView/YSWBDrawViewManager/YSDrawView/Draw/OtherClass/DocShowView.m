@@ -254,7 +254,7 @@
     
     if (_isPenetration == YES) {
         
-        if ([YSRoomInterface instance].localUser.role == YSUserType_Teacher)
+        if ([[YSWhiteBoardManager shareInstance] isCanControlWhiteBoardView])
         {
             [[YSWhiteBoardManager shareInstance] setTheCurrentDocumentFileID:self.ysDrawView.fileid];
         }

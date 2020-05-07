@@ -188,7 +188,7 @@
     }
     else
     {
-        if ([YSWhiteBoardManager shareInstance].roomUseType == YSRoomUseTypeLiveRoom)
+        if ([[YSWhiteBoardManager shareInstance] isOneWhiteBoardView])
         {
             return YSDefaultWhiteBoardId;
         }

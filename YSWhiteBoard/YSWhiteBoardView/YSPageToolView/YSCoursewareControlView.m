@@ -251,10 +251,9 @@
     }
     self.pageLabel.text = [NSString stringWithFormat:@"%ld / %ld",(long)self.currentPage,(long)self.totalPage];
     
-    YSRoomUser *localUser = [YSRoomInterface instance].localUser;
-    
-    if (localUser.role != YSUserType_Teacher)
+    if (![[YSWhiteBoardManager shareInstance] isCanControlWhiteBoardView])
     {
+        YSRoomUser *localUser = [YSRoomInterface instance].localUser;
         NSDictionary *properties = [localUser.properties bm_dictionaryForKey:@"properties"];
         
         if ([properties bm_boolForKey:@"candraw"])
@@ -288,10 +287,9 @@
     }
     self.pageLabel.text = [NSString stringWithFormat:@"%ld / %ld",(long)self.currentPage,(long)self.totalPage];
     
-    YSRoomUser *localUser = [YSRoomInterface instance].localUser;
-    
-    if (localUser.role != YSUserType_Teacher)
+    if (![[YSWhiteBoardManager shareInstance] isCanControlWhiteBoardView])
     {
+        YSRoomUser *localUser = [YSRoomInterface instance].localUser;
         NSDictionary *properties = [localUser.properties bm_dictionaryForKey:@"properties"];
         
         if ([properties bm_boolForKey:@"candraw"])
