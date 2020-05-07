@@ -10,10 +10,15 @@
 #import "YSRoomUtil.h"
 #import "YSFileModel.h"
 #import <objc/message.h>
+#import "YSWBMp3Controlview.h"
 #import "YSWBMp4Controlview.h"
 #import "YSWBMediaMarkView.h"
 
 #define YSTopViewHeight         (30.0f)
+
+static const CGFloat kMp3_Width_iPhone = 55.0f;
+static const CGFloat kMp3_Width_iPad = 70.0f;
+#define MP3VIEW_WIDTH                   ([UIDevice bm_isiPad] ? kMp3_Width_iPad : kMp3_Width_iPhone)
 
 @interface YSWhiteBoardView ()
 <
@@ -35,6 +40,7 @@
 
 /// 媒体课件窗口
 @property (nonatomic, assign) BOOL isMediaView;
+@property (nonatomic, assign) YSWhiteBordMediaType mediaType;
 
 /// 白板背景容器
 @property (nonatomic, strong) UIView *whiteBoardContentView;
@@ -71,8 +77,14 @@
 /// 小白板点击控制条全屏前的frame
 //@property (nonatomic, assign)CGRect whiteBoardFrame;
 
+/// MP3播放控制
+@property (nonatomic, strong) YSWBMp3Controlview *mp3ControlView;
+/// MP3播放动画
+@property (nonatomic, strong) UIImageView *playMp3ImageView;
+
 /// 视频播放控制
 @property (nonatomic, strong) YSWBMp4ControlView *mp4ControlView;
+
 
 /// 白板视频标注视图
 @property (nonatomic, strong) YSWBMediaMarkView *mediaMarkView;
@@ -111,6 +123,7 @@
     {
         self.fileId = fileId;
         self.isMediaView = isMedia;
+        self.mediaType = mediaType;
         
         if ([fileId isEqualToString:@"0"])
         {
@@ -128,12 +141,15 @@
         if (self.isMediaView)
         {
             self.isLoadingFinish = YES;
-            self.mediaMarkSharpsDatas = [NSMutableArray array];
+            if (self.mediaType == YSWhiteBordMediaType_Video)
+            {
+                self.mediaMarkSharpsDatas = [NSMutableArray array];
+            }
         }
         
         topViewHeight = 0;
 
-        if (!isMainWhiteBoard)
+        if (!isMainWhiteBoard && (!self.isMediaView || self.mediaType != YSWhiteBordMediaType_Audio))
         {
             topViewHeight = YSTopViewHeight;
             
@@ -195,49 +211,106 @@
             }
         }
 
-        if ([YSRoomInterface instance].localUser.role == YSUserType_Teacher)
+        if (self.mediaType != YSWhiteBordMediaType_Audio)
         {
-            if (!isMainWhiteBoard)
+            if ([YSRoomInterface instance].localUser.role == YSUserType_Teacher)
             {
-                UIView *dragZoomView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, 40, 40)];
-                dragZoomView.backgroundColor = UIColor.clearColor;
-                dragZoomView.bm_right = frame.size.width;
-                dragZoomView.bm_bottom = frame.size.height;
-                self.dragZoomView = dragZoomView;
-                [self addSubview:dragZoomView];
-                
-                UIPanGestureRecognizer *panGesture = [[UIPanGestureRecognizer alloc]initWithTarget:self action:@selector(panGestureToZoomView:)];
-                [dragZoomView addGestureRecognizer:panGesture];
-                
-                YSWhiteBoardControlView *whiteBoardControlView = [[YSWhiteBoardControlView alloc] initWithFrame:CGRectMake(self.bm_width - 70 - 70, self.pageControlView.bm_originY, 70, 28)];
-                whiteBoardControlView.bm_bottom = self.bm_height - 20;
-                whiteBoardControlView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin;
-                [self addSubview:whiteBoardControlView];
-                self.whiteBoardControlView = whiteBoardControlView;
-                self.whiteBoardControlView.delegate = self;
-                whiteBoardControlView.hidden = YES;
-                
-                if (self.isMediaView)
+                if (!isMainWhiteBoard)
                 {
-                    [self makeMp4ControlView];
+                    UIView *dragZoomView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, 40, 40)];
+                    dragZoomView.backgroundColor = UIColor.clearColor;
+                    dragZoomView.bm_right = frame.size.width;
+                    dragZoomView.bm_bottom = frame.size.height;
+                    self.dragZoomView = dragZoomView;
+                    [self addSubview:dragZoomView];
+                    
+                    UIPanGestureRecognizer *panGesture = [[UIPanGestureRecognizer alloc]initWithTarget:self action:@selector(panGestureToZoomView:)];
+                    [dragZoomView addGestureRecognizer:panGesture];
+                    
+                    YSWhiteBoardControlView *whiteBoardControlView = [[YSWhiteBoardControlView alloc] initWithFrame:CGRectMake(self.bm_width - 70 - 70, self.pageControlView.bm_originY, 70, 28)];
+                    whiteBoardControlView.bm_bottom = self.bm_height - 20;
+                    whiteBoardControlView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin;
+                    [self addSubview:whiteBoardControlView];
+                    self.whiteBoardControlView = whiteBoardControlView;
+                    self.whiteBoardControlView.delegate = self;
+                    whiteBoardControlView.hidden = YES;
+                    
+                    if (self.isMediaView)
+                    {
+                        [self makeMp4ControlView];
+                    }
                 }
+                else
+                {
+                    // 最小化时的收藏夹按钮
+                    UIButton *collectBtn = [[UIButton alloc]initWithFrame:CGRectMake(frame.size.width-40-26, frame.size.height-90, 40, 40)];
+                    collectBtn.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin;
+                    [collectBtn setImage:[UIImage imageNamed:@"SplitScreen_leaveMessage_normal"] forState:UIControlStateNormal];
+                    [collectBtn setImage:[UIImage imageNamed:@"SplitScreen_leaveMessage_selected"] forState:UIControlStateSelected];
+                    collectBtn.contentMode = UIViewContentModeScaleAspectFill;
+                    [collectBtn addTarget:self action:@selector(collectButtonsClick:) forControlEvents:UIControlEventTouchUpInside];
+                    [self addSubview:collectBtn];
+                    self.collectBtn = collectBtn;
+                }
+            }
+        }
+        else
+        {
+            // 音频
+            if ([YSRoomInterface instance].localUser.role == YSUserType_Teacher)
+            {
+                [self makeMp3ControlView];
             }
             else
             {
-                // 最小化时的收藏夹按钮
-                UIButton *collectBtn = [[UIButton alloc]initWithFrame:CGRectMake(frame.size.width-40-26, frame.size.height-90, 40, 40)];
-                collectBtn.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin;
-                [collectBtn setImage:[UIImage imageNamed:@"SplitScreen_leaveMessage_normal"] forState:UIControlStateNormal];
-                [collectBtn setImage:[UIImage imageNamed:@"SplitScreen_leaveMessage_selected"] forState:UIControlStateSelected];
-                collectBtn.contentMode = UIViewContentModeScaleAspectFill;
-                [collectBtn addTarget:self action:@selector(collectButtonsClick:) forControlEvents:UIControlEventTouchUpInside];
-                [self addSubview:collectBtn];
-                self.collectBtn = collectBtn;
+                [self makeMp3Animation];
             }
         }
     }
     
     return self;
+}
+
+- (void)makeMp3Animation
+{
+    UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, MP3VIEW_WIDTH, MP3VIEW_WIDTH)];
+    
+    NSMutableArray *imageArray = [[NSMutableArray alloc] init];
+    for (NSUInteger i=1; i<=50; i++)
+    {
+        NSString *imageName = [NSString stringWithFormat:@"main_playmp3_%02lu", (unsigned long)i];
+        [imageArray addObject:imageName];
+    }
+    
+    [imageView bm_animationWithImageArray:imageArray duration:2 repeatCount:0];
+    
+    imageView.hidden = YES;
+    self.playMp3ImageView = imageView;
+    
+    [self addSubview:self.playMp3ImageView];
+    
+    self.bm_size = self.playMp3ImageView.bm_size;
+}
+
+- (void)makeMp3ControlView
+{
+    self.mp3ControlView = [[YSWBMp3Controlview alloc] init];
+    self.mp3ControlView.hidden = YES;
+    self.mp3ControlView.delegate = [YSWhiteBoardManager shareInstance];
+    self.mp3ControlView.backgroundColor = [UIColor bm_colorWithHex:0x000000 alpha:0.39];
+    [self addSubview:self.mp3ControlView];
+    if ([UIDevice bm_isiPad])
+    {
+        self.mp3ControlView.frame = CGRectMake(0, 0, 386, 74);
+        [self.mp3ControlView bm_roundedRect:37];
+    }
+    else
+    {
+        self.mp3ControlView.frame = CGRectMake(0, 0, 300, 60);
+        [self.mp3ControlView bm_roundedRect:30];
+    }
+    
+    self.bm_size = self.mp3ControlView.bm_size;
 }
 
 - (void)makeMp4ControlView
@@ -248,12 +321,12 @@
     [self addSubview:self.mp4ControlView];
     
     self.mp4ControlView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-
+    
     [self.mp4ControlView bm_roundedRect:23];
-
+    
     self.mp4ControlView.hidden = YES;
     self.mp4ControlView.delegate = [YSWhiteBoardManager shareInstance];
-    [self performSelector:@selector(hideMp4ControlView) withObject:nil afterDelay:2.0f];
+    [self performSelector:@selector(hideMp4ControlView) withObject:nil afterDelay:3.0f];
 }
 
 - (void)hideMp4ControlView
@@ -1295,14 +1368,39 @@
     [self.webViewManager refreshWhiteBoardWithFrame:self.whiteBoardContentView.bounds];
 }
 
+
 #pragma -
 #pragma mark 视频控制
 
 - (void)setMediaStream:(NSTimeInterval)duration pos:(NSTimeInterval)pos isPlay:(BOOL)isPlay fileName:(nonnull NSString *)fileName
 {
-    //self.mp4ControlView.hidden = NO;
-    [self.mp4ControlView bm_bringToFront];
-    [self.mp4ControlView setMediaStream:duration pos:pos isPlay:isPlay fileName:fileName];
+    YSUserRoleType role = [YSRoomInterface instance].localUser.role;
+    if (role == YSUserType_Teacher)
+    {
+        if (self.mediaType == YSWhiteBordMediaType_Audio)
+        {
+            [self.mp3ControlView bm_bringToFront];
+            [self.mp3ControlView setMediaStream:duration pos:pos isPlay:isPlay fileName:[YSWhiteBoardManager shareInstance].mediaFileModel.filename];
+        }
+        else
+        {
+            [self.mp4ControlView bm_bringToFront];
+            [self.mp4ControlView setMediaStream:duration pos:pos isPlay:isPlay fileName:fileName];
+        }
+    }
+    else
+    {
+        if (isPlay)
+        {
+            [self.playMp3ImageView bm_bringToFront];
+            self.playMp3ImageView.hidden = NO;
+            [self.playMp3ImageView startAnimating];
+        }
+        else
+        {
+            [self.playMp3ImageView stopAnimating];
+        }
+    }
 }
 
 
