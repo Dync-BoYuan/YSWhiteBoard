@@ -173,7 +173,14 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
         UIView *whiteBoardContentView = [[UIView alloc] initWithFrame:contentFrame];
         [self addSubview:whiteBoardContentView];
         self.whiteBoardContentView = whiteBoardContentView;
-        self.whiteBoardContentView.backgroundColor = YSWhiteBoard_BackGroudColor;
+        if (self.mediaType == YSWhiteBordMediaType_Audio)
+        {
+            self.whiteBoardContentView.backgroundColor = [UIColor redColor];
+        }
+        else
+        {
+            self.whiteBoardContentView.backgroundColor = YSWhiteBoard_BackGroudColor;
+        }
         
         UITapGestureRecognizer *oneTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(changeToCurrentBWView:)];
         oneTap.numberOfTapsRequired = 1;
@@ -285,18 +292,20 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
     
     [imageView bm_animationWithImageArray:imageArray duration:2 repeatCount:0];
     
-    imageView.hidden = YES;
     self.playMp3ImageView = imageView;
     
     [self addSubview:self.playMp3ImageView];
     
     self.bm_size = self.playMp3ImageView.bm_size;
+    
+    UITapGestureRecognizer *oneTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(changeToCurrentBWView:)];
+    oneTap.numberOfTapsRequired = 1;
+    [self.playMp3ImageView addGestureRecognizer:oneTap];
 }
 
 - (void)makeMp3ControlView
 {
     self.mp3ControlView = [[YSWBMp3Controlview alloc] init];
-    self.mp3ControlView.hidden = YES;
     self.mp3ControlView.delegate = [YSWhiteBoardManager shareInstance];
     self.mp3ControlView.backgroundColor = [UIColor bm_colorWithHex:0x000000 alpha:0.39];
     [self addSubview:self.mp3ControlView];
@@ -312,6 +321,10 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
     }
     
     self.bm_size = self.mp3ControlView.bm_size;
+    
+    UITapGestureRecognizer *oneTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(changeToCurrentBWView:)];
+    oneTap.numberOfTapsRequired = 1;
+    [self.mp3ControlView addGestureRecognizer:oneTap];
 }
 
 - (void)makeMp4ControlView
@@ -368,24 +381,27 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
     
     if (self.isMediaView)
     {
-        if (self.mp4ControlView.bm_width < 300)
+        if (self.mediaType == YSWhiteBordMediaType_Video)
         {
-            [self.mp4ControlView hideMp4ControlViewOutsidePause:YES];
+            if (self.mp4ControlView.bm_width < 300)
+            {
+                [self.mp4ControlView hideMp4ControlViewOutsidePause:YES];
+            }
+            else
+            {
+                [self.mp4ControlView hideMp4ControlViewOutsidePause:NO];
+            }
+            
+            if ([self.positionData bm_boolForKey:@"full"])
+            {
+                self.mp4ControlView.frame = CGRectMake(80, 0, self.whiteBoardControlView.bm_left - 10 - 80 , 46);
+            }
+            else
+            {
+                self.mp4ControlView.frame = CGRectMake(30, 0, self.bm_width - 60, 46);
+            }
+            self.mp4ControlView.bm_bottom = self.bm_height - 23;
         }
-        else
-        {
-            [self.mp4ControlView hideMp4ControlViewOutsidePause:NO];
-        }
-        
-        if ([self.positionData bm_boolForKey:@"full"])
-        {
-            self.mp4ControlView.frame = CGRectMake(80, 0, self.whiteBoardControlView.bm_left - 10 - 80 , 46);
-        }
-        else
-        {
-            self.mp4ControlView.frame = CGRectMake(30, 0, self.bm_width - 60, 46);
-        }
-        self.mp4ControlView.bm_bottom = self.bm_height - 23;
     }
 }
 
@@ -424,6 +440,13 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
 - (void)refreshWhiteBoard
 {
     CGRect frame = self.frame;
+    if (self.mediaType == YSWhiteBordMediaType_Audio)
+    {
+        [self refreshWhiteBoardWithFrame:frame];
+        
+        return;
+    }
+    
     if (self != [YSWhiteBoardManager shareInstance].mainWhiteBoardView)
     {
         NSDictionary *message = self.positionData;
@@ -1693,7 +1716,14 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
     }
     else
     {
-        [[YSWhiteBoardManager shareInstance] removeWhiteBoardViewWithWhiteBoardView:self];
+        if (self.isMediaView)
+        {
+            [[YSRoomInterface instance] stopShareMediaFile:nil];
+        }
+        else
+        {
+            [[YSWhiteBoardManager shareInstance] removeWhiteBoardViewWithWhiteBoardView:self];
+        }
     }
 }
 

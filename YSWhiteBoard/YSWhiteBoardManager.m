@@ -296,9 +296,14 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     }
     CGRect frame = CGRectMake(whiteBoardViewCurrentLeft, whiteBoardViewCurrentTop, self.whiteBoardViewDefaultSize.width, self.whiteBoardViewDefaultSize.height);
             
-    YSWhiteBoardView *whiteBoardView = [[YSWhiteBoardView alloc] initWithFrame:frame fileId:fileId isMedia:isMedia mediaType:YSWhiteBordMediaType_Video loadFinishedBlock:loadFinishedBlock];
+    YSWhiteBoardView *whiteBoardView = [[YSWhiteBoardView alloc] initWithFrame:frame fileId:fileId isMedia:isMedia mediaType:mediaType loadFinishedBlock:loadFinishedBlock];
     
     whiteBoardView.delegate = self;
+    
+    if (mediaType == YSWhiteBordMediaType_Audio)
+    {
+        frame = whiteBoardView.frame;
+    }
     if (!whiteBoardView.positionData)
     {
         CGFloat x = whiteBoardViewCurrentLeft / (self.mainWhiteBoardView.bm_width - frame.size.width);
@@ -329,8 +334,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     [whiteBoardView refreshWhiteBoard];
 
     [self makeCurrentWhiteBoardViewPoint];
-        
-    
+
     return whiteBoardView;
 }
 
@@ -557,9 +561,6 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         self.isDragZooming = NO;
     }
 }
-
-
-
 
 ///接收信令进行拖拽和缩放
 
@@ -916,16 +917,22 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     {
         if ([whiteBoard.fileId isEqualToString:fileId])
         {
-            whiteBoard.topBar.backgroundColor = YSWhiteBoard_TopBarBackGroudColor;
-            [whiteBoard bm_addShadow:3.0f Radius:0.0f BorderColor:YSWhiteBoard_TopBarBackGroudColor ShadowColor:YSWhiteBoard_BackGroudColor Offset:CGSizeMake(1, 2) Opacity:0.6f];
+            if (whiteBoard.mediaType != YSWhiteBordMediaType_Audio)
+            {
+                whiteBoard.topBar.backgroundColor = YSWhiteBoard_TopBarBackGroudColor;
+                [whiteBoard bm_addShadow:3.0f Radius:0.0f BorderColor:YSWhiteBoard_TopBarBackGroudColor ShadowColor:YSWhiteBoard_BackGroudColor Offset:CGSizeMake(1, 2) Opacity:0.6f];
+            }
         }
         else
         {
-            whiteBoard.topBar.backgroundColor = [UIColor bm_colorWithHex:0xB6C5EB];
-            [whiteBoard bm_addShadow:3.0f Radius:0.0f BorderColor:[UIColor bm_colorWithHex:0xB6C5EB] ShadowColor:YSWhiteBoard_BackGroudColor Offset:CGSizeMake(1, 2) Opacity:0.6f];
-            if (whiteBoard.pageControlView.isAllScreen)
+            if (whiteBoard.mediaType != YSWhiteBordMediaType_Audio)
             {
-                whiteBoard.pageControlView.isAllScreen = NO;
+                whiteBoard.topBar.backgroundColor = [UIColor bm_colorWithHex:0xB6C5EB];
+                [whiteBoard bm_addShadow:3.0f Radius:0.0f BorderColor:[UIColor bm_colorWithHex:0xB6C5EB] ShadowColor:YSWhiteBoard_BackGroudColor Offset:CGSizeMake(1, 2) Opacity:0.6f];
+                if (whiteBoard.pageControlView.isAllScreen)
+                {
+                    whiteBoard.pageControlView.isAllScreen = NO;
+                }
             }
         }
     }
