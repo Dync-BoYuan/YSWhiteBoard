@@ -47,6 +47,9 @@ NS_ASSUME_NONNULL_BEGIN
 /// 缩放比例
 @property (nonatomic, assign, readonly) CGFloat zoomScale;
 
+/// 自身所属的课件的id
+@property (nonatomic, copy) NSString * fileId;
+
 
 /// 重置缩放按钮
 - (void)resetBtnStates;

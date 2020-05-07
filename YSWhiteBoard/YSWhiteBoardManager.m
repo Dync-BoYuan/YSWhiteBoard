@@ -923,6 +923,10 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         {
             whiteBoard.topBar.backgroundColor = [UIColor bm_colorWithHex:0xB6C5EB];
             [whiteBoard bm_addShadow:3.0f Radius:0.0f BorderColor:[UIColor bm_colorWithHex:0xB6C5EB] ShadowColor:YSWhiteBoard_BackGroudColor Offset:CGSizeMake(1, 2) Opacity:0.6f];
+            if (whiteBoard.pageControlView.isAllScreen)
+            {
+                whiteBoard.pageControlView.isAllScreen = NO;
+            }
         }
     }
 }
@@ -2425,11 +2429,30 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         if ([type isEqualToString:@"sort"])
         {
             NSArray *sort = [tDataDic bm_arrayForKey:@"sort"];
+            
+            NSString * instanceId = [tDataDic bm_stringForKey:@"instanceId"];
+            self.currentFileId = [YSRoomUtil getFileIdFromSourceInstanceId:instanceId];
+            
             for (NSString *whiteBoardId in sort)
             {
                 YSWhiteBoardView *whiteBoardView = [self getWhiteBoardViewWithWhiteBoardId:whiteBoardId];
                 if (whiteBoardView)
                 {
+                    
+                    if ([instanceId isEqualToString:whiteBoardId])
+                    {
+                        whiteBoardView.topBar.backgroundColor = YSWhiteBoard_TopBarBackGroudColor;
+                        [whiteBoardView bm_addShadow:3.0f Radius:0.0f BorderColor:YSWhiteBoard_TopBarBackGroudColor ShadowColor:YSWhiteBoard_BackGroudColor Offset:CGSizeMake(1, 2) Opacity:0.6f];
+                    }
+                    else
+                    {
+                        whiteBoardView.topBar.backgroundColor = [UIColor bm_colorWithHex:0xB6C5EB];
+                        [whiteBoardView bm_addShadow:3.0f Radius:0.0f BorderColor:[UIColor bm_colorWithHex:0xB6C5EB] ShadowColor:YSWhiteBoard_BackGroudColor Offset:CGSizeMake(1, 2) Opacity:0.6f];
+                        if (whiteBoardView.pageControlView.isAllScreen)
+                        {
+                            whiteBoardView.pageControlView.isAllScreen = NO;
+                        }
+                    }
                     [whiteBoardView bm_bringToFront];
                 }
             }
