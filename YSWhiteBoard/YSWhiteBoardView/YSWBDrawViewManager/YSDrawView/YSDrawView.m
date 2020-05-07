@@ -58,9 +58,6 @@
     _rtDrawView                 = [[DrawView alloc] init];
     _rtDrawView.delegate        = self;
     _rtDrawView.backgroundColor = [UIColor clearColor];
-#warning test
-    _rtDrawView.backgroundColor = [[UIColor greenColor] changeAlpha:0.3];
-    //    _rtDrawView.backgroundColor = [[UIColor grayColor] colorWithAlphaComponent:0.4f];
     _rtDrawView.mode = YSWorkModeControllor;
     [self addSubview:_rtDrawView];
     [_rtDrawView bmmas_makeConstraints:^(BMMASConstraintMaker *make) {
