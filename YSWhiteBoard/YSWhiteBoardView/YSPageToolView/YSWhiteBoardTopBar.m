@@ -98,6 +98,25 @@
         fullScreenBtn.hidden = NO;
         minimizeBtn.hidden = NO;
     }
+    
+}
+
+- (void)setIsCurrent:(BOOL)isCurrent
+{
+    _isCurrent = isCurrent;
+    
+    if (isCurrent)
+    {
+        [self.closeBtn setImage:[UIImage imageNamed:@"SplitScreen_close"] forState:UIControlStateNormal];
+        [self.fullScreenBtn setImage:[UIImage imageNamed:@"SplitScreen_fullScreen"] forState:UIControlStateNormal];
+        [self.minimizeBtn setImage:[UIImage imageNamed:@"SplitScreen_minimize_normal"] forState:UIControlStateNormal];
+    }
+    else
+    {
+        [self.closeBtn setImage:[UIImage imageNamed:@"SplitScreen_close_noFocus"] forState:UIControlStateNormal];
+        [self.fullScreenBtn setImage:[UIImage imageNamed:@"SplitScreen_fullScreen_noFocus"] forState:UIControlStateNormal];
+        [self.minimizeBtn setImage:[UIImage imageNamed:@"SplitScreen_minimize_noFocus"] forState:UIControlStateNormal];
+    }
 }
 
 - (void)setTitleString:(NSString *)titleString

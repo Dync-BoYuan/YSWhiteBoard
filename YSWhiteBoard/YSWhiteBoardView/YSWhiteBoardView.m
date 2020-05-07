@@ -146,6 +146,7 @@
             self.topBar = topBar;
             
             [self bm_addShadow:3.0f Radius:0.0f BorderColor:YSWhiteBoard_TopBarBackGroudColor ShadowColor:YSWhiteBoard_BackGroudColor Offset:CGSizeMake(1, 2) Opacity:0.6f];
+            topBar.isCurrent = [self.fileId isEqualToString:[YSWhiteBoardManager shareInstance].currentFileId];
             
             BMWeakSelf
             topBar.barButtonsClick = ^(UIButton * _Nonnull sender) {
@@ -184,11 +185,11 @@
             {
                 YSCoursewareControlView *pageControlView = [[YSCoursewareControlView alloc] initWithFrame:CGRectMake(0, 0, 232, 28)];
                 pageControlView.delegate = self;
+                pageControlView.fileId = self.fileId;
                 [self addSubview:pageControlView];
                 self.pageControlView = pageControlView;
                 self.pageControlView.bm_centerX = frame.size.width * 0.5f;
                 self.pageControlView.bm_bottom = frame.size.height - 20;
-                pageControlView.fileId = self.fileId;
                 
                 // 拖拽
                 UIPanGestureRecognizer *panGestureRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(dragPageControlView:)];

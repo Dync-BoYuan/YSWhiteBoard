@@ -32,6 +32,8 @@ NS_ASSUME_NONNULL_BEGIN
 /// 课件 title
 @property (nonatomic, copy) NSString  *titleString;
 
+/// 是否属于当前激活课件
+@property (nonatomic, assign) BOOL isCurrent;
 
 @end
 
