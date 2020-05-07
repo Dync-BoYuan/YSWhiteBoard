@@ -306,8 +306,14 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         CGFloat scaleWidth = frame.size.width / self.mainWhiteBoardView.bm_width;
         CGFloat scaleHeight = frame.size.height / self.mainWhiteBoardView.bm_height;
         
-        NSDictionary * positionData = @{@"x":@(x),@"y":@(y),@"width":@(scaleWidth),@"height":@(scaleHeight)};
+        NSDictionary * positionData = @{@"x":@(x),@"y":@(y),@"width":@(scaleWidth),@"height":@(scaleHeight),@"small":@NO,@"full":@NO,@"type":@"init",@"instanceId":whiteBoardView.whiteBoardId};
         whiteBoardView.positionData = positionData;
+        
+        NSString * msgID = [NSString stringWithFormat:@"MoreWhiteboardState_%@", whiteBoardView.whiteBoardId];
+
+        NSString * associatedMsgID = [NSString stringWithFormat:@"DocumentFilePage_ExtendShowPage_%@", whiteBoardView.whiteBoardId];
+
+        [YSRoomUtil pubWhiteBoardMsg:sYSSignalMoreWhiteboardState msgID:msgID data:positionData extensionData:nil associatedMsgID:associatedMsgID expires:0 completion:nil];
     }
     whiteBoardView.mainWhiteBoard = self.mainWhiteBoardView;
     
@@ -330,7 +336,6 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 
     [self makeCurrentWhiteBoardViewPoint];
         
-    
     return whiteBoardView;
 }
 
@@ -924,7 +929,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         {
             whiteBoard.topBar.backgroundColor = [UIColor bm_colorWithHex:0xB6C5EB];
             [whiteBoard bm_addShadow:3.0f Radius:0.0f BorderColor:[UIColor bm_colorWithHex:0xB6C5EB] ShadowColor:YSWhiteBoard_BackGroudColor Offset:CGSizeMake(1, 2) Opacity:0.6f];
-            whiteBoard.topBar.isCurrent = YES;
+            whiteBoard.topBar.isCurrent = NO;
             if (whiteBoard.pageControlView.isAllScreen)
             {
                 whiteBoard.pageControlView.isAllScreen = NO;
@@ -2440,7 +2445,6 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
                 YSWhiteBoardView *whiteBoardView = [self getWhiteBoardViewWithWhiteBoardId:whiteBoardId];
                 if (whiteBoardView)
                 {
-                    
                     if ([instanceId isEqualToString:whiteBoardId])
                     {
                         whiteBoardView.topBar.backgroundColor = YSWhiteBoard_TopBarBackGroudColor;
