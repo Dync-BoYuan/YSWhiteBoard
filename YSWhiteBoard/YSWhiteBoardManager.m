@@ -2729,10 +2729,9 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 {
     if ([[YSWhiteBoardManager shareInstance] isCanControlWhiteBoardView])
     {
-        if (pos == duration)
+        if (pos >= duration)
         {
-            [[YSRoomInterface instance] pauseMediaFile:NO];
-            [[YSRoomInterface instance] seekMediaFile:0];
+            [[YSRoomInterface instance] stopShareMediaFile:nil];
             self.isMediaDrag = NO;
             return;
         }
