@@ -309,7 +309,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     {
         frame = whiteBoardView.frame;
     }
-    if (!whiteBoardView.positionData)
+    if (!whiteBoardView.positionData && [self isCanControlWhiteBoardView])
     {
         CGFloat x = whiteBoardViewCurrentLeft / (self.mainWhiteBoardView.bm_width - frame.size.width);
         CGFloat y = whiteBoardViewCurrentTop / (self.mainWhiteBoardView.bm_height - frame.size.height);
@@ -2361,7 +2361,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
                 whiteBoardView.topBar.delegate = self;
                 [self addWhiteBoardViewWithWhiteBoardView:whiteBoardView];
                 
-                if ([self.defaultFileId isEqualToString:fileId])
+                if ([self.defaultFileId isEqualToString:fileId] && [self isCanControlWhiteBoardView])
                 {
                     // 默认课件最大化
                     NSString *whiteBoardId = [YSRoomUtil getwhiteboardIDFromFileId:self.defaultFileId];
@@ -2377,8 +2377,8 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
                     
                     [YSRoomUtil pubWhiteBoardMsg:sYSSignalMoreWhiteboardState msgID:msgID data:data extensionData:nil associatedMsgID:associatedMsgID expires:0 completion:nil];
                     
-                    self.defaultFileId = nil;
                 }
+                self.defaultFileId = nil;
             }
         }
         
