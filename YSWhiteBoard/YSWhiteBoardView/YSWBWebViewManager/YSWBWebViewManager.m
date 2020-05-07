@@ -11,6 +11,21 @@
 #import "YSWBLogger.h"
 #import <objc/message.h>
 
+@implementation WKProcessPool (SharedProcessPool)
+
++ (WKProcessPool *)sharedProcessPool
+{
+    static WKProcessPool *SharedProcessPool;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        SharedProcessPool = [[WKProcessPool alloc] init];
+    });
+    
+    return SharedProcessPool;
+}
+
+@end
+
 @interface YSWBWebViewManager ()
 <
     WKNavigationDelegate,
@@ -129,6 +144,18 @@
     [cache setDiskCapacity:0];
     [cache setMemoryCapacity:0];
 
+    // 清除部分，可以自己设置
+    // NSSet *websiteDataTypes= [NSSet setWithArray:types];
+    // 清除所有
+    NSSet *websiteDataTypes = [WKWebsiteDataStore allWebsiteDataTypes];
+    //// Date from
+    NSDate *dateFrom = [NSDate dateWithTimeIntervalSince1970:0];
+    //// Execute
+    [[WKWebsiteDataStore defaultDataStore] removeDataOfTypes:websiteDataTypes modifiedSince:dateFrom completionHandler:^{
+        // Done
+        NSLog(@"清除缓存完毕");
+    }];
+    
     // webview暂停加载
     [webView stopLoading];
 }
@@ -152,7 +179,7 @@
         [config.preferences setValue:@(YES) forKey:@"allowFileAccessFromFileURLs"]; //跨域
     }
     // web内容处理池
-    config.processPool = [[WKProcessPool alloc] init];
+    config.processPool = [WKProcessPool sharedProcessPool];
     
     /*
      @property (nonatomic) BOOL mediaPlaybackRequiresUserAction
@@ -411,7 +438,7 @@
     }
     
     NSData *data = [NSJSONSerialization dataWithJSONObject:msgDic
-                                                   options:NSJSONWritingPrettyPrinted
+                                                   options:0
                                                      error:nil];
     NSString *strMsg = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
     NSString *js   = [NSString stringWithFormat:@"JsSocket.%@(%@)", WBFakeJsSdkInitInfo, strMsg];
@@ -457,10 +484,9 @@
     NSString *url = [dataDic bm_stringForKey:@"url"];
     BOOL isvideo = [dataDic bm_boolForKey:@"video"];
     NSDictionary *param = [dataDic bm_dictionaryForKey:@"attributes"];
-    
-    
-//    NSMutableDictionary * mutParam = [param mutableCopy];
-//    mutParam setValue:<#(nullable id)#> forKey:<#(nonnull NSString *)#>
+    NSString *fileId = [NSString stringWithFormat:@"%@_video", [param bm_stringForKey:@"fileid"]];
+    NSMutableDictionary *paramDic = [NSMutableDictionary dictionaryWithDictionary:param];
+    [paramDic bm_setString:fileId forKey:@"fileid"];
 
     if ([YSWhiteBoardManager shareInstance].mediaFileModel)
     {
@@ -479,7 +505,7 @@
                 [[YSRoomInterface instance] startShareMediaFile:url
                                                       isVideo:isvideo
                                                          toID:toID
-                                                   attributes:param
+                                                   attributes:paramDic
                                                         block:nil];
             }
         }];
@@ -498,7 +524,7 @@
         [[YSRoomInterface instance] startShareMediaFile:url
                                               isVideo:isvideo
                                                  toID:toID
-                                           attributes:param
+                                           attributes:paramDic
                                                 block:nil];
     }
 }
@@ -807,7 +833,7 @@
         else
         {
             NSData *tJsonData = [NSJSONSerialization dataWithJSONObject:message
-                                                                options:NSJSONWritingPrettyPrinted
+                                                                options:0
                                                                   error:nil];
             tJsonDataJsonString =
                 [[NSString alloc] initWithData:tJsonData encoding:NSUTF8StringEncoding];
@@ -855,7 +881,7 @@
     if (cmd)
     {
         NSData *tJsonData = [NSJSONSerialization dataWithJSONObject:cmd
-                                                            options:NSJSONWritingPrettyPrinted
+                                                            options:0
                                                               error:nil];
 
         tJsonDataJsonString =
@@ -1012,12 +1038,12 @@
         return;
     }
 
+    [self.webView stopLoading];
+    
     //解决音频未销毁的问题
     NSURLRequest *request = [[NSURLRequest alloc] initWithURL:[NSURL URLWithString:@"about:blank"]];
     [self.webView loadRequest:request];
 
-    [self.webView stopLoading];
-    
     self.webView.scrollView.delegate = nil;
     [[self.webView configuration].userContentController removeScriptMessageHandlerForName:sYSSignalPubMsg];
     [[self.webView configuration].userContentController removeScriptMessageHandlerForName:sYSSignalDelMsg];

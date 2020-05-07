@@ -111,7 +111,7 @@
 {
     NSError *error;
     
-    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:dict options:NSJSONWritingPrettyPrinted error:&error];
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:dict options:0 error:&error];
     
     NSString *jsonString = @"";
     if (!jsonData)
@@ -228,7 +228,7 @@
             dataDic = dic;
         }
         
-        NSData *jsonData = [NSJSONSerialization dataWithJSONObject:dataDic options:NSJSONWritingPrettyPrinted error:nil];
+        NSData *jsonData = [NSJSONSerialization dataWithJSONObject:dataDic options:0 error:nil];
 
         NSString *dataString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
 

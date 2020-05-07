@@ -1154,6 +1154,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         }
         
         [whiteBoardView destroy];
+        whiteBoardView = nil;
         
         if (self.wbDelegate && [self.wbDelegate respondsToSelector:@selector(onWhiteBoardChangedFileWithFileList:)])
         {
@@ -2610,6 +2611,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     {
         return;
     }
+    
     NSDictionary *message = notification.userInfo;
     
     NSString *peerID = [message bm_stringForKey:YSWhiteBoardOnShareMediaStateExtensionIdKey];
