@@ -175,8 +175,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)onWWBViewDrawViewManagerZoomScaleChanged:(YSWhiteBoardView *)whiteBoardView zoomScale:(CGFloat)zoomScale;
 /// 课件全屏
 - (void)onWBViewFullScreen:(BOOL)isAllScreen wbView:(YSWhiteBoardView *)whiteBoardView;
-///拖拽手势事件  拖拽右下角缩放View
+/// 拖拽手势事件  拖拽右下角缩放View
 - (void)panToZoomWhiteBoardView:(YSWhiteBoardView *)whiteBoard withGestureRecognizer:(UIPanGestureRecognizer *)pan;
+
+/// 拖拽Mp3手势事件
+- (void)moveMp3ViewWithGestureRecognizer:(UIPanGestureRecognizer *)panGesture;
 
 @end
 

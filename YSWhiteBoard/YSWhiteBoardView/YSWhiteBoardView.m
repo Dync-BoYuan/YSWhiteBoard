@@ -176,7 +176,7 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
         self.whiteBoardContentView = whiteBoardContentView;
         if (self.mediaType == YSWhiteBordMediaType_Audio)
         {
-            self.whiteBoardContentView.backgroundColor = [UIColor redColor];
+            self.whiteBoardContentView.backgroundColor = [UIColor clearColor];
         }
         else
         {
@@ -202,7 +202,6 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
             [self.whiteBoardContentView addSubview:self.wbView];
             
             self.drawViewManager = [[YSWBDrawViewManager alloc] initWithBackView:whiteBoardContentView webView:self.wbView];
-            
             
             if ([YSWhiteBoardManager shareInstance].roomUseType != YSRoomUseTypeLiveRoom)
             {
@@ -301,6 +300,7 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
     
     UITapGestureRecognizer *oneTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(changeToCurrentBWView:)];
     oneTap.numberOfTapsRequired = 1;
+    self.playMp3ImageView.userInteractionEnabled = YES;
     [self.playMp3ImageView addGestureRecognizer:oneTap];
 }
 
@@ -326,6 +326,9 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
     UITapGestureRecognizer *oneTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(changeToCurrentBWView:)];
     oneTap.numberOfTapsRequired = 1;
     [self.mp3ControlView addGestureRecognizer:oneTap];
+
+    UIPanGestureRecognizer *panGesture = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(panGestureToMoveMp3View:)];
+    [self addGestureRecognizer:panGesture];
 }
 
 - (void)makeMp4ControlView
@@ -363,6 +366,14 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
         }
 
         [[YSWhiteBoardManager shareInstance] setTheCurrentDocumentFileID:self.fileId];
+    }
+}
+
+- (void)panGestureToMoveMp3View:(UIPanGestureRecognizer *)panGesture
+{
+    if ([self.delegate respondsToSelector:@selector(moveMp3ViewWithGestureRecognizer:)])
+    {
+        [self.delegate moveMp3ViewWithGestureRecognizer:panGesture];
     }
 }
 

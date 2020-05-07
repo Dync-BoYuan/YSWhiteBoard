@@ -2831,4 +2831,20 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     }
 }
 
+/// 拖拽Mp3手势事件  本地操作
+- (void)moveMp3ViewWithGestureRecognizer:(UIPanGestureRecognizer *)panGesture
+{
+    UIView *panView = panGesture.view;
+
+    //1、获得拖动位移
+    CGPoint offsetPoint = [panGesture translationInView:panView];
+    //2、清空拖动位移
+    [panGesture setTranslation:CGPointZero inView:panView];
+    //3、重新设置控件位置
+    CGFloat newX = panView.bm_centerX+offsetPoint.x;
+    CGFloat newY = panView.bm_centerY+offsetPoint.y;
+    CGPoint centerPoint = CGPointMake(newX, newY);
+    panView.center = centerPoint;
+}
+
 @end
