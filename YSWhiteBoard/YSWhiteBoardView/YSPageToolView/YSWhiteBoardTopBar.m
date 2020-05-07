@@ -92,13 +92,12 @@
     titleLabel.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     self.titleLabel = titleLabel;
          
-    if ([YSRoomInterface instance].localUser.role == YSUserType_Teacher)
+    if ([[YSWhiteBoardManager shareInstance] isCanControlWhiteBoardView])
     {
         closeBtn.hidden = NO;
         fullScreenBtn.hidden = NO;
         minimizeBtn.hidden = NO;
     }
-    
 }
 
 - (void)setIsCurrent:(BOOL)isCurrent
@@ -138,9 +137,7 @@
 ///课件拖拽事件
 - (void)panGestureToMoveView:(UIPanGestureRecognizer *)pan
 {
-    YSUserRoleType role = [YSRoomInterface instance].localUser.role;
-    
-    if (role != YSUserType_Teacher)
+    if (![[YSWhiteBoardManager shareInstance] isCanControlWhiteBoardView])
     {
         return;
     }
@@ -153,9 +150,7 @@
 
 - (void)tapToBringVideoToFont:(UITapGestureRecognizer *)tapGesture
 {
-    YSUserRoleType role = [YSRoomInterface instance].localUser.role;
-    
-    if (role != YSUserType_Teacher)
+    if (![[YSWhiteBoardManager shareInstance] isCanControlWhiteBoardView])
     {
         return;
     }

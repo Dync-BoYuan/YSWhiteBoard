@@ -61,7 +61,7 @@
 {
     _drawData.start = _drawData.end = CGPointMake(point.x*self.sacle.x, point.y*self.sacle.y);
     
-    if ([YSRoomInterface instance].localUser.role == YSUserType_Teacher)
+    if ([[YSWhiteBoardManager shareInstance] isCanControlWhiteBoardView])
     {
         [[YSWhiteBoardManager shareInstance] setTheCurrentDocumentFileID:self.fileId];
     }

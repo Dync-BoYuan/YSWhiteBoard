@@ -149,6 +149,16 @@ NS_ASSUME_NONNULL_BEGIN
 - (CGFloat)documentZoomScaleWithFileId:(NSString *)fileId;
 
 #pragma -
+#pragma mark 是否多课件窗口
+
+- (BOOL)isOneWhiteBoardView;
+
+#pragma -
+#pragma mark 课件窗口控制权限
+
+- (BOOL)isCanControlWhiteBoardView;
+
+#pragma -
 #pragma mark 画笔权限
 
 - (BOOL)isUserCanDraw;

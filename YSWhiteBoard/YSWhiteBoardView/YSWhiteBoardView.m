@@ -203,7 +203,7 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
             
             self.drawViewManager = [[YSWBDrawViewManager alloc] initWithBackView:whiteBoardContentView webView:self.wbView];
             
-            if ([YSWhiteBoardManager shareInstance].roomUseType != YSRoomUseTypeLiveRoom)
+            if (![[YSWhiteBoardManager shareInstance] isOneWhiteBoardView])
             {
                 YSCoursewareControlView *pageControlView = [[YSCoursewareControlView alloc] initWithFrame:CGRectMake(0, 0, 232, 28)];
                 pageControlView.delegate = self;
@@ -221,7 +221,7 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
 
         if (self.mediaType != YSWhiteBordMediaType_Audio)
         {
-            if ([YSRoomInterface instance].localUser.role == YSUserType_Teacher)
+            if ([[YSWhiteBoardManager shareInstance] isCanControlWhiteBoardView])
             {
                 if (!isMainWhiteBoard)
                 {
@@ -265,7 +265,7 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
         else
         {
             // 音频
-            if ([YSRoomInterface instance].localUser.role == YSUserType_Teacher)
+            if ([[YSWhiteBoardManager shareInstance] isCanControlWhiteBoardView])
             {
                 [self makeMp3ControlView];
             }
@@ -354,7 +354,7 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
 
 - (void)changeToCurrentBWView:(UITapGestureRecognizer *)tapGesture
 {
-    if ([YSRoomInterface instance].localUser.role == YSUserType_Teacher)
+    if ([[YSWhiteBoardManager shareInstance] isCanControlWhiteBoardView])
     {
         if (self.isMediaView)
         {
@@ -966,7 +966,7 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
     
     NSString *dataString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
     
-    if ([YSWhiteBoardManager shareInstance].roomUseType == YSRoomUseTypeLiveRoom)
+    if ([[YSWhiteBoardManager shareInstance] isOneWhiteBoardView])
     {
         [[YSRoomInterface instance] pubMsg:sYSSignalShowPage msgID:sYSSignalDocumentFilePage_ShowPage toID:tellWho data:dataString save:save extensionData:@{} associatedMsgID:nil associatedUserID:associatedUserID expires:0 completion:nil];
     }
@@ -1236,7 +1236,7 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
         [dic1 bm_setBool:YES forKey:@"initiative"];
         dic = dic1;
 
-        if ([YSWhiteBoardManager shareInstance].roomUseType == YSRoomUseTypeLiveRoom)
+        if ([[YSWhiteBoardManager shareInstance] isOneWhiteBoardView])
         {
             NSDictionary *tParamDicDefault = @{
                                                @"id":sYSSignalDocumentFilePage_ShowPage,
@@ -1408,8 +1408,7 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
 
 - (void)setMediaStream:(NSTimeInterval)duration pos:(NSTimeInterval)pos isPlay:(BOOL)isPlay fileName:(nonnull NSString *)fileName
 {
-    YSUserRoleType role = [YSRoomInterface instance].localUser.role;
-    if (role == YSUserType_Teacher)
+    if ([[YSWhiteBoardManager shareInstance] isCanControlWhiteBoardView])
     {
         if (self.mediaType == YSWhiteBordMediaType_Audio)
         {

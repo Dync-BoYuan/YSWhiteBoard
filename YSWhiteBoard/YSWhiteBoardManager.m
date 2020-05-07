@@ -919,7 +919,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         }
     }
     
-    if ([YSRoomInterface instance].localUser.role == YSUserType_Teacher)
+    if ([[YSWhiteBoardManager shareInstance] isCanControlWhiteBoardView])
     {
         [self sendArrangeWhiteBoardView];
     }
@@ -1259,7 +1259,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         return;
     }
     
-    if (self.roomUseType == YSRoomUseTypeLiveRoom)
+    if ([self isOneWhiteBoardView])
     {
         NSString *sourceInstanceId = YSDefaultWhiteBoardId;
         NSDictionary *fileDic = [YSFileModel fileDataDocDic:fileModel sourceInstanceId:sourceInstanceId];
@@ -1285,7 +1285,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         return;
     }
     
-    if (self.roomUseType == YSRoomUseTypeLiveRoom)
+    if ([self isOneWhiteBoardView])
     {
         NSString *sourceInstanceId = YSDefaultWhiteBoardId;
         NSDictionary *fileDic = [YSFileModel fileDataDocDic:fileModel sourceInstanceId:sourceInstanceId];
@@ -1377,7 +1377,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 
     [[YSRoomInterface instance] pubMsg:sYSSignalDocumentChange msgID:sYSSignalDocumentChange toID:YSRoomPubMsgTellAll data:tDataDic save:NO completion:nil];
 
-    if (self.roomUseType == YSRoomUseTypeLiveRoom)
+    if ([self isOneWhiteBoardView])
     {
         [YSRoomUtil pubWhiteBoardMsg:sYSSignalShowPage msgID:sYSSignalDocumentFilePage_ShowPage data:tDataDic extensionData:nil associatedMsgID:nil expires:0 completion:nil];
     }
@@ -1520,6 +1520,33 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 {
     YSWhiteBoardView *whiteBoardView = [self getWhiteBoardViewWithFileId:fileId];
     return [whiteBoardView documentZoomScale];
+}
+
+#pragma -
+#pragma mark 是否多课件窗口
+
+- (BOOL)isOneWhiteBoardView
+{
+    if (self.roomUseType == YSRoomUseTypeLiveRoom)
+    {
+        return YES;
+    }
+    
+    return NO;
+}
+
+#pragma -
+#pragma mark 课件窗口控制权限
+
+- (BOOL)isCanControlWhiteBoardView
+{
+    YSRoomUser *localUser = [YSRoomInterface instance].localUser;
+    if (localUser.role == YSUserType_Teacher)
+    {
+        return YES;
+    }
+    
+    return NO;
 }
 
 #pragma -
@@ -1690,13 +1717,12 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
             self.roomConfig = [[YSRoomConfiguration alloc] initWithConfigurationString:chairmancontrol];
         }
         
-        
-        if (self.roomUseType == YSRoomUseTypeLiveRoom)
+        if ([self isOneWhiteBoardView])
         {
             self.mainWhiteBoardView.pageControlView.hidden = YES;
         }
         
-        if ([YSRoomInterface instance].localUser.role != YSUserType_Teacher)
+        if (![[YSWhiteBoardManager shareInstance] isCanControlWhiteBoardView])
         {
             self.mainWhiteBoardView.collectBtn.hidden = YES;
             
@@ -1947,7 +1973,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         [self changeCourseWithFileId:self.currentFileId toID:[YSRoomInterface instance].localUser.peerID save:NO];
     }
     
-    if (self.roomUseType != YSRoomUseTypeLiveRoom && ![self.currentFileId isEqualToString:@"0"])
+    if (![self isOneWhiteBoardView] && ![self.currentFileId isEqualToString:@"0"])
     {
         NSString *fileId = @"0";
         YSFileModel *fileModel = [self getDocumentWithFileID:fileId];
@@ -2187,7 +2213,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         whiteBoardViewCurrentLeft = YSWhiteBoardDefaultLeft;
         whiteBoardViewCurrentTop = YSWhiteBoardDefaultTop;
         
-        if (self.roomUseType == YSRoomUseTypeLiveRoom)
+        if ([self isOneWhiteBoardView])
         {
             if (!inlist)
             {
@@ -2198,7 +2224,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         {
             if (!inlist)
             {
-                if ([YSRoomInterface instance].localUser.role == YSUserType_Teacher)
+                if ([[YSWhiteBoardManager shareInstance] isCanControlWhiteBoardView])
                 {
                     NSArray *arrangeList = [self getWhiteBoardViewArrangeList];
                     for (YSWhiteBoardView *whiteBoardView in self.coursewareViewList)
@@ -2343,7 +2369,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     /// 白板视频标注
     else if ([msgName isEqualToString:sYSSignalVideoWhiteboard])
     {
-        if (self.roomUseType == YSRoomUseTypeLiveRoom)
+        if ([self isOneWhiteBoardView])
         {
             return;
         }
@@ -2365,7 +2391,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
             NSString *whiteboardID = [tDataDic bm_stringTrimForKey:@"whiteboardID"];
             if ([whiteboardID isEqualToString:YSVideoWhiteboard_Id])
             {
-                if (self.roomUseType == YSRoomUseTypeLiveRoom)
+                if ([self isOneWhiteBoardView])
                 {
                     return;
                 }
@@ -2561,7 +2587,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     /// 白板视频标注
     else if ([msgName isEqualToString:sYSSignalVideoWhiteboard])
     {
-        if (self.roomUseType == YSRoomUseTypeLiveRoom)
+        if ([self isOneWhiteBoardView])
         {
             return;
         }
@@ -2589,7 +2615,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 // 媒体流发布状态
 - (void)roomWhiteBoardOnShareMediaState:(NSNotification *)notification
 {
-    if (self.roomUseType == YSRoomUseTypeLiveRoom)
+    if ([self isOneWhiteBoardView])
     {
         return;
     }
@@ -2628,7 +2654,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 // 更新媒体流的信息
 - (void)roomWhiteBoardOnUpdateMediaStream:(NSNotification *)notification
 {
-    if (self.roomUseType == YSRoomUseTypeLiveRoom)
+    if ([self isOneWhiteBoardView])
     {
         return;
     }
@@ -2701,8 +2727,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 
 - (void)onRoomUpdateMediaStream:(NSTimeInterval)duration pos:(NSTimeInterval)pos isPlay:(BOOL)isPlay
 {
-    YSUserRoleType role = [YSRoomInterface instance].localUser.role;
-    if (role == YSUserType_Teacher)
+    if ([[YSWhiteBoardManager shareInstance] isCanControlWhiteBoardView])
     {
         if (pos >= duration)
         {
@@ -2728,13 +2753,9 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 
 - (void)pauseMediaStream:(NSTimeInterval)duration pos:(NSTimeInterval)pos
 {
-    YSUserRoleType role = [YSRoomInterface instance].localUser.role;
     if (self.mediaFileModel.isVideo)
     {
-        if (role == YSUserType_Teacher)
-        {
-            [self.mp4WhiteBoardView setMediaStream:duration pos:pos isPlay:NO fileName:self.mediaFileModel.filename];
-        }
+        [self.mp4WhiteBoardView setMediaStream:duration pos:pos isPlay:NO fileName:self.mediaFileModel.filename];
     }
     else if (self.mediaFileModel.isAudio)
     {
@@ -2749,13 +2770,9 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 
 - (void)continueMediaStream:(NSTimeInterval)duration pos:(NSTimeInterval)pos
 {
-    YSUserRoleType role = [YSRoomInterface instance].localUser.role;
     if (self.mediaFileModel.isVideo)
     {
-        if (role == YSUserType_Teacher)
-        {
-            [self.mp4WhiteBoardView setMediaStream:duration pos:pos isPlay:YES fileName:self.mediaFileModel.filename];
-        }
+        [self.mp4WhiteBoardView setMediaStream:duration pos:pos isPlay:YES fileName:self.mediaFileModel.filename];
     }
     else if (self.mediaFileModel.isAudio)
     {
