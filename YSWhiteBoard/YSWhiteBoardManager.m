@@ -273,24 +273,28 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 }
 
 - (YSWhiteBoardView *)createWhiteBoardWithFileId:(NSString *)fileId
+                             isFromLocalUser:(BOOL)isFromMe
                                loadFinishedBlock:(wbLoadFinishedBlock)loadFinishedBlock
 {
-    return [self createWhiteBoardWithFileId:fileId isMedia:NO mediaType:0 loadFinishedBlock:loadFinishedBlock];
+    return [self createWhiteBoardWithFileId:fileId isFromLocalUser:isFromMe isMedia:NO mediaType:0 loadFinishedBlock:loadFinishedBlock];
 }
 
 - (YSWhiteBoardView *)createMp3WhiteBoardWithFileId:(NSString *)fileId
+                                isFromLocalUser:(BOOL)isFromMe
                                   loadFinishedBlock:(wbLoadFinishedBlock)loadFinishedBlock
 {
-    return [self createWhiteBoardWithFileId:fileId isMedia:YES mediaType:YSWhiteBordMediaType_Audio loadFinishedBlock:loadFinishedBlock];
+    return [self createWhiteBoardWithFileId:fileId isFromLocalUser:isFromMe isMedia:YES mediaType:YSWhiteBordMediaType_Audio loadFinishedBlock:loadFinishedBlock];
 }
 
 - (YSWhiteBoardView *)createMp4WhiteBoardWithFileId:(NSString *)fileId
+                                    isFromLocalUser:(BOOL)isFromMe
                                   loadFinishedBlock:(wbLoadFinishedBlock)loadFinishedBlock
 {
-    return [self createWhiteBoardWithFileId:fileId isMedia:YES mediaType:YSWhiteBordMediaType_Video loadFinishedBlock:loadFinishedBlock];
+    return [self createWhiteBoardWithFileId:fileId isFromLocalUser:isFromMe isMedia:YES mediaType:YSWhiteBordMediaType_Video loadFinishedBlock:loadFinishedBlock];
 }
 
 - (YSWhiteBoardView *)createWhiteBoardWithFileId:(NSString *)fileId
+                                 isFromLocalUser:(BOOL)isFromMe
                                          isMedia:(BOOL)isMedia
                                        mediaType:(YSWhiteBordMediaType)mediaType
                                loadFinishedBlock:(wbLoadFinishedBlock)loadFinishedBlock
@@ -309,21 +313,24 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     {
         frame = whiteBoardView.frame;
     }
-    if (!whiteBoardView.positionData && [self isCanControlWhiteBoardView])
+    if (isFromMe)
     {
-        CGFloat x = whiteBoardViewCurrentLeft / (self.mainWhiteBoardView.bm_width - frame.size.width);
-        CGFloat y = whiteBoardViewCurrentTop / (self.mainWhiteBoardView.bm_height - frame.size.height);
-        CGFloat scaleWidth = frame.size.width / self.mainWhiteBoardView.bm_width;
-        CGFloat scaleHeight = frame.size.height / self.mainWhiteBoardView.bm_height;
-        
-        NSDictionary * positionData = @{@"x":@(x),@"y":@(y),@"width":@(scaleWidth),@"height":@(scaleHeight),@"small":@NO,@"full":@NO,@"type":@"init",@"instanceId":whiteBoardView.whiteBoardId};
-        whiteBoardView.positionData = positionData;
-        
-        NSString * msgID = [NSString stringWithFormat:@"MoreWhiteboardState_%@", whiteBoardView.whiteBoardId];
-
-        NSString * associatedMsgID = [NSString stringWithFormat:@"DocumentFilePage_ExtendShowPage_%@", whiteBoardView.whiteBoardId];
-
-        [YSRoomUtil pubWhiteBoardMsg:sYSSignalMoreWhiteboardState msgID:msgID data:positionData extensionData:nil associatedMsgID:associatedMsgID expires:0 completion:nil];
+        if (!whiteBoardView.positionData && [self isCanControlWhiteBoardView])
+        {
+            CGFloat x = whiteBoardViewCurrentLeft / (self.mainWhiteBoardView.bm_width - whiteBoardView.bm_width);
+            CGFloat y = whiteBoardViewCurrentTop / (self.mainWhiteBoardView.bm_height - whiteBoardView.bm_height);
+            CGFloat scaleWidth = whiteBoardView.bm_width / self.mainWhiteBoardView.bm_width;
+            CGFloat scaleHeight = whiteBoardView.bm_height / self.mainWhiteBoardView.bm_height;
+            
+            NSDictionary * positionData = @{@"x":@(x),@"y":@(y),@"width":@(scaleWidth),@"height":@(scaleHeight),@"small":@NO,@"full":@NO,@"type":@"init",@"instanceId":whiteBoardView.whiteBoardId};
+            whiteBoardView.positionData = positionData;
+            
+            NSString * msgID = [NSString stringWithFormat:@"MoreWhiteboardState_%@", whiteBoardView.whiteBoardId];
+            
+            NSString * associatedMsgID = [NSString stringWithFormat:@"DocumentFilePage_ExtendShowPage_%@", whiteBoardView.whiteBoardId];
+            
+            [YSRoomUtil pubWhiteBoardMsg:sYSSignalMoreWhiteboardState msgID:msgID data:positionData extensionData:nil associatedMsgID:associatedMsgID expires:0 completion:nil];
+        }
     }
     whiteBoardView.mainWhiteBoard = self.mainWhiteBoardView;
     
@@ -2230,8 +2237,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         self.isBeginClass = YES;
         self.beginClassMessage = message;
         
-        whiteBoardViewCurrentLeft = YSWhiteBoardDefaultLeft;
-        whiteBoardViewCurrentTop = YSWhiteBoardDefaultTop;
+        
         
         if ([self isOneWhiteBoardView])
         {
@@ -2246,6 +2252,9 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
             {
                 if ([[YSWhiteBoardManager shareInstance] isCanControlWhiteBoardView])
                 {
+                    whiteBoardViewCurrentLeft = YSWhiteBoardDefaultLeft;
+                    whiteBoardViewCurrentTop = YSWhiteBoardDefaultTop;
+                    
                     NSArray *arrangeList = [self getWhiteBoardViewArrangeList];
                     for (YSWhiteBoardView *whiteBoardView in self.coursewareViewList)
                     {
@@ -2326,6 +2335,9 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     else if ([msgName isEqualToString:sYSSignalShowPage] || [msgName isEqualToString:sYSSignalExtendShowPage])
     {
         NSString *fileId = [tDataDic bm_stringForKey:@"fileid"];
+
+        
+        
         if (!fileId)
         {
             NSDictionary *filedata = [tDataDic bm_dictionaryForKey:@"filedata"];
@@ -2354,7 +2366,9 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
             whiteBoardView = [self getWhiteBoardViewWithFileId:fileId];
             if (!whiteBoardView)
             {
-                whiteBoardView = [self createWhiteBoardWithFileId:fileId loadFinishedBlock:nil];
+                BOOL mineCreat = [fromId isEqualToString:[YSRoomInterface instance].localUser.peerID];
+                
+                whiteBoardView = [self createWhiteBoardWithFileId:fileId isFromLocalUser:mineCreat loadFinishedBlock:nil];
                 //whiteBoardView.backgroundColor = [UIColor bm_randomColor];
                 [self.mainWhiteBoardView addSubview:whiteBoardView];
                 whiteBoardView.topBar.delegate = self;
@@ -2649,6 +2663,8 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     YSMediaState mediaState = [message bm_intForKey:YSWhiteBoardOnShareMediaStateKey];
     NSDictionary *mediaDic = [message bm_dictionaryForKey:YSWhiteBoardOnShareMediaStateExtensionMsgKey];
 
+
+    
     if (![peerID bm_isNotEmpty])
     {
         return;
@@ -2693,10 +2709,11 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 
 - (void)playMediaFile
 {
-    YSUserRoleType role = [YSRoomInterface instance].localUser.role;
+    BOOL mineCreat = [self.mediaFileSenderPeerId isEqualToString:[YSRoomInterface instance].localUser.peerID];
+    
     if (self.mediaFileModel.isVideo)
     {
-        self.mp4WhiteBoardView = [self createMp4WhiteBoardWithFileId:self.mediaFileModel.fileid loadFinishedBlock:nil];
+        self.mp4WhiteBoardView = [self createMp4WhiteBoardWithFileId:self.mediaFileModel.fileid isFromLocalUser:mineCreat loadFinishedBlock:nil];
         self.mp4WhiteBoardView.topBar.delegate = self;
         [self addWhiteBoardViewWithWhiteBoardView:self.mp4WhiteBoardView];
 
@@ -2707,7 +2724,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     }
     else if (self.mediaFileModel.isAudio)
     {
-        self.mp3WhiteBoardView = [self createMp3WhiteBoardWithFileId:self.mediaFileModel.fileid loadFinishedBlock:nil];
+        self.mp3WhiteBoardView = [self createMp3WhiteBoardWithFileId:self.mediaFileModel.fileid isFromLocalUser:NO loadFinishedBlock:nil];
         [self addWhiteBoardViewWithWhiteBoardView:self.mp3WhiteBoardView];
         
         BMWeakSelf
@@ -2727,7 +2744,6 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     [[YSRoomInterface instance] unPlayMediaFile:self.mediaFileSenderPeerId completion:^(NSError *error) {
     }];
 
-    YSUserRoleType role = [YSRoomInterface instance].localUser.role;
     if (self.mediaFileModel.isVideo)
     {
         [self removeWhiteBoardViewWithWhiteBoardView:self.mp4WhiteBoardView];

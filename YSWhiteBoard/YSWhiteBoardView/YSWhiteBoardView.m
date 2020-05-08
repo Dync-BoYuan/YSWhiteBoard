@@ -475,7 +475,7 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
         {
             NSString * type = [message bm_stringForKey:@"type"];
             
-            if (([type isEqualToString:@"full"]) && [message bm_boolForKey:@"full"])
+            if (([type isEqualToString:@"full"] || [type isEqualToString:@"init"]) && [message bm_boolForKey:@"full"])
             {
                 frame = CGRectMake(0, -30, self.mainWhiteBoard.bm_width, self.mainWhiteBoard.bm_height+30);
                 self.whiteBoardControlView.hidden = NO;
