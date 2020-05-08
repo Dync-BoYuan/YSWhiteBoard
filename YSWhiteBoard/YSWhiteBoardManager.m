@@ -2226,8 +2226,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         self.isBeginClass = YES;
         self.beginClassMessage = message;
         
-        whiteBoardViewCurrentLeft = YSWhiteBoardDefaultLeft;
-        whiteBoardViewCurrentTop = YSWhiteBoardDefaultTop;
+        
         
         if ([self isOneWhiteBoardView])
         {
@@ -2242,6 +2241,9 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
             {
                 if ([[YSWhiteBoardManager shareInstance] isCanControlWhiteBoardView])
                 {
+                    whiteBoardViewCurrentLeft = YSWhiteBoardDefaultLeft;
+                    whiteBoardViewCurrentTop = YSWhiteBoardDefaultTop;
+                    
                     NSArray *arrangeList = [self getWhiteBoardViewArrangeList];
                     for (YSWhiteBoardView *whiteBoardView in self.coursewareViewList)
                     {
