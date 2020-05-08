@@ -46,7 +46,7 @@
 
 - (NSString *)description
 {
-    return [NSString stringWithFormat:@"%@---%@",self.fileid, self.filecategory];
+    return [NSString stringWithFormat:@"%@---%@",self.fileid, @(self.filecategory)];
 }
 
 + (NSDictionary *)fileDataDocDic:(YSFileModel *)aDefaultDocment sourceInstanceId:(NSString *)sourceInstanceId
@@ -91,37 +91,27 @@
     
     // isH5Document isH5Docment
     // 0:表示普通文档　１－２动态ppt(1: 第一版动态ppt 2: 新版动态ppt ）  3:h5文档
-    NSString *prop = nil;
-    if (!aDefaultDocment.fileprop || [aDefaultDocment isEqual:[NSNull null]])
-    {
-        prop = @"0";
-    }
-    else
-    {
-        prop = [NSString stringWithFormat:@"%@", aDefaultDocment.fileprop];
-    }
-//    NSString *tFileProp = [NSString stringWithFormat:@"%@",[aDefaultDocment.fileprop isEqual:[NSNull null]] ? @"0" : aDefaultDocment.fileprop];
-
-    BOOL isGeneralFile = [prop isEqualToString:@"0"]? true : false;
-    BOOL isDynamicPPT  = ([prop isEqualToString:@"1"] ||[prop isEqualToString:@"2"] )? true : false ;
-    BOOL isH5Document  = [prop isEqualToString:@"3"]? true : false ;
+    BOOL isGeneralFile = aDefaultDocment.fileprop == 0 ? YES : NO;
+    BOOL isDynamicPPT  = (aDefaultDocment.fileprop == 1 || aDefaultDocment.fileprop == 2) ? YES : NO;
+    BOOL isH5Document  = aDefaultDocment.fileprop == 3 ? YES : NO;
+ 
     NSString *action   =  isH5Document ? sYSSignalActionShow : @"";
     NSString *downloadpath = aDefaultDocment.downloadpath?aDefaultDocment.downloadpath:@"";
     
     NSString *mediaType     =  @"";
-    NSInteger fileCurrpage = [aDefaultDocment.currpage integerValue];
+    NSInteger fileCurrpage = aDefaultDocment.currpage;
     if (fileCurrpage <= 0)
     {
         fileCurrpage = 1;
     }
-    NSInteger filePagenum = [aDefaultDocment.pagenum integerValue];
-    NSInteger filePptslide = [aDefaultDocment.pptslide integerValue];
+    NSInteger filePagenum = aDefaultDocment.pagenum ;
+    NSInteger filePptslide = aDefaultDocment.pptslide;
     if (filePptslide <= 0)
     {
         filePptslide = 1;
     }
-    NSInteger filePptstep = [aDefaultDocment.pptstep integerValue];
-    NSInteger fileSteptotal = [aDefaultDocment.steptotal integerValue];
+    NSInteger filePptstep = aDefaultDocment.pptstep;
+    NSInteger fileSteptotal = aDefaultDocment.steptotal;
     
     NSMutableDictionary *filedata = [NSMutableDictionary dictionaryWithDictionary:@{
         @"fileid":aDefaultDocment.fileid?aDefaultDocment.fileid:@(0),
@@ -132,13 +122,14 @@
         @"pptslide": @(filePptslide),
         @"pptstep": @(filePptstep),
         @"steptotal": @(fileSteptotal),
-        @"isContentDocument":aDefaultDocment.isContentDocument?aDefaultDocment.isContentDocument:@(0),
+        @"isContentDocument":@(aDefaultDocment.isContentDocument),
         @"swfpath"  :  aDefaultDocment.swfpath?aDefaultDocment.swfpath:@""
     }];
+    
     if (currentPage > 0)
     {
-        [filedata setObject:@(currentPage) forKey:@"currpage"];
-        [filedata setObject:@(currentPage) forKey:@"pptslide"];
+        [filedata bm_setInteger:currentPage forKey:@"currpage"];
+        [filedata bm_setInteger:currentPage forKey:@"pptslide"];
     }
     
 //    NSString *type = nil;
