@@ -2710,7 +2710,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         
         BMWeakSelf
         [[YSRoomInterface instance] playMediaFile:self.mediaFileSenderPeerId renderType:YSRenderMode_fit window:self.mp3WhiteBoardView.whiteBoardContentView completion:^(NSError *error) {
-            [weakSelf.mp3WhiteBoardView setMediaStream:0 pos:0 isPlay:NO fileName:self.mediaFileModel.filename];
+            [weakSelf.mp3WhiteBoardView setMediaStream:0 pos:0 isPlay:YES fileName:self.mediaFileModel.filename];
         }];
     }
     
