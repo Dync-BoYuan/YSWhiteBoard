@@ -2705,8 +2705,6 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 
 - (void)playMediaFile
 {
-    YSUserRoleType role = [YSRoomInterface instance].localUser.role;
-    
     BOOL mineCreat = [self.mediaFileSenderPeerId isEqualToString:[YSRoomInterface instance].localUser.peerID];
     
     if (self.mediaFileModel.isVideo)
@@ -2722,7 +2720,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     }
     else if (self.mediaFileModel.isAudio)
     {
-        self.mp3WhiteBoardView = [self createMp3WhiteBoardWithFileId:self.mediaFileModel.fileid isFromLocalUser:mineCreat loadFinishedBlock:nil];
+        self.mp3WhiteBoardView = [self createMp3WhiteBoardWithFileId:self.mediaFileModel.fileid isFromLocalUser:NO loadFinishedBlock:nil];
         [self addWhiteBoardViewWithWhiteBoardView:self.mp3WhiteBoardView];
         
         BMWeakSelf
@@ -2742,7 +2740,6 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     [[YSRoomInterface instance] unPlayMediaFile:self.mediaFileSenderPeerId completion:^(NSError *error) {
     }];
 
-    YSUserRoleType role = [YSRoomInterface instance].localUser.role;
     if (self.mediaFileModel.isVideo)
     {
         [self removeWhiteBoardViewWithWhiteBoardView:self.mp4WhiteBoardView];
