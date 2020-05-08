@@ -207,7 +207,8 @@ NS_ASSUME_NONNULL_BEGIN
 /// 是否禁止观众私聊 202
 @property (nonatomic, assign) BOOL isDisablePrivateChat;
 
-
+/// 是否多课件 150
+@property (nonatomic, assign) BOOL isMultiCourseware;
 
 - (instancetype)initWithConfigurationString:(NSString *)configurationString;
 

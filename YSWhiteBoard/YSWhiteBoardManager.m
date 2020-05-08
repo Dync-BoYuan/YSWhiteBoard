@@ -1542,8 +1542,12 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     {
         return YES;
     }
+    else if (self.roomConfig.isMultiCourseware)
+    {
+        return NO;
+    }
     
-    return NO;
+    return YES;
 }
 
 #pragma -
