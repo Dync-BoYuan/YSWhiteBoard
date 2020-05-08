@@ -126,6 +126,9 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 /// 判断音视频进度是否在拖动
 @property (nonatomic, assign) BOOL isMediaDrag;
 
+/// 窗口是不是自己创建的
+@property (nonatomic, assign) BOOL mineCreat;
+
 @end
 
 @implementation YSWhiteBoardManager
@@ -309,21 +312,24 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     {
         frame = whiteBoardView.frame;
     }
-    if (!whiteBoardView.positionData && [self isCanControlWhiteBoardView])
+    if (self.mineCreat)
     {
-        CGFloat x = whiteBoardViewCurrentLeft / (self.mainWhiteBoardView.bm_width - frame.size.width);
-        CGFloat y = whiteBoardViewCurrentTop / (self.mainWhiteBoardView.bm_height - frame.size.height);
-        CGFloat scaleWidth = frame.size.width / self.mainWhiteBoardView.bm_width;
-        CGFloat scaleHeight = frame.size.height / self.mainWhiteBoardView.bm_height;
-        
-        NSDictionary * positionData = @{@"x":@(x),@"y":@(y),@"width":@(scaleWidth),@"height":@(scaleHeight),@"small":@NO,@"full":@NO,@"type":@"init",@"instanceId":whiteBoardView.whiteBoardId};
-        whiteBoardView.positionData = positionData;
-        
-        NSString * msgID = [NSString stringWithFormat:@"MoreWhiteboardState_%@", whiteBoardView.whiteBoardId];
-
-        NSString * associatedMsgID = [NSString stringWithFormat:@"DocumentFilePage_ExtendShowPage_%@", whiteBoardView.whiteBoardId];
-
-        [YSRoomUtil pubWhiteBoardMsg:sYSSignalMoreWhiteboardState msgID:msgID data:positionData extensionData:nil associatedMsgID:associatedMsgID expires:0 completion:nil];
+        if (!whiteBoardView.positionData && [self isCanControlWhiteBoardView])
+        {
+            CGFloat x = whiteBoardViewCurrentLeft / (self.mainWhiteBoardView.bm_width - whiteBoardView.bm_width);
+            CGFloat y = whiteBoardViewCurrentTop / (self.mainWhiteBoardView.bm_height - whiteBoardView.bm_height);
+            CGFloat scaleWidth = whiteBoardView.bm_width / self.mainWhiteBoardView.bm_width;
+            CGFloat scaleHeight = whiteBoardView.bm_height / self.mainWhiteBoardView.bm_height;
+            
+            NSDictionary * positionData = @{@"x":@(x),@"y":@(y),@"width":@(scaleWidth),@"height":@(scaleHeight),@"small":@NO,@"full":@NO,@"type":@"init",@"instanceId":whiteBoardView.whiteBoardId};
+            whiteBoardView.positionData = positionData;
+            
+            NSString * msgID = [NSString stringWithFormat:@"MoreWhiteboardState_%@", whiteBoardView.whiteBoardId];
+            
+            NSString * associatedMsgID = [NSString stringWithFormat:@"DocumentFilePage_ExtendShowPage_%@", whiteBoardView.whiteBoardId];
+            
+            [YSRoomUtil pubWhiteBoardMsg:sYSSignalMoreWhiteboardState msgID:msgID data:positionData extensionData:nil associatedMsgID:associatedMsgID expires:0 completion:nil];
+        }
     }
     whiteBoardView.mainWhiteBoard = self.mainWhiteBoardView;
     
@@ -2324,6 +2330,9 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     else if ([msgName isEqualToString:sYSSignalShowPage] || [msgName isEqualToString:sYSSignalExtendShowPage])
     {
         NSString *fileId = [tDataDic bm_stringForKey:@"fileid"];
+
+        self.mineCreat = [fromId isEqualToString:[YSRoomInterface instance].localUser.peerID];
+        
         if (!fileId)
         {
             NSDictionary *filedata = [tDataDic bm_dictionaryForKey:@"filedata"];
