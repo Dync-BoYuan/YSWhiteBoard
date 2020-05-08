@@ -62,6 +62,9 @@
  */
 @property (nonatomic, assign) NSUInteger filecategory;
 
++ (instancetype)fileModelWithServerDic:(NSDictionary *)dic;
+- (void)updateWithServerDic:(NSDictionary *)dic;
+
 - (void)dynamicpptUpdate;
 
 + (NSDictionary *)fileDataDocDic:(YSFileModel *)aDefaultDocment sourceInstanceId:(NSString *)sourceInstanceId;
