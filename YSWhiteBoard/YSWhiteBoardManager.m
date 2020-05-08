@@ -126,9 +126,6 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 /// 判断音视频进度是否在拖动
 @property (nonatomic, assign) BOOL isMediaDrag;
 
-/// 窗口是不是自己创建的
-@property (nonatomic, assign) BOOL mineCreat;
-
 @end
 
 @implementation YSWhiteBoardManager
@@ -276,24 +273,28 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 }
 
 - (YSWhiteBoardView *)createWhiteBoardWithFileId:(NSString *)fileId
+                             isFromLocalUser:(BOOL)isFromMe
                                loadFinishedBlock:(wbLoadFinishedBlock)loadFinishedBlock
 {
-    return [self createWhiteBoardWithFileId:fileId isMedia:NO mediaType:0 loadFinishedBlock:loadFinishedBlock];
+    return [self createWhiteBoardWithFileId:fileId isFromLocalUser:isFromMe isMedia:NO mediaType:0 loadFinishedBlock:loadFinishedBlock];
 }
 
 - (YSWhiteBoardView *)createMp3WhiteBoardWithFileId:(NSString *)fileId
+                                isFromLocalUser:(BOOL)isFromMe
                                   loadFinishedBlock:(wbLoadFinishedBlock)loadFinishedBlock
 {
-    return [self createWhiteBoardWithFileId:fileId isMedia:YES mediaType:YSWhiteBordMediaType_Audio loadFinishedBlock:loadFinishedBlock];
+    return [self createWhiteBoardWithFileId:fileId isFromLocalUser:isFromMe isMedia:YES mediaType:YSWhiteBordMediaType_Audio loadFinishedBlock:loadFinishedBlock];
 }
 
 - (YSWhiteBoardView *)createMp4WhiteBoardWithFileId:(NSString *)fileId
+                                    isFromLocalUser:(BOOL)isFromMe
                                   loadFinishedBlock:(wbLoadFinishedBlock)loadFinishedBlock
 {
-    return [self createWhiteBoardWithFileId:fileId isMedia:YES mediaType:YSWhiteBordMediaType_Video loadFinishedBlock:loadFinishedBlock];
+    return [self createWhiteBoardWithFileId:fileId isFromLocalUser:isFromMe isMedia:YES mediaType:YSWhiteBordMediaType_Video loadFinishedBlock:loadFinishedBlock];
 }
 
 - (YSWhiteBoardView *)createWhiteBoardWithFileId:(NSString *)fileId
+                                 isFromLocalUser:(BOOL)isFromMe
                                          isMedia:(BOOL)isMedia
                                        mediaType:(YSWhiteBordMediaType)mediaType
                                loadFinishedBlock:(wbLoadFinishedBlock)loadFinishedBlock
@@ -312,7 +313,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     {
         frame = whiteBoardView.frame;
     }
-    if (self.mineCreat)
+    if (isFromMe)
     {
         if (!whiteBoardView.positionData && [self isCanControlWhiteBoardView])
         {
@@ -2331,7 +2332,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     {
         NSString *fileId = [tDataDic bm_stringForKey:@"fileid"];
 
-        self.mineCreat = [fromId isEqualToString:[YSRoomInterface instance].localUser.peerID];
+        
         
         if (!fileId)
         {
@@ -2361,7 +2362,9 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
             whiteBoardView = [self getWhiteBoardViewWithFileId:fileId];
             if (!whiteBoardView)
             {
-                whiteBoardView = [self createWhiteBoardWithFileId:fileId loadFinishedBlock:nil];
+                BOOL mineCreat = [fromId isEqualToString:[YSRoomInterface instance].localUser.peerID];
+                
+                whiteBoardView = [self createWhiteBoardWithFileId:fileId isFromLocalUser:mineCreat loadFinishedBlock:nil];
                 //whiteBoardView.backgroundColor = [UIColor bm_randomColor];
                 [self.mainWhiteBoardView addSubview:whiteBoardView];
                 whiteBoardView.topBar.delegate = self;
@@ -2656,6 +2659,8 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     YSMediaState mediaState = [message bm_intForKey:YSWhiteBoardOnShareMediaStateKey];
     NSDictionary *mediaDic = [message bm_dictionaryForKey:YSWhiteBoardOnShareMediaStateExtensionMsgKey];
 
+
+    
     if (![peerID bm_isNotEmpty])
     {
         return;
@@ -2701,9 +2706,12 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 - (void)playMediaFile
 {
     YSUserRoleType role = [YSRoomInterface instance].localUser.role;
+    
+    BOOL mineCreat = [self.mediaFileSenderPeerId isEqualToString:[YSRoomInterface instance].localUser.peerID];
+    
     if (self.mediaFileModel.isVideo)
     {
-        self.mp4WhiteBoardView = [self createMp4WhiteBoardWithFileId:self.mediaFileModel.fileid loadFinishedBlock:nil];
+        self.mp4WhiteBoardView = [self createMp4WhiteBoardWithFileId:self.mediaFileModel.fileid isFromLocalUser:mineCreat loadFinishedBlock:nil];
         self.mp4WhiteBoardView.topBar.delegate = self;
         [self addWhiteBoardViewWithWhiteBoardView:self.mp4WhiteBoardView];
 
@@ -2714,7 +2722,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     }
     else if (self.mediaFileModel.isAudio)
     {
-        self.mp3WhiteBoardView = [self createMp3WhiteBoardWithFileId:self.mediaFileModel.fileid loadFinishedBlock:nil];
+        self.mp3WhiteBoardView = [self createMp3WhiteBoardWithFileId:self.mediaFileModel.fileid isFromLocalUser:mineCreat loadFinishedBlock:nil];
         [self addWhiteBoardViewWithWhiteBoardView:self.mp3WhiteBoardView];
         
         BMWeakSelf
