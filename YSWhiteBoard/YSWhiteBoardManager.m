@@ -1995,7 +1995,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         }
     }
     
-    if (!show)
+    if (!show && !self.isBeginClass)
     {
         [self changeCourseWithFileId:self.currentFileId toID:[YSRoomInterface instance].localUser.peerID save:NO];
     }
@@ -2237,8 +2237,6 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         self.isBeginClass = YES;
         self.beginClassMessage = message;
         
-        
-        
         if ([self isOneWhiteBoardView])
         {
             if (!inlist)
@@ -2265,12 +2263,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
                         
                         [YSRoomUtil pubWhiteBoardMsg:sYSSignalMoreWhiteboardState msgID:msgID data:whiteBoardView.positionData extensionData:nil associatedMsgID:associatedMsgID expires:0 completion:nil];
                     }
-                    
-                    if (self.mediaFileModel.isAudio)
-                    {
-                        [self changeCourseWithFileId:self.mediaFileModel.fileid];
-                    }
-                    
+                                        
                     [self sendArrangeWhiteBoardViewWithArrangeList:arrangeList];
                 }
                 else
@@ -2335,9 +2328,6 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     else if ([msgName isEqualToString:sYSSignalShowPage] || [msgName isEqualToString:sYSSignalExtendShowPage])
     {
         NSString *fileId = [tDataDic bm_stringForKey:@"fileid"];
-
-        
-        
         if (!fileId)
         {
             NSDictionary *filedata = [tDataDic bm_dictionaryForKey:@"filedata"];
@@ -2504,7 +2494,6 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     // 窗口布局
     else if ([msgName isEqualToString:sYSSignalMoreWhiteboardGlobalState])
     {
-        
 //        NSString * ddd = [YSRoomInterface instance].localUser.peerID;
 //        YSRoomUser *fromeUser = [[YSRoomInterface instance] getRoomUserWithUId:fromId];
         
@@ -2663,8 +2652,6 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     YSMediaState mediaState = [message bm_intForKey:YSWhiteBoardOnShareMediaStateKey];
     NSDictionary *mediaDic = [message bm_dictionaryForKey:YSWhiteBoardOnShareMediaStateExtensionMsgKey];
 
-
-    
     if (![peerID bm_isNotEmpty])
     {
         return;
