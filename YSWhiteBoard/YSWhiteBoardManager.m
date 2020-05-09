@@ -2758,9 +2758,18 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     
     if (self.mediaFileModel.isVideo)
     {
-        self.mp4WhiteBoardView = [self createMp4WhiteBoardWithFileId:self.mediaFileModel.fileid isFromLocalUser:mineCreat loadFinishedBlock:nil];
-        self.mp4WhiteBoardView.topBar.delegate = self;
-        [self addWhiteBoardViewWithWhiteBoardView:self.mp4WhiteBoardView];
+        YSWhiteBoardView *whiteBoardView = [self getWhiteBoardViewWithFileId:self.mediaFileModel.fileid];
+        if (whiteBoardView)
+        {
+            self.mp4WhiteBoardView = whiteBoardView;
+            self.mp4WhiteBoardView.isH5LoadMedia = YES;
+        }
+        else
+        {
+            self.mp4WhiteBoardView = [self createMp4WhiteBoardWithFileId:self.mediaFileModel.fileid isFromLocalUser:mineCreat loadFinishedBlock:nil];
+            self.mp4WhiteBoardView.topBar.delegate = self;
+            [self addWhiteBoardViewWithWhiteBoardView:self.mp4WhiteBoardView];
+        }
 
         BMWeakSelf
         [[YSRoomInterface instance] playMediaFile:self.mediaFileSenderPeerId renderType:YSRenderMode_fit window:self.mp4WhiteBoardView.whiteBoardContentView completion:^(NSError *error) {
@@ -2791,7 +2800,10 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 
     if (self.mediaFileModel.isVideo)
     {
-        [self removeWhiteBoardViewWithWhiteBoardView:self.mp4WhiteBoardView];
+        if (!self.mp4WhiteBoardView.isH5LoadMedia)
+        {
+            [self removeWhiteBoardViewWithWhiteBoardView:self.mp4WhiteBoardView];
+        }
         self.mp4WhiteBoardView = nil;
     }
     else if (self.mediaFileModel.isAudio)
@@ -2837,6 +2849,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 
 - (void)pauseMediaStream:(NSTimeInterval)duration pos:(NSTimeInterval)pos
 {
+    self.mediaFileModel.isPause = YES;
     if (self.mediaFileModel.isVideo)
     {
         [self.mp4WhiteBoardView setMediaStream:duration pos:pos isPlay:NO fileName:self.mediaFileModel.filename];
@@ -2854,6 +2867,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 
 - (void)continueMediaStream:(NSTimeInterval)duration pos:(NSTimeInterval)pos
 {
+    self.mediaFileModel.isPause = NO;
     if (self.mediaFileModel.isVideo)
     {
         [self.mp4WhiteBoardView setMediaStream:duration pos:pos isPlay:YES fileName:self.mediaFileModel.filename];

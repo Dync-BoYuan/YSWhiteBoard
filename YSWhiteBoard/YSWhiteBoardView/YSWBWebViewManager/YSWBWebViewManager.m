@@ -484,9 +484,9 @@
     NSString *url = [dataDic bm_stringForKey:@"url"];
     BOOL isvideo = [dataDic bm_boolForKey:@"video"];
     NSDictionary *param = [dataDic bm_dictionaryForKey:@"attributes"];
-    NSString *fileId = [NSString stringWithFormat:@"%@_video", [param bm_stringForKey:@"fileid"]];
-    NSMutableDictionary *paramDic = [NSMutableDictionary dictionaryWithDictionary:param];
-    [paramDic bm_setString:fileId forKey:@"fileid"];
+//    NSString *fileId = [NSString stringWithFormat:@"%@_video", [param bm_stringForKey:@"fileid"]];
+//    NSMutableDictionary *paramDic = [NSMutableDictionary dictionaryWithDictionary:param];
+//    [paramDic bm_setString:fileId forKey:@"fileid"];
 
     if ([YSWhiteBoardManager shareInstance].mediaFileModel)
     {
@@ -505,7 +505,7 @@
                 [[YSRoomInterface instance] startShareMediaFile:url
                                                       isVideo:isvideo
                                                          toID:toID
-                                                   attributes:paramDic
+                                                   attributes:param
                                                         block:nil];
             }
         }];
@@ -524,7 +524,7 @@
         [[YSRoomInterface instance] startShareMediaFile:url
                                               isVideo:isvideo
                                                  toID:toID
-                                           attributes:paramDic
+                                           attributes:param
                                                 block:nil];
     }
 }

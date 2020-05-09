@@ -28,6 +28,8 @@ NS_ASSUME_NONNULL_BEGIN
 /// 媒体课件窗口
 @property (nonatomic, assign, readonly) BOOL isMediaView;
 @property (nonatomic, assign, readonly) YSWhiteBordMediaType mediaType;
+/// H5脚本加载视频
+@property (nonatomic, assign) BOOL isH5LoadMedia;
 
 /// 当前页码
 @property (nonatomic, assign, readonly) NSUInteger currentPage;
@@ -36,7 +38,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// 课件加载成功
 @property (nonatomic, assign, readonly) BOOL isLoadingFinish;
-
 
 /// 白板背景容器
 @property (nonatomic, strong, readonly) UIView *whiteBoardContentView;
