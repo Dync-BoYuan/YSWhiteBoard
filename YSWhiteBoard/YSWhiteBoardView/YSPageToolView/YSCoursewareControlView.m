@@ -352,13 +352,25 @@
     {
         self.leftTurnBtn.enabled = (self.currentPage > 1);
 
-        if ([YSWhiteBoardManager shareInstance].isBeginClass && self.isWhiteBoard && [YSRoomInterface instance].localUser.role == YSUserType_Teacher)
+        if (([YSWhiteBoardManager shareInstance].isBeginClass && self.isWhiteBoard && [YSRoomInterface instance].localUser.role == YSUserType_Teacher))
         {
             self.rightTurnBtn.enabled = YES;
         }
         else
         {
             self.rightTurnBtn.enabled = self.currentPage < self.totalPage;
+        }
+        
+        if (![YSWhiteBoardManager shareInstance].isBeginClass && [YSRoomInterface instance].localUser.role == YSUserType_Student)
+        {
+            if ([YSWhiteBoardManager shareInstance].roomConfig.canPageTurningFlag)
+            {
+                self.rightTurnBtn.enabled = self.currentPage < self.totalPage;
+            }
+            else
+            {
+                self.rightTurnBtn.enabled = NO;
+            }
         }
     }
     else
