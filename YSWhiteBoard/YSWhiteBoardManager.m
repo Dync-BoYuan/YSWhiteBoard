@@ -2256,6 +2256,12 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
                     NSArray *arrangeList = [self getWhiteBoardViewArrangeList];
                     for (YSWhiteBoardView *whiteBoardView in self.coursewareViewList)
                     {
+                        // 上课不发送音视频流
+                        if (whiteBoardView == self.mp3WhiteBoardView || whiteBoardView == self.mp4WhiteBoardView)
+                        {
+                            continue;
+                        }
+                        
                         [self changeCourseWithFileId:whiteBoardView.fileId];
                         
                         NSString *msgID = [NSString stringWithFormat:@"MoreWhiteboardState_%@", whiteBoardView.whiteBoardId];
@@ -2263,8 +2269,16 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
                         
                         [YSRoomUtil pubWhiteBoardMsg:sYSSignalMoreWhiteboardState msgID:msgID data:whiteBoardView.positionData extensionData:nil associatedMsgID:associatedMsgID expires:0 completion:nil];
                     }
-                                        
-                    [self sendArrangeWhiteBoardViewWithArrangeList:arrangeList];
+                    
+                    if (self.mediaFileModel)
+                    {
+                        // 上课关闭所有音视频流，关闭窗口后会发送层级
+                        [[YSRoomInterface instance] stopShareMediaFile:nil];
+                    }
+                    else
+                    {
+                        [self sendArrangeWhiteBoardViewWithArrangeList:arrangeList];
+                    }
                 }
                 else
                 {
