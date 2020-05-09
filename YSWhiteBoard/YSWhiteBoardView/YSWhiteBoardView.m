@@ -524,10 +524,10 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
     if (self != [YSWhiteBoardManager shareInstance].mainWhiteBoardView)
     {
         NSDictionary *message = self.positionData;
-
+        
         if (self.isMediaView)
         {
-            NSDictionary *positionData = [[NSUserDefaults standardUserDefaults] dictionaryForKey:self.fileId];
+            NSDictionary *positionData = [[YSWhiteBoardManager shareInstance].allPositionDict bm_dictionaryForKey:self.fileId];
             if ([positionData bm_isNotEmpty])
             {
                 message = positionData;

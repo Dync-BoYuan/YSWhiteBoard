@@ -64,6 +64,9 @@ NS_ASSUME_NONNULL_BEGIN
 /// 课件窗口列表
 @property (nullable, nonatomic, strong) NSMutableArray <YSWhiteBoardView *> *coursewareViewList;
 
+///每个课件收到的位置
+@property (nonatomic, strong, readonly) NSMutableDictionary * allPositionDict;
+
 
 + (void)destroy;
 

@@ -126,9 +126,14 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 /// 判断音视频进度是否在拖动
 @property (nonatomic, assign) BOOL isMediaDrag;
 
+///每个课件收到的位置
+@property (nonatomic, strong) NSMutableDictionary * allPositionDict;
+
+
 @end
 
 @implementation YSWhiteBoardManager
+
 
 #pragma mark - dealloc
 
@@ -591,9 +596,13 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         return;
     }
     
-    if ([fileId bm_isNotEmpty])
+    if (fileId)
     {
-        [[NSUserDefaults standardUserDefaults] setObject:message forKey:fileId];
+        if (!self.allPositionDict)
+        {
+            self.allPositionDict = [[NSMutableDictionary alloc] init];
+        }
+        [self.allPositionDict setObject:message forKey:fileId];
     }
     
     YSWhiteBoardView *whiteBoardView = [self getWhiteBoardViewWithFileId:fileId];
@@ -1998,6 +2007,16 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         }
         else if ([msgName isEqualToString:sYSSignalVideoWhiteboard] || [msgName isEqualToString:sYSSignalSharpsChange] || [msgName isEqualToString:sYSSignalMoreWhiteboardState] || [msgName isEqualToString:sYSSignalMoreWhiteboardGlobalState])
         {
+            if ([msgName isEqualToString:sYSSignalMoreWhiteboardState])
+            {
+                NSObject *data = [msgDic objectForKey:@"data"];
+                NSDictionary *tDataDic = [YSRoomUtil convertWithData:data];
+                NSString * instanceId = [tDataDic bm_stringForKey:@"instanceId"];
+                NSString * fileId = [YSRoomUtil getFileIdFromSourceInstanceId:instanceId];
+                
+                
+            }
+            
             [newMsgArray addObject:msgDic];
             if (!index)
             {
@@ -2780,6 +2799,8 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
             self.mp4WhiteBoardView = [self createMp4WhiteBoardWithFileId:self.mediaFileModel.fileid isFromLocalUser:mineCreat loadFinishedBlock:nil];
             self.mp4WhiteBoardView.topBar.delegate = self;
             [self addWhiteBoardViewWithWhiteBoardView:self.mp4WhiteBoardView];
+            
+            
         }
 
         BMWeakSelf
