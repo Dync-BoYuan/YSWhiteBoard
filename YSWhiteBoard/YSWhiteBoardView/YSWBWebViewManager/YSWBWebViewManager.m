@@ -1010,14 +1010,15 @@
     self.webView.frame = frame;
 
     //给白板发送webview宽高
-    NSDictionary *tParamDic = @{
-        @"height" : @(CGRectGetHeight(self.webView.frame)), // DocumentFilePage_ShowPage
-        @"width" : @(CGRectGetWidth(self.webView.frame))
-    };
-
-    WB_INFO(@"refreshWhiteBoard : %@", NSStringFromCGRect(_webView.frame));
+//    NSDictionary *tParamDic = @{
+//        @"height" : @(CGRectGetHeight(self.webView.frame)), // DocumentFilePage_ShowPage
+//        @"width" : @(CGRectGetWidth(self.webView.frame))
+//    };
+//
+//    WB_INFO(@"refreshWhiteBoard : %@", NSStringFromCGRect(_webView.frame));
     
-    [self sendAction:WBChangeDynamicPptSize command:tParamDic];
+//    [self sendAction:WBChangeDynamicPptSize command:tParamDic];
+    [self sendAction:WBDocResize command:@{}];
 }
 
 // 重新加载白板
