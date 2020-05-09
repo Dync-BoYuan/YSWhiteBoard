@@ -1967,15 +1967,49 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     NSDictionary *msgList = [dict objectForKey:@"msglist"];
     NSSortDescriptor *desc = [[NSSortDescriptor alloc] initWithKey:@"seq" ascending:YES];
     NSArray *msgArray = [[msgList allValues] sortedArrayUsingDescriptors:@[ desc ]];
-
-//    for (NSString *key in msgList.allKeys)
-//    {
-//        NSDictionary *msgDic = [msgList bm_dictionaryForKey:key];
-//
-//        [self roomWhiteBoardOnRemotePubMsgWithMessage:msgDic inList:YES];
-//    }
-
-    for (NSDictionary *msgDic in msgArray)
+    
+    NSMutableArray *newMsgArray = [[NSMutableArray alloc] init];
+    NSMutableArray *showMsgArray = [[NSMutableArray alloc] init];
+    
+//    sYSSignalShowPage
+//    sYSSignalVideoWhiteboard
+//    sYSSignalSharpsChange
+//    sYSSignalMoreWhiteboardState
+//    sYSSignalMoreWhiteboardGlobalState
+    
+    NSUInteger index = 0;
+    for (NSUInteger msgIndex =0; msgIndex<msgArray.count; msgIndex++)
+    {
+        NSDictionary *msgDic = msgArray[msgIndex];
+        NSString *msgName = [msgDic bm_stringForKey:@"name"];
+        if ([msgName isEqualToString:sYSSignalShowPage] || [msgName isEqualToString:sYSSignalExtendShowPage])
+        {
+            [showMsgArray addObject:msgDic];
+            if (!index)
+            {
+                index = msgIndex;
+            }
+        }
+        else if ([msgName isEqualToString:sYSSignalVideoWhiteboard] || [msgName isEqualToString:sYSSignalSharpsChange] || [msgName isEqualToString:sYSSignalMoreWhiteboardState] || [msgName isEqualToString:sYSSignalMoreWhiteboardGlobalState])
+        {
+            [newMsgArray addObject:msgDic];
+            if (!index)
+            {
+                index = msgIndex;
+            }
+        }
+        else
+        {
+            [newMsgArray addObject:msgDic];
+        }
+    }
+    
+    if (index && [showMsgArray bm_isNotEmpty])
+    {
+        [newMsgArray bm_insertArray:showMsgArray atIndex:index];
+    }
+    
+    for (NSDictionary *msgDic in newMsgArray)
     {
         [self roomWhiteBoardOnRemotePubMsgWithMessage:msgDic inList:YES];
         
