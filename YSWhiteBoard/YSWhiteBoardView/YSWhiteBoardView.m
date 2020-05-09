@@ -466,6 +466,15 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
     {
         NSDictionary *message = self.positionData;
 
+        if (self.isMediaView)
+        {
+            NSDictionary *positionData = [[NSUserDefaults standardUserDefaults] dictionaryForKey:self.fileId];
+            if ([positionData bm_isNotEmpty])
+            {
+                message = positionData;
+            }
+        }
+        
         if (self.pageControlView.isAllScreen)
         {
             frame = CGRectMake(0, -30, BMUI_SCREEN_WIDTH, BMUI_SCREEN_HEIGHT+30);

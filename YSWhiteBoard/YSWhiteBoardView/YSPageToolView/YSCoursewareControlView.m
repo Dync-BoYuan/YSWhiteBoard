@@ -132,8 +132,6 @@
     
     self.augmentBtn.enabled = YES;
     self.reduceBtn.enabled  = NO;
-        
-    
 }
 
 - (void)layoutSubviews

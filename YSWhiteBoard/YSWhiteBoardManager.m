@@ -591,12 +591,17 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         return;
     }
     
+    if ([fileId bm_isNotEmpty])
+    {
+        [[NSUserDefaults standardUserDefaults] setObject:message forKey:fileId];
+    }
+    
     YSWhiteBoardView *whiteBoardView = [self getWhiteBoardViewWithFileId:fileId];
     if (!whiteBoardView)
     {
         return;
     }
-        
+    
     if (inlist)
     {
         whiteBoardView.positionData = message;
