@@ -221,7 +221,7 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
 
         if (self.mediaType != YSWhiteBordMediaType_Audio)
         {
-            if ([[YSWhiteBoardManager shareInstance] isCanControlWhiteBoardView])
+            if ([YSRoomInterface instance].localUser.role == YSUserType_Teacher)
             {
                 if (!isMainWhiteBoard)
                 {
