@@ -361,6 +361,7 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
     imageView.contentMode = UIViewContentModeCenter;
     [self.whiteBoardContentView addSubview:imageView];
     imageView.backgroundColor = [UIColor blackColor];
+    imageView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     if (!self.isMediaView)
     {
         imageView.hidden = YES;

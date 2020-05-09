@@ -46,7 +46,7 @@
 - (void)create {
     _drawView                 = [[DrawView alloc] init];
     _drawView.delegate        = self;
-    _drawView.backgroundColor = YSWhiteBoard_MainBackGroudColor;
+    _drawView.backgroundColor = [UIColor clearColor];
     [self addSubview:_drawView];
     [_drawView bmmas_makeConstraints:^(BMMASConstraintMaker *make) {
         make.top.bmmas_equalTo(self.bmmas_top);
