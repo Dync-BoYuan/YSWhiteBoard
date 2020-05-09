@@ -904,6 +904,11 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 
 - (void)setTheCurrentDocumentFileID:(NSString *)fileId
 {
+    [self setTheCurrentDocumentFileID:fileId sendArrange:YES];
+}
+
+- (void)setTheCurrentDocumentFileID:(NSString *)fileId sendArrange:(BOOL)sendArrange
+{
     if ([fileId isEqualToString:_currentFileId])
     {
         return;
@@ -926,7 +931,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         }
     }
     
-    if ([[YSWhiteBoardManager shareInstance] isCanControlWhiteBoardView])
+    if (sendArrange && [[YSWhiteBoardManager shareInstance] isCanControlWhiteBoardView])
     {
         [self sendArrangeWhiteBoardView];
     }
@@ -2372,6 +2377,11 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
             {
                 BOOL mineCreat = [fromId isEqualToString:[YSRoomInterface instance].localUser.peerID];
                 
+                if (inlist)
+                {
+                    mineCreat = NO;
+                }
+                
                 whiteBoardView = [self createWhiteBoardWithFileId:fileId isFromLocalUser:mineCreat loadFinishedBlock:nil];
                 //whiteBoardView.backgroundColor = [UIColor bm_randomColor];
                 [self.mainWhiteBoardView addSubview:whiteBoardView];
@@ -2393,7 +2403,6 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
                     NSString *associatedMsgID = [NSString stringWithFormat:@"DocumentFilePage_ExtendShowPage_%@", whiteBoardId];
                     
                     [YSRoomUtil pubWhiteBoardMsg:sYSSignalMoreWhiteboardState msgID:msgID data:data extensionData:nil associatedMsgID:associatedMsgID expires:0 completion:nil];
-                    
                 }
                 self.defaultFileId = nil;
             }
@@ -2523,7 +2532,8 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
             NSArray *sort = [tDataDic bm_arrayForKey:@"sort"];
             
             NSString * instanceId = [tDataDic bm_stringForKey:@"instanceId"];
-            self.currentFileId = [YSRoomUtil getFileIdFromSourceInstanceId:instanceId];
+            NSString *currentFileId = [YSRoomUtil getFileIdFromSourceInstanceId:instanceId];
+            [self setTheCurrentDocumentFileID:currentFileId sendArrange:NO];
             
             for (NSString *whiteBoardId in sort)
             {
