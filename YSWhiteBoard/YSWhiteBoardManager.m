@@ -2432,8 +2432,9 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     }
     else if ([msgName isEqualToString:sYSSignalShowPage] || [msgName isEqualToString:sYSSignalExtendShowPage])
     {
-        
-        if (![self isOneWhiteBoardView] && [msgName isEqualToString:sYSSignalShowPage]) {
+        // 后台关联课件是发送showpage信令，多课件时不响应
+        if (![self isOneWhiteBoardView] && [msgName isEqualToString:sYSSignalShowPage])
+        {
             return;
         }
         
