@@ -1464,6 +1464,20 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         return;
     }
     
+    if (![self isOneWhiteBoardView])
+    {
+        YSWhiteBoardView *whiteBoardView = [self getWhiteBoardViewWithFileId:fileModel.fileid];
+        if (whiteBoardView)
+        {
+            NSString *sourceInstanceId = [YSRoomUtil getSourceInstanceIdFromFileId:fileModel.fileid];
+            NSDictionary *fileDic1 = [YSFileModel fileDataDocDic:fileModel sourceInstanceId:sourceInstanceId];
+            
+            NSString *msgID = [NSString stringWithFormat:@"%@%@", sYSSignalDocumentFilePage_ExtendShowPage, [YSRoomUtil getwhiteboardIDFromFileId:fileModel.fileid]];
+            
+            [YSRoomUtil pubWhiteBoardMsg:sYSSignalExtendShowPage msgID:msgID data:fileDic1 extensionData:nil associatedMsgID:nil expires:0 completion:nil];
+        }
+    }
+
     NSDictionary *fileDic = [YSFileModel fileDataDocDic:fileModel sourceInstanceId:nil];
     NSMutableDictionary *sendDic = [NSMutableDictionary dictionaryWithDictionary:fileDic];
     [sendDic bm_setBool:YES forKey:@"isDel"];
