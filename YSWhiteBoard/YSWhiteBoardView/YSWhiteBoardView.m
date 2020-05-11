@@ -550,8 +550,6 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
             }
             else
             {
-                NSUInteger maxvideo = [[YSWhiteBoardManager shareInstance].roomDic bm_uintForKey:@"maxvideo"];
-
                 CGFloat scale = self.mainWhiteBoard.bm_width / self.mainWhiteBoard.bm_height;
                 
                 CGFloat height = 0;

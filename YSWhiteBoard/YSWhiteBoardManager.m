@@ -266,8 +266,23 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 - (YSWhiteBoardView *)createMainWhiteBoardWithFrame:(CGRect)frame
                         loadFinishedBlock:(wbLoadFinishedBlock)loadFinishedBlock
 {
-    CGFloat height = frame.size.height * 0.6f;
-    CGFloat width = height / 3.0f * 5.0f;
+//    CGFloat height = frame.size.height * 0.6f;
+//    CGFloat width = height / 3.0f * 5.0f;
+    CGFloat scale = self.mainWhiteBoardView.bm_width / self.mainWhiteBoardView.bm_height;
+       
+       CGFloat height = 0;
+       CGFloat width = 0;
+       if (scale > 5.0/3.0)
+       {
+           height = self.mainWhiteBoardView.bm_height * 0.6f;
+           width = height * 5.0/3.0;
+       }
+       else
+       {
+           width = self.mainWhiteBoardView.bm_width * 0.6f;
+           height = width * 3.0/5.0;
+       }
+    
     self.whiteBoardViewDefaultSize = CGSizeMake(width, height);
     
     self.mainWhiteBoardView = [[YSWhiteBoardView alloc] initWithFrame:frame fileId:@"0" loadFinishedBlock:loadFinishedBlock];
@@ -708,9 +723,6 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 
 - (void)refreshWhiteBoard
 {
-//    CGFloat height = self.mainWhiteBoardView.bm_size.height * 0.6f;
-//    CGFloat width = height / 3.0f * 5.0f;
-
     CGFloat scale = self.mainWhiteBoardView.bm_width / self.mainWhiteBoardView.bm_height;
     
     CGFloat height = 0;
@@ -722,7 +734,6 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     }
     else
     {
-//        CGFloat scaleWidth = [message bm_floatForKey:@"width"];
         width = self.mainWhiteBoardView.bm_width * 0.6f;
         height = width * 3.0/5.0;
     }
