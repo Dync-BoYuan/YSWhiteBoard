@@ -378,9 +378,24 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 
 - (void)makeCurrentWhiteBoardViewPoint
 {
+    [self makeCurrentWhiteBoardViewPointReset:NO];
+}
+
+- (void)makeCurrentWhiteBoardViewPointReset:(BOOL)reset
+{
     static NSUInteger loopCount = 0;
     static NSUInteger lineCount = 0;
 
+    if (reset)
+    {
+        loopCount = 0;
+        lineCount = 0;
+        whiteBoardViewCurrentLeft = YSWhiteBoardDefaultLeft;
+        whiteBoardViewCurrentTop = YSWhiteBoardDefaultTop;
+        
+        return;
+    }
+    
     whiteBoardViewCurrentTop += YSWhiteBoardDefaultTopOffset;
 
     CGSize size = self.whiteBoardViewDefaultSize;
@@ -2364,8 +2379,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
             {
                 if ([[YSWhiteBoardManager shareInstance] isCanControlWhiteBoardView])
                 {
-                    whiteBoardViewCurrentLeft = YSWhiteBoardDefaultLeft;
-                    whiteBoardViewCurrentTop = YSWhiteBoardDefaultTop;
+                    [self makeCurrentWhiteBoardViewPointReset:YES];
                     
                     NSArray *arrangeList = [self getWhiteBoardViewArrangeList];
                     for (YSWhiteBoardView *whiteBoardView in self.coursewareViewList)
