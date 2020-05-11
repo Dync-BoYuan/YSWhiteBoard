@@ -47,16 +47,6 @@ static YSBrushToolsManager *brushTools = nil;
     return brushTools;
 }
 
-///// 原始配置
-//- (void)makeDefaultToolConfigs
-//{
-//    self.currentBrushToolType = YSBrushToolTypeMouse;
-//
-//    // 默认颜色 红
-//    self.defaultPrimaryColor = @"#FF0000";
-//    [self freshBrushToolConfigs];
-//}
-
 /// 画笔默认配置
 - (void)freshDefaultBrushToolConfigs
 {

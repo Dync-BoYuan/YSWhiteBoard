@@ -550,11 +550,26 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
             }
             else
             {
-                //宽，高值在主白板上的比例
-                CGFloat scaleHeight = [message bm_floatForKey:@"height"];
+                NSUInteger maxvideo = [[YSWhiteBoardManager shareInstance].roomDic bm_uintForKey:@"maxvideo"];
+
+                CGFloat scale = self.mainWhiteBoard.bm_width / self.mainWhiteBoard.bm_height;
                 
-                CGFloat height = scaleHeight * self.mainWhiteBoard.bm_height;
-                CGFloat width = height *5/3;
+                CGFloat height = 0;
+                CGFloat width = 0;
+                if (scale > 5/3)
+                {
+                    CGFloat scaleHeight = [message bm_floatForKey:@"height"];
+                    height = scaleHeight * self.mainWhiteBoard.bm_height;
+                    width = height * 5/3;
+                }
+                else
+                {
+                    CGFloat scaleWidth = [message bm_floatForKey:@"width"];
+                    width = scaleWidth * self.mainWhiteBoard.bm_width;
+                    height = width * 3/5;
+                }
+                
+                
                 if (!width || !height)
                 {
                     width = self.bm_width;

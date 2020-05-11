@@ -1657,7 +1657,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         [whiteBoardView didSelectDrawType:type color:hexColor widthProgress:progress];
         return;
     }
-    
+
     if (self.mainWhiteBoardView)
     {
         [self.mainWhiteBoardView didSelectDrawType:type color:hexColor widthProgress:progress];
