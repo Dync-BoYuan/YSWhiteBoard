@@ -403,6 +403,14 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         whiteBoardViewCurrentLeft = YSWhiteBoardDefaultLeft;
         whiteBoardViewCurrentTop = YSWhiteBoardDefaultTop*(loopCount+0.5);
     }
+    
+    if (((whiteBoardViewCurrentTop + size.height) >= self.mainWhiteBoardView.bm_height) || ((whiteBoardViewCurrentLeft + size.width) >= self.mainWhiteBoardView.bm_width))
+    {
+        loopCount = 0;
+        lineCount = 0;
+        whiteBoardViewCurrentLeft = YSWhiteBoardDefaultLeft;
+        whiteBoardViewCurrentTop = YSWhiteBoardDefaultTop;
+    }
 }
 
 - (void)clickToBringVideoToFront:(UIView *)whiteBoard
