@@ -268,7 +268,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 {
 //    CGFloat height = frame.size.height * 0.6f;
 //    CGFloat width = height / 3.0f * 5.0f;
-    CGFloat scale = self.mainWhiteBoardView.bm_width / self.mainWhiteBoardView.bm_height;
+    CGFloat scale = frame.size.width / frame.size.height;
        
        CGFloat height = 0;
        CGFloat width = 0;
