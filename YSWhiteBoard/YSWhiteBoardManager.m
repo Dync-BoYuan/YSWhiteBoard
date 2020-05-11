@@ -2034,16 +2034,6 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         }
         else if ([msgName isEqualToString:sYSSignalVideoWhiteboard] || [msgName isEqualToString:sYSSignalSharpsChange] || [msgName isEqualToString:sYSSignalMoreWhiteboardState] || [msgName isEqualToString:sYSSignalMoreWhiteboardGlobalState])
         {
-            if ([msgName isEqualToString:sYSSignalMoreWhiteboardState])
-            {
-                NSObject *data = [msgDic objectForKey:@"data"];
-                NSDictionary *tDataDic = [YSRoomUtil convertWithData:data];
-                NSString * instanceId = [tDataDic bm_stringForKey:@"instanceId"];
-                NSString * fileId = [YSRoomUtil getFileIdFromSourceInstanceId:instanceId];
-                
-                
-            }
-            
             [newMsgArray addObject:msgDic];
             if (!index)
             {

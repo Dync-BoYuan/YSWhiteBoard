@@ -100,7 +100,7 @@
 #if IS_LOAD_LOCAL_INDEX
     // 加载本地的h5文件
     NSURL *path =
-        [WBBUNDLE URLForResource:@"react_mobile_new_publishdir/index" withExtension:@"html"];
+        [YSWBBUNDLE URLForResource:@"react_mobile_new_publishdir/index" withExtension:@"html"];
 //    NSString *urlStr = [NSString
 //        stringWithFormat:@"%@#/mobileApp?languageType=%@&loadComponentName=%@", path.absoluteString,
 //                         [self getCurrentLanguage], loadComponentName];
