@@ -27,6 +27,7 @@
 @property (nonatomic, copy) NSString *newfilename;
 @property (nonatomic, copy) NSString *pagenum;
 @property (nonatomic, copy) NSString *pdfpath;
+@property (nonatomic, copy) NSString *cospdfpath;
 @property (nonatomic, copy) NSString *size;
 @property (nonatomic, copy) NSString *status;
 @property (nonatomic, copy) NSString *swfpath;

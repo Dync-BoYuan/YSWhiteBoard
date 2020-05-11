@@ -897,13 +897,13 @@
                 NSString *realPath = [NSString stringWithFormat:@"https://%@%@", self.address, path];
                 
                 __block BOOL hasPDF = NO;
-                [[YSWhiteBoardManager shareInstance].docmentDicList
-                    enumerateObjectsUsingBlock:^(NSDictionary *_Nonnull obj, NSUInteger idx,
+                [[YSWhiteBoardManager shareInstance].docmentList
+                    enumerateObjectsUsingBlock:^(YSFileModel *_Nonnull obj, NSUInteger idx,
                                                  BOOL *_Nonnull stop) {
 
-                        if ([[obj bm_stringForKey:@"fileid"] isEqualToString:fileId])
+                        if ([obj.fileid isEqualToString:fileId])
                         { //v查找课件库中的对应课件是否可以使用pdf
-                            NSString *cospdfpath = [obj bm_stringForKey:@"cospdfpath"];
+                            NSString *cospdfpath = obj.cospdfpath;
                             if ([cospdfpath bm_isNotEmpty])
                             {
                                 hasPDF = YES;

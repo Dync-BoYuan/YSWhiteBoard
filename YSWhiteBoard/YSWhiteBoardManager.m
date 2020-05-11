@@ -84,8 +84,6 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 
 /// 课件列表
 @property (nonatomic, strong) NSMutableArray <YSFileModel *> *docmentList;
-/// 课件Dic列表
-@property (nonatomic, strong) NSMutableArray <NSDictionary *> *docmentDicList;
 
 /// 当前激活文档id
 @property (nonatomic, strong, setter=setTheCurrentDocumentFileID:) NSString *currentFileId;
@@ -967,7 +965,10 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         }
     }
     
-    [self removeWhiteBoardViewWithFileId:fileId];
+    if (![self isOneWhiteBoardView])
+    {
+        [self removeWhiteBoardViewWithFileId:fileId];
+    }
 }
 
 - (void)setTheCurrentDocumentFileID:(NSString *)fileId
@@ -1511,6 +1512,47 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
             [YSRoomUtil delWhiteBoardMsg:sYSSignalExtendShowPage msgID:msgID data:fileDic1 completion:nil];
         }
     }
+    else
+    {
+        if ([self isOneWhiteBoardView] && [fileModel.fileid isEqualToString:self.currentFileId])
+        {
+            NSMutableArray *fileList = [[NSMutableArray alloc] init];
+            for (YSFileModel *fileModel1 in self.docmentList)
+            {
+                if ([fileModel1.fileid isEqualToString:fileModel.fileid])
+                {
+                    break;
+                }
+                [fileList addObject:fileModel1];
+            }
+            
+            YSFileModel *newFileModel = [self getDocumentWithFileID:@"0"];
+            if ([fileList bm_isNotEmpty])
+            {
+                fileList = [NSMutableArray arrayWithArray:[fileList bm_reversedArray]];
+                
+                for (YSFileModel *fileModel1 in fileList)
+                {
+                    if (!fileModel1.isMedia)
+                    {
+                        if (![YSRoomUtil checkIsMedia:fileModel1.filetype])
+                        {
+                            newFileModel = fileModel1;
+                            break;
+                        }
+                    }
+                }
+            }
+            
+            if (newFileModel)
+            {
+                NSString *sourceInstanceId = YSDefaultWhiteBoardId;
+                NSDictionary *fileDic = [YSFileModel fileDataDocDic:newFileModel sourceInstanceId:sourceInstanceId];
+                
+                [YSRoomUtil pubWhiteBoardMsg:sYSSignalShowPage msgID:sYSSignalDocumentFilePage_ShowPage data:fileDic extensionData:nil associatedMsgID:nil expires:0 completion:nil];
+            }
+        }
+    }
 
     NSDictionary *fileDic = [YSFileModel fileDataDocDic:fileModel sourceInstanceId:nil];
     NSMutableDictionary *sendDic = [NSMutableDictionary dictionaryWithDictionary:fileDic];
@@ -1935,7 +1977,6 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     NSDictionary *preloadFileDic = nil;
     
     [self.docmentList removeAllObjects];
-    self.docmentDicList = [NSMutableArray arrayWithArray:fileList];
 
     // 第一个课堂课件
     NSString *firstClassModelFileId = nil;

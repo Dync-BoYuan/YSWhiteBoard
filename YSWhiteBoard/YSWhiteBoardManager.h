@@ -43,8 +43,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// 课件列表
 @property (nonatomic, strong, readonly) NSMutableArray <YSFileModel *> *docmentList;
-/// 课件Dic列表
-@property (nonatomic, strong, readonly) NSMutableArray <NSDictionary *> *docmentDicList;
 /// 当前激活文档id
 @property (nonatomic, strong, readonly) NSString *currentFileId;
 
