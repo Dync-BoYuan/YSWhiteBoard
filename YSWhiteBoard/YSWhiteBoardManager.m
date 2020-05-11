@@ -2538,6 +2538,13 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
             {
                 [self.mainWhiteBoardView changeFileId:fileId];
                 whiteBoardView = self.mainWhiteBoardView;
+                
+                if (self.wbDelegate && [self.wbDelegate respondsToSelector:@selector(onWhiteBoardChangedFileWithFileList:)])
+                {
+                    NSMutableArray *fileList = [[NSMutableArray alloc] init];
+                    [fileList addObject:self.mainWhiteBoardView.fileId];
+                    [self.wbDelegate onWhiteBoardChangedFileWithFileList:fileList];
+                }
             }
         }
         else
