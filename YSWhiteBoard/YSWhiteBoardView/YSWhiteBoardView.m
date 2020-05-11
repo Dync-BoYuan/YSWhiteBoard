@@ -556,17 +556,17 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
                 
                 CGFloat height = 0;
                 CGFloat width = 0;
-                if (scale > 5/3)
+                if (scale > 5.0/3.0)
                 {
                     CGFloat scaleHeight = [message bm_floatForKey:@"height"];
                     height = scaleHeight * self.mainWhiteBoard.bm_height;
-                    width = height * 5/3;
+                    width = height * 5.0/3.0;
                 }
                 else
                 {
                     CGFloat scaleWidth = [message bm_floatForKey:@"width"];
                     width = scaleWidth * self.mainWhiteBoard.bm_width;
-                    height = width * 3/5;
+                    height = width * 3.0/5.0;
                 }
                 
                 
