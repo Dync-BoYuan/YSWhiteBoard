@@ -581,7 +581,18 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
                 CGFloat x = scaleLeft * (self.mainWhiteBoard.bm_width - width);
                 CGFloat y = scaleTop * (self.mainWhiteBoard.bm_height - height);
                 
+                if ((x + width) > (self.mainWhiteBoard.bm_width - 2))
+                {
+                    x = self.mainWhiteBoard.bm_width - width - 1;
+                }
+                
+                if ((y + height) > (self.mainWhiteBoard.bm_height - height - 2))
+                {
+                    y = self.mainWhiteBoard.bm_height - height - 1;
+                }
+                
                 frame = CGRectMake(x, y, width, height);
+                
                 self.whiteBoardControlView.hidden = YES;
             }
         }
