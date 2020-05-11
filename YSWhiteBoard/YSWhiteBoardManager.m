@@ -274,12 +274,12 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
        CGFloat width = 0;
        if (scale > 5.0/3.0)
        {
-           height = self.mainWhiteBoardView.bm_height * 0.6f;
+           height = frame.size.height * 0.6f;
            width = height * 5.0/3.0;
        }
        else
        {
-           width = self.mainWhiteBoardView.bm_width * 0.6f;
+           width = frame.size.width * 0.6f;
            height = width * 3.0/5.0;
        }
     
