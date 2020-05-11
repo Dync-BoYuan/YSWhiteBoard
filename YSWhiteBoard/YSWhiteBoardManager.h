@@ -176,8 +176,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)freshBrushToolConfig;
 // 获取当前工具配置设置 drawType: YSBrushToolType类型  colorHex: RGB颜色  progress: 值
 - (YSBrushToolsConfigs *)getCurrentBrushToolConfig;
+// 画笔颜色
+- (NSString *)getPrimaryColorHex;
 // 改变默认画笔颜色
-- (void)changePrimaryColor:(NSString *)colorHex;
+- (void)changePrimaryColorHex:(NSString *)colorHex;
 
 @end
 

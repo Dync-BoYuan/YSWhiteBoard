@@ -1692,9 +1692,16 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 }
 
 // 改变默认画笔颜色
-- (void)changePrimaryColor:(NSString *)colorHex
+- (void)changePrimaryColorHex:(NSString *)colorHex
 {
-    [self.brushToolsManager changePrimaryColor:colorHex];
+    [self.brushToolsManager changePrimaryColorHex:colorHex];
+}
+
+// 画笔颜色
+- (NSString *)getPrimaryColorHex
+{
+    return self.brushToolsManager.primaryColorHex;
+
 }
 
 
@@ -2190,7 +2197,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     if ([properties bm_containsObjectForKey:sYSUserPrimaryColor])
     {
         NSString *colorHex = [properties bm_stringForKey:sYSUserPrimaryColor];
-        [self.brushToolsManager changePrimaryColor:colorHex];
+        [self.brushToolsManager changePrimaryColorHex:colorHex];
     }
 
     if (self.mainWhiteBoardView)
