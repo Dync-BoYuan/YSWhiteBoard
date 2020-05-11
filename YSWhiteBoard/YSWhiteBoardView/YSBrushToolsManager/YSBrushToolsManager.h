@@ -39,7 +39,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)didSelectDrawType:(YSDrawType)type color:(nullable NSString *)hexColor widthProgress:(CGFloat)progress;
 
 /// 改变默认画笔颜色
-- (void)changePrimaryColor:(nullable NSString *)colorHex;
+- (void)changePrimaryColorHex:(nullable NSString *)colorHex;
 
 @end
 
