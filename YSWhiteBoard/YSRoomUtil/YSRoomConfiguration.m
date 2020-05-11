@@ -58,7 +58,6 @@
         self.isHiddenKickOutStudentBtn          = [self cutOutStringWithIndex: 135];
         self.isRemindEyeCare                    = [self cutOutStringWithIndex: 141];
         self.isMultiCourseware                  = [self cutOutStringWithIndex: 150];
-        self.isMultiCourseware = YES;
         self.isShowUserNum                      = [self cutOutStringWithIndex: 200];
         self.isChatBeforeClass                  = [self cutOutStringWithIndex: 201];
         self.isDisablePrivateChat               = [self cutOutStringWithIndex: 202];
