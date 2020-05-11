@@ -47,6 +47,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, readonly) NSMutableArray <NSDictionary *> *docmentDicList;
 /// 当前激活文档id
 @property (nonatomic, strong, readonly) NSString *currentFileId;
+
 /// 当前播放的媒体课件
 @property (nonatomic, strong, readonly) YSMediaFileModel *mediaFileModel;
 /// 当前播放的媒体课件发送者peerId
@@ -78,7 +79,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (YSWhiteBoardView *)createMainWhiteBoardWithFrame:(CGRect)frame
                         loadFinishedBlock:(wbLoadFinishedBlock)loadFinishedBlock;
 
-- (void)updateWebAddressInfo;
+//- (void)updateWebAddressInfo;
 
 
 #pragma -
@@ -146,7 +147,6 @@ NS_ASSUME_NONNULL_BEGIN
 ///删除课件窗口
 - (void)removeWhiteBoardViewWithFileId:(NSString *)fileId;
 - (void)removeWhiteBoardViewWithWhiteBoardView:(YSWhiteBoardView *)whiteBoardView;
-
 
 - (CGFloat)currentDocumentZoomScale;
 - (CGFloat)documentZoomScaleWithFileId:(NSString *)fileId;
