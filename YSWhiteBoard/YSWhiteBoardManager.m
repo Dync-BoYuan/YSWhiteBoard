@@ -1485,7 +1485,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
             
             NSString *msgID = [NSString stringWithFormat:@"%@%@", sYSSignalDocumentFilePage_ExtendShowPage, [YSRoomUtil getwhiteboardIDFromFileId:fileModel.fileid]];
             
-            [YSRoomUtil pubWhiteBoardMsg:sYSSignalExtendShowPage msgID:msgID data:fileDic1 extensionData:nil associatedMsgID:nil expires:0 completion:nil];
+            [YSRoomUtil delWhiteBoardMsg:sYSSignalExtendShowPage msgID:msgID data:fileDic1 completion:nil];
         }
     }
 
