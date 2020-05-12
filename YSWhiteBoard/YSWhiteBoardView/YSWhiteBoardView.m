@@ -89,7 +89,8 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
 @property (nonatomic, strong) UIImageView *mp4WaitingImageView;
 /// 视频播放控制
 @property (nonatomic, strong) YSWBMp4ControlView *mp4ControlView;
-
+/// H5媒体关闭
+@property (nonatomic, strong) UIButton *closeH5Mp4Btn;
 
 /// 白板视频标注视图
 @property (nonatomic, strong) YSWBMediaMarkView *mediaMarkView;
@@ -383,25 +384,57 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
     
     _isH5LoadMedia = isH5LoadMedia;
     
+
     if (isH5LoadMedia)
     {
-        mp4BackAllowTurnPage = self.pageControlView.allowTurnPage;
-        mp4BackAllowScaling = self.pageControlView.allowScaling;
-
-        self.pageControlView.allowTurnPage = NO;
-        self.pageControlView.allowScaling = NO;
-        self.pageControlView.frashBtn.enabled = NO;
+//        mp4BackAllowTurnPage = self.pageControlView.allowTurnPage;
+//        mp4BackAllowScaling = self.pageControlView.allowScaling;
+//
+//        self.pageControlView.allowTurnPage = NO;
+//        self.pageControlView.allowScaling = NO;
+//        self.pageControlView.frashBtn.enabled = NO;
+        self.pageControlView.hidden = YES;
 
         self.mp4WaitingImageView.hidden = NO;
         [self.mp4WaitingImageView bm_bringToFront];
+        
+        if ([[YSWhiteBoardManager shareInstance] isCanControlWhiteBoardView])
+        {
+            self.mp4ControlView.hidden = NO;
+            
+            UIButton *closeH5Mp4Btn = [UIButton buttonWithType:UIButtonTypeCustom];
+            [closeH5Mp4Btn addTarget:self action:@selector(stopH5Media) forControlEvents:UIControlEventTouchUpInside];
+            [closeH5Mp4Btn setImage:[UIImage imageNamed:@"ysh5media_closemp4_normal"] forState:UIControlStateNormal];
+            closeH5Mp4Btn.frame = CGRectMake(self.frame.size.width - 35, 40, 25, 25);
+            closeH5Mp4Btn.backgroundColor = [UIColor clearColor];
+            closeH5Mp4Btn.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleBottomMargin;
+            self.closeH5Mp4Btn = closeH5Mp4Btn;
+            [self addSubview:closeH5Mp4Btn];
+        }
+        
+
     }
     else
     {
-        self.pageControlView.allowTurnPage = mp4BackAllowTurnPage;
-        self.pageControlView.allowScaling = mp4BackAllowScaling;
-        self.pageControlView.frashBtn.enabled = YES;
-
+//        self.pageControlView.allowTurnPage = mp4BackAllowTurnPage;
+//        self.pageControlView.allowScaling = mp4BackAllowScaling;
+//        self.pageControlView.frashBtn.enabled = YES;
+        self.pageControlView.hidden = NO;
         self.mp4WaitingImageView.hidden = YES;
+        self.mp4ControlView.hidden = YES;
+        if (self.closeH5Mp4Btn)
+        {
+            [self.closeH5Mp4Btn removeFromSuperview];
+            self.closeH5Mp4Btn = nil;
+        }
+    }
+}
+
+- (void)stopH5Media
+{
+    if (self.isH5LoadMedia)
+    {
+        [[YSRoomInterface instance] stopShareMediaFile:nil];
     }
 }
 

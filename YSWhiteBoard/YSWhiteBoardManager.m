@@ -2948,7 +2948,11 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 
     if (self.mediaFileModel.isVideo)
     {
-        if (!self.mp4WhiteBoardView.isH5LoadMedia)
+        if (self.mp4WhiteBoardView.isH5LoadMedia)
+        {
+            self.mp4WhiteBoardView.isH5LoadMedia = NO;
+        }
+        else
         {
             [self removeWhiteBoardViewWithWhiteBoardView:self.mp4WhiteBoardView];
         }
