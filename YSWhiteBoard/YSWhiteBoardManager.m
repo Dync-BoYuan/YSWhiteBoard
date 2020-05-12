@@ -1880,11 +1880,6 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
             self.roomConfig = [[YSRoomConfiguration alloc] initWithConfigurationString:chairmancontrol];
         }
         
-        if ([self isOneWhiteBoardView])
-        {
-            self.mainWhiteBoardView.pageControlView.hidden = YES;
-        }
-        
         if (![[YSWhiteBoardManager shareInstance] isCanControlWhiteBoardView])
         {
             self.mainWhiteBoardView.collectBtn.hidden = YES;

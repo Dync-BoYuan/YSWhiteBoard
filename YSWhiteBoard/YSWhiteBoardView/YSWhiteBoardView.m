@@ -208,28 +208,25 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
             
         if (self.mediaType != YSWhiteBordMediaType_Audio)
         {
-            if (![[YSWhiteBoardManager shareInstance] isOneWhiteBoardView])
+            YSCoursewareControlView *pageControlView = [[YSCoursewareControlView alloc] initWithFrame:CGRectMake(0, 0, 232, 28)];
+            pageControlView.delegate = self;
+            pageControlView.fileId = self.fileId;
+            [self addSubview:pageControlView];
+            self.pageControlView = pageControlView;
+            self.pageControlView.bm_centerX = frame.size.width * 0.5f;
+            self.pageControlView.bm_bottom = frame.size.height - 20;
+            
+            // 拖拽
+            UIPanGestureRecognizer *panGestureRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(dragPageControlView:)];
+            [self.pageControlView addGestureRecognizer:panGestureRecognizer];
+            if (isMedia)
             {
-                YSCoursewareControlView *pageControlView = [[YSCoursewareControlView alloc] initWithFrame:CGRectMake(0, 0, 232, 28)];
-                pageControlView.delegate = self;
-                pageControlView.fileId = self.fileId;
-                [self addSubview:pageControlView];
-                self.pageControlView = pageControlView;
-                self.pageControlView.bm_centerX = frame.size.width * 0.5f;
-                self.pageControlView.bm_bottom = frame.size.height - 20;
-                
-                // 拖拽
-                UIPanGestureRecognizer *panGestureRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(dragPageControlView:)];
-                [self.pageControlView addGestureRecognizer:panGestureRecognizer];
-                if (isMedia)
-                {
-                    self.pageControlView.allowTurnPage = NO;
-                    self.pageControlView.allowScaling = NO;
-                    self.pageControlView.frashBtn.enabled = NO;
-                }
+                self.pageControlView.allowTurnPage = NO;
+                self.pageControlView.allowScaling = NO;
+                self.pageControlView.frashBtn.enabled = NO;
             }
 
-            if ([YSRoomInterface instance].localUser.role == YSUserType_Teacher)
+            if ([YSRoomInterface instance].localUser.role == YSUserType_Teacher && ![[YSWhiteBoardManager shareInstance] isOneWhiteBoardView])
             {
                 if (!isMainWhiteBoard)
                 {
