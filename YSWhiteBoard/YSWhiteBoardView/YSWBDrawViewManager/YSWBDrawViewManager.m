@@ -125,7 +125,7 @@
         // 是否点选鼠标
         if (self.showOnWeb)
         {
-            self.fileView.hidden = selected;
+            self.fileView.hidden = NO;
         }
         else
         {
@@ -612,7 +612,8 @@
             if (self.showOnWeb)
             {
                 // 画笔穿透时在web课件上不隐藏
-                self.fileView.hidden = [YSWhiteBoardManager shareInstance].roomConfig.isPenCanPenetration ? NO : self.selectMouse;
+//                self.fileView.hidden = [YSWhiteBoardManager shareInstance].roomConfig.isPenCanPenetration ? NO : self.selectMouse;
+                self.fileView.hidden = NO;
             }
         }
         else if ([YSRoomInterface instance].localUser.role == YSUserType_Teacher)
@@ -957,7 +958,7 @@
                             self.showOnWeb    = YES;
                             self.wkWebView.hidden = NO;
                             [self.fileView showOnWeb];
-                            self.fileView.hidden = self.selectMouse;
+//                            self.fileView.hidden = self.selectMouse;
                         }
                         else if ([realPath hasSuffix:@".gif"])
                         {
@@ -965,7 +966,7 @@
                             self.showOnWeb    = YES;
                             self.wkWebView.hidden = NO;
                             [self.fileView showOnWeb];
-                            self.fileView.hidden = self.selectMouse;
+//                            self.fileView.hidden = self.selectMouse;
                         }
                         else
                         {
@@ -996,7 +997,8 @@
                 self.showOnWeb    = YES;
                 self.wkWebView.hidden = NO;
                 [self.fileView showOnWeb];
-                self.fileView.hidden = [YSWhiteBoardManager shareInstance].roomConfig.isPenCanPenetration ? NO : self.selectMouse;
+//                self.fileView.hidden = [YSWhiteBoardManager shareInstance].roomConfig.isPenCanPenetration ? NO : self.selectMouse;
+                self.fileView.hidden = NO;
             }
             
             if ([YSWhiteBoardManager shareInstance].roomConfig.isPenCanPenetration == YES)
@@ -1123,20 +1125,11 @@
 
     if (self.showOnWeb)
     {
-        self.fileView.hidden = (type == YSNativeToolTypeMouse);
+        self.fileView.hidden = NO;
     }
     else
     {
         self.fileView.ysDrawView.drawView.hidden = NO;
-        
-//        if ([self.bwContentView.fileId isEqualToString:@"0"])
-//        {
-//            self.fileView.ysDrawView.drawView.hidden = NO;
-//        }
-//        else
-//        {
-//            self.fileView.ysDrawView.drawView.hidden = (type == YSNativeToolTypeMouse);
-//        }
     }
 }
 
