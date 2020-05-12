@@ -204,10 +204,7 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
             [self.whiteBoardContentView addSubview:self.wbView];
             
             self.drawViewManager = [[YSWBDrawViewManager alloc] initWithBackView:whiteBoardContentView webView:self.wbView];
-        }
             
-        if (self.mediaType != YSWhiteBordMediaType_Audio)
-        {
             YSCoursewareControlView *pageControlView = [[YSCoursewareControlView alloc] initWithFrame:CGRectMake(0, 0, 232, 28)];
             pageControlView.delegate = self;
             pageControlView.fileId = self.fileId;
@@ -219,14 +216,11 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
             // 拖拽
             UIPanGestureRecognizer *panGestureRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(dragPageControlView:)];
             [self.pageControlView addGestureRecognizer:panGestureRecognizer];
-            if (isMedia)
-            {
-                self.pageControlView.allowTurnPage = NO;
-                self.pageControlView.allowScaling = NO;
-                self.pageControlView.frashBtn.enabled = NO;
-            }
-
-            if ([YSRoomInterface instance].localUser.role == YSUserType_Teacher && ![[YSWhiteBoardManager shareInstance] isOneWhiteBoardView])
+        }
+            
+        if (self.mediaType != YSWhiteBordMediaType_Audio)
+        {
+            if ([YSRoomInterface instance].localUser.role == YSUserType_Teacher )
             {
                 if (!isMainWhiteBoard)
                 {
@@ -354,7 +348,7 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
 
 - (void)makeMp4WaitingView
 {
-    UIImageView *imageView = [[UIImageView alloc] initWithFrame:self.bounds];
+    UIImageView *imageView = [[UIImageView alloc] initWithFrame:self.whiteBoardContentView.bounds];
     imageView.contentMode = UIViewContentModeCenter;
     [self.whiteBoardContentView addSubview:imageView];
     imageView.backgroundColor = [UIColor blackColor];
