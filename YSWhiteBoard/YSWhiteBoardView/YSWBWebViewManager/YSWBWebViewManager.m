@@ -437,6 +437,20 @@
         return;
     }
     
+#if 1
+    
+    if (self.loadFinishedBlock)
+    {
+        self.loadFinishedBlock();
+    }
+    
+    if (self.delegate && [self.delegate respondsToSelector:@selector(onWBWebViewManagerPageFinshed)])
+    {
+        [self.delegate onWBWebViewManagerPageFinshed];
+    }
+
+#else
+    
     NSData *data = [NSJSONSerialization dataWithJSONObject:msgDic
                                                    options:0
                                                      error:nil];
@@ -459,6 +473,7 @@
             [weakSelf.delegate onWBWebViewManagerPageFinshed];
         }
     }];
+#endif
 }
 /// app中play PPT中的media
 - (void)onJsPublishNetworkMedia:(NSDictionary *)videoData
