@@ -419,7 +419,7 @@ struct CompareNSString: public std::binary_function<NSString*, NSString*, bool> 
     
     if (_mode == YSWorkModeControllor && ![YSRoomInterface instance].localUser.canDraw)
     {
-        [super touchesBegan:touches withEvent:event];
+        [super touchesMoved:touches withEvent:event];
         return;
     }
 
@@ -478,8 +478,6 @@ struct CompareNSString: public std::binary_function<NSString*, NSString*, bool> 
     } else {
          [self setNeedsDisplay];
     }
-   
-    
 }
 
 - (void)touchesCancelled:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
@@ -495,13 +493,13 @@ struct CompareNSString: public std::binary_function<NSString*, NSString*, bool> 
     
     if (_mode == YSWorkModeControllor && ![YSRoomInterface instance].localUser.canDraw)
     {
-        [super touchesBegan:touches withEvent:event];
+        [super touchesEnded:touches withEvent:event];
         return;
     }
 
     if (_mode == YSWorkModeViewer || self.hidden)
     {
-        [super touchesBegan:touches withEvent:event];
+        [super touchesEnded:touches withEvent:event];
         return;
     }
     

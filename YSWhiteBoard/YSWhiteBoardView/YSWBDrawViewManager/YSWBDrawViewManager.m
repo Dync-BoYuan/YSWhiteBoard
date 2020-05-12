@@ -68,7 +68,7 @@
         self.wkWebView = webView;
         
         self.showOnWeb = NO;
-        self.selectMouse = YES;
+        
                 
         self.address = [YSWhiteBoardManager shareInstance].serverDocAddrKey;
 
@@ -85,6 +85,9 @@
             make.top.bmmas_equalTo(self.contentView.bmmas_top);
             make.bottom.bmmas_equalTo(self.contentView.bmmas_bottom);
         }];
+        
+        self.selectMouse = YES;
+        [self setWorkMode:YSWorkModeViewer];
         
         [view setNeedsLayout];
         [view layoutIfNeeded];
@@ -614,7 +617,14 @@
         }
         else if ([YSRoomInterface instance].localUser.role == YSUserType_Teacher)
         { // 老师
-            [self setWorkMode:YSWorkModeControllor];
+            if (self.selectMouse)
+            {
+                [self setWorkMode:YSWorkModeViewer];
+            }
+            else
+            {
+                [self setWorkMode:YSWorkModeControllor];
+            }
         }
         else
         { // 巡课
@@ -1067,7 +1077,7 @@
         {
             self.selectMouse = YES;
 
-//            [self setWorkMode:YSWorkModeViewer];
+            [self setWorkMode:YSWorkModeViewer];
 //
 //            NSNumber *isDynamicPPT = [self.fileDictionary objectForKey:@"isDynamicPPT"];
 //            NSNumber *isH5Document = [self.fileDictionary objectForKey:@"isH5Document"];
@@ -1117,14 +1127,16 @@
     }
     else
     {
-        if ([self.bwContentView.fileId isEqualToString:@"0"])
-        {
-            self.fileView.ysDrawView.drawView.hidden = NO;
-        }
-        else
-        {
-            self.fileView.ysDrawView.drawView.hidden = (type == YSNativeToolTypeMouse);
-        }
+        self.fileView.ysDrawView.drawView.hidden = NO;
+        
+//        if ([self.bwContentView.fileId isEqualToString:@"0"])
+//        {
+//            self.fileView.ysDrawView.drawView.hidden = NO;
+//        }
+//        else
+//        {
+//            self.fileView.ysDrawView.drawView.hidden = (type == YSNativeToolTypeMouse);
+//        }
     }
 }
 
