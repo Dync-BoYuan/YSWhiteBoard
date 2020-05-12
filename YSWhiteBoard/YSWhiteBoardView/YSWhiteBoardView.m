@@ -1429,6 +1429,7 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
 - (void)changeFileId:(NSString *)fileId
 {
     self.fileId = fileId;
+    self.pageControlView.fileId = fileId;
 }
 
 /// 当前页码
