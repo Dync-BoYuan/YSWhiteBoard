@@ -1135,6 +1135,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
             {
                 [fileList addObject:whiteBoardView.fileId];
             }
+            
         }
         
         if (![fileList containsObject:self.mainWhiteBoardView.fileId])
@@ -1879,6 +1880,13 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         {
             self.roomConfig = [[YSRoomConfiguration alloc] initWithConfigurationString:chairmancontrol];
         }
+        
+        if ([[YSWhiteBoardManager shareInstance] isOneWhiteBoardView])
+        {
+            self.mainWhiteBoardView.collectBtn.hidden = YES;
+            self.mainWhiteBoardView.whiteBoardControlView.hidden = YES;
+        }
+        
         
         if (![[YSWhiteBoardManager shareInstance] isCanControlWhiteBoardView])
         {
