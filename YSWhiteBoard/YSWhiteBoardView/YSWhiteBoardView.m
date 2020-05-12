@@ -586,7 +586,7 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
                     x = self.mainWhiteBoard.bm_width - width - 1;
                 }
                 
-                if ((y + height) > (self.mainWhiteBoard.bm_height - height - 2))
+                if ((y + height) > (self.mainWhiteBoard.bm_height - 2))
                 {
                     y = self.mainWhiteBoard.bm_height - height - 1;
                 }
