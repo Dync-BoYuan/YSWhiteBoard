@@ -163,7 +163,7 @@ static  NSString *const sYSSignalMoreWhiteboardGlobalState  = @"MoreWhiteboardGl
 
 #define WBDisconnect                                @"disconnect"
 
-#define WBFakeJsSdkInitInfo                         @"updateFakeJsSdkInitInfo"
+//#define WBFakeJsSdkInitInfo                         @"updateFakeJsSdkInitInfo"
 /// 更新文档服务地址信令
 #define WBUpdateWebAddressInfo                      @"updateWebAddressInfo"
 
