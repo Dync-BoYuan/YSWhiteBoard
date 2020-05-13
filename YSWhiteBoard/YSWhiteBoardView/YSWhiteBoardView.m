@@ -476,33 +476,27 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
 
     self.dragZoomView.bm_right = frame.size.width;
     self.dragZoomView.bm_bottom = frame.size.height;
-    if (!self.mp4ControlView.hidden)
+
+    if ((self.isMediaView && self.mediaType == YSWhiteBordMediaType_Video) || self.isH5LoadMedia)
     {
-        self.mp4ControlView.bm_bottom = self.bm_height - 23;
-    }
-    if (self.isMediaView)
-    {
-        if (self.mediaType == YSWhiteBordMediaType_Video)
+        if (self.mp4ControlView.bm_width < 300)
         {
-            if (self.mp4ControlView.bm_width < 300)
-            {
-                [self.mp4ControlView hideMp4ControlViewOutsidePause:YES];
-            }
-            else
-            {
-                [self.mp4ControlView hideMp4ControlViewOutsidePause:NO];
-            }
-            
-            if ([self.positionData bm_boolForKey:@"full"])
-            {
-                self.mp4ControlView.frame = CGRectMake(80, 0, self.whiteBoardControlView.bm_left - 10 - 80 , 46);
-            }
-            else
-            {
-                self.mp4ControlView.frame = CGRectMake(30, 0, self.bm_width - 60, 46);
-            }
-            self.mp4ControlView.bm_bottom = self.bm_height - 23;
+            [self.mp4ControlView hideMp4ControlViewOutsidePause:YES];
         }
+        else
+        {
+            [self.mp4ControlView hideMp4ControlViewOutsidePause:NO];
+        }
+        
+        if ([self.positionData bm_boolForKey:@"full"])
+        {
+            self.mp4ControlView.frame = CGRectMake(80, 0, self.whiteBoardControlView.bm_left - 10 - 80 , 46);
+        }
+        else
+        {
+            self.mp4ControlView.frame = CGRectMake(30, 0, self.bm_width - 60, 46);
+        }
+        self.mp4ControlView.bm_bottom = self.bm_height - 23;
     }
 }
 
