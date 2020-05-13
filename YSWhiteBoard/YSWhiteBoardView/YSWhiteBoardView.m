@@ -394,8 +394,6 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
         
         if ([[YSWhiteBoardManager shareInstance] isCanControlWhiteBoardView])
         {
-            self.mp4ControlView.hidden = NO;
-            
             UIButton *closeH5Mp4Btn = [UIButton buttonWithType:UIButtonTypeCustom];
             [closeH5Mp4Btn addTarget:self action:@selector(stopH5Media) forControlEvents:UIControlEventTouchUpInside];
             [closeH5Mp4Btn setImage:[UIImage imageNamed:@"ysh5media_closemp4_normal"] forState:UIControlStateNormal];
@@ -411,7 +409,8 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
             self.h5Mp4TapGestureView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
             
             [self.mp4ControlView bm_bringToFront];
-            
+            [self.closeH5Mp4Btn bm_bringToFront];
+            [self.whiteBoardControlView bm_bringToFront];
             UITapGestureRecognizer *oneTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(changeToCurrentBWView:)];
             oneTap.numberOfTapsRequired = 1;
             [self.h5Mp4TapGestureView addGestureRecognizer:oneTap];
@@ -419,6 +418,7 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
     }
     else
     {
+        [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(hideMp4ControlView) object:nil];
         self.pageControlView.hidden = NO;
         self.mp4WaitingImageView.hidden = YES;
         self.mp4ControlView.hidden = YES;
@@ -448,7 +448,7 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
 {
     if ([[YSWhiteBoardManager shareInstance] isCanControlWhiteBoardView])
     {
-        if (self.isMediaView)
+        if (self.isMediaView || self.isH5LoadMedia)
         {
             self.mp4ControlView.hidden = !self.mp4ControlView.hidden;
             if (!self.mp4ControlView.hidden)
@@ -484,7 +484,7 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
     self.dragZoomView.bm_right = frame.size.width;
     self.dragZoomView.bm_bottom = frame.size.height;
 
-    if ((self.isMediaView && self.mediaType == YSWhiteBordMediaType_Video) || self.isH5LoadMedia)
+    if (1)
     {
         if (self.mp4ControlView.bm_width < 300)
         {
