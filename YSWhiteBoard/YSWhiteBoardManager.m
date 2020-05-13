@@ -3130,23 +3130,23 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     
     CGFloat viewWidth = panView.bm_width;
     
-        if (newX < 1 + 30.0)
-        {
-            newX = 1 + viewWidth/2 ;
-        }
-        else if (newX > self.mainWhiteBoardView.bm_width - viewWidth/2 - 1)
-        {
-            newX = self.mainWhiteBoardView.bm_width - viewWidth/2 - 1;
-        }
+    if (newX < 1 + 30.0)
+    {
+        newX = 1 + viewWidth/2 ;
+    }
+    else if (newX > self.mainWhiteBoardView.bm_width - viewWidth/2 - 1)
+    {
+        newX = self.mainWhiteBoardView.bm_width - viewWidth/2 - 1;
+    }
     
-        if (newY < 1 + 30.0)
-        {
-            newY = 1 + viewWidth/2;
-        }
-        else if (newY > self.mainWhiteBoardView.bm_height - viewWidth/2 - 1)
-        {
-            newY = self.mainWhiteBoardView.bm_height - viewWidth/2 - 1;
-        }
+    if (newY < 1 + 30.0)
+    {
+        newY = 1 + viewWidth/2;
+    }
+    else if (newY > self.mainWhiteBoardView.bm_height - viewWidth/2 - 1)
+    {
+        newY = self.mainWhiteBoardView.bm_height - viewWidth/2 - 1;
+    }
     
     CGPoint centerPoint = CGPointMake(newX, newY);
     panView.center = centerPoint;
