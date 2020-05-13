@@ -33,9 +33,6 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
     CGFloat topViewHeight;
     
     CGSize oldSize;
-    
-    BOOL mp4BackAllowTurnPage;
-    BOOL mp4BackAllowScaling;
 }
 
 @property (nonatomic, strong) NSString *whiteBoardId;
@@ -75,7 +72,7 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
 @property (nonatomic, strong) UIImageView *dragPageControlViewImage;
 
 /// 右下角拖动放大的view
-@property (nonatomic, strong) UIView * dragZoomView;
+@property (nonatomic, strong) UIView *dragZoomView;
 
 /// 小白板点击控制条全屏前的frame
 //@property (nonatomic, assign)CGRect whiteBoardFrame;
@@ -91,6 +88,8 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
 @property (nonatomic, strong) YSWBMp4ControlView *mp4ControlView;
 /// H5媒体关闭
 @property (nonatomic, strong) UIButton *closeH5Mp4Btn;
+/// H5媒体点击手势接收
+@property (nonatomic, strong) UIView *h5Mp4TapGestureView;
 
 /// 白板视频标注视图
 @property (nonatomic, strong) YSWBMediaMarkView *mediaMarkView;
@@ -361,7 +360,6 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
         imageView.hidden = YES;
     }
     self.mp4WaitingImageView = imageView;
-    self.mp4WaitingImageView.userInteractionEnabled = YES;
     
     NSMutableArray *imageArray = [[NSMutableArray alloc] init];
     for (NSUInteger i=1; i<=21; i++)
@@ -371,10 +369,6 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
     }
     [imageView bm_animationWithImageArray:imageArray duration:3 repeatCount:0];
     [imageView startAnimating];
-
-    UITapGestureRecognizer *oneTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(changeToCurrentBWView:)];
-    oneTap.numberOfTapsRequired = 1;
-    [self.mp4WaitingImageView addGestureRecognizer:oneTap];
 }
 
 - (void)hideMp4ControlView
@@ -391,15 +385,8 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
     
     _isH5LoadMedia = isH5LoadMedia;
     
-
     if (isH5LoadMedia)
     {
-//        mp4BackAllowTurnPage = self.pageControlView.allowTurnPage;
-//        mp4BackAllowScaling = self.pageControlView.allowScaling;
-//
-//        self.pageControlView.allowTurnPage = NO;
-//        self.pageControlView.allowScaling = NO;
-//        self.pageControlView.frashBtn.enabled = NO;
         self.pageControlView.hidden = YES;
 
         self.mp4WaitingImageView.hidden = NO;
@@ -417,15 +404,21 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
             closeH5Mp4Btn.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleBottomMargin;
             self.closeH5Mp4Btn = closeH5Mp4Btn;
             [self addSubview:closeH5Mp4Btn];
+            
+            self.h5Mp4TapGestureView = [[UIView alloc] initWithFrame:self.bounds];
+            self.h5Mp4TapGestureView.backgroundColor = [UIColor clearColor];
+            [self addSubview:self.h5Mp4TapGestureView];
+            self.h5Mp4TapGestureView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+            
+            [self.mp4ControlView bm_bringToFront];
+            
+            UITapGestureRecognizer *oneTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(changeToCurrentBWView:)];
+            oneTap.numberOfTapsRequired = 1;
+            [self.h5Mp4TapGestureView addGestureRecognizer:oneTap];
         }
-        
-
     }
     else
     {
-//        self.pageControlView.allowTurnPage = mp4BackAllowTurnPage;
-//        self.pageControlView.allowScaling = mp4BackAllowScaling;
-//        self.pageControlView.frashBtn.enabled = YES;
         self.pageControlView.hidden = NO;
         self.mp4WaitingImageView.hidden = YES;
         self.mp4ControlView.hidden = YES;
@@ -433,6 +426,12 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
         {
             [self.closeH5Mp4Btn removeFromSuperview];
             self.closeH5Mp4Btn = nil;
+        }
+        
+        if (self.h5Mp4TapGestureView)
+        {
+            [self.h5Mp4TapGestureView removeFromSuperview];
+            self.h5Mp4TapGestureView = nil;
         }
     }
 }
