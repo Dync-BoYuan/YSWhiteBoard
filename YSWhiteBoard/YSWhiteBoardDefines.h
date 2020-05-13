@@ -54,8 +54,8 @@ static NSString *const YSWhiteBoard_domain_demoali = @"rddocdemo.roadofcloud.net
 static  NSString *const sWhiteboardID           = @"whiteboardID";
 #define YSDefaultWhiteBoardId                   @"default"
 
-#define YSWhiteBoard_MainBackGroudColor         [UIColor bm_colorWithHex:0xDEEAFF]
-#define YSWhiteBoard_MainBackDrawBoardBgColor   [UIColor bm_colorWithHex:0xDCE2F1]
+#define YSWhiteBoard_MainBackGroudColor         [UIColor bm_colorWithHex:0xDCE2F1]
+#define YSWhiteBoard_MainBackDrawBoardBgColor   [UIColor bm_colorWithHex:0xDEEAFF]
 
 //#define YSWhiteBoard_BackGroudColor             [UIColor bm_colorWithHex:0x6D7278]
 #define YSWhiteBoard_BackGroudColor             [UIColor bm_colorWithHex:0xDCE2F1]
