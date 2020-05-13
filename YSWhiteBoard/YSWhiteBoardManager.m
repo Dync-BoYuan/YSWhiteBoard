@@ -1890,11 +1890,14 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
             self.mainWhiteBoardView.whiteBoardControlView.hidden = YES;
         }
         
+        if ([YSRoomInterface instance].localUser.role != YSUserType_Teacher)
+        {
+            self.mainWhiteBoardView.collectBtn.hidden = YES;
+        }
+        
         
         if (![[YSWhiteBoardManager shareInstance] isCanControlWhiteBoardView])
         {
-            self.mainWhiteBoardView.collectBtn.hidden = YES;
-            
             NSDictionary *properties = [[YSRoomInterface instance].localUser.properties bm_dictionaryForKey:@"properties"];
             
             if ([properties bm_boolForKey:@"candraw"])
@@ -3128,11 +3131,12 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     CGFloat newX = panView.bm_centerX+offsetPoint.x;
     CGFloat newY = panView.bm_centerY+offsetPoint.y;
 
-    if ([YSRoomInterface instance].localUser.role != YSUserType_Teacher)
+    if ([YSRoomInterface instance].localUser.role == YSUserType_Teacher)
     {
         CGFloat viewWidth = panView.bm_width;
+        CGFloat viewHeight = panView.bm_height;
         
-        if (newX < 1 + 30.0)
+        if (newX < 1 + viewWidth/2)
         {
             newX = 1 + viewWidth/2 ;
         }
@@ -3141,7 +3145,29 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
             newX = self.mainWhiteBoardView.bm_width - viewWidth/2 - 1;
         }
         
-        if (newY < 1 + 30.0)
+        if (newY <= 1 + viewHeight/2)
+        {
+            newY = 1 + viewHeight/2;
+        }
+        else if (newY > self.mainWhiteBoardView.bm_height - viewHeight/2 - 1)
+        {
+            newY = self.mainWhiteBoardView.bm_height - viewHeight/2 - 1;
+        }
+    }
+    else
+    {
+       CGFloat viewWidth = panView.bm_width;
+        
+        if (newX < 1 + viewWidth/2)
+        {
+            newX = 1 + viewWidth/2 ;
+        }
+        else if (newX > self.mainWhiteBoardView.bm_width - viewWidth/2 - 1)
+        {
+            newX = self.mainWhiteBoardView.bm_width - viewWidth/2 - 1;
+        }
+        
+        if (newY <= 1 + viewWidth/2)
         {
             newY = 1 + viewWidth/2;
         }
