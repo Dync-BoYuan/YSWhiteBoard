@@ -485,7 +485,7 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
     self.dragZoomView.bm_right = frame.size.width;
     self.dragZoomView.bm_bottom = frame.size.height;
 
-    if ((self.isMediaView && self.mediaType == YSWhiteBordMediaType_Video) || self.isH5LoadMedia)
+    if (1)
     {
         if (self.mp4ControlView.bm_width < 300)
         {
