@@ -402,8 +402,7 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
             closeH5Mp4Btn.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleBottomMargin;
             self.closeH5Mp4Btn = closeH5Mp4Btn;
             [self addSubview:closeH5Mp4Btn];
-            
-            self.h5Mp4TapGestureView = [[UIView alloc] initWithFrame:self.bounds];
+            self.h5Mp4TapGestureView = [[UIView alloc] initWithFrame:CGRectMake(0, YSTopViewHeight, self.frame.size.width, self.frame.size.height - YSTopViewHeight)];
             self.h5Mp4TapGestureView.backgroundColor = [UIColor clearColor];
             [self addSubview:self.h5Mp4TapGestureView];
             self.h5Mp4TapGestureView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
