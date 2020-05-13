@@ -98,6 +98,7 @@
     pageLabel.font = [UIFont systemFontOfSize:16];
     [self addSubview:pageLabel];
     self.pageLabel = pageLabel;
+    self.pageLabel.adjustsFontSizeToFitWidth = YES;
     
     //右翻页按钮
     UIButton * rightTurnBtn = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, 17, 25)];
