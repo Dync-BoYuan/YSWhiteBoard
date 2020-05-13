@@ -107,6 +107,8 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
 
 - (void)destroy
 {
+    [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(hideMp4ControlView) object:nil];
+
     [self.cacheMsgPool removeAllObjects];
     self.cacheMsgPool = nil;
 
@@ -359,6 +361,7 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
         imageView.hidden = YES;
     }
     self.mp4WaitingImageView = imageView;
+    self.mp4WaitingImageView.userInteractionEnabled = YES;
     
     NSMutableArray *imageArray = [[NSMutableArray alloc] init];
     for (NSUInteger i=1; i<=21; i++)
@@ -368,6 +371,10 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
     }
     [imageView bm_animationWithImageArray:imageArray duration:3 repeatCount:0];
     [imageView startAnimating];
+
+    UITapGestureRecognizer *oneTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(changeToCurrentBWView:)];
+    oneTap.numberOfTapsRequired = 1;
+    [self.mp4WaitingImageView addGestureRecognizer:oneTap];
 }
 
 - (void)hideMp4ControlView
@@ -447,6 +454,7 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
             self.mp4ControlView.hidden = !self.mp4ControlView.hidden;
             if (!self.mp4ControlView.hidden)
             {
+                [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(hideMp4ControlView) object:nil];
                 [self performSelector:@selector(hideMp4ControlView) withObject:nil afterDelay:3.0f];
             }
         }
@@ -1571,7 +1579,6 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
 
 - (void)dragPageControlView:(UIPanGestureRecognizer *)pan
 {
-    
     UIView *dragView = pan.view;
     if (pan.state == UIGestureRecognizerStateBegan)
     {
@@ -1711,7 +1718,8 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
     }
 }
 
-#pragma mark 小白板的topbar上的按钮点击事件
+#pragma mark - 小白板的topbar上的按钮点击事件
+
 - (void)topBarButtonClick:(UIButton *)sender
 {
     switch (sender.tag) {
@@ -1775,7 +1783,6 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
         // 课件全屏
         [self bm_bringToFront];
         [self.delegate onWBViewFullScreen:isAllScreen wbView:self];
-        
     }
 }
 
