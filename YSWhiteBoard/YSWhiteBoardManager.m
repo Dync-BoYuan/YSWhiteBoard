@@ -980,6 +980,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 {
     if ([fileId isEqualToString:_currentFileId])
     {
+        [self.mainWhiteBoardView.collectBtn bm_bringToFront];
         return;
     }
     UIView *firstResponder = [self.mainWhiteBoardView bm_firstResponder];
@@ -1029,6 +1030,8 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
             }
         }
     }
+    
+    [self.mainWhiteBoardView.collectBtn bm_bringToFront];
 }
 
 - (NSArray *)getWhiteBoardViewArrangeList
