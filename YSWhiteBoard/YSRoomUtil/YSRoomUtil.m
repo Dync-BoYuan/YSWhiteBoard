@@ -219,6 +219,13 @@
                 associatedUserID = nil;
                 save = YES;
             }
+            else if ([YSRoomInterface instance].localUser.role == YSUserType_Student)
+            {
+                tellWho = YSRoomPubMsgTellAll;
+                associatedUserID = nil;
+                save = YES;
+            }
+            
         }
         
         if ([msgName isEqualToString:sYSSignalShowPage] || [msgName isEqualToString:sYSSignalExtendShowPage])
