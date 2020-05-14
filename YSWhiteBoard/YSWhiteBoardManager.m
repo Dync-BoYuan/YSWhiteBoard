@@ -2519,18 +2519,20 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     }
     else if ([msgName isEqualToString:sYSSignalShowPage] || [msgName isEqualToString:sYSSignalExtendShowPage])
     {
-        // 后台关联课件是发送showpage信令，多课件时不响应
-        if (![self isOneWhiteBoardView] && [msgName isEqualToString:sYSSignalShowPage])
-        {
-            return;
-        }
-        
         NSString *fileId = [tDataDic bm_stringForKey:@"fileid"];
+        
         if (!fileId)
         {
             NSDictionary *filedata = [tDataDic bm_dictionaryForKey:@"filedata"];
             fileId = [filedata bm_stringForKey:@"fileid"];
         }
+        
+        // 后台关联课件是发送showpage信令，多课件时不响应
+        if (![self isOneWhiteBoardView] && [msgName isEqualToString:sYSSignalShowPage] && ![fileId isEqualToString:@"0"])
+        {
+            return;
+        }
+       
         [self.docmentList enumerateObjectsUsingBlock:^(YSFileModel * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             if ([fileId isEqualToString:obj.fileid])
             {
