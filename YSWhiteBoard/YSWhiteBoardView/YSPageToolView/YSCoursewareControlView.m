@@ -289,16 +289,7 @@
     if (![[YSWhiteBoardManager shareInstance] isCanControlWhiteBoardView])
     {
         YSRoomUser *localUser = [YSRoomInterface instance].localUser;
-        NSDictionary *properties = [localUser.properties bm_dictionaryForKey:@"properties"];
-        
-        if ([properties bm_boolForKey:@"candraw"])
-        {
-            self.allowTurnPage = YES;
-        }
-        else
-        {
-            self.allowTurnPage = NO;
-        }
+        self.allowTurnPage = localUser.canDraw;
     }
     else
     {
@@ -346,6 +337,7 @@
 // 是否可以翻页  (未开课前通过权限判断是否可以翻页  上课后永久不可以翻页)
 - (void)setAllowTurnPage:(BOOL)allowTurnPage
 {
+    
     _allowTurnPage = allowTurnPage;
     if (allowTurnPage)
     {
