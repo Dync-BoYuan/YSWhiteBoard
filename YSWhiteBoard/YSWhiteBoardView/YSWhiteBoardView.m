@@ -410,6 +410,7 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
             [self.mp4ControlView bm_bringToFront];
             [self.closeH5Mp4Btn bm_bringToFront];
             [self.whiteBoardControlView bm_bringToFront];
+            [self.dragZoomView bm_bringToFront];
             UITapGestureRecognizer *oneTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(changeToCurrentBWView:)];
             oneTap.numberOfTapsRequired = 1;
             [self.h5Mp4TapGestureView addGestureRecognizer:oneTap];
