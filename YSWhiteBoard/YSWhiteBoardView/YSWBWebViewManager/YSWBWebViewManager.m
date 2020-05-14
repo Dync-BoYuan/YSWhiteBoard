@@ -498,7 +498,12 @@
 
     NSString *url = [dataDic bm_stringForKey:@"url"];
     BOOL isvideo = [dataDic bm_boolForKey:@"video"];
-    NSDictionary *param = [dataDic bm_dictionaryForKey:@"attributes"];
+    NSMutableDictionary *param = [NSMutableDictionary dictionaryWithDictionary:[dataDic bm_dictionaryForKey:@"attributes"]];
+    NSString * fileID = [param bm_stringForKey:@"fileid"];
+    NSString * whiteboardID = [YSRoomUtil getwhiteboardIDFromFileId:fileID];
+
+    [param setObject:whiteboardID forKey:@"whiteboardId"];
+    
 //    NSString *fileId = [NSString stringWithFormat:@"%@_video", [param bm_stringForKey:@"fileid"]];
 //    NSMutableDictionary *paramDic = [NSMutableDictionary dictionaryWithDictionary:param];
 //    [paramDic bm_setString:fileId forKey:@"fileid"];
