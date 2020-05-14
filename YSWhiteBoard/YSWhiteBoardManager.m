@@ -1012,21 +1012,46 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         {
             continue;
         }
+                
+        YSRoomUser * localUser = [YSRoomInterface instance].localUser;
         
         if ([whiteBoard.fileId isEqualToString:fileId])
         {
+            whiteBoard.isCurrent = YES;
             whiteBoard.topBar.backgroundColor = YSWhiteBoard_TopBarBackGroudColor;
             [whiteBoard bm_addShadow:3.0f Radius:0.0f BorderColor:YSWhiteBoard_TopBarBackGroudColor ShadowColor:YSWhiteBoard_BackGroudColor Offset:CGSizeMake(1, 2) Opacity:0.6f];
             whiteBoard.topBar.isCurrent = YES;
+            if (localUser.role == YSUserType_Student)
+            {
+                if ([localUser.properties bm_containsObjectForKey:@"candraw"])
+                {
+                    BOOL candraw = [localUser.properties bm_boolForKey:@"candraw"];
+                    
+                    if (candraw && self.roomConfig.canPageTurningFlag)
+                    {
+                        whiteBoard.pageControlView.allowTurnPage = YES;
+                    }
+                    else
+                    {
+                        whiteBoard.pageControlView.allowTurnPage = NO;
+                    }
+                }
+            }
         }
         else
         {
+            whiteBoard.isCurrent = NO;
             whiteBoard.topBar.backgroundColor = [UIColor bm_colorWithHex:0xB6C5EB];
             [whiteBoard bm_addShadow:3.0f Radius:0.0f BorderColor:[UIColor bm_colorWithHex:0xB6C5EB] ShadowColor:YSWhiteBoard_BackGroudColor Offset:CGSizeMake(1, 2) Opacity:0.6f];
             whiteBoard.topBar.isCurrent = NO;
             if (whiteBoard.pageControlView.isAllScreen)
             {
                 whiteBoard.pageControlView.isAllScreen = NO;
+            }
+            
+            if (localUser.role == YSUserType_Student)
+            {
+                whiteBoard.pageControlView.allowTurnPage = NO;
             }
         }
     }
@@ -1915,16 +1940,9 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         
         if (![[YSWhiteBoardManager shareInstance] isCanControlWhiteBoardView])
         {
-            NSDictionary *properties = [[YSRoomInterface instance].localUser.properties bm_dictionaryForKey:@"properties"];
+            BOOL canDraw = [YSRoomInterface instance].localUser.canDraw;
             
-            if ([properties bm_boolForKey:@"candraw"])
-            {
-                self.mainWhiteBoardView.pageControlView.allowTurnPage = YES;
-            }
-            else
-            {
-                self.mainWhiteBoardView.pageControlView.allowTurnPage = NO;
-            }
+            self.mainWhiteBoardView.pageControlView.allowTurnPage = [YSRoomInterface instance].localUser.canDraw;
         }
     }
 }
@@ -2112,6 +2130,21 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         return;
     }
 
+    if (![self isOneWhiteBoardView] && ![self.currentFileId isEqualToString:@"0"])
+    {
+        NSString *fileId = self.currentFileId;
+        
+        NSDictionary * dict = @{@"data":[YSFileModel fileDataDocDic:nil sourceInstanceId:nil],
+                                @"fromID":[YSRoomInterface instance].localUser.peerID,
+                                @"id":sYSSignalExtendShowPage,
+                                @"name":sYSSignalExtendShowPage,
+                                @"toID":[YSRoomInterface instance].localUser.peerID,
+                                @"ts":@(0)};
+        
+        [self roomWhiteBoardOnRemotePubMsgWithMessage:dict inList:YES];
+        [self setTheCurrentDocumentFileID:fileId];
+    }
+        
     NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary:response];
 
     NSMutableDictionary *myselfDict = [NSMutableDictionary dictionary];
@@ -2187,35 +2220,12 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
                 fileid = @"0";
             }
             [self setTheCurrentDocumentFileID:fileid];
-            //break;
         }
     }
     
     if (!show && !self.isBeginClass)
     {
         [self changeCourseWithFileId:self.currentFileId toID:[YSRoomInterface instance].localUser.peerID save:NO];
-    }
-    
-    if (![self isOneWhiteBoardView] && ![self.currentFileId isEqualToString:@"0"])
-    {
-        NSString *fileId = @"0";
-        YSFileModel *fileModel = [self getDocumentWithFileID:fileId];
-        NSDictionary *fileDic = [YSFileModel fileDataDocDic:fileModel sourceInstanceId:nil];
-        
-        NSString *msgID = [NSString stringWithFormat:@"%@%@", sYSSignalDocumentFilePage_ExtendShowPage, YSDefaultWhiteBoardId];
-        NSMutableDictionary *fileData = [[NSMutableDictionary alloc] initWithDictionary:fileDic];
-        [fileData bm_setString:YSDefaultWhiteBoardId forKey:@"sourceInstanceId"];
-        [fileData bm_setBool:YES forKey:@"initiative"];
-        [[YSRoomInterface instance] pubMsg:sYSSignalExtendShowPage
-                                     msgID:msgID
-                                      toID:[YSRoomInterface instance].localUser.peerID
-                                      data:fileData
-                                      save:NO
-                             extensionData:nil
-                           associatedMsgID:nil
-                          associatedUserID:[YSRoomInterface instance].localUser.peerID
-                                   expires:0
-                                completion:nil];
     }
 }
 
@@ -2518,21 +2528,6 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         {
             [self addOrReplaceDocumentFile:tDataDic];
         }
-//
-//        if (self.wbDelegate && [self.wbDelegate respondsToSelector:@selector(onWhiteBoardChangedFileWithFileList:)])
-//        {
-//            NSMutableArray *fileList = [[NSMutableArray alloc] init];
-//            for (YSWhiteBoardView *whiteBoardView in self.coursewareViewList)
-//            {
-//                [fileList addObject:whiteBoardView.fileId];
-//            }
-//            if (![fileList containsObject:self.mainWhiteBoardView.fileId])
-//            {
-//                [fileList addObject:self.mainWhiteBoardView.fileId];
-//            }
-//
-//            [self.wbDelegate onWhiteBoardChangedFileWithFileList:fileList];
-//        }
     }
     else if ([msgName isEqualToString:sYSSignalShowPage] || [msgName isEqualToString:sYSSignalExtendShowPage])
     {
@@ -2747,24 +2742,26 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
                 {
                     if (whiteBoardView.mediaType != YSWhiteBordMediaType_Audio)
                     {
-                        if ([instanceId isEqualToString:whiteBoardId])
-                        {
-                            whiteBoardView.topBar.backgroundColor = YSWhiteBoard_TopBarBackGroudColor;
-                            [whiteBoardView bm_addShadow:3.0f Radius:0.0f BorderColor:YSWhiteBoard_TopBarBackGroudColor ShadowColor:YSWhiteBoard_BackGroudColor Offset:CGSizeMake(1, 2) Opacity:0.6f];
-                            whiteBoardView.topBar.isCurrent = YES;
-                        }
-                        else
-                        {
-                            whiteBoardView.topBar.backgroundColor = [UIColor bm_colorWithHex:0xB6C5EB];
-                            [whiteBoardView bm_addShadow:3.0f Radius:0.0f BorderColor:[UIColor bm_colorWithHex:0xB6C5EB] ShadowColor:YSWhiteBoard_BackGroudColor Offset:CGSizeMake(1, 2) Opacity:0.6f];
-                            
-                            whiteBoardView.topBar.isCurrent = NO;
-                            
-                            if (whiteBoardView.pageControlView.isAllScreen)
-                            {
-                                whiteBoardView.pageControlView.isAllScreen = NO;
-                            }
-                        }
+//                        BOOL iseq = [whiteBoardId isEqualToString:instanceId];
+//
+//                        if ([whiteBoardId isEqualToString:instanceId])
+//                        {
+//                            whiteBoardView.topBar.backgroundColor = YSWhiteBoard_TopBarBackGroudColor;
+//                            [whiteBoardView bm_addShadow:3.0f Radius:0.0f BorderColor:YSWhiteBoard_TopBarBackGroudColor ShadowColor:YSWhiteBoard_BackGroudColor Offset:CGSizeMake(1, 2) Opacity:0.6f];
+//                            whiteBoardView.topBar.isCurrent = YES;
+//                        }
+//                        else
+//                        {
+//                            whiteBoardView.topBar.backgroundColor = [UIColor bm_colorWithHex:0xB6C5EB];
+//                            [whiteBoardView bm_addShadow:3.0f Radius:0.0f BorderColor:[UIColor bm_colorWithHex:0xB6C5EB] ShadowColor:YSWhiteBoard_BackGroudColor Offset:CGSizeMake(1, 2) Opacity:0.6f];
+//
+//                            whiteBoardView.topBar.isCurrent = NO;
+//
+//                            if (whiteBoardView.pageControlView.isAllScreen)
+//                            {
+//                                whiteBoardView.pageControlView.isAllScreen = NO;
+//                            }
+//                        }
                     }
                     [whiteBoardView bm_bringToFront];
                 }

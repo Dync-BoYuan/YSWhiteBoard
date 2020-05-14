@@ -173,14 +173,14 @@ struct CompareNSString: public std::binary_function<NSString*, NSString*, bool> 
     NSData *data = [NSJSONSerialization dataWithJSONObject:dic options:0 error:&error];
     if (error)
     {
-        NSLog(@"error:%@",error);
+//        NSLog(@"error:%@",error);
         return;
     }
     NSString *shapeID = [NSString stringWithFormat:@"%@###_SharpsChange_%@_%d", key, self.fileid, self.pageId];
     NSString *dataString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
     NSString *associatedMsgID = [NSString stringWithFormat:@"%@%@", sYSSignalDocumentFilePage_ExtendShowPage, whiteboardID];
     [[YSRoomInterface instance] pubMsg:sYSSignalSharpsChange msgID:shapeID toID:YSRoomPubMsgTellAll data:dataString save:YES extensionData:@{} associatedMsgID:associatedMsgID associatedUserID:nil expires:0 completion:^(NSError *error) {
-        NSLog(@"%@",error);
+//        NSLog(@"%@",error);
     }];
     [self setNeedsDisplay];
 }

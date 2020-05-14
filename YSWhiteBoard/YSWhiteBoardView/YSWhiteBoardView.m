@@ -165,8 +165,8 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
             [self addSubview:topBar];
             self.topBar = topBar;
             
-            [self bm_addShadow:3.0f Radius:0.0f BorderColor:YSWhiteBoard_TopBarBackGroudColor ShadowColor:YSWhiteBoard_BackGroudColor Offset:CGSizeMake(1, 2) Opacity:0.6f];
-            topBar.isCurrent = [self.fileId isEqualToString:[YSWhiteBoardManager shareInstance].currentFileId];
+//            [self bm_addShadow:3.0f Radius:0.0f BorderColor:YSWhiteBoard_TopBarBackGroudColor ShadowColor:YSWhiteBoard_BackGroudColor Offset:CGSizeMake(1, 2) Opacity:0.6f];
+//            topBar.isCurrent = [self.fileId isEqualToString:[YSWhiteBoardManager shareInstance].currentFileId];
             
             BMWeakSelf
             topBar.barButtonsClick = ^(UIButton * _Nonnull sender) {
@@ -738,23 +738,26 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
     {
         [self.drawViewManager updateProperty:message];
     }
-       NSDictionary *properties = [message bm_dictionaryForKey:@"properties"];
-       if (![properties bm_isNotEmptyDictionary])
-       {
-           return;
-       }
-
-       if ([properties bm_containsObjectForKey:@"candraw"])
-       {
-           if ([properties bm_boolForKey:@"candraw"])
-           {
-               self.pageControlView.allowTurnPage = YES;
-           }
-           else
-           {
-               self.pageControlView.allowTurnPage = NO;
-           }
-       }
+    NSDictionary *properties = [message bm_dictionaryForKey:@"properties"];
+    if (![properties bm_isNotEmptyDictionary])
+    {
+        return;
+    }
+    
+    if ([properties bm_containsObjectForKey:@"candraw"])
+    {
+        if ([properties bm_boolForKey:@"candraw"])
+        {
+            if (([YSRoomInterface instance].localUser.role == YSUserType_Student  && self.isCurrent && [YSWhiteBoardManager shareInstance].roomConfig.canPageTurningFlag) || [YSRoomInterface instance].localUser.role == YSUserType_Teacher)
+            {
+                self.pageControlView.allowTurnPage = YES;
+            }
+        }
+        else
+        {
+            self.pageControlView.allowTurnPage = NO;
+        }
+    }
 }
 
 /// 收到远端pubMsg消息通知

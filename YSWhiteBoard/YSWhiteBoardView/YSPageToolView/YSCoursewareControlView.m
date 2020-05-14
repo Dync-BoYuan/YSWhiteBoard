@@ -31,7 +31,7 @@
 /// 缩放比例
 @property (nonatomic, assign) CGFloat zoomScale;
 
-///是否是白板
+///是否是空白板
 @property (nonatomic, assign) BOOL isWhiteBoard;
 
 @end
@@ -46,8 +46,7 @@
         self.layer.cornerRadius = frame.size.height/2;
         self.layer.masksToBounds = YES;
         
-//        self.isAllScreen = NO;
-        self.allowTurnPage = YES;
+//        self.allowTurnPage = YES;
         self.totalPage = 1;
         self.currentPage = 1;
         self.zoomScale = 1;
@@ -252,17 +251,10 @@
     
     if (![[YSWhiteBoardManager shareInstance] isCanControlWhiteBoardView])
     {
-        YSRoomUser *localUser = [YSRoomInterface instance].localUser;
-        NSDictionary *properties = [localUser.properties bm_dictionaryForKey:@"properties"];
         
-        if ([properties bm_boolForKey:@"candraw"])
-        {
-            self.allowTurnPage = YES;
-        }
-        else
-        {
-            self.allowTurnPage = NO;
-        }
+        BOOL canDraw = [YSRoomInterface instance].localUser.canDraw;
+        
+        self.allowTurnPage = [YSRoomInterface instance].localUser.canDraw;
     }
     else
     {
@@ -288,8 +280,9 @@
     
     if (![[YSWhiteBoardManager shareInstance] isCanControlWhiteBoardView])
     {
-        YSRoomUser *localUser = [YSRoomInterface instance].localUser;
-        self.allowTurnPage = localUser.canDraw;
+        BOOL canDraw = [YSRoomInterface instance].localUser.canDraw;
+        
+        self.allowTurnPage = [YSRoomInterface instance].localUser.canDraw;
     }
     else
     {
@@ -334,6 +327,7 @@
     }
     
 }
+
 // 是否可以翻页  (未开课前通过权限判断是否可以翻页  上课后永久不可以翻页)
 - (void)setAllowTurnPage:(BOOL)allowTurnPage
 {

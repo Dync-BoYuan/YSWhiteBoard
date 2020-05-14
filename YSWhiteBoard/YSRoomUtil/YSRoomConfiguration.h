@@ -40,7 +40,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) BOOL canDrawFlag;
 
 /**
- 翻页权限
+ 学生是否有翻页权限
  */
 @property (nonatomic, assign) BOOL canPageTurningFlag;
 
