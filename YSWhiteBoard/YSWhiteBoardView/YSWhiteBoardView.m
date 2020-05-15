@@ -165,9 +165,6 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
             [self addSubview:topBar];
             self.topBar = topBar;
             
-//            [self bm_addShadow:3.0f Radius:0.0f BorderColor:YSWhiteBoard_TopBarBackGroudColor ShadowColor:YSWhiteBoard_BackGroudColor Offset:CGSizeMake(1, 2) Opacity:0.6f];
-//            topBar.isCurrent = [self.fileId isEqualToString:[YSWhiteBoardManager shareInstance].currentFileId];
-            
             BMWeakSelf
             topBar.barButtonsClick = ^(UIButton * _Nonnull sender) {
                 [weakSelf topBarButtonClick:sender];
@@ -1663,17 +1660,18 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
 
 - (void)collectButtonsClick:(UIButton *)sender
 {
-    NSArray * coursewareViewList = [YSWhiteBoardManager shareInstance].coursewareViewList;
+//    NSArray * coursewareViewList = [YSWhiteBoardManager shareInstance].coursewareViewList;
+    
+    NSArray *arrangeList = [[YSWhiteBoardManager shareInstance] getWhiteBoardViewArrangeList];
     
     if (sender.selected)
     {
         BOOL isHidden = NO;
-        for (int i = 0; i<coursewareViewList.count; i++)
+        for (int i = 0; i<arrangeList.count; i++)
         {
-            YSWhiteBoardView * whiteBoardView = coursewareViewList[i];
+            YSWhiteBoardView * whiteBoardView = arrangeList[i];
             if (!whiteBoardView.hidden)
             {
-                
                 NSString * msgID = [NSString stringWithFormat:@"MoreWhiteboardState_%@", whiteBoardView.whiteBoardId];
                 
                 NSDictionary * data = @{@"x":@0,@"y":@0,@"width":@1,@"height":@1,@"small":@YES,@"full":@NO,@"type":@"small",@"instanceId":whiteBoardView.whiteBoardId};
@@ -1687,7 +1685,7 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
         
         if (!isHidden)
         {
-            for (YSWhiteBoardView * whiteBoardView in coursewareViewList)
+            for (YSWhiteBoardView * whiteBoardView in arrangeList)
             {
                 // x,y值在主白板上的比例
                 CGFloat scaleLeft = [whiteBoardView.positionData bm_floatForKey:@"x"];
@@ -1708,7 +1706,7 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
     }
     else
     {
-        for (YSWhiteBoardView * whiteBoardView in coursewareViewList)
+        for (YSWhiteBoardView * whiteBoardView in arrangeList)
         {
             NSString * msgID = [NSString stringWithFormat:@"MoreWhiteboardState_%@", whiteBoardView.whiteBoardId];
             NSDictionary * data = @{@"x":@0,@"y":@0,@"width":@1,@"height":@1,@"small":@YES,@"full":@NO,@"type":@"small",@"instanceId":whiteBoardView.whiteBoardId};

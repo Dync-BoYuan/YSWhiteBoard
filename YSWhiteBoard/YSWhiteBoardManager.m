@@ -1059,7 +1059,8 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     [self.mainWhiteBoardView.collectBtn bm_bringToFront];
 }
 
-- (NSArray *)getWhiteBoardViewArrangeList
+///多窗口排序后的whiteBoardId列表
+- (NSArray *)getWhiteBoardViewIdArrangeList
 {
     NSArray *subviews = self.mainWhiteBoardView.subviews;
     NSMutableArray *whiteboardIdList = [[NSMutableArray alloc] init];
@@ -1075,9 +1076,26 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     return whiteboardIdList;
 }
 
+///多窗口排序后的窗口列表
+- (NSArray *)getWhiteBoardViewArrangeList
+{
+    NSArray *subviews = self.mainWhiteBoardView.subviews;
+    NSMutableArray *whiteboardList = [[NSMutableArray alloc] init];
+    for (UIView *view in subviews)
+    {
+        if ([view isKindOfClass:[YSWhiteBoardView class]])
+        {
+            YSWhiteBoardView *whiteBoardView1 = (YSWhiteBoardView *)view;
+            [whiteboardList addObject:whiteBoardView1];
+        }
+    }
+    
+    return whiteboardList;
+}
+
 - (void)sendArrangeWhiteBoardView
 {
-    NSArray *arrangeList = [self getWhiteBoardViewArrangeList];
+    NSArray *arrangeList = [self getWhiteBoardViewIdArrangeList];
     [self sendArrangeWhiteBoardViewWithArrangeList:arrangeList];
 }
 
@@ -2458,7 +2476,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
                 {
                     [self makeCurrentWhiteBoardViewPointReset:YES];
                     
-                    NSArray *arrangeList = [self getWhiteBoardViewArrangeList];
+                    NSArray *arrangeList = [self getWhiteBoardViewIdArrangeList];
                     for (YSWhiteBoardView *whiteBoardView in self.coursewareViewList)
                     {
                         // 上课不发送音视频流
@@ -2740,8 +2758,8 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
                 YSWhiteBoardView *whiteBoardView = [self getWhiteBoardViewWithWhiteBoardId:whiteBoardId];
                 if (whiteBoardView)
                 {
-                    if (whiteBoardView.mediaType != YSWhiteBordMediaType_Audio)
-                    {
+//                    if (whiteBoardView.mediaType != YSWhiteBordMediaType_Audio)
+//                    {
 //                        BOOL iseq = [whiteBoardId isEqualToString:instanceId];
 //
 //                        if ([whiteBoardId isEqualToString:instanceId])
@@ -2762,7 +2780,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 //                                whiteBoardView.pageControlView.isAllScreen = NO;
 //                            }
 //                        }
-                    }
+//                    }
                     [whiteBoardView bm_bringToFront];
                 }
             }

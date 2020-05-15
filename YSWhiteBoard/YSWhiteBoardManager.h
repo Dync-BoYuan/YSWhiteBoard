@@ -149,6 +149,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (CGFloat)currentDocumentZoomScale;
 - (CGFloat)documentZoomScaleWithFileId:(NSString *)fileId;
 
+///多窗口排序后的窗口列表
+- (NSArray *)getWhiteBoardViewArrangeList;
+
 #pragma -
 #pragma mark 是否多课件窗口
 
