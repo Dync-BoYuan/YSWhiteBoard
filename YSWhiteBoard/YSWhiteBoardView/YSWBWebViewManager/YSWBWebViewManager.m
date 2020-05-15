@@ -47,15 +47,22 @@
 - (WKWebView *)createWhiteBoardWithFrame:(CGRect)frame
                        loadFinishedBlock:(wbLoadFinishedBlock)loadFinishedBlock
 {
+    return [self createWhiteBoardWithFrame:frame connectH5CoursewareUrlCookies:nil loadFinishedBlock:loadFinishedBlock];
+}
+
+- (WKWebView *)createWhiteBoardWithFrame:(CGRect)frame
+connectH5CoursewareUrlCookies:(NSArray <NSDictionary *> *)connectH5CoursewareUrlCookies
+            loadFinishedBlock:(wbLoadFinishedBlock)loadFinishedBlock
+{
     self.loadFinishedBlock = loadFinishedBlock;
     self.wbWebUrl = @"/publish/index.html#/mobileApp?languageType=ch";
 
-    [self createWKWebViewWithFrame:frame];
+    [self createWKWebViewWithFrame:frame connectH5CoursewareUrlCookies:connectH5CoursewareUrlCookies];
 
     return self.webView;
 }
 
-- (void)createWKWebViewWithFrame:(CGRect)frame
+- (void)createWKWebViewWithFrame:(CGRect)frame connectH5CoursewareUrlCookies:(NSArray <NSDictionary *> *)connectH5CoursewareUrlCookies
 {
     WKWebView *webView =
         [[WKWebView alloc] initWithFrame:CGRectMake(0, 0, frame.size.width, frame.size.height)
@@ -120,22 +127,44 @@
     // 清理
     [self clearcookie:webView];
 
+    // 添加cookie
+    if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 11.0) {
+    //if (@available(iOS 11.0, *)) {
+        WKHTTPCookieStore *cookieStore = _webView.configuration.websiteDataStore.httpCookieStore;
+        //get cookies
+        for (NSDictionary *cookieDic in connectH5CoursewareUrlCookies)
+        {
+            NSHTTPCookie *cookie = [NSHTTPCookie cookieWithProperties:cookieDic];
+            [cookieStore setCookie:cookie completionHandler:nil];
+        }
+    }
+    else
+    {
+        NSHTTPCookieStorage *cookieStore = [NSHTTPCookieStorage sharedHTTPCookieStorage];
+        for (NSDictionary *cookieDic in connectH5CoursewareUrlCookies)
+        {
+            NSHTTPCookie *cookie = [NSHTTPCookie cookieWithProperties:cookieDic];
+            [cookieStore setCookie:cookie];
+        }
+    }
+
     NSURLRequest *request = [NSURLRequest requestWithURL:url];
     [webView loadRequest:request];
 }
 
 - (void)clearcookie:(WKWebView *)webView
 {
-    NSString *version = [UIDevice currentDevice].systemVersion;
-
-    if (version.doubleValue >= 8.0 && version.doubleValue < 9.0) { return; }
-    
     // 清除cookies
-    NSHTTPCookie *cookie;
-    NSHTTPCookieStorage *storage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
-    for (cookie in [storage cookies])
+    if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 11.0) {
+    }
+    else
     {
-        [storage deleteCookie:cookie];
+        NSHTTPCookie *cookie;
+        NSHTTPCookieStorage *storage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
+        for (cookie in [storage cookies])
+        {
+            [storage deleteCookie:cookie];
+        }
     }
 
     // 清除UIWebView的缓存

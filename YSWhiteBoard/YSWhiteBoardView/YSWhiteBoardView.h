@@ -154,6 +154,13 @@ NS_ASSUME_NONNULL_BEGIN
 /// 隐藏白板视频标注
 - (void)hideVideoWhiteboard;
 
+
+/// 变更H5课件地址参数，此方法会刷新当前H5课件以变更新参数
+- (void)changeConnectH5CoursewareUrlParameters:(nullable NSDictionary *)parameters;
+
+/// 设置H5课件Cookies
+- (void)setConnectH5CoursewareUrlCookies:(nullable NSArray <NSDictionary *> *)cookies;
+
 @end
 
 
