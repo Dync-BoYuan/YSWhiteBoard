@@ -2866,34 +2866,23 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 
     if ([msgName isEqualToString:sYSSignalExtendShowPage])
     {
-        NSObject *data = [message objectForKey:@"data"];
-        NSDictionary *tDataDic = [YSRoomUtil convertWithData:data];
-        if (![tDataDic bm_isNotEmptyDictionary])
+        NSString * messageId = [message objectForKey:@"id"];
+        
+        NSString *fileId = nil;
+                
+        NSString * messageIdHead = @"DocumentFilePage_ExtendShowPage_docModule_";
+        
+        if (messageId.length > messageIdHead.length)
+        {
+            fileId = [messageId substringFromIndex:messageIdHead.length];
+        }
+        
+        if (![fileId bm_isNotEmpty])
         {
             return;
         }
-        
-        NSString *fileId = [tDataDic bm_stringForKey:@"fileid"];
-        if (!fileId)
-        {
-            NSString *sourceInstanceId = [tDataDic bm_stringForKey:@"sourceInstanceId"];
-            if (sourceInstanceId)
-            {
-                if ([sourceInstanceId isEqualToString:YSDefaultWhiteBoardId])
-                {
-                    return;
-                }
-                else if (sourceInstanceId.length > YSWhiteBoardId_Header.length)
-                {
-                    fileId = [sourceInstanceId substringFromIndex:YSWhiteBoardId_Header.length];
-                }
-            }
-        }
-        
-        if (fileId)
-        {
-            [self removeWhiteBoardViewWithFileId:fileId];
-        }
+
+        [self removeWhiteBoardViewWithFileId:fileId];
         
         return;
     }
