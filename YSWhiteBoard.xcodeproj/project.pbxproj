@@ -126,10 +126,6 @@
 		87C8B11A2429BCD20016848E /* LaserPan.h in Headers */ = {isa = PBXBuildFile; fileRef = 87C8B0FF2429BCD20016848E /* LaserPan.h */; };
 		87C8B11B2429BCD20016848E /* DrawBase.h in Headers */ = {isa = PBXBuildFile; fileRef = 87C8B1012429BCD20016848E /* DrawBase.h */; };
 		87C8B11C2429BCD20016848E /* DrawBase.m in Sources */ = {isa = PBXBuildFile; fileRef = 87C8B1022429BCD20016848E /* DrawBase.m */; };
-		87C8B122242C3ED00016848E /* YSPreloadProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = 87C8B11E242C3ED00016848E /* YSPreloadProgressView.m */; };
-		87C8B123242C3ED00016848E /* YSDownloader.m in Sources */ = {isa = PBXBuildFile; fileRef = 87C8B11F242C3ED00016848E /* YSDownloader.m */; };
-		87C8B124242C3ED00016848E /* YSPreloadProgressView.h in Headers */ = {isa = PBXBuildFile; fileRef = 87C8B120242C3ED00016848E /* YSPreloadProgressView.h */; };
-		87C8B125242C3ED00016848E /* YSDownloader.h in Headers */ = {isa = PBXBuildFile; fileRef = 87C8B121242C3ED00016848E /* YSDownloader.h */; };
 		87C8B1502432F19E0016848E /* YSWhiteBoardMacro.h in Headers */ = {isa = PBXBuildFile; fileRef = 87AD1610242725EB00EAE233 /* YSWhiteBoardMacro.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		87C8B1512432F19E0016848E /* YSWhiteBoardDefines.h in Headers */ = {isa = PBXBuildFile; fileRef = 87AD161B2427586700EAE233 /* YSWhiteBoardDefines.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		87C8B1522432F19E0016848E /* YSWhiteBoardManagerDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 87AD16262428449000EAE233 /* YSWhiteBoardManagerDelegate.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -264,48 +260,6 @@
 		87C8B0FF2429BCD20016848E /* LaserPan.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LaserPan.h; sourceTree = "<group>"; };
 		87C8B1012429BCD20016848E /* DrawBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DrawBase.h; sourceTree = "<group>"; };
 		87C8B1022429BCD20016848E /* DrawBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DrawBase.m; sourceTree = "<group>"; };
-		87C8B11E242C3ED00016848E /* YSPreloadProgressView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YSPreloadProgressView.m; sourceTree = "<group>"; };
-		87C8B11F242C3ED00016848E /* YSDownloader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YSDownloader.m; sourceTree = "<group>"; };
-		87C8B120242C3ED00016848E /* YSPreloadProgressView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YSPreloadProgressView.h; sourceTree = "<group>"; };
-		87C8B121242C3ED00016848E /* YSDownloader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YSDownloader.h; sourceTree = "<group>"; };
-		87C8B127242C3F910016848E /* ZipArchive.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ZipArchive.h; sourceTree = "<group>"; };
-		87C8B129242C3F910016848E /* crypt.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = crypt.c; sourceTree = "<group>"; };
-		87C8B12A242C3F910016848E /* unzip.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = unzip.c; sourceTree = "<group>"; };
-		87C8B12B242C3F910016848E /* zip.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = zip.c; sourceTree = "<group>"; };
-		87C8B12C242C3F910016848E /* minishared.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = minishared.h; sourceTree = "<group>"; };
-		87C8B12D242C3F910016848E /* ioapi.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = ioapi.c; sourceTree = "<group>"; };
-		87C8B12E242C3F910016848E /* ioapi_mem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ioapi_mem.h; sourceTree = "<group>"; };
-		87C8B12F242C3F910016848E /* ioapi_buf.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = ioapi_buf.c; sourceTree = "<group>"; };
-		87C8B130242C3F910016848E /* crypt.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = crypt.h; sourceTree = "<group>"; };
-		87C8B131242C3F910016848E /* zip.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = zip.h; sourceTree = "<group>"; };
-		87C8B132242C3F910016848E /* unzip.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = unzip.h; sourceTree = "<group>"; };
-		87C8B133242C3F910016848E /* ioapi_mem.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = ioapi_mem.c; sourceTree = "<group>"; };
-		87C8B134242C3F910016848E /* minishared.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = minishared.c; sourceTree = "<group>"; };
-		87C8B135242C3F910016848E /* ioapi.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ioapi.h; sourceTree = "<group>"; };
-		87C8B136242C3F910016848E /* ioapi_buf.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ioapi_buf.h; sourceTree = "<group>"; };
-		87C8B138242C3F910016848E /* prng.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = prng.h; sourceTree = "<group>"; };
-		87C8B139242C3F910016848E /* aes_ni.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = aes_ni.h; sourceTree = "<group>"; };
-		87C8B13A242C3F910016848E /* aeskey.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = aeskey.c; sourceTree = "<group>"; };
-		87C8B13B242C3F910016848E /* hmac.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = hmac.c; sourceTree = "<group>"; };
-		87C8B13C242C3F910016848E /* aestab.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = aestab.h; sourceTree = "<group>"; };
-		87C8B13D242C3F910016848E /* pwd2key.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = pwd2key.h; sourceTree = "<group>"; };
-		87C8B13E242C3F910016848E /* aescrypt.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = aescrypt.c; sourceTree = "<group>"; };
-		87C8B13F242C3F910016848E /* fileenc.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = fileenc.c; sourceTree = "<group>"; };
-		87C8B140242C3F910016848E /* aesopt.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = aesopt.h; sourceTree = "<group>"; };
-		87C8B141242C3F910016848E /* sha1.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = sha1.c; sourceTree = "<group>"; };
-		87C8B142242C3F910016848E /* brg_types.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = brg_types.h; sourceTree = "<group>"; };
-		87C8B143242C3F910016848E /* hmac.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = hmac.h; sourceTree = "<group>"; };
-		87C8B144242C3F910016848E /* aes_ni.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = aes_ni.c; sourceTree = "<group>"; };
-		87C8B145242C3F910016848E /* brg_endian.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = brg_endian.h; sourceTree = "<group>"; };
-		87C8B146242C3F910016848E /* prng.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = prng.c; sourceTree = "<group>"; };
-		87C8B147242C3F910016848E /* aes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = aes.h; sourceTree = "<group>"; };
-		87C8B148242C3F910016848E /* pwd2key.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = pwd2key.c; sourceTree = "<group>"; };
-		87C8B149242C3F910016848E /* aestab.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = aestab.c; sourceTree = "<group>"; };
-		87C8B14A242C3F910016848E /* sha1.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = sha1.h; sourceTree = "<group>"; };
-		87C8B14B242C3F910016848E /* fileenc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = fileenc.h; sourceTree = "<group>"; };
-		87C8B14C242C3F910016848E /* SSZipArchive.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SSZipArchive.h; sourceTree = "<group>"; };
-		87C8B14D242C3F910016848E /* SSZipCommon.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SSZipCommon.h; sourceTree = "<group>"; };
-		87C8B14E242C3F910016848E /* SSZipArchive.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SSZipArchive.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -496,8 +450,6 @@
 		87C8B0872429B9D20016848E /* Vendor */ = {
 			isa = PBXGroup;
 			children = (
-				87C8B126242C3F910016848E /* SSZipArchive */,
-				87C8B11D242C3ED00016848E /* YSPreload */,
 				87C8B0DC2429BB8B0016848E /* ColorPicker */,
 				87C8B08B2429B9D20016848E /* SDWebImage */,
 			);
@@ -634,78 +586,6 @@
 			path = Base;
 			sourceTree = "<group>";
 		};
-		87C8B11D242C3ED00016848E /* YSPreload */ = {
-			isa = PBXGroup;
-			children = (
-				87C8B121242C3ED00016848E /* YSDownloader.h */,
-				87C8B11F242C3ED00016848E /* YSDownloader.m */,
-				87C8B120242C3ED00016848E /* YSPreloadProgressView.h */,
-				87C8B11E242C3ED00016848E /* YSPreloadProgressView.m */,
-			);
-			path = YSPreload;
-			sourceTree = "<group>";
-		};
-		87C8B126242C3F910016848E /* SSZipArchive */ = {
-			isa = PBXGroup;
-			children = (
-				87C8B127242C3F910016848E /* ZipArchive.h */,
-				87C8B128242C3F910016848E /* minizip */,
-				87C8B14C242C3F910016848E /* SSZipArchive.h */,
-				87C8B14D242C3F910016848E /* SSZipCommon.h */,
-				87C8B14E242C3F910016848E /* SSZipArchive.m */,
-			);
-			path = SSZipArchive;
-			sourceTree = "<group>";
-		};
-		87C8B128242C3F910016848E /* minizip */ = {
-			isa = PBXGroup;
-			children = (
-				87C8B129242C3F910016848E /* crypt.c */,
-				87C8B12A242C3F910016848E /* unzip.c */,
-				87C8B12B242C3F910016848E /* zip.c */,
-				87C8B12C242C3F910016848E /* minishared.h */,
-				87C8B12D242C3F910016848E /* ioapi.c */,
-				87C8B12E242C3F910016848E /* ioapi_mem.h */,
-				87C8B12F242C3F910016848E /* ioapi_buf.c */,
-				87C8B130242C3F910016848E /* crypt.h */,
-				87C8B131242C3F910016848E /* zip.h */,
-				87C8B132242C3F910016848E /* unzip.h */,
-				87C8B133242C3F910016848E /* ioapi_mem.c */,
-				87C8B134242C3F910016848E /* minishared.c */,
-				87C8B135242C3F910016848E /* ioapi.h */,
-				87C8B136242C3F910016848E /* ioapi_buf.h */,
-				87C8B137242C3F910016848E /* aes */,
-			);
-			path = minizip;
-			sourceTree = "<group>";
-		};
-		87C8B137242C3F910016848E /* aes */ = {
-			isa = PBXGroup;
-			children = (
-				87C8B138242C3F910016848E /* prng.h */,
-				87C8B139242C3F910016848E /* aes_ni.h */,
-				87C8B13A242C3F910016848E /* aeskey.c */,
-				87C8B13B242C3F910016848E /* hmac.c */,
-				87C8B13C242C3F910016848E /* aestab.h */,
-				87C8B13D242C3F910016848E /* pwd2key.h */,
-				87C8B13E242C3F910016848E /* aescrypt.c */,
-				87C8B13F242C3F910016848E /* fileenc.c */,
-				87C8B140242C3F910016848E /* aesopt.h */,
-				87C8B141242C3F910016848E /* sha1.c */,
-				87C8B142242C3F910016848E /* brg_types.h */,
-				87C8B143242C3F910016848E /* hmac.h */,
-				87C8B144242C3F910016848E /* aes_ni.c */,
-				87C8B145242C3F910016848E /* brg_endian.h */,
-				87C8B146242C3F910016848E /* prng.c */,
-				87C8B147242C3F910016848E /* aes.h */,
-				87C8B148242C3F910016848E /* pwd2key.c */,
-				87C8B149242C3F910016848E /* aestab.c */,
-				87C8B14A242C3F910016848E /* sha1.h */,
-				87C8B14B242C3F910016848E /* fileenc.h */,
-			);
-			path = aes;
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -736,8 +616,6 @@
 				87AD163E2428B68400EAE233 /* YSWBWebViewManager.h in Headers */,
 				87AD163C2428B68400EAE233 /* YSWBDrawViewManager.h in Headers */,
 				26ACB4CA2446F7C500C8B149 /* NSURLProtocol+YSWhiteBoard.h in Headers */,
-				87C8B125242C3ED00016848E /* YSDownloader.h in Headers */,
-				87C8B124242C3ED00016848E /* YSPreloadProgressView.h in Headers */,
 				87C8B0CF2429B9D20016848E /* UIImage+VYMultiFormat.h in Headers */,
 				87C8B0CC2429B9D20016848E /* UIImageView+VYWebCache.h in Headers */,
 				87AD163F2428B68400EAE233 /* YSWKWebViewWeakDelegate.h in Headers */,
@@ -879,7 +757,6 @@
 				87AD161A2427554900EAE233 /* YSRoomConfiguration.m in Sources */,
 				87C8B0CE2429B9D20016848E /* UIImageView+VYHighlightedWebCache.m in Sources */,
 				87C8B1162429BCD20016848E /* DrawLine.m in Sources */,
-				87C8B123242C3ED00016848E /* YSDownloader.m in Sources */,
 				87C8B1032429BCD20016848E /* YSDrawView.m in Sources */,
 				87C8B0BF2429B9D20016848E /* VYSDWebImageDecoder.m in Sources */,
 				87C8B0C32429B9D20016848E /* VYSDWebImagePrefetcher.m in Sources */,
@@ -895,7 +772,6 @@
 				87AD16412428B68400EAE233 /* YSWKWebViewWeakDelegate.m in Sources */,
 				87AD16452428B6AB00EAE233 /* YSWhiteBoardView.m in Sources */,
 				877F395D24555DDC0086D7E2 /* YSMediaFileModel.m in Sources */,
-				87C8B122242C3ED00016848E /* YSPreloadProgressView.m in Sources */,
 				87C8B0B52429B9D20016848E /* VYSDWebImageDownloaderOperation.m in Sources */,
 				87C8B1092429BCD20016848E /* DocUnderView.m in Sources */,
 				87C8B0BD2429B9D20016848E /* UIButton+VYWebCache.m in Sources */,
