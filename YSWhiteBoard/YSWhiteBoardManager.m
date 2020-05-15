@@ -1019,7 +1019,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         {
             whiteBoard.isCurrent = YES;
             whiteBoard.topBar.backgroundColor = YSWhiteBoard_TopBarBackGroudColor;
-            [whiteBoard bm_addShadow:3.0f Radius:0.0f BorderColor:YSWhiteBoard_TopBarBackGroudColor ShadowColor:YSWhiteBoard_BackGroudColor Offset:CGSizeMake(1, 2) Opacity:0.6f];
+            [whiteBoard bm_addShadow:3.0f Radius:0.0f BorderColor:YSWhiteBoard_BorderColor ShadowColor:YSWhiteBoard_BackGroudColor Offset:CGSizeMake(1, 2) Opacity:0.6f];
             whiteBoard.topBar.isCurrent = YES;
             if (localUser.role == YSUserType_Student)
             {
@@ -1041,8 +1041,8 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         else
         {
             whiteBoard.isCurrent = NO;
-            whiteBoard.topBar.backgroundColor = [UIColor bm_colorWithHex:0xB6C5EB];
-            [whiteBoard bm_addShadow:3.0f Radius:0.0f BorderColor:[UIColor bm_colorWithHex:0xB6C5EB] ShadowColor:YSWhiteBoard_BackGroudColor Offset:CGSizeMake(1, 2) Opacity:0.6f];
+            whiteBoard.topBar.backgroundColor = YSWhiteBoard_UnTopBarBackGroudColor;
+            [whiteBoard bm_addShadow:3.0f Radius:0.0f BorderColor:YSWhiteBoard_UnBorderColor ShadowColor:YSWhiteBoard_BackGroudColor Offset:CGSizeMake(1, 2) Opacity:0.6f];
             whiteBoard.topBar.isCurrent = NO;
             if (whiteBoard.pageControlView.isAllScreen)
             {
@@ -2916,7 +2916,10 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     NSTimeInterval duration = [message bm_doubleForKey:YSWhiteBoardUpadteMediaStreamDurationKey];
     NSTimeInterval pos = [message bm_doubleForKey:YSWhiteBoardUpadteMediaStreamPositionKey];
     BOOL isPlay = [message bm_boolForKey:YSWhiteBoardUpadteMediaStreamPlayingKey];
-    
+    if (isPlay)
+    {
+        [self.mp4WhiteBoardView hideVideoWhiteboard];
+    }
     [self onRoomUpdateMediaStream:duration pos:pos isPlay:isPlay];
 }
 
@@ -2970,6 +2973,8 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 
     if (self.mediaFileModel.isVideo)
     {
+        [self.mp4WhiteBoardView hideVideoWhiteboard];
+
         if (self.mp4WhiteBoardView.isH5LoadMedia)
         {
             self.mp4WhiteBoardView.isH5LoadMedia = NO;
