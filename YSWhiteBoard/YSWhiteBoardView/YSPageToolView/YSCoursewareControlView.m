@@ -254,7 +254,7 @@
         
         BOOL canDraw = [YSRoomInterface instance].localUser.canDraw;
         
-        self.allowTurnPage = [YSRoomInterface instance].localUser.canDraw;
+        self.allowTurnPage = canDraw;
     }
     else
     {
@@ -282,7 +282,7 @@
     {
         BOOL canDraw = [YSRoomInterface instance].localUser.canDraw;
         
-        self.allowTurnPage = [YSRoomInterface instance].localUser.canDraw;
+        self.allowTurnPage = canDraw;
     }
     else
     {

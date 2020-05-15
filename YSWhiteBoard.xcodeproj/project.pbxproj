@@ -98,8 +98,6 @@
 		87C8B0D92429B9D20016848E /* UIImage+VYGIF.h in Headers */ = {isa = PBXBuildFile; fileRef = 87C8B0B02429B9D20016848E /* UIImage+VYGIF.h */; };
 		87C8B0DA2429B9D20016848E /* VYSDWebImageDownloader.h in Headers */ = {isa = PBXBuildFile; fileRef = 87C8B0B12429B9D20016848E /* VYSDWebImageDownloader.h */; };
 		87C8B0DB2429B9D20016848E /* UIImage+VYWebP.m in Sources */ = {isa = PBXBuildFile; fileRef = 87C8B0B22429B9D20016848E /* UIImage+VYWebP.m */; };
-		87C8B0E02429BB8B0016848E /* HSV.h in Headers */ = {isa = PBXBuildFile; fileRef = 87C8B0DE2429BB8B0016848E /* HSV.h */; };
-		87C8B0E22429BC8D0016848E /* HSV.mm in Sources */ = {isa = PBXBuildFile; fileRef = 87C8B0E12429BC8D0016848E /* HSV.mm */; };
 		87C8B1032429BCD20016848E /* YSDrawView.m in Sources */ = {isa = PBXBuildFile; fileRef = 87C8B0E42429BCD20016848E /* YSDrawView.m */; };
 		87C8B1042429BCD20016848E /* YSDrawView.h in Headers */ = {isa = PBXBuildFile; fileRef = 87C8B0E52429BCD20016848E /* YSDrawView.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		87C8B1052429BCD20016848E /* YSFileModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 87C8B0E72429BCD20016848E /* YSFileModel.m */; };
@@ -232,8 +230,6 @@
 		87C8B0B02429B9D20016848E /* UIImage+VYGIF.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+VYGIF.h"; sourceTree = "<group>"; };
 		87C8B0B12429B9D20016848E /* VYSDWebImageDownloader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VYSDWebImageDownloader.h; sourceTree = "<group>"; };
 		87C8B0B22429B9D20016848E /* UIImage+VYWebP.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+VYWebP.m"; sourceTree = "<group>"; };
-		87C8B0DE2429BB8B0016848E /* HSV.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HSV.h; sourceTree = "<group>"; };
-		87C8B0E12429BC8D0016848E /* HSV.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = HSV.mm; sourceTree = "<group>"; };
 		87C8B0E42429BCD20016848E /* YSDrawView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YSDrawView.m; sourceTree = "<group>"; };
 		87C8B0E52429BCD20016848E /* YSDrawView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YSDrawView.h; sourceTree = "<group>"; };
 		87C8B0E72429BCD20016848E /* YSFileModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YSFileModel.m; sourceTree = "<group>"; };
@@ -450,7 +446,6 @@
 		87C8B0872429B9D20016848E /* Vendor */ = {
 			isa = PBXGroup;
 			children = (
-				87C8B0DC2429BB8B0016848E /* ColorPicker */,
 				87C8B08B2429B9D20016848E /* SDWebImage */,
 			);
 			path = Vendor;
@@ -500,15 +495,6 @@
 				87C8B09A2429B9D20016848E /* VYSDWebImagePrefetcher.m */,
 			);
 			path = SDWebImage;
-			sourceTree = "<group>";
-		};
-		87C8B0DC2429BB8B0016848E /* ColorPicker */ = {
-			isa = PBXGroup;
-			children = (
-				87C8B0DE2429BB8B0016848E /* HSV.h */,
-				87C8B0E12429BC8D0016848E /* HSV.mm */,
-			);
-			path = ColorPicker;
 			sourceTree = "<group>";
 		};
 		87C8B0E32429BCD20016848E /* YSDrawView */ = {
@@ -651,7 +637,6 @@
 				87C8B0D62429B9D20016848E /* UIButton+VYWebCache.h in Headers */,
 				87C8B1072429BCD20016848E /* DocShowView.h in Headers */,
 				87C8B10C2429BCD20016848E /* DocUnderView.h in Headers */,
-				87C8B0E02429BB8B0016848E /* HSV.h in Headers */,
 				87C8B1192429BCD20016848E /* DrawPen.h in Headers */,
 				87C8B0C12429B9D20016848E /* UIView+VYWebCache.h in Headers */,
 				87C8B0C82429B9D20016848E /* MKAnnotationView+VYWebCache.h in Headers */,
@@ -782,7 +767,6 @@
 				040812722435894A00900963 /* YSBrushToolsManager.m in Sources */,
 				87C8B1082429BCD20016848E /* LKPDFView.m in Sources */,
 				87AD163D2428B68400EAE233 /* YSWBDrawViewManager.m in Sources */,
-				87C8B0E22429BC8D0016848E /* HSV.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

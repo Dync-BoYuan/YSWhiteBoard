@@ -1985,7 +1985,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         {
             BOOL canDraw = [YSRoomInterface instance].localUser.canDraw;
             
-            self.mainWhiteBoardView.pageControlView.allowTurnPage = [YSRoomInterface instance].localUser.canDraw;
+            self.mainWhiteBoardView.pageControlView.allowTurnPage = canDraw;
         }
     }
 }
