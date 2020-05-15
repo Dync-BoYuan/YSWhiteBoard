@@ -74,9 +74,6 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 @property (nonatomic, assign) BOOL isUpdateWebAddressInfo;
 @property (nonatomic, strong) NSDictionary *serverAddressInfoDic;
 
-// 消息列表
-//@property (nonatomic, strong) NSMutableArray <NSDictionary *> *msgList;
-
 
 /// 记录UI层是否开始上课
 @property (nonatomic, assign) BOOL isBeginClass;
@@ -103,16 +100,16 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 /// 主白板
 @property (nonatomic, strong) YSWhiteBoardView *mainWhiteBoardView;
 
-// 画笔控制
+/// 画笔控制
 @property (nonatomic, strong) YSBrushToolsManager *brushToolsManager;
 
-///拖出视频view时的模拟移动图
+/// 拖出视频view时的模拟移动图
 @property (nonatomic, strong) UIImageView *dragImageView;
 
-///小白板是否正在拖动
+/// 小白板是否正在拖动
 @property (nonatomic, assign) BOOL isDraging;
 
-///小白板是否正在拖动缩放
+/// 小白板是否正在拖动缩放
 @property (nonatomic, assign) BOOL isDragZooming;
 
 
@@ -124,9 +121,13 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 /// 判断音视频进度是否在拖动
 @property (nonatomic, assign) BOOL isMediaDrag;
 
-///每个课件收到的位置
+/// 每个课件收到的位置
 @property (nonatomic, strong) NSMutableDictionary * allPositionDict;
 
+/// H5课件附加url参数
+@property (nonatomic, strong) NSMutableDictionary *connectH5CoursewareUrlParameters;
+/// H5课件cookie
+@property (nonatomic, strong) NSArray <NSDictionary *> *connectH5CoursewareUrlCookies;
 
 @end
 
@@ -165,7 +166,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     if (whiteBoardManagerSingleton)
     {
         [whiteBoardManagerSingleton clearAllData];
-        //[whiteBoardManagerSingleton registerURLProtocol:NO];
+        [whiteBoardManagerSingleton registerURLProtocol:NO];
         whiteBoardManagerSingleton = nil;
     }
 }
@@ -202,7 +203,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         if (!whiteBoardManagerSingleton)
         {
             whiteBoardManagerSingleton = [[YSWhiteBoardManager alloc] init];
-            [whiteBoardManagerSingleton registerURLProtocol:YES];
+            //[whiteBoardManagerSingleton registerURLProtocol:YES];
         }
     }
     return whiteBoardManagerSingleton;
@@ -247,11 +248,21 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 #pragma -
 #pragma mark createWhiteBoard
 
-- (void)registerDelegate:(id <YSWhiteBoardManagerDelegate>)delegate configration:(NSDictionary *)config
+- (void)registerDelegate:(id<YSWhiteBoardManagerDelegate>)delegate configration:(NSDictionary *)config
+{
+    [self registerDelegate:delegate configration:config useHttpDNS:YES];
+}
+
+- (void)registerDelegate:(id <YSWhiteBoardManagerDelegate>)delegate configration:(NSDictionary *)config useHttpDNS:(BOOL)useHttpDNS
 {
     self.wbDelegate = delegate;
     self.configration = config;
     
+    if (useHttpDNS)
+    {
+        [self registerURLProtocol:YES];
+    }
+
 //    NSDictionary *whiteBoardConfig = @{
 //        YSWhiteBoardWebProtocolKey : YSLive_Http,
 //        YSWhiteBoardWebHostKey : host,
@@ -367,6 +378,16 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         [whiteBoardView brushToolsDidSelect:[YSBrushToolsManager shareInstance].currentBrushToolType];
     }
 
+    if (self.connectH5CoursewareUrlParameters)
+    {
+        [whiteBoardView changeConnectH5CoursewareUrlParameters:self.connectH5CoursewareUrlParameters];
+    }
+    
+    if (self.connectH5CoursewareUrlCookies)
+    {
+        [whiteBoardView setConnectH5CoursewareUrlCookies:self.connectH5CoursewareUrlCookies];
+    }
+    
     [whiteBoardView refreshWhiteBoard];
 
     [self makeCurrentWhiteBoardViewPoint];
@@ -742,6 +763,31 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     }
 }
 
+/// 变更H5课件地址参数，此方法会刷新当前H5课件以变更新参数
+- (void)changeConnectH5CoursewareUrlParameters:(NSDictionary *)parameters
+{
+    if ([parameters bm_isNotEmptyDictionary])
+    {
+        self.connectH5CoursewareUrlParameters = [NSMutableDictionary dictionaryWithDictionary:parameters];
+    }
+    else
+    {
+        self.connectH5CoursewareUrlParameters = [NSMutableDictionary dictionary];
+    }
+    
+    [self.mainWhiteBoardView changeConnectH5CoursewareUrlParameters:self.connectH5CoursewareUrlParameters];
+    
+    for (YSWhiteBoardView *whiteBoardView in self.coursewareViewList)
+    {
+        [whiteBoardView changeConnectH5CoursewareUrlParameters:self.connectH5CoursewareUrlParameters];
+    }
+}
+
+- (void)setConnectH5CoursewareUrlCookies:(nullable NSArray <NSDictionary *> *)cookies;
+{
+    _connectH5CoursewareUrlCookies = [NSArray arrayWithArray:cookies];
+}
+
 - (void)refreshWhiteBoard
 {
     CGFloat scale = self.mainWhiteBoardView.bm_width / self.mainWhiteBoardView.bm_height;
@@ -768,9 +814,6 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     {
         [whiteBoardView refreshWhiteBoard];
     }
-    
-    
-    
 }
 
 - (void)freshCurrentCourse

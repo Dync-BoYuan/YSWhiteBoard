@@ -40,7 +40,7 @@
 		877F395C24555DDC0086D7E2 /* YSMediaFileModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 877F395A24555DDC0086D7E2 /* YSMediaFileModel.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		877F395D24555DDC0086D7E2 /* YSMediaFileModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 877F395B24555DDC0086D7E2 /* YSMediaFileModel.m */; };
 		877F395F2456B0D10086D7E2 /* YSWBMediaControlviewDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 877F395E2456ACB20086D7E2 /* YSWBMediaControlviewDelegate.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		877F39682457E4EB0086D7E2 /* YSWBMediaMarkView.h in Headers */ = {isa = PBXBuildFile; fileRef = 877F39662457E4EB0086D7E2 /* YSWBMediaMarkView.h */; };
+		877F39682457E4EB0086D7E2 /* YSWBMediaMarkView.h in Headers */ = {isa = PBXBuildFile; fileRef = 877F39662457E4EB0086D7E2 /* YSWBMediaMarkView.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		877F39692457E4EB0086D7E2 /* YSWBMediaMarkView.m in Sources */ = {isa = PBXBuildFile; fileRef = 877F39672457E4EB0086D7E2 /* YSWBMediaMarkView.m */; };
 		87AD1600242721F000EAE233 /* YSWhiteBoardManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 87AD15FE242721F000EAE233 /* YSWhiteBoardManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		87AD1601242721F000EAE233 /* YSWhiteBoardManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 87AD15FF242721F000EAE233 /* YSWhiteBoardManager.m */; };
@@ -713,6 +713,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				877F39682457E4EB0086D7E2 /* YSWBMediaMarkView.h in Headers */,
 				044733A42456C9F4009ACB27 /* YSWhiteBoardTopBar.h in Headers */,
 				877F395F2456B0D10086D7E2 /* YSWBMediaControlviewDelegate.h in Headers */,
 				877F395C24555DDC0086D7E2 /* YSMediaFileModel.h in Headers */,
@@ -731,7 +732,6 @@
 				87C8B1062429BCD20016848E /* YSFileModel.h in Headers */,
 				87AD1600242721F000EAE233 /* YSWhiteBoardManager.h in Headers */,
 				87AD162924284E8E00EAE233 /* YSRoomUtil.h in Headers */,
-				877F39682457E4EB0086D7E2 /* YSWBMediaMarkView.h in Headers */,
 				87C8B0862429B9150016848E /* YSWhiteBoardEnum.h in Headers */,
 				87AD163E2428B68400EAE233 /* YSWBWebViewManager.h in Headers */,
 				87AD163C2428B68400EAE233 /* YSWBDrawViewManager.h in Headers */,

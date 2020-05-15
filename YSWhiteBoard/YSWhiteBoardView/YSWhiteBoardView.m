@@ -95,6 +95,9 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
 @property (nonatomic, strong) YSWBMediaMarkView *mediaMarkView;
 @property (nonatomic, strong) NSMutableArray <NSDictionary *> *mediaMarkSharpsDatas;
 
+/// H5课件cookie
+@property (nonatomic, strong) NSArray <NSDictionary *> *connectH5CoursewareUrlCookies;
+
 @end
 
 @implementation YSWhiteBoardView
@@ -202,7 +205,7 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
             self.webViewManager = [[YSWBWebViewManager alloc] init];
             self.webViewManager.delegate = self;
             
-            self.wbView = [self.webViewManager createWhiteBoardWithFrame:whiteBoardContentView.bounds loadFinishedBlock:loadFinishedBlock];
+            self.wbView = [self.webViewManager createWhiteBoardWithFrame:whiteBoardContentView.bounds connectH5CoursewareUrlCookies:self.connectH5CoursewareUrlCookies loadFinishedBlock:loadFinishedBlock];
             [self.whiteBoardContentView addSubview:self.wbView];
             
             self.drawViewManager = [[YSWBDrawViewManager alloc] initWithBackView:whiteBoardContentView webView:self.wbView];
@@ -1914,5 +1917,41 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
     }
 }
 
+/// 变更H5课件地址参数，此方法会刷新当前H5课件以变更新参数
+- (void)changeConnectH5CoursewareUrlParameters:(NSDictionary *)parameters
+{
+    if (!self.loadingH5Fished)
+    {
+        NSLog(@"===================cacheMsgPool userPropertyChanged");
+        
+        NSString *methodName = NSStringFromSelector(@selector(changeConnectH5CoursewareUrlParameters:));
+        NSMutableDictionary *dic = [NSMutableDictionary dictionary];
+        [dic setValue:methodName forKey:kYSMethodNameKey];
+        [dic setValue:@[parameters] forKey:kYSParameterKey];
+        [self.cacheMsgPool addObject:dic];
+        
+        return;
+    }
+
+    NSString *code = @"setDocParams";
+    NSString *parametersJson = [parameters bm_toJSON];
+    if (!parametersJson)
+    {
+        parametersJson = @"";
+    }
+    NSString *data = [NSString stringWithFormat:@"%@", parametersJson];
+    NSString *jsString = [NSString stringWithFormat:@"JsSocket.%@(%@, true)", code, data];
+    
+    if (self.webViewManager)
+    {
+        [self.webViewManager sendMessageToJS:jsString];
+    }
+}
+
+/// 设置H5课件Cookies
+- (void)setConnectH5CoursewareUrlCookies:(nullable NSArray <NSDictionary *> *)cookies
+{
+    _connectH5CoursewareUrlCookies = [NSArray arrayWithArray:cookies];
+}
 
 @end
