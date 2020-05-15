@@ -73,6 +73,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)whiteBoardVersion;
 
 - (void)registerDelegate:(id <YSWhiteBoardManagerDelegate>)delegate configration:(NSDictionary *)config;
+- (void)registerDelegate:(id<YSWhiteBoardManagerDelegate>)delegate configration:(NSDictionary *)config useHttpDNS:(BOOL)useHttpDNS;
 
 - (YSWhiteBoardView *)createMainWhiteBoardWithFrame:(CGRect)frame
                         loadFinishedBlock:(wbLoadFinishedBlock)loadFinishedBlock;
@@ -96,6 +97,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)changeAllCourseViewBackgroudColor:(UIColor *)color;
 /// 变更白板背景图
 - (void)changeAllWhiteBoardBackImage:(nullable UIImage *)image;
+
+
+/// 变更H5课件地址参数，此方法会刷新当前H5课件以变更新参数
+- (void)changeConnectH5CoursewareUrlParameters:(nullable NSDictionary *)parameters;
+
+/// 设置H5课件Cookies
+- (void)setConnectH5CoursewareUrlCookies:(nullable NSArray <NSDictionary *> *)cookies;
 
 
 /// 刷新白板
@@ -148,6 +156,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (CGFloat)currentDocumentZoomScale;
 - (CGFloat)documentZoomScaleWithFileId:(NSString *)fileId;
+
+///多窗口排序后的窗口列表
+- (NSArray *)getWhiteBoardViewArrangeList;
 
 #pragma -
 #pragma mark 是否多课件窗口

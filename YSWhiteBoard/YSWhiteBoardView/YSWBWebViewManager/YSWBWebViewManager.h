@@ -28,8 +28,10 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) BOOL playingMedia;
 
 - (WKWebView *)createWhiteBoardWithFrame:(CGRect)frame
-                         loadFinishedBlock:(wbLoadFinishedBlock)loadFinishedBlock;
-
+                       loadFinishedBlock:(wbLoadFinishedBlock)loadFinishedBlock;
+- (WKWebView *)createWhiteBoardWithFrame:(CGRect)frame
+           connectH5CoursewareUrlCookies:(nullable NSArray <NSDictionary *> *)connectH5CoursewareUrlCookies
+                       loadFinishedBlock:(wbLoadFinishedBlock)loadFinishedBlock;
 
 /**
  向js发送消息

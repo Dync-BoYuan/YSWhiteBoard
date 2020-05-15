@@ -225,7 +225,6 @@
                 associatedUserID = nil;
                 save = YES;
             }
-            
         }
         
         if ([msgName isEqualToString:sYSSignalShowPage] || [msgName isEqualToString:sYSSignalExtendShowPage])
