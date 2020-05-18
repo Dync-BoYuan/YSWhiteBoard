@@ -1281,10 +1281,14 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
                     [self.drawViewManager.fileDictionary setObject:filedata forKey:@"filedata"];
                     
                     // 白板加页需发送
-                    NSString *json = [YSRoomUtil jsonStringWithDictionary:@{@"totalPage":@(self.currentPage),
-                                                                      @"fileid":@(0),
-                                                                      @"sourceInstanceId":YSDefaultWhiteBoardId
-                                                                      }];
+                    NSDictionary *fileDic = @{ @"totalPage" : @(self.currentPage),
+                                               @"fileid" : @(0),
+                                               @"sourceInstanceId" : YSDefaultWhiteBoardId };
+                    NSString *json = [fileDic bm_toJSON];
+//                    NSString *json = [YSRoomUtil jsonStringWithDictionary:@{@"totalPage":@(self.currentPage),
+//                                                                      @"fileid":@(0),
+//                                                                      @"sourceInstanceId":YSDefaultWhiteBoardId
+//                                                                      }];
                     [[YSRoomInterface instance] pubMsg:sYSSignalWBPageCount msgID:sYSSignalWBPageCount toID:YSRoomPubMsgTellAll data:json save:YES completion:nil];
                 }
                 else
