@@ -43,10 +43,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// 课件列表
 @property (nonatomic, strong, readonly) NSMutableArray <YSFileModel *> *docmentList;
-/// 课件Dic列表
-@property (nonatomic, strong, readonly) NSMutableArray <NSDictionary *> *docmentDicList;
 /// 当前激活文档id
 @property (nonatomic, strong, readonly) NSString *currentFileId;
+
 /// 当前播放的媒体课件
 @property (nonatomic, strong, readonly) YSMediaFileModel *mediaFileModel;
 /// 当前播放的媒体课件发送者peerId
@@ -64,6 +63,9 @@ NS_ASSUME_NONNULL_BEGIN
 /// 课件窗口列表
 @property (nullable, nonatomic, strong) NSMutableArray <YSWhiteBoardView *> *coursewareViewList;
 
+///每个课件收到的位置
+@property (nonatomic, strong, readonly) NSMutableDictionary * allPositionDict;
+
 
 + (void)destroy;
 
@@ -71,11 +73,12 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)whiteBoardVersion;
 
 - (void)registerDelegate:(id <YSWhiteBoardManagerDelegate>)delegate configration:(NSDictionary *)config;
+- (void)registerDelegate:(id<YSWhiteBoardManagerDelegate>)delegate configration:(NSDictionary *)config useHttpDNS:(BOOL)useHttpDNS;
 
 - (YSWhiteBoardView *)createMainWhiteBoardWithFrame:(CGRect)frame
                         loadFinishedBlock:(wbLoadFinishedBlock)loadFinishedBlock;
 
-- (void)updateWebAddressInfo;
+//- (void)updateWebAddressInfo;
 
 
 #pragma -
@@ -94,6 +97,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)changeAllCourseViewBackgroudColor:(UIColor *)color;
 /// 变更白板背景图
 - (void)changeAllWhiteBoardBackImage:(nullable UIImage *)image;
+
+
+/// 变更H5课件地址参数，此方法会刷新当前H5课件以变更新参数
+- (void)changeConnectH5CoursewareUrlParameters:(nullable NSDictionary *)parameters;
+
+/// 设置H5课件Cookies
+- (void)setConnectH5CoursewareUrlCookies:(nullable NSArray <NSDictionary *> *)cookies;
 
 
 /// 刷新白板
@@ -144,9 +154,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)removeWhiteBoardViewWithFileId:(NSString *)fileId;
 - (void)removeWhiteBoardViewWithWhiteBoardView:(YSWhiteBoardView *)whiteBoardView;
 
-
 - (CGFloat)currentDocumentZoomScale;
 - (CGFloat)documentZoomScaleWithFileId:(NSString *)fileId;
+
+///多窗口排序后的窗口列表
+- (NSArray *)getWhiteBoardViewArrangeList;
 
 #pragma -
 #pragma mark 是否多课件窗口
@@ -173,8 +185,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)freshBrushToolConfig;
 // 获取当前工具配置设置 drawType: YSBrushToolType类型  colorHex: RGB颜色  progress: 值
 - (YSBrushToolsConfigs *)getCurrentBrushToolConfig;
+// 画笔颜色
+- (NSString *)getPrimaryColorHex;
 // 改变默认画笔颜色
-- (void)changePrimaryColor:(NSString *)colorHex;
+- (void)changePrimaryColorHex:(NSString *)colorHex;
 
 @end
 

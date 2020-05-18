@@ -31,7 +31,7 @@
 /// 缩放比例
 @property (nonatomic, assign) CGFloat zoomScale;
 
-///是否是白板
+///是否是空白板
 @property (nonatomic, assign) BOOL isWhiteBoard;
 
 @end
@@ -46,8 +46,7 @@
         self.layer.cornerRadius = frame.size.height/2;
         self.layer.masksToBounds = YES;
         
-//        self.isAllScreen = NO;
-        self.allowTurnPage = YES;
+//        self.allowTurnPage = YES;
         self.totalPage = 1;
         self.currentPage = 1;
         self.zoomScale = 1;
@@ -98,6 +97,7 @@
     pageLabel.font = [UIFont systemFontOfSize:16];
     [self addSubview:pageLabel];
     self.pageLabel = pageLabel;
+    self.pageLabel.adjustsFontSizeToFitWidth = YES;
     
     //右翻页按钮
     UIButton * rightTurnBtn = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, 17, 25)];
@@ -132,8 +132,6 @@
     
     self.augmentBtn.enabled = YES;
     self.reduceBtn.enabled  = NO;
-        
-    
 }
 
 - (void)layoutSubviews
@@ -253,17 +251,10 @@
     
     if (![[YSWhiteBoardManager shareInstance] isCanControlWhiteBoardView])
     {
-        YSRoomUser *localUser = [YSRoomInterface instance].localUser;
-        NSDictionary *properties = [localUser.properties bm_dictionaryForKey:@"properties"];
         
-        if ([properties bm_boolForKey:@"candraw"])
-        {
-            self.allowTurnPage = YES;
-        }
-        else
-        {
-            self.allowTurnPage = NO;
-        }
+        BOOL canDraw = [YSRoomInterface instance].localUser.canDraw;
+        
+        self.allowTurnPage = canDraw;
     }
     else
     {
@@ -289,17 +280,9 @@
     
     if (![[YSWhiteBoardManager shareInstance] isCanControlWhiteBoardView])
     {
-        YSRoomUser *localUser = [YSRoomInterface instance].localUser;
-        NSDictionary *properties = [localUser.properties bm_dictionaryForKey:@"properties"];
+        BOOL canDraw = [YSRoomInterface instance].localUser.canDraw;
         
-        if ([properties bm_boolForKey:@"candraw"])
-        {
-            self.allowTurnPage = YES;
-        }
-        else
-        {
-            self.allowTurnPage = NO;
-        }
+        self.allowTurnPage = canDraw;
     }
     else
     {
@@ -344,21 +327,35 @@
     }
     
 }
+
 // 是否可以翻页  (未开课前通过权限判断是否可以翻页  上课后永久不可以翻页)
 - (void)setAllowTurnPage:(BOOL)allowTurnPage
 {
+    
     _allowTurnPage = allowTurnPage;
     if (allowTurnPage)
     {
         self.leftTurnBtn.enabled = (self.currentPage > 1);
 
-        if ([YSWhiteBoardManager shareInstance].isBeginClass && self.isWhiteBoard && [YSRoomInterface instance].localUser.role == YSUserType_Teacher)
+        if (([YSWhiteBoardManager shareInstance].isBeginClass && self.isWhiteBoard && [YSRoomInterface instance].localUser.role == YSUserType_Teacher))
         {
             self.rightTurnBtn.enabled = YES;
         }
         else
         {
             self.rightTurnBtn.enabled = self.currentPage < self.totalPage;
+        }
+        
+        if (![YSWhiteBoardManager shareInstance].isBeginClass && [YSRoomInterface instance].localUser.role == YSUserType_Student)
+        {
+            if ([YSWhiteBoardManager shareInstance].roomConfig.canPageTurningFlag)
+            {
+                self.rightTurnBtn.enabled = self.currentPage < self.totalPage;
+            }
+            else
+            {
+                self.rightTurnBtn.enabled = NO;
+            }
         }
     }
     else

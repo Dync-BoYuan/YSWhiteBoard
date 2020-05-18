@@ -47,15 +47,22 @@
 - (WKWebView *)createWhiteBoardWithFrame:(CGRect)frame
                        loadFinishedBlock:(wbLoadFinishedBlock)loadFinishedBlock
 {
+    return [self createWhiteBoardWithFrame:frame connectH5CoursewareUrlCookies:nil loadFinishedBlock:loadFinishedBlock];
+}
+
+- (WKWebView *)createWhiteBoardWithFrame:(CGRect)frame
+connectH5CoursewareUrlCookies:(NSArray <NSDictionary *> *)connectH5CoursewareUrlCookies
+            loadFinishedBlock:(wbLoadFinishedBlock)loadFinishedBlock
+{
     self.loadFinishedBlock = loadFinishedBlock;
     self.wbWebUrl = @"/publish/index.html#/mobileApp?languageType=ch";
 
-    [self createWKWebViewWithFrame:frame];
+    [self createWKWebViewWithFrame:frame connectH5CoursewareUrlCookies:connectH5CoursewareUrlCookies];
 
     return self.webView;
 }
 
-- (void)createWKWebViewWithFrame:(CGRect)frame
+- (void)createWKWebViewWithFrame:(CGRect)frame connectH5CoursewareUrlCookies:(NSArray <NSDictionary *> *)connectH5CoursewareUrlCookies
 {
     WKWebView *webView =
         [[WKWebView alloc] initWithFrame:CGRectMake(0, 0, frame.size.width, frame.size.height)
@@ -100,7 +107,7 @@
 #if IS_LOAD_LOCAL_INDEX
     // 加载本地的h5文件
     NSURL *path =
-        [WBBUNDLE URLForResource:@"react_mobile_new_publishdir/index" withExtension:@"html"];
+        [YSWBBUNDLE URLForResource:@"react_mobile_new_publishdir/index" withExtension:@"html"];
 //    NSString *urlStr = [NSString
 //        stringWithFormat:@"%@#/mobileApp?languageType=%@&loadComponentName=%@", path.absoluteString,
 //                         [self getCurrentLanguage], loadComponentName];
@@ -120,22 +127,44 @@
     // 清理
     [self clearcookie:webView];
 
+    // 添加cookie
+    if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 11.0) {
+    //if (@available(iOS 11.0, *)) {
+        WKHTTPCookieStore *cookieStore = _webView.configuration.websiteDataStore.httpCookieStore;
+        //get cookies
+        for (NSDictionary *cookieDic in connectH5CoursewareUrlCookies)
+        {
+            NSHTTPCookie *cookie = [NSHTTPCookie cookieWithProperties:cookieDic];
+            [cookieStore setCookie:cookie completionHandler:nil];
+        }
+    }
+    else
+    {
+        NSHTTPCookieStorage *cookieStore = [NSHTTPCookieStorage sharedHTTPCookieStorage];
+        for (NSDictionary *cookieDic in connectH5CoursewareUrlCookies)
+        {
+            NSHTTPCookie *cookie = [NSHTTPCookie cookieWithProperties:cookieDic];
+            [cookieStore setCookie:cookie];
+        }
+    }
+
     NSURLRequest *request = [NSURLRequest requestWithURL:url];
     [webView loadRequest:request];
 }
 
 - (void)clearcookie:(WKWebView *)webView
 {
-    NSString *version = [UIDevice currentDevice].systemVersion;
-
-    if (version.doubleValue >= 8.0 && version.doubleValue < 9.0) { return; }
-    
     // 清除cookies
-    NSHTTPCookie *cookie;
-    NSHTTPCookieStorage *storage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
-    for (cookie in [storage cookies])
+    if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 11.0) {
+    }
+    else
     {
-        [storage deleteCookie:cookie];
+        NSHTTPCookie *cookie;
+        NSHTTPCookieStorage *storage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
+        for (cookie in [storage cookies])
+        {
+            [storage deleteCookie:cookie];
+        }
     }
 
     // 清除UIWebView的缓存
@@ -437,6 +466,20 @@
         return;
     }
     
+#if 1
+    
+    if (self.loadFinishedBlock)
+    {
+        self.loadFinishedBlock();
+    }
+    
+    if (self.delegate && [self.delegate respondsToSelector:@selector(onWBWebViewManagerPageFinshed)])
+    {
+        [self.delegate onWBWebViewManagerPageFinshed];
+    }
+
+#else
+    
     NSData *data = [NSJSONSerialization dataWithJSONObject:msgDic
                                                    options:0
                                                      error:nil];
@@ -459,6 +502,7 @@
             [weakSelf.delegate onWBWebViewManagerPageFinshed];
         }
     }];
+#endif
 }
 /// app中play PPT中的media
 - (void)onJsPublishNetworkMedia:(NSDictionary *)videoData
@@ -483,10 +527,15 @@
 
     NSString *url = [dataDic bm_stringForKey:@"url"];
     BOOL isvideo = [dataDic bm_boolForKey:@"video"];
-    NSDictionary *param = [dataDic bm_dictionaryForKey:@"attributes"];
-    NSString *fileId = [NSString stringWithFormat:@"%@_video", [param bm_stringForKey:@"fileid"]];
-    NSMutableDictionary *paramDic = [NSMutableDictionary dictionaryWithDictionary:param];
-    [paramDic bm_setString:fileId forKey:@"fileid"];
+    NSMutableDictionary *param = [NSMutableDictionary dictionaryWithDictionary:[dataDic bm_dictionaryForKey:@"attributes"]];
+    NSString * fileID = [param bm_stringForKey:@"fileid"];
+    NSString * whiteboardID = [YSRoomUtil getwhiteboardIDFromFileId:fileID];
+
+    [param setObject:whiteboardID forKey:@"whiteboardId"];
+    
+//    NSString *fileId = [NSString stringWithFormat:@"%@_video", [param bm_stringForKey:@"fileid"]];
+//    NSMutableDictionary *paramDic = [NSMutableDictionary dictionaryWithDictionary:param];
+//    [paramDic bm_setString:fileId forKey:@"fileid"];
 
     if ([YSWhiteBoardManager shareInstance].mediaFileModel)
     {
@@ -505,7 +554,7 @@
                 [[YSRoomInterface instance] startShareMediaFile:url
                                                       isVideo:isvideo
                                                          toID:toID
-                                                   attributes:paramDic
+                                                   attributes:param
                                                         block:nil];
             }
         }];
@@ -524,7 +573,7 @@
         [[YSRoomInterface instance] startShareMediaFile:url
                                               isVideo:isvideo
                                                  toID:toID
-                                           attributes:paramDic
+                                           attributes:param
                                                 block:nil];
     }
 }
@@ -1010,14 +1059,15 @@
     self.webView.frame = frame;
 
     //给白板发送webview宽高
-    NSDictionary *tParamDic = @{
-        @"height" : @(CGRectGetHeight(self.webView.frame)), // DocumentFilePage_ShowPage
-        @"width" : @(CGRectGetWidth(self.webView.frame))
-    };
-
-    WB_INFO(@"refreshWhiteBoard : %@", NSStringFromCGRect(_webView.frame));
+//    NSDictionary *tParamDic = @{
+//        @"height" : @(CGRectGetHeight(self.webView.frame)), // DocumentFilePage_ShowPage
+//        @"width" : @(CGRectGetWidth(self.webView.frame))
+//    };
+//
+//    WB_INFO(@"refreshWhiteBoard : %@", NSStringFromCGRect(_webView.frame));
     
-    [self sendAction:WBChangeDynamicPptSize command:tParamDic];
+//    [self sendAction:WBChangeDynamicPptSize command:tParamDic];
+    [self sendAction:WBDocResize command:@{}];
 }
 
 // 重新加载白板

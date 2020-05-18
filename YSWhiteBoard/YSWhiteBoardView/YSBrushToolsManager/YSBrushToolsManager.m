@@ -47,16 +47,6 @@ static YSBrushToolsManager *brushTools = nil;
     return brushTools;
 }
 
-///// 原始配置
-//- (void)makeDefaultToolConfigs
-//{
-//    self.currentBrushToolType = YSBrushToolTypeMouse;
-//
-//    // 默认颜色 红
-//    self.defaultPrimaryColor = @"#FF0000";
-//    [self freshBrushToolConfigs];
-//}
-
 /// 画笔默认配置
 - (void)freshDefaultBrushToolConfigs
 {
@@ -64,23 +54,24 @@ static YSBrushToolsManager *brushTools = nil;
     
     // 默认颜色 红
     self.defaultPrimaryColor = @"#FF0000";
+    self.primaryColorHex = self.defaultPrimaryColor;
 
     // 画笔
     self.lineConfig = [[YSBrushToolsConfigs alloc]init];
     self.lineConfig.drawType = YSDrawTypePen;
-    self.lineConfig.colorHex = @"";
+    self.lineConfig.colorHex = self.defaultPrimaryColor;
     self.lineConfig.progress = 0.03f;
     
     // 文本
     self.textConfig = [[YSBrushToolsConfigs alloc]init];
     self.textConfig.drawType = YSDrawTypeTextMS;
-    self.textConfig.colorHex = @"";
+    self.textConfig.colorHex = self.defaultPrimaryColor;
     self.textConfig.progress = 0.3f;
     
     // 形状
     self.sharpConfig = [[YSBrushToolsConfigs alloc]init];
     self.sharpConfig.drawType = YSDrawTypeEmptyRectangle;
-    self.sharpConfig.colorHex = @"";
+    self.sharpConfig.colorHex = self.defaultPrimaryColor;
     self.sharpConfig.progress = 0.03f;
     
     // 橡皮
@@ -175,16 +166,23 @@ static YSBrushToolsManager *brushTools = nil;
         
     if ([self.currentConfig bm_isNotEmpty])
     {
-        [self changePrimaryColor:hexColor];
+        [self changePrimaryColorHex:hexColor];
 
         self.currentConfig.drawType = drawType;
-        self.currentConfig.colorHex = self.primaryColorHex;
+        if (type == YSBrushToolTypeEraser)
+        {
+            self.currentConfig.colorHex = @"";
+        }
+        else
+        {
+            self.currentConfig.colorHex = self.primaryColorHex;
+        }
         self.currentConfig.progress = progress;
     }
 }
 
 /// 改变默认画笔颜色
-- (void)changePrimaryColor:(NSString *)colorHex
+- (void)changePrimaryColorHex:(NSString *)colorHex
 {
     if (!colorHex)
     {

@@ -55,10 +55,14 @@ static  NSString *const sWhiteboardID           = @"whiteboardID";
 #define YSDefaultWhiteBoardId                   @"default"
 
 #define YSWhiteBoard_MainBackGroudColor         [UIColor bm_colorWithHex:0xDCE2F1]
+#define YSWhiteBoard_MainBackDrawBoardBgColor   [UIColor bm_colorWithHex:0xDEEAFF]
+
 //#define YSWhiteBoard_BackGroudColor             [UIColor bm_colorWithHex:0x6D7278]
 #define YSWhiteBoard_BackGroudColor             [UIColor bm_colorWithHex:0xDCE2F1]
-
 #define YSWhiteBoard_TopBarBackGroudColor       [UIColor bm_colorWithHex:0x82ABEC]
+#define YSWhiteBoard_BorderColor                [UIColor bm_colorWithHex:0x82ABEC alpha:0.8f]
+#define YSWhiteBoard_UnTopBarBackGroudColor     [UIColor bm_colorWithHex:0xB6C5EB]
+#define YSWhiteBoard_UnBorderColor              [UIColor bm_colorWithHex:0xB6C5EB alpha:0.8f]
 
 
 #pragma - mark 用户属性
@@ -162,7 +166,7 @@ static  NSString *const sYSSignalMoreWhiteboardGlobalState  = @"MoreWhiteboardGl
 
 #define WBDisconnect                                @"disconnect"
 
-#define WBFakeJsSdkInitInfo                         @"updateFakeJsSdkInitInfo"
+//#define WBFakeJsSdkInitInfo                         @"updateFakeJsSdkInitInfo"
 /// 更新文档服务地址信令
 #define WBUpdateWebAddressInfo                      @"updateWebAddressInfo"
 

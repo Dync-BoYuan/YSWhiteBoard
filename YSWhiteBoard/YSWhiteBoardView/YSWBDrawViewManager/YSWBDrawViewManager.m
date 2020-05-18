@@ -68,7 +68,7 @@
         self.wkWebView = webView;
         
         self.showOnWeb = NO;
-        self.selectMouse = YES;
+        
                 
         self.address = [YSWhiteBoardManager shareInstance].serverDocAddrKey;
 
@@ -85,6 +85,9 @@
             make.top.bmmas_equalTo(self.contentView.bmmas_top);
             make.bottom.bmmas_equalTo(self.contentView.bmmas_bottom);
         }];
+        
+        self.selectMouse = YES;
+        [self setWorkMode:YSWorkModeViewer];
         
         [view setNeedsLayout];
         [view layoutIfNeeded];
@@ -122,7 +125,7 @@
         // 是否点选鼠标
         if (self.showOnWeb)
         {
-            self.fileView.hidden = selected;
+            self.fileView.hidden = NO;
         }
         else
         {
@@ -609,12 +612,20 @@
             if (self.showOnWeb)
             {
                 // 画笔穿透时在web课件上不隐藏
-                self.fileView.hidden = [YSWhiteBoardManager shareInstance].roomConfig.isPenCanPenetration ? NO : self.selectMouse;
+//                self.fileView.hidden = [YSWhiteBoardManager shareInstance].roomConfig.isPenCanPenetration ? NO : self.selectMouse;
+                self.fileView.hidden = NO;
             }
         }
         else if ([YSRoomInterface instance].localUser.role == YSUserType_Teacher)
         { // 老师
-            [self setWorkMode:YSWorkModeControllor];
+            if (self.selectMouse)
+            {
+                [self setWorkMode:YSWorkModeViewer];
+            }
+            else
+            {
+                [self setWorkMode:YSWorkModeControllor];
+            }
         }
         else
         { // 巡课
@@ -897,13 +908,13 @@
                 NSString *realPath = [NSString stringWithFormat:@"https://%@%@", self.address, path];
                 
                 __block BOOL hasPDF = NO;
-                [[YSWhiteBoardManager shareInstance].docmentDicList
-                    enumerateObjectsUsingBlock:^(NSDictionary *_Nonnull obj, NSUInteger idx,
+                [[YSWhiteBoardManager shareInstance].docmentList
+                    enumerateObjectsUsingBlock:^(YSFileModel *_Nonnull obj, NSUInteger idx,
                                                  BOOL *_Nonnull stop) {
 
-                        if ([[obj bm_stringForKey:@"fileid"] isEqualToString:fileId])
+                        if ([obj.fileid isEqualToString:fileId])
                         { //v查找课件库中的对应课件是否可以使用pdf
-                            NSString *cospdfpath = [obj bm_stringForKey:@"cospdfpath"];
+                            NSString *cospdfpath = obj.cospdfpath;
                             if ([cospdfpath bm_isNotEmpty])
                             {
                                 hasPDF = YES;
@@ -947,7 +958,7 @@
                             self.showOnWeb    = YES;
                             self.wkWebView.hidden = NO;
                             [self.fileView showOnWeb];
-                            self.fileView.hidden = self.selectMouse;
+//                            self.fileView.hidden = self.selectMouse;
                         }
                         else if ([realPath hasSuffix:@".gif"])
                         {
@@ -955,7 +966,7 @@
                             self.showOnWeb    = YES;
                             self.wkWebView.hidden = NO;
                             [self.fileView showOnWeb];
-                            self.fileView.hidden = self.selectMouse;
+//                            self.fileView.hidden = self.selectMouse;
                         }
                         else
                         {
@@ -986,7 +997,8 @@
                 self.showOnWeb    = YES;
                 self.wkWebView.hidden = NO;
                 [self.fileView showOnWeb];
-                self.fileView.hidden = [YSWhiteBoardManager shareInstance].roomConfig.isPenCanPenetration ? NO : self.selectMouse;
+//                self.fileView.hidden = [YSWhiteBoardManager shareInstance].roomConfig.isPenCanPenetration ? NO : self.selectMouse;
+                self.fileView.hidden = NO;
             }
             
             if ([YSWhiteBoardManager shareInstance].roomConfig.isPenCanPenetration == YES)
@@ -1067,7 +1079,7 @@
         {
             self.selectMouse = YES;
 
-//            [self setWorkMode:YSWorkModeViewer];
+            [self setWorkMode:YSWorkModeViewer];
 //
 //            NSNumber *isDynamicPPT = [self.fileDictionary objectForKey:@"isDynamicPPT"];
 //            NSNumber *isH5Document = [self.fileDictionary objectForKey:@"isH5Document"];
@@ -1113,18 +1125,11 @@
 
     if (self.showOnWeb)
     {
-        self.fileView.hidden = (type == YSNativeToolTypeMouse);
+        self.fileView.hidden = NO;
     }
     else
     {
-        if ([self.bwContentView.fileId isEqualToString:@"0"])
-        {
-            self.fileView.ysDrawView.drawView.hidden = NO;
-        }
-        else
-        {
-            self.fileView.ysDrawView.drawView.hidden = (type == YSNativeToolTypeMouse);
-        }
+        self.fileView.ysDrawView.drawView.hidden = NO;
     }
 }
 

@@ -81,18 +81,12 @@
     }
 }
 
-- (void)freshViewWithSavedSharpsData:(NSArray <NSDictionary *> *)sharpsDataArray videoRatio:(CGFloat)videoRatio
+- (void)setVideoRatio:(CGFloat)videoRatio
 {
-    if (self.superview)
-    {
-        self.frame = self.superview.bounds;
-    }
-    
-    self.videoRatio = videoRatio;
+    _videoRatio = videoRatio;
     
     CGFloat width;
     CGFloat height;
-
     if (self.videoRatio > 0)
     {
         width = self.bm_height*self.videoRatio;
@@ -108,15 +102,19 @@
         
         self.drawView.bm_size = CGSizeMake(width, height);
         [self.drawView bm_centerInSuperView];
-        
-        [self.drawView switchToFileID:YSVideoWhiteboard_Id pageID:1 refreshImmediately:YES];
-        //[self.drawView addDrawData:data refreshImmediately:YES];
     }
     else
     {
         self.drawView.frame = self.bounds;
     }
-    
+}
+
+- (void)freshViewWithSavedSharpsData:(NSArray <NSDictionary *> *)sharpsDataArray videoRatio:(CGFloat)videoRatio
+{
+    self.videoRatio = videoRatio;
+
+    [self.drawView switchToFileID:YSVideoWhiteboard_Id pageID:1 refreshImmediately:YES];
+
     for (NSDictionary *dic in sharpsDataArray)
     {
         [self.drawView addDrawData:dic refreshImmediately:YES];

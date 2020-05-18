@@ -34,13 +34,16 @@
 @property (nonatomic, strong) NSString *uploaduserid;
 @property (nonatomic, strong) NSString *uploadusername;
 @property (nonatomic, strong) NSString *pdfpath;
-@property (nonatomic, strong) NSString* dynamicppt;//1 是原动态ppt 2.新的
+@property (nonatomic, strong) NSString *dynamicppt;//1 是原动态ppt 2.新的
 
 @property (nonatomic, assign) NSUInteger pagenum;
 @property (nonatomic, assign) NSUInteger currpage;//NSInteger
 @property (nonatomic, assign) NSUInteger pptslide;//1 当前页面
 @property (nonatomic, assign) NSUInteger pptstep;//0 贞
 @property (nonatomic, assign) NSUInteger steptotal;//总的
+
+// pdf
+@property (nonatomic, copy) NSString *cospdfpath;
 
 //0:表示普通文档　１－２动态ppt(1: 第一版动态ppt 2: 新版动态ppt ）  3:h5文档
 @property (nonatomic, assign) NSUInteger fileprop;

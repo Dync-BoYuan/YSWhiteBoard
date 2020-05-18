@@ -74,9 +74,6 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 @property (nonatomic, assign) BOOL isUpdateWebAddressInfo;
 @property (nonatomic, strong) NSDictionary *serverAddressInfoDic;
 
-// 消息列表
-//@property (nonatomic, strong) NSMutableArray <NSDictionary *> *msgList;
-
 
 /// 记录UI层是否开始上课
 @property (nonatomic, assign) BOOL isBeginClass;
@@ -84,8 +81,6 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 
 /// 课件列表
 @property (nonatomic, strong) NSMutableArray <YSFileModel *> *docmentList;
-/// 课件Dic列表
-@property (nonatomic, strong) NSMutableArray <NSDictionary *> *docmentDicList;
 
 /// 当前激活文档id
 @property (nonatomic, strong, setter=setTheCurrentDocumentFileID:) NSString *currentFileId;
@@ -105,16 +100,16 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 /// 主白板
 @property (nonatomic, strong) YSWhiteBoardView *mainWhiteBoardView;
 
-// 画笔控制
+/// 画笔控制
 @property (nonatomic, strong) YSBrushToolsManager *brushToolsManager;
 
-///拖出视频view时的模拟移动图
+/// 拖出视频view时的模拟移动图
 @property (nonatomic, strong) UIImageView *dragImageView;
 
-///小白板是否正在拖动
+/// 小白板是否正在拖动
 @property (nonatomic, assign) BOOL isDraging;
 
-///小白板是否正在拖动缩放
+/// 小白板是否正在拖动缩放
 @property (nonatomic, assign) BOOL isDragZooming;
 
 
@@ -125,6 +120,14 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 
 /// 判断音视频进度是否在拖动
 @property (nonatomic, assign) BOOL isMediaDrag;
+
+/// 每个课件收到的位置
+@property (nonatomic, strong) NSMutableDictionary * allPositionDict;
+
+/// H5课件附加url参数
+@property (nonatomic, strong) NSMutableDictionary *connectH5CoursewareUrlParameters;
+/// H5课件cookie
+@property (nonatomic, strong) NSArray <NSDictionary *> *connectH5CoursewareUrlCookies;
 
 @end
 
@@ -162,7 +165,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     if (whiteBoardManagerSingleton)
     {
         [whiteBoardManagerSingleton clearAllData];
-        //[whiteBoardManagerSingleton registerURLProtocol:NO];
+        [whiteBoardManagerSingleton registerURLProtocol:NO];
         whiteBoardManagerSingleton = nil;
     }
 }
@@ -199,7 +202,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         if (!whiteBoardManagerSingleton)
         {
             whiteBoardManagerSingleton = [[YSWhiteBoardManager alloc] init];
-            [whiteBoardManagerSingleton registerURLProtocol:YES];
+            //[whiteBoardManagerSingleton registerURLProtocol:YES];
         }
     }
     return whiteBoardManagerSingleton;
@@ -244,11 +247,21 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 #pragma -
 #pragma mark createWhiteBoard
 
-- (void)registerDelegate:(id <YSWhiteBoardManagerDelegate>)delegate configration:(NSDictionary *)config
+- (void)registerDelegate:(id<YSWhiteBoardManagerDelegate>)delegate configration:(NSDictionary *)config
+{
+    [self registerDelegate:delegate configration:config useHttpDNS:YES];
+}
+
+- (void)registerDelegate:(id <YSWhiteBoardManagerDelegate>)delegate configration:(NSDictionary *)config useHttpDNS:(BOOL)useHttpDNS
 {
     self.wbDelegate = delegate;
     self.configration = config;
     
+    if (useHttpDNS)
+    {
+        [self registerURLProtocol:YES];
+    }
+
 //    NSDictionary *whiteBoardConfig = @{
 //        YSWhiteBoardWebProtocolKey : YSLive_Http,
 //        YSWhiteBoardWebHostKey : host,
@@ -261,8 +274,23 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 - (YSWhiteBoardView *)createMainWhiteBoardWithFrame:(CGRect)frame
                         loadFinishedBlock:(wbLoadFinishedBlock)loadFinishedBlock
 {
-    CGFloat height = frame.size.height * 0.6f;
-    CGFloat width = height / 3.0f * 5.0f;
+//    CGFloat height = frame.size.height * 0.6f;
+//    CGFloat width = height / 3.0f * 5.0f;
+    CGFloat scale = frame.size.width / frame.size.height;
+       
+       CGFloat height = 0;
+       CGFloat width = 0;
+       if (scale > 5.0/3.0)
+       {
+           height = frame.size.height * 0.6f;
+           width = height * 5.0/3.0;
+       }
+       else
+       {
+           width = frame.size.width * 0.6f;
+           height = width * 3.0/5.0;
+       }
+    
     self.whiteBoardViewDefaultSize = CGSizeMake(width, height);
     
     self.mainWhiteBoardView = [[YSWhiteBoardView alloc] initWithFrame:frame fileId:@"0" loadFinishedBlock:loadFinishedBlock];
@@ -349,6 +377,16 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         [whiteBoardView brushToolsDidSelect:[YSBrushToolsManager shareInstance].currentBrushToolType];
     }
 
+    if (self.connectH5CoursewareUrlParameters)
+    {
+        [whiteBoardView changeConnectH5CoursewareUrlParameters:self.connectH5CoursewareUrlParameters];
+    }
+    
+    if (self.connectH5CoursewareUrlCookies)
+    {
+        [whiteBoardView setConnectH5CoursewareUrlCookies:self.connectH5CoursewareUrlCookies];
+    }
+    
     [whiteBoardView refreshWhiteBoard];
 
     [self makeCurrentWhiteBoardViewPoint];
@@ -358,9 +396,24 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 
 - (void)makeCurrentWhiteBoardViewPoint
 {
+    [self makeCurrentWhiteBoardViewPointReset:NO];
+}
+
+- (void)makeCurrentWhiteBoardViewPointReset:(BOOL)reset
+{
     static NSUInteger loopCount = 0;
     static NSUInteger lineCount = 0;
 
+    if (reset)
+    {
+        loopCount = 0;
+        lineCount = 0;
+        whiteBoardViewCurrentLeft = YSWhiteBoardDefaultLeft;
+        whiteBoardViewCurrentTop = YSWhiteBoardDefaultTop;
+        
+        return;
+    }
+    
     whiteBoardViewCurrentTop += YSWhiteBoardDefaultTopOffset;
 
     CGSize size = self.whiteBoardViewDefaultSize;
@@ -382,6 +435,14 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         lineCount = 0;
         whiteBoardViewCurrentLeft = YSWhiteBoardDefaultLeft;
         whiteBoardViewCurrentTop = YSWhiteBoardDefaultTop*(loopCount+0.5);
+    }
+    
+    if (((whiteBoardViewCurrentTop + size.height) >= self.mainWhiteBoardView.bm_height) || ((whiteBoardViewCurrentLeft + size.width) >= self.mainWhiteBoardView.bm_width))
+    {
+        loopCount = 0;
+        lineCount = 0;
+        whiteBoardViewCurrentLeft = YSWhiteBoardDefaultLeft;
+        whiteBoardViewCurrentTop = YSWhiteBoardDefaultTop;
     }
 }
 
@@ -591,12 +652,21 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         return;
     }
     
+    if (fileId)
+    {
+        if (!self.allPositionDict)
+        {
+            self.allPositionDict = [[NSMutableDictionary alloc] init];
+        }
+        [self.allPositionDict setObject:message forKey:fileId];
+    }
+    
     YSWhiteBoardView *whiteBoardView = [self getWhiteBoardViewWithFileId:fileId];
     if (!whiteBoardView)
     {
         return;
     }
-        
+    
     if (inlist)
     {
         whiteBoardView.positionData = message;
@@ -692,11 +762,49 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     }
 }
 
+/// 变更H5课件地址参数，此方法会刷新当前H5课件以变更新参数
+- (void)changeConnectH5CoursewareUrlParameters:(NSDictionary *)parameters
+{
+    if ([parameters bm_isNotEmptyDictionary])
+    {
+        self.connectH5CoursewareUrlParameters = [NSMutableDictionary dictionaryWithDictionary:parameters];
+    }
+    else
+    {
+        self.connectH5CoursewareUrlParameters = [NSMutableDictionary dictionary];
+    }
+    
+    [self.mainWhiteBoardView changeConnectH5CoursewareUrlParameters:self.connectH5CoursewareUrlParameters];
+    
+    for (YSWhiteBoardView *whiteBoardView in self.coursewareViewList)
+    {
+        [whiteBoardView changeConnectH5CoursewareUrlParameters:self.connectH5CoursewareUrlParameters];
+    }
+}
+
+- (void)setConnectH5CoursewareUrlCookies:(nullable NSArray <NSDictionary *> *)cookies;
+{
+    _connectH5CoursewareUrlCookies = [NSArray arrayWithArray:cookies];
+}
+
 - (void)refreshWhiteBoard
 {
-    CGFloat height = self.mainWhiteBoardView.bm_size.height * 0.6f;
-    CGFloat width = height / 3.0f * 5.0f;
-
+    CGFloat scale = self.mainWhiteBoardView.bm_width / self.mainWhiteBoardView.bm_height;
+    
+    CGFloat height = 0;
+    CGFloat width = 0;
+    if (scale > 5.0/3.0)
+    {
+        height = self.mainWhiteBoardView.bm_height * 0.6f;
+        width = height * 5.0/3.0;
+    }
+    else
+    {
+        width = self.mainWhiteBoardView.bm_width * 0.6f;
+        height = width * 3.0/5.0;
+    }
+    
+    
     self.whiteBoardViewDefaultSize = CGSizeMake(width, height);
     
     [self.mainWhiteBoardView refreshWhiteBoard];
@@ -904,13 +1012,22 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         }
     }
     
-    [self removeWhiteBoardViewWithFileId:fileId];
+    if (![self isOneWhiteBoardView])
+    {
+        [self removeWhiteBoardViewWithFileId:fileId];
+    }
 }
 
 - (void)setTheCurrentDocumentFileID:(NSString *)fileId
 {
+    [self setTheCurrentDocumentFileID:fileId sendArrange:YES];
+}
+
+- (void)setTheCurrentDocumentFileID:(NSString *)fileId sendArrange:(BOOL)sendArrange
+{
     if ([fileId isEqualToString:_currentFileId])
     {
+        [self.mainWhiteBoardView.collectBtn bm_bringToFront];
         return;
     }
     UIView *firstResponder = [self.mainWhiteBoardView bm_firstResponder];
@@ -931,7 +1048,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         }
     }
     
-    if ([[YSWhiteBoardManager shareInstance] isCanControlWhiteBoardView])
+    if (sendArrange && [[YSWhiteBoardManager shareInstance] isCanControlWhiteBoardView])
     {
         [self sendArrangeWhiteBoardView];
     }
@@ -942,27 +1059,55 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         {
             continue;
         }
+                
+        YSRoomUser * localUser = [YSRoomInterface instance].localUser;
         
         if ([whiteBoard.fileId isEqualToString:fileId])
         {
+            whiteBoard.isCurrent = YES;
             whiteBoard.topBar.backgroundColor = YSWhiteBoard_TopBarBackGroudColor;
-            [whiteBoard bm_addShadow:3.0f Radius:0.0f BorderColor:YSWhiteBoard_TopBarBackGroudColor ShadowColor:YSWhiteBoard_BackGroudColor Offset:CGSizeMake(1, 2) Opacity:0.6f];
+            [whiteBoard bm_addShadow:3.0f Radius:0.0f BorderColor:YSWhiteBoard_BorderColor ShadowColor:YSWhiteBoard_BackGroudColor Offset:CGSizeMake(1, 2) Opacity:0.6f];
             whiteBoard.topBar.isCurrent = YES;
+            if (localUser.role == YSUserType_Student)
+            {
+                if ([localUser.properties bm_containsObjectForKey:@"candraw"])
+                {
+                    BOOL candraw = [localUser.properties bm_boolForKey:@"candraw"];
+                    
+                    if (candraw && self.roomConfig.canPageTurningFlag)
+                    {
+                        whiteBoard.pageControlView.allowTurnPage = YES;
+                    }
+                    else
+                    {
+                        whiteBoard.pageControlView.allowTurnPage = NO;
+                    }
+                }
+            }
         }
         else
         {
-            whiteBoard.topBar.backgroundColor = [UIColor bm_colorWithHex:0xB6C5EB];
-            [whiteBoard bm_addShadow:3.0f Radius:0.0f BorderColor:[UIColor bm_colorWithHex:0xB6C5EB] ShadowColor:YSWhiteBoard_BackGroudColor Offset:CGSizeMake(1, 2) Opacity:0.6f];
+            whiteBoard.isCurrent = NO;
+            whiteBoard.topBar.backgroundColor = YSWhiteBoard_UnTopBarBackGroudColor;
+            [whiteBoard bm_addShadow:3.0f Radius:0.0f BorderColor:YSWhiteBoard_UnBorderColor ShadowColor:YSWhiteBoard_BackGroudColor Offset:CGSizeMake(1, 2) Opacity:0.6f];
             whiteBoard.topBar.isCurrent = NO;
             if (whiteBoard.pageControlView.isAllScreen)
             {
                 whiteBoard.pageControlView.isAllScreen = NO;
             }
+            
+            if (localUser.role == YSUserType_Student)
+            {
+                whiteBoard.pageControlView.allowTurnPage = NO;
+            }
         }
     }
+    
+    [self.mainWhiteBoardView.collectBtn bm_bringToFront];
 }
 
-- (NSArray *)getWhiteBoardViewArrangeList
+///多窗口排序后的whiteBoardId列表
+- (NSArray *)getWhiteBoardViewIdArrangeList
 {
     NSArray *subviews = self.mainWhiteBoardView.subviews;
     NSMutableArray *whiteboardIdList = [[NSMutableArray alloc] init];
@@ -978,9 +1123,26 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     return whiteboardIdList;
 }
 
+///多窗口排序后的窗口列表
+- (NSArray *)getWhiteBoardViewArrangeList
+{
+    NSArray *subviews = self.mainWhiteBoardView.subviews;
+    NSMutableArray *whiteboardList = [[NSMutableArray alloc] init];
+    for (UIView *view in subviews)
+    {
+        if ([view isKindOfClass:[YSWhiteBoardView class]])
+        {
+            YSWhiteBoardView *whiteBoardView1 = (YSWhiteBoardView *)view;
+            [whiteboardList addObject:whiteBoardView1];
+        }
+    }
+    
+    return whiteboardList;
+}
+
 - (void)sendArrangeWhiteBoardView
 {
-    NSArray *arrangeList = [self getWhiteBoardViewArrangeList];
+    NSArray *arrangeList = [self getWhiteBoardViewIdArrangeList];
     [self sendArrangeWhiteBoardViewWithArrangeList:arrangeList];
 }
 
@@ -1398,16 +1560,32 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         }
     };
 
-    [[YSRoomInterface instance] pubMsg:sYSSignalDocumentChange msgID:sYSSignalDocumentChange toID:YSRoomPubMsgTellAll data:tDataDic save:NO completion:nil];
 
     if ([self isOneWhiteBoardView])
     {
         [YSRoomUtil pubWhiteBoardMsg:sYSSignalShowPage msgID:sYSSignalDocumentFilePage_ShowPage data:tDataDic extensionData:nil associatedMsgID:nil expires:0 completion:nil];
+        [[YSRoomInterface instance] pubMsg:sYSSignalDocumentChange msgID:sYSSignalDocumentChange toID:YSRoomPubMsgTellAllExceptSender data:tDataDic save:NO completion:nil];
     }
     else
     {
         NSString *msgID = [NSString stringWithFormat:@"%@%@", sYSSignalDocumentFilePage_ExtendShowPage, sourceInstanceId];
         [YSRoomUtil pubWhiteBoardMsg:sYSSignalExtendShowPage msgID:msgID data:tDataDic extensionData:nil associatedMsgID:nil expires:0 completion:nil];
+        
+        [[YSRoomInterface instance] pubMsg:sYSSignalDocumentChange msgID:sYSSignalDocumentChange toID:YSRoomPubMsgTellAllExceptSender data:tDataDic save:NO completion:nil];
+        
+        NSString *whiteBoardId = [YSRoomUtil getwhiteboardIDFromFileId:fileid];
+        NSString *tempMsgID = [NSString stringWithFormat:@"MoreWhiteboardState_%@", whiteBoardId];
+        
+        CGFloat scaleLeft = whiteBoardViewCurrentLeft / (self.mainWhiteBoardView.bm_width - self.whiteBoardViewDefaultSize.width);
+        CGFloat scaleTop = whiteBoardViewCurrentTop / (self.mainWhiteBoardView.bm_height - self.whiteBoardViewDefaultSize.height);
+        CGFloat scaleWidth = self.whiteBoardViewDefaultSize.width / self.mainWhiteBoardView.bm_width;
+        CGFloat scaleHeight = self.whiteBoardViewDefaultSize.height / self.mainWhiteBoardView.bm_height;
+        
+        NSDictionary * data = @{@"x":@(scaleLeft),@"y":@(scaleTop),@"width":@(scaleWidth),@"height":@(scaleHeight),@"small":@NO,@"full":@NO,@"type":@"init",@"instanceId":whiteBoardId};
+        NSString *associatedMsgID = [NSString stringWithFormat:@"DocumentFilePage_ExtendShowPage_%@", whiteBoardId];
+        
+        [YSRoomUtil pubWhiteBoardMsg:sYSSignalMoreWhiteboardState msgID:tempMsgID data:data extensionData:nil associatedMsgID:associatedMsgID expires:0 completion:nil];
+        
     }
 }
 
@@ -1430,6 +1608,61 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         return;
     }
     
+    if (![self isOneWhiteBoardView])
+    {
+        YSWhiteBoardView *whiteBoardView = [self getWhiteBoardViewWithFileId:fileModel.fileid];
+        if (whiteBoardView)
+        {
+            NSString *sourceInstanceId = [YSRoomUtil getSourceInstanceIdFromFileId:fileModel.fileid];
+            NSDictionary *fileDic1 = [YSFileModel fileDataDocDic:fileModel sourceInstanceId:sourceInstanceId];
+            
+            NSString *msgID = [NSString stringWithFormat:@"%@%@", sYSSignalDocumentFilePage_ExtendShowPage, [YSRoomUtil getwhiteboardIDFromFileId:fileModel.fileid]];
+            
+            [YSRoomUtil delWhiteBoardMsg:sYSSignalExtendShowPage msgID:msgID data:fileDic1 completion:nil];
+        }
+    }
+    else
+    {
+        if ([self isOneWhiteBoardView] && [fileModel.fileid isEqualToString:self.currentFileId])
+        {
+            NSMutableArray *fileList = [[NSMutableArray alloc] init];
+            for (YSFileModel *fileModel1 in self.docmentList)
+            {
+                if ([fileModel1.fileid isEqualToString:fileModel.fileid])
+                {
+                    break;
+                }
+                [fileList addObject:fileModel1];
+            }
+            
+            YSFileModel *newFileModel = [self getDocumentWithFileID:@"0"];
+            if ([fileList bm_isNotEmpty])
+            {
+                fileList = [NSMutableArray arrayWithArray:[fileList bm_reversedArray]];
+                
+                for (YSFileModel *fileModel1 in fileList)
+                {
+                    if (!fileModel1.isMedia)
+                    {
+                        if (![YSRoomUtil checkIsMedia:fileModel1.filetype])
+                        {
+                            newFileModel = fileModel1;
+                            break;
+                        }
+                    }
+                }
+            }
+            
+            if (newFileModel)
+            {
+                NSString *sourceInstanceId = YSDefaultWhiteBoardId;
+                NSDictionary *fileDic = [YSFileModel fileDataDocDic:newFileModel sourceInstanceId:sourceInstanceId];
+                
+                [YSRoomUtil pubWhiteBoardMsg:sYSSignalShowPage msgID:sYSSignalDocumentFilePage_ShowPage data:fileDic extensionData:nil associatedMsgID:nil expires:0 completion:nil];
+            }
+        }
+    }
+
     NSDictionary *fileDic = [YSFileModel fileDataDocDic:fileModel sourceInstanceId:nil];
     NSMutableDictionary *sendDic = [NSMutableDictionary dictionaryWithDictionary:fileDic];
     [sendDic bm_setBool:YES forKey:@"isDel"];
@@ -1554,8 +1787,12 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     {
         return YES;
     }
+    else if (self.roomConfig.isMultiCourseware)
+    {
+        return NO;
+    }
     
-    return NO;
+    return YES;
 }
 
 #pragma -
@@ -1639,7 +1876,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         [whiteBoardView didSelectDrawType:type color:hexColor widthProgress:progress];
         return;
     }
-    
+
     if (self.mainWhiteBoardView)
     {
         [self.mainWhiteBoardView didSelectDrawType:type color:hexColor widthProgress:progress];
@@ -1674,9 +1911,16 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 }
 
 // 改变默认画笔颜色
-- (void)changePrimaryColor:(NSString *)colorHex
+- (void)changePrimaryColorHex:(NSString *)colorHex
 {
-    [self.brushToolsManager changePrimaryColor:colorHex];
+    [self.brushToolsManager changePrimaryColorHex:colorHex];
+}
+
+// 画笔颜色
+- (NSString *)getPrimaryColorHex
+{
+    return self.brushToolsManager.primaryColorHex;
+
 }
 
 
@@ -1745,25 +1989,23 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
             self.roomConfig = [[YSRoomConfiguration alloc] initWithConfigurationString:chairmancontrol];
         }
         
-        if ([self isOneWhiteBoardView])
+        if ([[YSWhiteBoardManager shareInstance] isOneWhiteBoardView])
         {
-            self.mainWhiteBoardView.pageControlView.hidden = YES;
+            self.mainWhiteBoardView.collectBtn.hidden = YES;
+            self.mainWhiteBoardView.whiteBoardControlView.hidden = YES;
         }
+        
+        if ([YSRoomInterface instance].localUser.role != YSUserType_Teacher)
+        {
+            self.mainWhiteBoardView.collectBtn.hidden = YES;
+        }
+        
         
         if (![[YSWhiteBoardManager shareInstance] isCanControlWhiteBoardView])
         {
-            self.mainWhiteBoardView.collectBtn.hidden = YES;
+            BOOL canDraw = [YSRoomInterface instance].localUser.canDraw;
             
-            NSDictionary *properties = [[YSRoomInterface instance].localUser.properties bm_dictionaryForKey:@"properties"];
-            
-            if ([properties bm_boolForKey:@"candraw"])
-            {
-                self.mainWhiteBoardView.pageControlView.allowTurnPage = YES;
-            }
-            else
-            {
-                self.mainWhiteBoardView.pageControlView.allowTurnPage = NO;
-            }
+            self.mainWhiteBoardView.pageControlView.allowTurnPage = canDraw;
         }
     }
 }
@@ -1842,7 +2084,6 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     NSDictionary *preloadFileDic = nil;
     
     [self.docmentList removeAllObjects];
-    self.docmentDicList = [NSMutableArray arrayWithArray:fileList];
 
     // 第一个课堂课件
     NSString *firstClassModelFileId = nil;
@@ -1944,6 +2185,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     [self roomWhiteBoardOnRoomConnectedUserlist:code response:response];
 }
 
+#pragma mark 信令排序
 - (void)roomWhiteBoardOnRoomConnectedUserlist:(NSNumber *)code response:(NSDictionary *)response
 {
     if (![response bm_isNotEmptyDictionary])
@@ -1951,6 +2193,21 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         return;
     }
 
+    if (![self isOneWhiteBoardView] && ![self.currentFileId isEqualToString:@"0"])
+    {
+        NSString *fileId = self.currentFileId;
+        
+        NSDictionary * dict = @{@"data":[YSFileModel fileDataDocDic:nil sourceInstanceId:nil],
+                                @"fromID":[YSRoomInterface instance].localUser.peerID,
+                                @"id":sYSSignalExtendShowPage,
+                                @"name":sYSSignalExtendShowPage,
+                                @"toID":[YSRoomInterface instance].localUser.peerID,
+                                @"ts":@(0)};
+        
+        [self roomWhiteBoardOnRemotePubMsgWithMessage:dict inList:YES];
+        [self setTheCurrentDocumentFileID:fileId];
+    }
+        
     NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary:response];
 
     NSMutableDictionary *myselfDict = [NSMutableDictionary dictionary];
@@ -1958,20 +2215,54 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     [myselfDict setValue:[YSRoomInterface instance].localUser.peerID forKey:@"id"];
     
     [dict setValue:myselfDict forKey:@"myself"];
-    
+    //信令排序
     BOOL show = NO;
     NSDictionary *msgList = [dict objectForKey:@"msglist"];
     NSSortDescriptor *desc = [[NSSortDescriptor alloc] initWithKey:@"seq" ascending:YES];
     NSArray *msgArray = [[msgList allValues] sortedArrayUsingDescriptors:@[ desc ]];
-
-//    for (NSString *key in msgList.allKeys)
-//    {
-//        NSDictionary *msgDic = [msgList bm_dictionaryForKey:key];
-//
-//        [self roomWhiteBoardOnRemotePubMsgWithMessage:msgDic inList:YES];
-//    }
-
-    for (NSDictionary *msgDic in msgArray)
+    
+    NSMutableArray *newMsgArray = [[NSMutableArray alloc] init];
+    NSMutableArray *showMsgArray = [[NSMutableArray alloc] init];
+    
+//    sYSSignalShowPage
+//    sYSSignalVideoWhiteboard
+//    sYSSignalSharpsChange
+//    sYSSignalMoreWhiteboardState
+//    sYSSignalMoreWhiteboardGlobalState
+    
+    NSUInteger index = 0;
+    for (NSUInteger msgIndex =0; msgIndex<msgArray.count; msgIndex++)
+    {
+        NSDictionary *msgDic = msgArray[msgIndex];
+        NSString *msgName = [msgDic bm_stringForKey:@"name"];
+        if ([msgName isEqualToString:sYSSignalShowPage] || [msgName isEqualToString:sYSSignalExtendShowPage])
+        {
+            [showMsgArray addObject:msgDic];
+            if (!index)
+            {
+                index = msgIndex;
+            }
+        }
+        else if ([msgName isEqualToString:sYSSignalVideoWhiteboard] || [msgName isEqualToString:sYSSignalSharpsChange] || [msgName isEqualToString:sYSSignalMoreWhiteboardState] || [msgName isEqualToString:sYSSignalMoreWhiteboardGlobalState])
+        {
+            [newMsgArray addObject:msgDic];
+            if (!index)
+            {
+                index = msgIndex;
+            }
+        }
+        else
+        {
+            [newMsgArray addObject:msgDic];
+        }
+    }
+    
+    if (index && [showMsgArray bm_isNotEmpty])
+    {
+        [newMsgArray bm_insertArray:showMsgArray atIndex:index];
+    }
+    
+    for (NSDictionary *msgDic in newMsgArray)
     {
         [self roomWhiteBoardOnRemotePubMsgWithMessage:msgDic inList:YES];
         
@@ -1992,35 +2283,12 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
                 fileid = @"0";
             }
             [self setTheCurrentDocumentFileID:fileid];
-            //break;
         }
     }
     
-    if (!show)
+    if (!show && !self.isBeginClass)
     {
         [self changeCourseWithFileId:self.currentFileId toID:[YSRoomInterface instance].localUser.peerID save:NO];
-    }
-    
-    if (![self isOneWhiteBoardView] && ![self.currentFileId isEqualToString:@"0"])
-    {
-        NSString *fileId = @"0";
-        YSFileModel *fileModel = [self getDocumentWithFileID:fileId];
-        NSDictionary *fileDic = [YSFileModel fileDataDocDic:fileModel sourceInstanceId:nil];
-        
-        NSString *msgID = [NSString stringWithFormat:@"%@%@", sYSSignalDocumentFilePage_ExtendShowPage, YSDefaultWhiteBoardId];
-        NSMutableDictionary *fileData = [[NSMutableDictionary alloc] initWithDictionary:fileDic];
-        [fileData bm_setString:YSDefaultWhiteBoardId forKey:@"sourceInstanceId"];
-        [fileData bm_setBool:YES forKey:@"initiative"];
-        [[YSRoomInterface instance] pubMsg:sYSSignalExtendShowPage
-                                     msgID:msgID
-                                      toID:[YSRoomInterface instance].localUser.peerID
-                                      data:fileData
-                                      save:NO
-                             extensionData:nil
-                           associatedMsgID:nil
-                          associatedUserID:[YSRoomInterface instance].localUser.peerID
-                                   expires:0
-                                completion:nil];
     }
 }
 
@@ -2127,7 +2395,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     if ([properties bm_containsObjectForKey:sYSUserPrimaryColor])
     {
         NSString *colorHex = [properties bm_stringForKey:sYSUserPrimaryColor];
-        [self.brushToolsManager changePrimaryColor:colorHex];
+        [self.brushToolsManager changePrimaryColorHex:colorHex];
     }
 
     if (self.mainWhiteBoardView)
@@ -2238,8 +2506,6 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         self.isBeginClass = YES;
         self.beginClassMessage = message;
         
-        
-        
         if ([self isOneWhiteBoardView])
         {
             if (!inlist)
@@ -2253,12 +2519,17 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
             {
                 if ([[YSWhiteBoardManager shareInstance] isCanControlWhiteBoardView])
                 {
-                    whiteBoardViewCurrentLeft = YSWhiteBoardDefaultLeft;
-                    whiteBoardViewCurrentTop = YSWhiteBoardDefaultTop;
+                    [self makeCurrentWhiteBoardViewPointReset:YES];
                     
-                    NSArray *arrangeList = [self getWhiteBoardViewArrangeList];
+                    NSArray *arrangeList = [self getWhiteBoardViewIdArrangeList];
                     for (YSWhiteBoardView *whiteBoardView in self.coursewareViewList)
                     {
+                        // 上课不发送音视频流
+                        if (whiteBoardView == self.mp3WhiteBoardView || whiteBoardView == self.mp4WhiteBoardView)
+                        {
+                            continue;
+                        }
+                        
                         [self changeCourseWithFileId:whiteBoardView.fileId];
                         
                         NSString *msgID = [NSString stringWithFormat:@"MoreWhiteboardState_%@", whiteBoardView.whiteBoardId];
@@ -2267,12 +2538,15 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
                         [YSRoomUtil pubWhiteBoardMsg:sYSSignalMoreWhiteboardState msgID:msgID data:whiteBoardView.positionData extensionData:nil associatedMsgID:associatedMsgID expires:0 completion:nil];
                     }
                     
-                    if (self.mediaFileModel.isAudio)
+                    if (self.mediaFileModel)
                     {
-                        [self changeCourseWithFileId:self.mediaFileModel.fileid];
+                        // 上课关闭所有音视频流，关闭窗口后会发送层级
+                        [[YSRoomInterface instance] stopShareMediaFile:nil];
                     }
-                    
-                    [self sendArrangeWhiteBoardViewWithArrangeList:arrangeList];
+                    else
+                    {
+                        [self sendArrangeWhiteBoardViewWithArrangeList:arrangeList];
+                    }
                 }
                 else
                 {
@@ -2317,21 +2591,6 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         {
             [self addOrReplaceDocumentFile:tDataDic];
         }
-//
-//        if (self.wbDelegate && [self.wbDelegate respondsToSelector:@selector(onWhiteBoardChangedFileWithFileList:)])
-//        {
-//            NSMutableArray *fileList = [[NSMutableArray alloc] init];
-//            for (YSWhiteBoardView *whiteBoardView in self.coursewareViewList)
-//            {
-//                [fileList addObject:whiteBoardView.fileId];
-//            }
-//            if (![fileList containsObject:self.mainWhiteBoardView.fileId])
-//            {
-//                [fileList addObject:self.mainWhiteBoardView.fileId];
-//            }
-//
-//            [self.wbDelegate onWhiteBoardChangedFileWithFileList:fileList];
-//        }
     }
     else if ([msgName isEqualToString:sYSSignalShowPage] || [msgName isEqualToString:sYSSignalExtendShowPage])
     {
@@ -2341,6 +2600,13 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
             NSDictionary *filedata = [tDataDic bm_dictionaryForKey:@"filedata"];
             fileId = [filedata bm_stringForKey:@"fileid"];
         }
+        
+        // 后台关联课件是发送showpage信令，多课件时不响应
+        if (![self isOneWhiteBoardView] && [msgName isEqualToString:sYSSignalShowPage] && ![fileId isEqualToString:@"0"])
+        {
+            return;
+        }
+       
         [self.docmentList enumerateObjectsUsingBlock:^(YSFileModel * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             if ([fileId isEqualToString:obj.fileid])
             {
@@ -2357,6 +2623,13 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
             {
                 [self.mainWhiteBoardView changeFileId:fileId];
                 whiteBoardView = self.mainWhiteBoardView;
+                
+                if (self.wbDelegate && [self.wbDelegate respondsToSelector:@selector(onWhiteBoardChangedFileWithFileList:)])
+                {
+                    NSMutableArray *fileList = [[NSMutableArray alloc] init];
+                    [fileList addObject:self.mainWhiteBoardView.fileId];
+                    [self.wbDelegate onWhiteBoardChangedFileWithFileList:fileList];
+                }
             }
         }
         else
@@ -2365,6 +2638,11 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
             if (!whiteBoardView)
             {
                 BOOL mineCreat = [fromId isEqualToString:[YSRoomInterface instance].localUser.peerID];
+                
+                if (inlist)
+                {
+                    mineCreat = NO;
+                }
                 
                 whiteBoardView = [self createWhiteBoardWithFileId:fileId isFromLocalUser:mineCreat loadFinishedBlock:nil];
                 //whiteBoardView.backgroundColor = [UIColor bm_randomColor];
@@ -2387,7 +2665,6 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
                     NSString *associatedMsgID = [NSString stringWithFormat:@"DocumentFilePage_ExtendShowPage_%@", whiteBoardId];
                     
                     [YSRoomUtil pubWhiteBoardMsg:sYSSignalMoreWhiteboardState msgID:msgID data:data extensionData:nil associatedMsgID:associatedMsgID expires:0 completion:nil];
-                    
                 }
                 self.defaultFileId = nil;
             }
@@ -2502,7 +2779,6 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     // 窗口布局
     else if ([msgName isEqualToString:sYSSignalMoreWhiteboardGlobalState])
     {
-        
 //        NSString * ddd = [YSRoomInterface instance].localUser.peerID;
 //        YSRoomUser *fromeUser = [[YSRoomInterface instance] getRoomUserWithUId:fromId];
         
@@ -2518,34 +2794,37 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
             NSArray *sort = [tDataDic bm_arrayForKey:@"sort"];
             
             NSString * instanceId = [tDataDic bm_stringForKey:@"instanceId"];
-            self.currentFileId = [YSRoomUtil getFileIdFromSourceInstanceId:instanceId];
+            NSString *currentFileId = [YSRoomUtil getFileIdFromSourceInstanceId:instanceId];
+            [self setTheCurrentDocumentFileID:currentFileId sendArrange:NO];
             
             for (NSString *whiteBoardId in sort)
             {
                 YSWhiteBoardView *whiteBoardView = [self getWhiteBoardViewWithWhiteBoardId:whiteBoardId];
                 if (whiteBoardView)
                 {
-                    if (whiteBoardView.mediaType != YSWhiteBordMediaType_Audio)
-                    {
-                        if ([instanceId isEqualToString:whiteBoardId])
-                        {
-                            whiteBoardView.topBar.backgroundColor = YSWhiteBoard_TopBarBackGroudColor;
-                            [whiteBoardView bm_addShadow:3.0f Radius:0.0f BorderColor:YSWhiteBoard_TopBarBackGroudColor ShadowColor:YSWhiteBoard_BackGroudColor Offset:CGSizeMake(1, 2) Opacity:0.6f];
-                            whiteBoardView.topBar.isCurrent = YES;
-                        }
-                        else
-                        {
-                            whiteBoardView.topBar.backgroundColor = [UIColor bm_colorWithHex:0xB6C5EB];
-                            [whiteBoardView bm_addShadow:3.0f Radius:0.0f BorderColor:[UIColor bm_colorWithHex:0xB6C5EB] ShadowColor:YSWhiteBoard_BackGroudColor Offset:CGSizeMake(1, 2) Opacity:0.6f];
-                            
-                            whiteBoardView.topBar.isCurrent = NO;
-                            
-                            if (whiteBoardView.pageControlView.isAllScreen)
-                            {
-                                whiteBoardView.pageControlView.isAllScreen = NO;
-                            }
-                        }
-                    }
+//                    if (whiteBoardView.mediaType != YSWhiteBordMediaType_Audio)
+//                    {
+//                        BOOL iseq = [whiteBoardId isEqualToString:instanceId];
+//
+//                        if ([whiteBoardId isEqualToString:instanceId])
+//                        {
+//                            whiteBoardView.topBar.backgroundColor = YSWhiteBoard_TopBarBackGroudColor;
+//                            [whiteBoardView bm_addShadow:3.0f Radius:0.0f BorderColor:YSWhiteBoard_TopBarBackGroudColor ShadowColor:YSWhiteBoard_BackGroudColor Offset:CGSizeMake(1, 2) Opacity:0.6f];
+//                            whiteBoardView.topBar.isCurrent = YES;
+//                        }
+//                        else
+//                        {
+//                            whiteBoardView.topBar.backgroundColor = [UIColor bm_colorWithHex:0xB6C5EB];
+//                            [whiteBoardView bm_addShadow:3.0f Radius:0.0f BorderColor:[UIColor bm_colorWithHex:0xB6C5EB] ShadowColor:YSWhiteBoard_BackGroudColor Offset:CGSizeMake(1, 2) Opacity:0.6f];
+//
+//                            whiteBoardView.topBar.isCurrent = NO;
+//
+//                            if (whiteBoardView.pageControlView.isAllScreen)
+//                            {
+//                                whiteBoardView.pageControlView.isAllScreen = NO;
+//                            }
+//                        }
+//                    }
                     [whiteBoardView bm_bringToFront];
                 }
             }
@@ -2588,34 +2867,23 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 
     if ([msgName isEqualToString:sYSSignalExtendShowPage])
     {
-        NSObject *data = [message objectForKey:@"data"];
-        NSDictionary *tDataDic = [YSRoomUtil convertWithData:data];
-        if (![tDataDic bm_isNotEmptyDictionary])
+        NSString * messageId = [message objectForKey:@"id"];
+        
+        NSString *fileId = nil;
+                
+        NSString * messageIdHead = @"DocumentFilePage_ExtendShowPage_docModule_";
+        
+        if (messageId.length > messageIdHead.length)
+        {
+            fileId = [messageId substringFromIndex:messageIdHead.length];
+        }
+        
+        if (![fileId bm_isNotEmpty])
         {
             return;
         }
-        
-        NSString *fileId = [tDataDic bm_stringForKey:@"fileid"];
-        if (!fileId)
-        {
-            NSString *sourceInstanceId = [tDataDic bm_stringForKey:@"sourceInstanceId"];
-            if (sourceInstanceId)
-            {
-                if ([sourceInstanceId isEqualToString:YSDefaultWhiteBoardId])
-                {
-                    return;
-                }
-                else if (sourceInstanceId.length > YSWhiteBoardId_Header.length)
-                {
-                    fileId = [sourceInstanceId substringFromIndex:YSWhiteBoardId_Header.length];
-                }
-            }
-        }
-        
-        if (fileId)
-        {
-            [self removeWhiteBoardViewWithFileId:fileId];
-        }
+
+        [self removeWhiteBoardViewWithFileId:fileId];
         
         return;
     }
@@ -2699,21 +2967,33 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     NSTimeInterval duration = [message bm_doubleForKey:YSWhiteBoardUpadteMediaStreamDurationKey];
     NSTimeInterval pos = [message bm_doubleForKey:YSWhiteBoardUpadteMediaStreamPositionKey];
     BOOL isPlay = [message bm_boolForKey:YSWhiteBoardUpadteMediaStreamPlayingKey];
-    
+    if (isPlay)
+    {
+        [self.mp4WhiteBoardView hideVideoWhiteboard];
+    }
     [self onRoomUpdateMediaStream:duration pos:pos isPlay:isPlay];
 }
 
 - (void)playMediaFile
 {
-    YSUserRoleType role = [YSRoomInterface instance].localUser.role;
-    
     BOOL mineCreat = [self.mediaFileSenderPeerId isEqualToString:[YSRoomInterface instance].localUser.peerID];
     
     if (self.mediaFileModel.isVideo)
     {
-        self.mp4WhiteBoardView = [self createMp4WhiteBoardWithFileId:self.mediaFileModel.fileid isFromLocalUser:mineCreat loadFinishedBlock:nil];
-        self.mp4WhiteBoardView.topBar.delegate = self;
-        [self addWhiteBoardViewWithWhiteBoardView:self.mp4WhiteBoardView];
+        YSWhiteBoardView *whiteBoardView = [self getWhiteBoardViewWithFileId:self.mediaFileModel.fileid];
+        if (whiteBoardView)
+        {
+            self.mp4WhiteBoardView = whiteBoardView;
+            self.mp4WhiteBoardView.isH5LoadMedia = YES;
+        }
+        else
+        {
+            self.mp4WhiteBoardView = [self createMp4WhiteBoardWithFileId:self.mediaFileModel.fileid isFromLocalUser:mineCreat loadFinishedBlock:nil];
+            self.mp4WhiteBoardView.topBar.delegate = self;
+            [self addWhiteBoardViewWithWhiteBoardView:self.mp4WhiteBoardView];
+            
+            
+        }
 
         BMWeakSelf
         [[YSRoomInterface instance] playMediaFile:self.mediaFileSenderPeerId renderType:YSRenderMode_fit window:self.mp4WhiteBoardView.whiteBoardContentView completion:^(NSError *error) {
@@ -2744,7 +3024,16 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 
     if (self.mediaFileModel.isVideo)
     {
-        [self removeWhiteBoardViewWithWhiteBoardView:self.mp4WhiteBoardView];
+        [self.mp4WhiteBoardView hideVideoWhiteboard];
+
+        if (self.mp4WhiteBoardView.isH5LoadMedia)
+        {
+            self.mp4WhiteBoardView.isH5LoadMedia = NO;
+        }
+        else
+        {
+            [self removeWhiteBoardViewWithWhiteBoardView:self.mp4WhiteBoardView];
+        }
         self.mp4WhiteBoardView = nil;
     }
     else if (self.mediaFileModel.isAudio)
@@ -2790,6 +3079,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 
 - (void)pauseMediaStream:(NSTimeInterval)duration pos:(NSTimeInterval)pos
 {
+    self.mediaFileModel.isPause = YES;
     if (self.mediaFileModel.isVideo)
     {
         [self.mp4WhiteBoardView setMediaStream:duration pos:pos isPlay:NO fileName:self.mediaFileModel.filename];
@@ -2807,6 +3097,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 
 - (void)continueMediaStream:(NSTimeInterval)duration pos:(NSTimeInterval)pos
 {
+    self.mediaFileModel.isPause = NO;
     if (self.mediaFileModel.isVideo)
     {
         [self.mp4WhiteBoardView setMediaStream:duration pos:pos isPlay:YES fileName:self.mediaFileModel.filename];
@@ -2911,6 +3202,53 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     //3、重新设置控件位置
     CGFloat newX = panView.bm_centerX+offsetPoint.x;
     CGFloat newY = panView.bm_centerY+offsetPoint.y;
+
+    if ([YSRoomInterface instance].localUser.role == YSUserType_Teacher)
+    {
+        CGFloat viewWidth = panView.bm_width;
+        CGFloat viewHeight = panView.bm_height;
+        
+        if (newX < 1 + viewWidth/2)
+        {
+            newX = 1 + viewWidth/2 ;
+        }
+        else if (newX > self.mainWhiteBoardView.bm_width - viewWidth/2 - 1)
+        {
+            newX = self.mainWhiteBoardView.bm_width - viewWidth/2 - 1;
+        }
+        
+        if (newY <= 1 + viewHeight/2)
+        {
+            newY = 1 + viewHeight/2;
+        }
+        else if (newY > self.mainWhiteBoardView.bm_height - viewHeight/2 - 1)
+        {
+            newY = self.mainWhiteBoardView.bm_height - viewHeight/2 - 1;
+        }
+    }
+    else
+    {
+       CGFloat viewWidth = panView.bm_width;
+        
+        if (newX < 1 + viewWidth/2)
+        {
+            newX = 1 + viewWidth/2 ;
+        }
+        else if (newX > self.mainWhiteBoardView.bm_width - viewWidth/2 - 1)
+        {
+            newX = self.mainWhiteBoardView.bm_width - viewWidth/2 - 1;
+        }
+        
+        if (newY <= 1 + viewWidth/2)
+        {
+            newY = 1 + viewWidth/2;
+        }
+        else if (newY > self.mainWhiteBoardView.bm_height - viewWidth/2 - 1)
+        {
+            newY = self.mainWhiteBoardView.bm_height - viewWidth/2 - 1;
+        }
+    }
+        
     CGPoint centerPoint = CGPointMake(newX, newY);
     panView.center = centerPoint;
 }

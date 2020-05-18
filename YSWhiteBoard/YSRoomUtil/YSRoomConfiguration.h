@@ -40,7 +40,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) BOOL canDrawFlag;
 
 /**
- 翻页权限
+ 学生是否有翻页权限
  */
 @property (nonatomic, assign) BOOL canPageTurningFlag;
 
@@ -207,7 +207,8 @@ NS_ASSUME_NONNULL_BEGIN
 /// 是否禁止观众私聊 202
 @property (nonatomic, assign) BOOL isDisablePrivateChat;
 
-
+/// 是否多课件 150
+@property (nonatomic, assign) BOOL isMultiCourseware;
 
 - (instancetype)initWithConfigurationString:(NSString *)configurationString;
 

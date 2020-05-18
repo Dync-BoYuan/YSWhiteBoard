@@ -50,7 +50,4 @@ extern NSString *const YSWhiteBoardPlayBackKey;
 
 #endif
 
-#define WBBUNDLE_NAME @"YSWhiteBoardResources.bundle"
-#define WBBUNDLE [NSBundle bundleWithPath: [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:WBBUNDLE_NAME]]
-
 #endif /* YSWhiteBoardMacro_h */

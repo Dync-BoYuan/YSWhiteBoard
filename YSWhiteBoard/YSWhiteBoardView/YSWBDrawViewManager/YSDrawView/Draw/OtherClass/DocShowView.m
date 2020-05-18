@@ -230,6 +230,12 @@
         }
     }
     
+    if (!_pdfView.hidden)
+    {
+        [_pdfView setNeedsDisplay];
+
+    }
+    
     if ([self.zoomDelegate respondsToSelector:@selector(onZoomScaleChanged:)])
     {
         [self.zoomDelegate onZoomScaleChanged:scrollView.zoomScale];

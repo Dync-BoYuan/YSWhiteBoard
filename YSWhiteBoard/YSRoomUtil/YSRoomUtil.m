@@ -107,57 +107,6 @@
     return NO;
 }
 
-+ (NSString *)jsonStringWithDictionary:(NSDictionary *)dict
-{
-    NSError *error;
-    
-    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:dict options:0 error:&error];
-    
-    NSString *jsonString = @"";
-    if (!jsonData)
-    {
-        NSLog(@"%@", error);
-    }
-    else
-    {
-        jsonString = [[NSString alloc]initWithData:jsonData encoding:NSUTF8StringEncoding];
-    }
-    
-    NSMutableString *mutStr = [NSMutableString stringWithString:jsonString];
-    
-    // 去掉字符串中的空格
-    NSRange range = {0, jsonString.length};
-    [mutStr replaceOccurrencesOfString:@" " withString:@"" options:NSLiteralSearch range:range];
-    
-    //去掉字符串中的换行符
-    NSRange range2 = {0, mutStr.length};
-    [mutStr replaceOccurrencesOfString:@"\n" withString:@"" options:NSLiteralSearch range:range2];
-    
-    return mutStr;
-}
-
-+ (NSDictionary *)dictionaryWithJsonString:(NSString *)jsonString
-{
-    if (jsonString == nil)
-    {
-        return nil;
-    }
-    
-    NSData *jsonData = [jsonString dataUsingEncoding:NSUTF8StringEncoding];
-    NSError *err;
-    NSDictionary *dic = [NSJSONSerialization JSONObjectWithData:jsonData
-                                                        options:NSJSONReadingMutableContainers
-                                                          error:&err];
-    if(err)
-    {
-        NSLog(@"json解析失败：%@",err);
-        return nil;
-    }
-    
-    return dic;
-}
-
-
 + (NSString *)getFileIdFromSourceInstanceId:(NSString *)sourceInstanceId
 {
     NSString *fileId = nil;
@@ -214,6 +163,12 @@
         if ([YSWhiteBoardManager shareInstance].isBeginClass)
         {
             if ([YSRoomInterface instance].localUser.role == YSUserType_Teacher)
+            {
+                tellWho = YSRoomPubMsgTellAll;
+                associatedUserID = nil;
+                save = YES;
+            }
+            else if ([YSRoomInterface instance].localUser.role == YSUserType_Student)
             {
                 tellWho = YSRoomPubMsgTellAll;
                 associatedUserID = nil;

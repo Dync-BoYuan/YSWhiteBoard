@@ -23,9 +23,6 @@ NS_ASSUME_NONNULL_BEGIN
 + (BOOL)checkIsMedia:(NSString *)filetype;
 + (BOOL)checkIsVideo:(NSString *)filetype;
 
-+ (NSString *)jsonStringWithDictionary:(NSDictionary *)dict;
-+ (nullable NSDictionary *)dictionaryWithJsonString:(NSString *)jsonString;
-
 + (NSString *)getFileIdFromSourceInstanceId:(NSString *)sourceInstanceId;
 + (NSString *)getSourceInstanceIdFromFileId:(NSString *)fileId;
 + (NSString *)getwhiteboardIDFromFileId:(NSString *)fileId;

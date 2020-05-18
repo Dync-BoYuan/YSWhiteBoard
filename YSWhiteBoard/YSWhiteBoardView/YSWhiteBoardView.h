@@ -28,6 +28,8 @@ NS_ASSUME_NONNULL_BEGIN
 /// 媒体课件窗口
 @property (nonatomic, assign, readonly) BOOL isMediaView;
 @property (nonatomic, assign, readonly) YSWhiteBordMediaType mediaType;
+/// H5脚本加载视频
+@property (nonatomic, assign) BOOL isH5LoadMedia;
 
 /// 当前页码
 @property (nonatomic, assign, readonly) NSUInteger currentPage;
@@ -36,7 +38,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// 课件加载成功
 @property (nonatomic, assign, readonly) BOOL isLoadingFinish;
-
 
 /// 白板背景容器
 @property (nonatomic, strong, readonly) UIView *whiteBoardContentView;
@@ -58,14 +59,14 @@ NS_ASSUME_NONNULL_BEGIN
 /// 主白板的
 @property (nonatomic, strong)YSWhiteBoardView *mainWhiteBoard;
 
-/// 小白板点击topbar上全屏前的位置信令的值
-//@property (nonatomic, strong)NSDictionary *beforeFullScreenData;
-
 ///最小化时的收藏夹按钮
 @property (nonatomic, strong) UIButton * collectBtn;
 
 ///当前的位置信令的值
 @property (nonatomic, strong) NSDictionary * positionData;
+
+/// 是否属于当前激活课件
+@property (nonatomic, assign) BOOL isCurrent;
 
 - (void)destroy;
 
@@ -152,6 +153,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)drawVideoWhiteboardWithData:(NSDictionary *)data inList:(BOOL)inlist;
 /// 隐藏白板视频标注
 - (void)hideVideoWhiteboard;
+
+
+/// 变更H5课件地址参数，此方法会刷新当前H5课件以变更新参数
+- (void)changeConnectH5CoursewareUrlParameters:(nullable NSDictionary *)parameters;
+
+/// 设置H5课件Cookies
+- (void)setConnectH5CoursewareUrlCookies:(nullable NSArray <NSDictionary *> *)cookies;
 
 @end
 

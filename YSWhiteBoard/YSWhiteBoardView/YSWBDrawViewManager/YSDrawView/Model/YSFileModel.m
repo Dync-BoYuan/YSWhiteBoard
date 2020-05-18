@@ -89,6 +89,10 @@
     {
         self.fileserverid = [dic bm_stringTrimForKey:@"fileserverid"];
     }
+    if ([dic bm_containsObjectForKey:@"filetype"])
+    {
+        self.filetype = [dic bm_stringTrimForKey:@"filetype"];
+    }
     if ([dic bm_containsObjectForKey:@"fileurl"])
     {
         self.fileurl = [dic bm_stringTrimForKey:@"fileurl"];
@@ -162,6 +166,11 @@
         self.steptotal = [dic bm_uintForKey:@"steptotal"];
     }
 
+    if ([dic bm_containsObjectForKey:@"cospdfpath"])
+    {
+        self.cospdfpath = [dic bm_stringTrimForKey:@"cospdfpath"];
+    }
+    
     //0:表示普通文档　１－２动态ppt(1: 第一版动态ppt 2: 新版动态ppt ）  3:h5文档
     if ([dic bm_containsObjectForKey:@"fileprop"])
     {
@@ -252,7 +261,7 @@
 
 - (NSString *)description
 {
-    return [NSString stringWithFormat:@"%@---%@",self.fileid, self.filecategory];
+    return [NSString stringWithFormat:@"%@---%@", self.fileid, @(self.filecategory)];
 }
 
 + (NSDictionary *)fileDataDocDic:(YSFileModel *)aDefaultDocment sourceInstanceId:(NSString *)sourceInstanceId

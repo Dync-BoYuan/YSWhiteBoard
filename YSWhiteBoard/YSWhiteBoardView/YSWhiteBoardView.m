@@ -72,7 +72,7 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
 @property (nonatomic, strong) UIImageView *dragPageControlViewImage;
 
 /// 右下角拖动放大的view
-@property (nonatomic, strong) UIView * dragZoomView;
+@property (nonatomic, strong) UIView *dragZoomView;
 
 /// 小白板点击控制条全屏前的frame
 //@property (nonatomic, assign)CGRect whiteBoardFrame;
@@ -82,13 +82,21 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
 /// MP3播放动画
 @property (nonatomic, strong) UIImageView *playMp3ImageView;
 
+/// 视频播放背景
+@property (nonatomic, strong) UIImageView *mp4WaitingImageView;
 /// 视频播放控制
 @property (nonatomic, strong) YSWBMp4ControlView *mp4ControlView;
-
+/// H5媒体关闭
+@property (nonatomic, strong) UIButton *closeH5Mp4Btn;
+/// H5媒体点击手势接收
+@property (nonatomic, strong) UIView *h5Mp4TapGestureView;
 
 /// 白板视频标注视图
 @property (nonatomic, strong) YSWBMediaMarkView *mediaMarkView;
 @property (nonatomic, strong) NSMutableArray <NSDictionary *> *mediaMarkSharpsDatas;
+
+/// H5课件cookie
+@property (nonatomic, strong) NSArray <NSDictionary *> *connectH5CoursewareUrlCookies;
 
 @end
 
@@ -101,6 +109,8 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
 
 - (void)destroy
 {
+    [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(hideMp4ControlView) object:nil];
+
     [self.cacheMsgPool removeAllObjects];
     self.cacheMsgPool = nil;
 
@@ -137,16 +147,13 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
         }
         
         self.cacheMsgPool = [NSMutableArray array];
-        self.isLoadingFinish = NO;
+        self.loadingH5Fished = NO;
         if (self.isMediaView)
         {
-            self.isLoadingFinish = YES;
-            if (self.mediaType == YSWhiteBordMediaType_Video)
-            {
-                self.mediaMarkSharpsDatas = [NSMutableArray array];
-            }
+            self.loadingH5Fished = YES;
         }
-        
+        self.mediaMarkSharpsDatas = [NSMutableArray array];
+
         topViewHeight = 0;
 
         if (!isMainWhiteBoard && (!self.isMediaView || self.mediaType != YSWhiteBordMediaType_Audio))
@@ -160,9 +167,6 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
             topBar.titleString = model.filename;
             [self addSubview:topBar];
             self.topBar = topBar;
-            
-            [self bm_addShadow:3.0f Radius:0.0f BorderColor:YSWhiteBoard_TopBarBackGroudColor ShadowColor:YSWhiteBoard_BackGroudColor Offset:CGSizeMake(1, 2) Opacity:0.6f];
-            topBar.isCurrent = [self.fileId isEqualToString:[YSWhiteBoardManager shareInstance].currentFileId];
             
             BMWeakSelf
             topBar.barButtonsClick = ^(UIButton * _Nonnull sender) {
@@ -198,30 +202,27 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
             self.webViewManager = [[YSWBWebViewManager alloc] init];
             self.webViewManager.delegate = self;
             
-            self.wbView = [self.webViewManager createWhiteBoardWithFrame:whiteBoardContentView.bounds loadFinishedBlock:loadFinishedBlock];
+            self.wbView = [self.webViewManager createWhiteBoardWithFrame:whiteBoardContentView.bounds connectH5CoursewareUrlCookies:self.connectH5CoursewareUrlCookies loadFinishedBlock:loadFinishedBlock];
             [self.whiteBoardContentView addSubview:self.wbView];
             
             self.drawViewManager = [[YSWBDrawViewManager alloc] initWithBackView:whiteBoardContentView webView:self.wbView];
             
-            if (![[YSWhiteBoardManager shareInstance] isOneWhiteBoardView])
-            {
-                YSCoursewareControlView *pageControlView = [[YSCoursewareControlView alloc] initWithFrame:CGRectMake(0, 0, 232, 28)];
-                pageControlView.delegate = self;
-                pageControlView.fileId = self.fileId;
-                [self addSubview:pageControlView];
-                self.pageControlView = pageControlView;
-                self.pageControlView.bm_centerX = frame.size.width * 0.5f;
-                self.pageControlView.bm_bottom = frame.size.height - 20;
-                
-                // 拖拽
-                UIPanGestureRecognizer *panGestureRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(dragPageControlView:)];
-                [self.pageControlView addGestureRecognizer:panGestureRecognizer];
-            }
+            YSCoursewareControlView *pageControlView = [[YSCoursewareControlView alloc] initWithFrame:CGRectMake(0, 0, 232, 28)];
+            pageControlView.delegate = self;
+            pageControlView.fileId = self.fileId;
+            [self addSubview:pageControlView];
+            self.pageControlView = pageControlView;
+            self.pageControlView.bm_centerX = frame.size.width * 0.5f;
+            self.pageControlView.bm_bottom = frame.size.height - 20;
+            
+            // 拖拽
+            UIPanGestureRecognizer *panGestureRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(dragPageControlView:)];
+            [self.pageControlView addGestureRecognizer:panGestureRecognizer];
         }
-
+            
         if (self.mediaType != YSWhiteBordMediaType_Audio)
         {
-            if ([[YSWhiteBoardManager shareInstance] isCanControlWhiteBoardView])
+            if ([YSRoomInterface instance].localUser.role == YSUserType_Teacher )
             {
                 if (!isMainWhiteBoard)
                 {
@@ -243,10 +244,8 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
                     self.whiteBoardControlView.delegate = self;
                     whiteBoardControlView.hidden = YES;
                     
-                    if (self.isMediaView)
-                    {
-                        [self makeMp4ControlView];
-                    }
+                    [self makeMp4WaitingView];
+                    [self makeMp4ControlView];
                 }
                 else
                 {
@@ -347,7 +346,29 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
     
     self.mp4ControlView.hidden = YES;
     self.mp4ControlView.delegate = [YSWhiteBoardManager shareInstance];
-    [self performSelector:@selector(hideMp4ControlView) withObject:nil afterDelay:3.0f];
+}
+
+- (void)makeMp4WaitingView
+{
+    UIImageView *imageView = [[UIImageView alloc] initWithFrame:self.whiteBoardContentView.bounds];
+    imageView.contentMode = UIViewContentModeCenter;
+    [self.whiteBoardContentView addSubview:imageView];
+    imageView.backgroundColor = [UIColor blackColor];
+    imageView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    if (!self.isMediaView)
+    {
+        imageView.hidden = YES;
+    }
+    self.mp4WaitingImageView = imageView;
+    
+    NSMutableArray *imageArray = [[NSMutableArray alloc] init];
+    for (NSUInteger i=1; i<=21; i++)
+    {
+        NSString *imageName = [NSString stringWithFormat:@"ysfloatview_loding%@", @(i)];
+        [imageArray addObject:imageName];
+    }
+    [imageView bm_animationWithImageArray:imageArray duration:3 repeatCount:0];
+    [imageView startAnimating];
 }
 
 - (void)hideMp4ControlView
@@ -355,16 +376,85 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
     self.mp4ControlView.hidden = YES;
 }
 
+- (void)setIsH5LoadMedia:(BOOL)isH5LoadMedia
+{
+    if (isH5LoadMedia == _isH5LoadMedia)
+    {
+        return;
+    }
+    
+    _isH5LoadMedia = isH5LoadMedia;
+    
+    if (isH5LoadMedia)
+    {
+        self.pageControlView.hidden = YES;
+
+        self.mp4WaitingImageView.hidden = NO;
+        [self.mp4WaitingImageView bm_bringToFront];
+        
+        if ([[YSWhiteBoardManager shareInstance] isCanControlWhiteBoardView])
+        {
+            UIButton *closeH5Mp4Btn = [UIButton buttonWithType:UIButtonTypeCustom];
+            [closeH5Mp4Btn addTarget:self action:@selector(stopH5Media) forControlEvents:UIControlEventTouchUpInside];
+            [closeH5Mp4Btn setImage:[UIImage imageNamed:@"ysh5media_closemp4_normal"] forState:UIControlStateNormal];
+            closeH5Mp4Btn.frame = CGRectMake(self.frame.size.width - 35, 40, 25, 25);
+            closeH5Mp4Btn.backgroundColor = [UIColor clearColor];
+            closeH5Mp4Btn.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleBottomMargin;
+            self.closeH5Mp4Btn = closeH5Mp4Btn;
+            [self addSubview:closeH5Mp4Btn];
+            self.h5Mp4TapGestureView = [[UIView alloc] initWithFrame:CGRectMake(0, YSTopViewHeight, self.frame.size.width, self.frame.size.height - YSTopViewHeight)];
+            self.h5Mp4TapGestureView.backgroundColor = [UIColor clearColor];
+            [self addSubview:self.h5Mp4TapGestureView];
+            self.h5Mp4TapGestureView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+            
+            [self.mp4ControlView bm_bringToFront];
+            [self.closeH5Mp4Btn bm_bringToFront];
+            [self.whiteBoardControlView bm_bringToFront];
+            [self.dragZoomView bm_bringToFront];
+            UITapGestureRecognizer *oneTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(changeToCurrentBWView:)];
+            oneTap.numberOfTapsRequired = 1;
+            [self.h5Mp4TapGestureView addGestureRecognizer:oneTap];
+        }
+    }
+    else
+    {
+        [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(hideMp4ControlView) object:nil];
+        self.pageControlView.hidden = NO;
+        self.mp4WaitingImageView.hidden = YES;
+        self.mp4ControlView.hidden = YES;
+        if (self.closeH5Mp4Btn)
+        {
+            [self.closeH5Mp4Btn removeFromSuperview];
+            self.closeH5Mp4Btn = nil;
+        }
+        
+        if (self.h5Mp4TapGestureView)
+        {
+            [self.h5Mp4TapGestureView removeFromSuperview];
+            self.h5Mp4TapGestureView = nil;
+        }
+    }
+}
+
+- (void)stopH5Media
+{
+    if (self.isH5LoadMedia)
+    {
+        [[YSRoomInterface instance] stopShareMediaFile:nil];
+    }
+}
+
 - (void)changeToCurrentBWView:(UITapGestureRecognizer *)tapGesture
 {
     if ([[YSWhiteBoardManager shareInstance] isCanControlWhiteBoardView])
     {
-        if (self.isMediaView)
+        if (self.isMediaView || self.isH5LoadMedia)
         {
             self.mp4ControlView.hidden = !self.mp4ControlView.hidden;
             if (!self.mp4ControlView.hidden)
             {
-                [self performSelector:@selector(hideMp4ControlView) withObject:nil afterDelay:2.0f];
+                [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(hideMp4ControlView) object:nil];
+                [self performSelector:@selector(hideMp4ControlView) withObject:nil afterDelay:3.0f];
             }
         }
 
@@ -393,30 +483,27 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
 
     self.dragZoomView.bm_right = frame.size.width;
     self.dragZoomView.bm_bottom = frame.size.height;
-    
-    if (self.isMediaView)
+
+    if (1)
     {
-        if (self.mediaType == YSWhiteBordMediaType_Video)
+        if (self.mp4ControlView.bm_width < 300)
         {
-            if (self.mp4ControlView.bm_width < 300)
-            {
-                [self.mp4ControlView hideMp4ControlViewOutsidePause:YES];
-            }
-            else
-            {
-                [self.mp4ControlView hideMp4ControlViewOutsidePause:NO];
-            }
-            
-            if ([self.positionData bm_boolForKey:@"full"])
-            {
-                self.mp4ControlView.frame = CGRectMake(80, 0, self.whiteBoardControlView.bm_left - 10 - 80 , 46);
-            }
-            else
-            {
-                self.mp4ControlView.frame = CGRectMake(30, 0, self.bm_width - 60, 46);
-            }
-            self.mp4ControlView.bm_bottom = self.bm_height - 23;
+            [self.mp4ControlView hideMp4ControlViewOutsidePause:YES];
         }
+        else
+        {
+            [self.mp4ControlView hideMp4ControlViewOutsidePause:NO];
+        }
+        
+        if ([self.positionData bm_boolForKey:@"full"])
+        {
+            self.mp4ControlView.frame = CGRectMake(80, 0, self.whiteBoardControlView.bm_left - 10 - 80 , 46);
+        }
+        else
+        {
+            self.mp4ControlView.frame = CGRectMake(30, 0, self.bm_width - 60, 46);
+        }
+        self.mp4ControlView.bm_bottom = self.bm_height - 23;
     }
 }
 
@@ -465,7 +552,16 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
     if (self != [YSWhiteBoardManager shareInstance].mainWhiteBoardView)
     {
         NSDictionary *message = self.positionData;
-
+        
+        if (self.isMediaView)
+        {
+            NSDictionary *positionData = [[YSWhiteBoardManager shareInstance].allPositionDict bm_dictionaryForKey:self.fileId];
+            if ([positionData bm_isNotEmpty])
+            {
+                message = positionData;
+            }
+        }
+        
         if (self.pageControlView.isAllScreen)
         {
             frame = CGRectMake(0, -30, BMUI_SCREEN_WIDTH, BMUI_SCREEN_HEIGHT+30);
@@ -482,11 +578,24 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
             }
             else
             {
-                //宽，高值在主白板上的比例
-                CGFloat scaleHeight = [message bm_floatForKey:@"height"];
+                CGFloat scale = self.mainWhiteBoard.bm_width / self.mainWhiteBoard.bm_height;
                 
-                CGFloat height = scaleHeight * self.mainWhiteBoard.bm_height;
-                CGFloat width = height *5/3;
+                CGFloat height = 0;
+                CGFloat width = 0;
+                if (scale > 5.0/3.0)
+                {
+                    CGFloat scaleHeight = [message bm_floatForKey:@"height"];
+                    height = scaleHeight * self.mainWhiteBoard.bm_height;
+                    width = height * 5.0/3.0;
+                }
+                else
+                {
+                    CGFloat scaleWidth = [message bm_floatForKey:@"width"];
+                    width = scaleWidth * self.mainWhiteBoard.bm_width;
+                    height = width * 3.0/5.0;
+                }
+                
+                
                 if (!width || !height)
                 {
                     width = self.bm_width;
@@ -500,7 +609,18 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
                 CGFloat x = scaleLeft * (self.mainWhiteBoard.bm_width - width);
                 CGFloat y = scaleTop * (self.mainWhiteBoard.bm_height - height);
                 
+                if ((x + width) > (self.mainWhiteBoard.bm_width - 2))
+                {
+                    x = self.mainWhiteBoard.bm_width - width - 1;
+                }
+                
+                if ((y + height) > (self.mainWhiteBoard.bm_height - 2))
+                {
+                    y = self.mainWhiteBoard.bm_height - height - 1;
+                }
+                
                 frame = CGRectMake(x, y, width, height);
+                
                 self.whiteBoardControlView.hidden = YES;
             }
         }
@@ -619,23 +739,26 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
     {
         [self.drawViewManager updateProperty:message];
     }
-       NSDictionary *properties = [message bm_dictionaryForKey:@"properties"];
-       if (![properties bm_isNotEmptyDictionary])
-       {
-           return;
-       }
-
-       if ([properties bm_containsObjectForKey:@"candraw"])
-       {
-           if ([properties bm_boolForKey:@"candraw"])
-           {
-               self.pageControlView.allowTurnPage = YES;
-           }
-           else
-           {
-               self.pageControlView.allowTurnPage = NO;
-           }
-       }
+    NSDictionary *properties = [message bm_dictionaryForKey:@"properties"];
+    if (![properties bm_isNotEmptyDictionary])
+    {
+        return;
+    }
+    
+    if ([properties bm_containsObjectForKey:@"candraw"])
+    {
+        if ([properties bm_boolForKey:@"candraw"])
+        {
+            if (([YSRoomInterface instance].localUser.role == YSUserType_Student  && self.isCurrent && [YSWhiteBoardManager shareInstance].roomConfig.canPageTurningFlag) || [YSRoomInterface instance].localUser.role == YSUserType_Teacher)
+            {
+                self.pageControlView.allowTurnPage = YES;
+            }
+        }
+        else
+        {
+            self.pageControlView.allowTurnPage = NO;
+        }
+    }
 }
 
 /// 收到远端pubMsg消息通知
@@ -886,7 +1009,7 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
     }
     self.pageControlView.allowScaling = NO;
     self.pageControlView.bm_centerX = self.bm_width * 0.5f;
-    [self.pageControlView sc_setTotalPage:_totalPage currentPage:_currentPage canPrevPage:prevPage canNextPage:nextPage isWhiteBoard:[self.fileId isEqualToString:@"0"]];
+    [self.pageControlView sc_setTotalPage:self.totalPage currentPage:self.currentPage canPrevPage:prevPage canNextPage:nextPage isWhiteBoard:[self.fileId isEqualToString:@"0"]];
         
     if (self.delegate && [self.delegate respondsToSelector:@selector(onWBViewWebViewManagerStateUpdate:withState:)])
     {
@@ -1158,10 +1281,14 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
                     [self.drawViewManager.fileDictionary setObject:filedata forKey:@"filedata"];
                     
                     // 白板加页需发送
-                    NSString *json = [YSRoomUtil jsonStringWithDictionary:@{@"totalPage":@(self.currentPage),
-                                                                      @"fileid":@(0),
-                                                                      @"sourceInstanceId":YSDefaultWhiteBoardId
-                                                                      }];
+                    NSDictionary *fileDic = @{ @"totalPage" : @(self.currentPage),
+                                               @"fileid" : @(0),
+                                               @"sourceInstanceId" : YSDefaultWhiteBoardId };
+                    NSString *json = [fileDic bm_toJSON];
+//                    NSString *json = [YSRoomUtil jsonStringWithDictionary:@{@"totalPage":@(self.currentPage),
+//                                                                      @"fileid":@(0),
+//                                                                      @"sourceInstanceId":YSDefaultWhiteBoardId
+//                                                                      }];
                     [[YSRoomInterface instance] pubMsg:sYSSignalWBPageCount msgID:sYSSignalWBPageCount toID:YSRoomPubMsgTellAll data:json save:YES completion:nil];
                 }
                 else
@@ -1340,6 +1467,7 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
 - (void)changeFileId:(NSString *)fileId
 {
     self.fileId = fileId;
+    self.pageControlView.fileId = fileId;
 }
 
 /// 当前页码
@@ -1457,7 +1585,6 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
 
 - (void)dragPageControlView:(UIPanGestureRecognizer *)pan
 {
-    
     UIView *dragView = pan.view;
     if (pan.state == UIGestureRecognizerStateBegan)
     {
@@ -1540,17 +1667,18 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
 
 - (void)collectButtonsClick:(UIButton *)sender
 {
-    NSArray * coursewareViewList = [YSWhiteBoardManager shareInstance].coursewareViewList;
+//    NSArray * coursewareViewList = [YSWhiteBoardManager shareInstance].coursewareViewList;
+    
+    NSArray *arrangeList = [[YSWhiteBoardManager shareInstance] getWhiteBoardViewArrangeList];
     
     if (sender.selected)
     {
         BOOL isHidden = NO;
-        for (int i = 0; i<coursewareViewList.count; i++)
+        for (int i = 0; i<arrangeList.count; i++)
         {
-            YSWhiteBoardView * whiteBoardView = coursewareViewList[i];
+            YSWhiteBoardView * whiteBoardView = arrangeList[i];
             if (!whiteBoardView.hidden)
             {
-                
                 NSString * msgID = [NSString stringWithFormat:@"MoreWhiteboardState_%@", whiteBoardView.whiteBoardId];
                 
                 NSDictionary * data = @{@"x":@0,@"y":@0,@"width":@1,@"height":@1,@"small":@YES,@"full":@NO,@"type":@"small",@"instanceId":whiteBoardView.whiteBoardId};
@@ -1564,7 +1692,7 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
         
         if (!isHidden)
         {
-            for (YSWhiteBoardView * whiteBoardView in coursewareViewList)
+            for (YSWhiteBoardView * whiteBoardView in arrangeList)
             {
                 // x,y值在主白板上的比例
                 CGFloat scaleLeft = [whiteBoardView.positionData bm_floatForKey:@"x"];
@@ -1585,7 +1713,7 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
     }
     else
     {
-        for (YSWhiteBoardView * whiteBoardView in coursewareViewList)
+        for (YSWhiteBoardView * whiteBoardView in arrangeList)
         {
             NSString * msgID = [NSString stringWithFormat:@"MoreWhiteboardState_%@", whiteBoardView.whiteBoardId];
             NSDictionary * data = @{@"x":@0,@"y":@0,@"width":@1,@"height":@1,@"small":@YES,@"full":@NO,@"type":@"small",@"instanceId":whiteBoardView.whiteBoardId};
@@ -1597,7 +1725,8 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
     }
 }
 
-#pragma mark 小白板的topbar上的按钮点击事件
+#pragma mark - 小白板的topbar上的按钮点击事件
+
 - (void)topBarButtonClick:(UIButton *)sender
 {
     switch (sender.tag) {
@@ -1661,7 +1790,6 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
         // 课件全屏
         [self bm_bringToFront];
         [self.delegate onWBViewFullScreen:isAllScreen wbView:self];
-        
     }
 }
 
@@ -1722,6 +1850,11 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
         }
         else
         {
+            if (self.isH5LoadMedia)
+            {
+                [[YSRoomInterface instance] stopShareMediaFile:nil];
+            }
+            
             NSString *msgID = [NSString stringWithFormat:@"%@%@", sYSSignalDocumentFilePage_ExtendShowPage, self.whiteBoardId];
             NSDictionary *data = @{@"sourceInstanceId" : self.whiteBoardId};
             [YSRoomUtil delWhiteBoardMsg:sYSSignalExtendShowPage msgID:msgID data:data completion:nil];
@@ -1735,6 +1868,11 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
         }
         else
         {
+            if (self.isH5LoadMedia)
+            {
+                [[YSRoomInterface instance] stopShareMediaFile:nil];
+            }
+            
             [[YSWhiteBoardManager shareInstance] removeWhiteBoardViewWithWhiteBoardView:self];
         }
     }
@@ -1752,8 +1890,9 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
         [self.mediaMarkView removeFromSuperview];
     }
     
-    self.mediaMarkView = [[YSWBMediaMarkView alloc] initWithFrame:self.bounds];
+    self.mediaMarkView = [[YSWBMediaMarkView alloc] initWithFrame:CGRectMake(0, YSTopViewHeight, self.bounds.size.width, self.bounds.size.height-YSTopViewHeight)];
     [self addSubview:self.mediaMarkView];
+    self.mediaMarkView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight ;
     
     [self.mediaMarkView freshViewWithSavedSharpsData:self.mediaMarkSharpsDatas videoRatio:videoRatio];
 }
@@ -1781,5 +1920,41 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
     }
 }
 
+/// 变更H5课件地址参数，此方法会刷新当前H5课件以变更新参数
+- (void)changeConnectH5CoursewareUrlParameters:(NSDictionary *)parameters
+{
+    if (!self.loadingH5Fished)
+    {
+        NSLog(@"===================cacheMsgPool userPropertyChanged");
+        
+        NSString *methodName = NSStringFromSelector(@selector(changeConnectH5CoursewareUrlParameters:));
+        NSMutableDictionary *dic = [NSMutableDictionary dictionary];
+        [dic setValue:methodName forKey:kYSMethodNameKey];
+        [dic setValue:@[parameters] forKey:kYSParameterKey];
+        [self.cacheMsgPool addObject:dic];
+        
+        return;
+    }
+
+    NSString *code = @"setDocParams";
+    NSString *parametersJson = [parameters bm_toJSON];
+    if (!parametersJson)
+    {
+        parametersJson = @"";
+    }
+    NSString *data = [NSString stringWithFormat:@"%@", parametersJson];
+    NSString *jsString = [NSString stringWithFormat:@"JsSocket.%@(%@, true)", code, data];
+    
+    if (self.webViewManager)
+    {
+        [self.webViewManager sendMessageToJS:jsString];
+    }
+}
+
+/// 设置H5课件Cookies
+- (void)setConnectH5CoursewareUrlCookies:(nullable NSArray <NSDictionary *> *)cookies
+{
+    _connectH5CoursewareUrlCookies = [NSArray arrayWithArray:cookies];
+}
 
 @end
