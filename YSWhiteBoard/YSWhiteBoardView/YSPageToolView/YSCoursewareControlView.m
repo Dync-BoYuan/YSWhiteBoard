@@ -331,8 +331,18 @@
 // 是否可以翻页  (未开课前通过权限判断是否可以翻页  上课后永久不可以翻页)
 - (void)setAllowTurnPage:(BOOL)allowTurnPage
 {
-    
     _allowTurnPage = allowTurnPage;
+    
+    BOOL canPageTurningFlag = [YSWhiteBoardManager shareInstance].roomConfig.canPageTurningFlag;
+    YSUserRoleType role = [YSRoomInterface instance].localUser.role;
+    
+    if (role != YSUserType_Teacher && !canPageTurningFlag)
+    {
+        self.leftTurnBtn.enabled = NO;
+        self.rightTurnBtn.enabled = NO;
+        return;
+    }
+    
     if (allowTurnPage)
     {
         self.leftTurnBtn.enabled = (self.currentPage > 1);

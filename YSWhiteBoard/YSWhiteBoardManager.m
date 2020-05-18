@@ -3118,6 +3118,11 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 - (void)mediaControlviewPlay:(BOOL)isPlay
 {
     [[YSRoomInterface instance] pauseMediaFile:isPlay];
+    
+    if (isPlay)
+    {
+      [YSRoomUtil pubWhiteBoardMsg:sYSSignalVideoWhiteboard msgID:sYSSignalVideoWhiteboard data:@{@"videoRatio":@(self.mediaFileModel.width/self.mediaFileModel.height)} extensionData:nil associatedMsgID:@"" expires:0 completion:nil];
+    }
 }
 
 - (void)mediaControlviewSlider:(NSTimeInterval)value

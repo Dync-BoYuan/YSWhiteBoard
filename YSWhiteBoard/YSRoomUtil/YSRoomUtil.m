@@ -206,7 +206,7 @@
                 expires:(NSTimeInterval)expires
              completion:(completion_block _Nullable)completion
 {
-    if ([msgName isEqualToString:sYSSignalShowPage] || [msgName isEqualToString:sYSSignalExtendShowPage] || [msgName isEqualToString:sYSSignalMoreWhiteboardState] || [msgName isEqualToString:sYSSignalMoreWhiteboardGlobalState])
+    if ([msgName isEqualToString:sYSSignalShowPage] || [msgName isEqualToString:sYSSignalExtendShowPage] || [msgName isEqualToString:sYSSignalMoreWhiteboardState] || [msgName isEqualToString:sYSSignalMoreWhiteboardGlobalState] || [msgName isEqualToString:sYSSignalVideoWhiteboard])
     {
         NSString *tellWho = [YSRoomInterface instance].localUser.peerID;
         NSString *associatedUserID = [YSRoomInterface instance].localUser.peerID;

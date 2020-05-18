@@ -749,7 +749,11 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
     {
         if ([properties bm_boolForKey:@"candraw"])
         {
-            if (([YSRoomInterface instance].localUser.role == YSUserType_Student  && self.isCurrent && [YSWhiteBoardManager shareInstance].roomConfig.canPageTurningFlag) || [YSRoomInterface instance].localUser.role == YSUserType_Teacher)
+            BOOL isCurrent = self.isCurrent;
+            BOOL canPageTurningFlag = [YSWhiteBoardManager shareInstance].roomConfig.canPageTurningFlag;
+            YSUserRoleType role = [YSRoomInterface instance].localUser.role;
+            
+            if ((role == YSUserType_Student  && isCurrent && canPageTurningFlag) || role == YSUserType_Teacher)
             {
                 self.pageControlView.allowTurnPage = YES;
             }
