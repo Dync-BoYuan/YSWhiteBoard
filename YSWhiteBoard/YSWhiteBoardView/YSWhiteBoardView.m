@@ -956,19 +956,19 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
                 }
                 
                 YSFileModel *file = [[YSWhiteBoardManager shareInstance] getDocumentWithFileID:fileId];
-                file.currpage = [dicPage bm_stringForKey:@"currentPage"];
-                file.pagenum = [dicPage bm_stringForKey:@"totalPage"];
+                file.currpage = [dicPage bm_uintForKey:@"currentPage"];
+                file.pagenum = [dicPage bm_uintForKey:@"totalPage"];
 
                 // 肯定是showOnWeb
                 if (self.drawViewManager.showOnWeb)
                 {
                     if ([dicPage bm_containsObjectForKey:@"pptstep"])
                     {
-                        file.pptstep = [dicPage bm_stringForKey:@"pptstep"];
+                        file.pptstep = [dicPage bm_uintForKey:@"pptstep"];
                     }
                     if ([dicPage bm_containsObjectForKey:@"steptotal"])
                     {
-                        file.steptotal = [dicPage bm_stringForKey:@"steptotal"];
+                        file.steptotal = [dicPage bm_uintForKey:@"steptotal"];
                     }
                     [self.drawViewManager setTotalPage:self.totalPage currentPage:self.currentPage];
                 }
@@ -1123,9 +1123,9 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
 {
     NSMutableDictionary *dic = [[NSMutableDictionary alloc] init];
 
-    [dic setObject:model.isDynamicPPT forKey:@"isDynamicPPT"];
-    [dic setObject:model.isGeneralFile forKey:@"isGeneralFile"];
-    [dic setObject:model.isH5Document forKey:@"isH5Document"];
+    [dic bm_setBool:model.isDynamicPPT forKey:@"isDynamicPPT"];
+    [dic bm_setBool:model.isGeneralFile forKey:@"isGeneralFile"];
+    [dic bm_setBool:model.isH5Document forKey:@"isH5Document"];
 
     NSMutableDictionary *filedata = [[NSMutableDictionary alloc] init];
     [filedata setObject:model.fileid forKey:@"fileid"];
@@ -1140,7 +1140,7 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
 
     if (model.isMedia)
     {
-        [dic setObject:model.isMedia forKey:@"isMedia"];
+        [dic bm_setBool:model.isMedia forKey:@"isMedia"];
     }
 
     if (!model.currpage)
@@ -1148,28 +1148,28 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
         [dic setObject:filedata forKey:@"filedata"];
         return dic;
     }
-    [filedata setObject:model.currpage forKey:@"currpage"];
+    [filedata bm_setInteger:model.currpage forKey:@"currpage"];
     
     if (model.pagenum)
     {
-        [filedata setObject:model.pagenum forKey:@"pagenum"];
+        [filedata bm_setInteger:model.pagenum forKey:@"pagenum"];
     }
     
     if (!model.pptslide)
     {
-        model.pptslide = @"1";
+        model.pptslide = 1;
     }
-    [filedata setObject:model.pptslide forKey:@"pptslide"];
+    [filedata bm_setInteger:model.pptslide forKey:@"pptslide"];
     
     if (!model.pptstep)
     {
-        model.pptstep = @"0";
+        model.pptstep = 0;
     }
-    [filedata setObject:model.pptstep forKey:@"pptstep"];
+    [filedata bm_setInteger:model.pptstep forKey:@"pptstep"];
     
     if (model.steptotal)
     {
-        [filedata setObject:model.steptotal forKey:@"steptotal"];
+        [filedata bm_setInteger:model.steptotal forKey:@"steptotal"];
     }
 
     [dic setObject:filedata forKey:@"filedata"];
