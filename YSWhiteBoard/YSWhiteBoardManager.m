@@ -133,7 +133,6 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 
 @implementation YSWhiteBoardManager
 
-
 #pragma mark - dealloc
 
 - (void)dealloc
@@ -874,15 +873,18 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary:file];
     [dict setValue:isContentDocument forKey:@"isContentDocument"];
     
-    YSFileModel *model = [YSFileModel new];
+    YSFileModel *model = [[YSFileModel alloc] init];
     if (dict[@"filedata"])
     {
-        [model setValuesForKeysWithDictionary:dict];
-        [model setValuesForKeysWithDictionary:dict[@"filedata"]];
+        //[model setValuesForKeysWithDictionary:dict];
+        //[model setValuesForKeysWithDictionary:dict[@"filedata"]];
+        [model updateWithServerDic:dict];
+        [model updateWithServerDic:dict[@"filedata"]];
     }
     else
     {
-        [model setValuesForKeysWithDictionary:dict];
+        //[model setValuesForKeysWithDictionary:dict];
+        [model updateWithServerDic:dict];
     }
     [self.docmentList addObject:model];
 }
@@ -915,47 +917,49 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         [self.docmentList addObject:fileModel];
     }
     
-    [fileModel setValuesForKeysWithDictionary:dict];
+    //[fileModel setValuesForKeysWithDictionary:dict];
+    [fileModel updateWithServerDic:dict];
     NSDictionary *fileData = dict[@"filedata"];
     if (fileData.count > 0)
     {
-        [fileModel setValuesForKeysWithDictionary:fileData];
+        //[fileModel setValuesForKeysWithDictionary:fileData];
+        [fileModel updateWithServerDic:fileData];
     }
     
     if ([[dict allKeys] containsObject:@"fileprop"])
     {
-        fileModel.fileprop = dict[@"fileprop"];
-        fileModel.isGeneralFile = @"1";
-        if (fileModel.fileprop.integerValue == 1 || fileModel.fileprop.integerValue == 2)
+        fileModel.fileprop = [dict bm_uintForKey:@"fileprop"];
+        fileModel.isGeneralFile = YES;
+        if (fileModel.fileprop == 1 || fileModel.fileprop == 2)
         {
-            fileModel.isDynamicPPT = @"1";
-            fileModel.isGeneralFile = @"0";
+            fileModel.isDynamicPPT = YES;
+            fileModel.isGeneralFile = NO;
         }
         else
         {
-            fileModel.isDynamicPPT = @"0";
+            fileModel.isDynamicPPT = NO;
         }
-        if (fileModel.fileprop.integerValue == 3)
+        if (fileModel.fileprop == 3)
         {
-            fileModel.isH5Document = @"1";
-            fileModel.isGeneralFile = @"0";
+            fileModel.isH5Document = YES;
+            fileModel.isGeneralFile = NO;
         }
         else
         {
-            fileModel.isH5Document = @"0";
+            fileModel.isH5Document = NO;
         }
     }
     else
     {
-        NSNumber *isDynamicPPT = dict[@"isDynamicPPT"];
-        NSNumber *isH5Document = dict[@"isH5Document"];
-        if (isDynamicPPT.intValue == 1)
+        BOOL isDynamicPPT = [dict bm_boolForKey:@"isDynamicPPT"];
+        BOOL isH5Document = [dict bm_boolForKey:@"isH5Document"];
+        if (isDynamicPPT)
         {
-            fileModel.fileprop = @(1);
+            fileModel.fileprop = 1;
         }
-        if (isH5Document.intValue == 1)
+        if (isH5Document)
         {
-            fileModel.fileprop = @(3);
+            fileModel.fileprop = 3;
         }
     }
 
@@ -1224,7 +1228,6 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
             {
                 [fileList addObject:whiteBoardView.fileId];
             }
-            
         }
         
         if (![fileList containsObject:self.mainWhiteBoardView.fileId])
@@ -1565,7 +1568,6 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     }
     else
     {
-        
         NSString *msgID = [NSString stringWithFormat:@"%@%@", sYSSignalDocumentFilePage_ExtendShowPage, sourceInstanceId];
         [YSRoomUtil pubWhiteBoardMsg:sYSSignalExtendShowPage msgID:msgID data:tDataDic extensionData:nil associatedMsgID:nil expires:0 completion:nil];
         
@@ -2593,7 +2595,6 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     else if ([msgName isEqualToString:sYSSignalShowPage] || [msgName isEqualToString:sYSSignalExtendShowPage])
     {
         NSString *fileId = [tDataDic bm_stringForKey:@"fileid"];
-        
         if (!fileId)
         {
             NSDictionary *filedata = [tDataDic bm_dictionaryForKey:@"filedata"];
@@ -2610,7 +2611,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
             if ([fileId isEqualToString:obj.fileid])
             {
                 NSDictionary *filedata = [tDataDic bm_dictionaryForKey:@"filedata"];
-                obj.currpage = [filedata bm_stringForKey:@"currpage"];
+                obj.currpage = [filedata bm_uintForKey:@"currpage"];
             }
         }];
         [self addOrReplaceDocumentFile:tDataDic];
