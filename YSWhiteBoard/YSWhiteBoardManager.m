@@ -129,6 +129,9 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 /// H5课件cookie
 @property (nonatomic, strong) NSArray <NSDictionary *> *connectH5CoursewareUrlCookies;
 
+/// 涂鸦数据
+@property (nonatomic, strong) NSMutableArray *sharpChangeArray;
+
 @end
 
 @implementation YSWhiteBoardManager
@@ -2223,7 +2226,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     
     NSMutableArray *newMsgArray = [[NSMutableArray alloc] init];
     NSMutableArray *showMsgArray = [[NSMutableArray alloc] init];
-    
+    self.sharpChangeArray = [[NSMutableArray alloc] init];
 //    sYSSignalShowPage
 //    sYSSignalVideoWhiteboard
 //    sYSSignalSharpsChange
@@ -2246,6 +2249,10 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         else if ([msgName isEqualToString:sYSSignalVideoWhiteboard] || [msgName isEqualToString:sYSSignalSharpsChange] || [msgName isEqualToString:sYSSignalMoreWhiteboardState] || [msgName isEqualToString:sYSSignalMoreWhiteboardGlobalState])
         {
             [newMsgArray addObject:msgDic];
+            if ([msgName isEqualToString:sYSSignalSharpsChange])
+            {
+                [self.sharpChangeArray addObject:msgDic];
+            }
             if (!index)
             {
                 index = msgIndex;
@@ -2624,12 +2631,32 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
                 [self.mainWhiteBoardView changeFileId:fileId];
                 whiteBoardView = self.mainWhiteBoardView;
                 
+                [self setTheCurrentDocumentFileID:fileId];
+                [self.mainWhiteBoardView remotePubMsg:message];
+                
+                for (NSDictionary *dictionary in self.sharpChangeArray)
+                {
+                    NSString *ID     = [dictionary objectForKey:@"id"];
+                    NSString *pageID = [ID componentsSeparatedByString:@"_"].lastObject;
+                    NSString *tempFileID = [[ID componentsSeparatedByString:@"_"]
+                        objectAtIndex:[ID componentsSeparatedByString:@"_"].count - 2];
+                    
+                    NSDictionary *filedata = [tDataDic bm_dictionaryForKey:@"filedata"];
+                    NSInteger currpage = [filedata bm_uintForKey:@"currpage"];
+                    if ([fileId isEqualToString:tempFileID] && pageID.integerValue == currpage)
+                    {
+                        [self.mainWhiteBoardView remotePubMsg:dictionary];
+                    }
+                }
+                
+                
                 if (self.wbDelegate && [self.wbDelegate respondsToSelector:@selector(onWhiteBoardChangedFileWithFileList:)])
                 {
                     NSMutableArray *fileList = [[NSMutableArray alloc] init];
                     [fileList addObject:self.mainWhiteBoardView.fileId];
                     [self.wbDelegate onWhiteBoardChangedFileWithFileList:fileList];
                 }
+                return;
             }
         }
         else
