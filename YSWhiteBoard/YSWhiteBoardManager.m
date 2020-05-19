@@ -1930,6 +1930,10 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 {
     // checkRoom相关通知
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(roomWhiteBoardOnCheckRoom:) name:YSWhiteBoardOnCheckRoomNotification object:nil];
+    // 获取服务器地址
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(roomWhiteBoardOnServerAddrs:) name:YSWhiteBoardOnServerAddrsNotification object:nil];
+    // 教室文件列表的通知
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(roomWhiteBoardOnFileList:) name:YSWhiteBoardFileListNotification object:nil];
     // 用户属性改变通知
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(roomWhiteBoardOnRoomUserPropertyChanged:) name:YSWhiteBoardOnRoomUserPropertyChangedNotification object:nil];
 //    // 用户离开通知
@@ -1946,16 +1950,12 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(roomWhiteBoardOnRoomConnectedUserlist:) name:YSWhiteBoardOnRoomConnectedNotification object:nil];
     // 断开链接的通知
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(roomWhiteBoardOnDisconnect:) name:YSWhiteBoardOnRoomDisconnectNotification object:nil];
-    // 教室文件列表的通知
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(roomWhiteBoardFileList:) name:YSWhiteBoardFileListNotification object:nil];
     // 教室消息列表的通知
 //    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(roomWhiteBoardOnRemoteMsgList:) name:YSWhiteBoardOnRemoteMsgListNotification object:nil];
     // 大并发房间用户上台通知
 //    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(roomWhiteBoardOnBigRoomUserPublished:) name:YSWhiteBoardOnBigRoomUserPublishedNotification object:nil];
     // 白板崩溃 重新加载 重新获取msgList
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(resetWhiteBoard:) name:YSWhiteBoardMsgListACKNotification object:nil];
-    // 获取服务器地址
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(roomGetWhiteBoardOnServerAddrs:) name:YSWhiteBoardOnServerAddrsNotification object:nil];
     // 预加载
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(roomWhitePreloadFile:) name:YSWhiteBoardPreloadFileNotification object:nil];
     
@@ -2011,7 +2011,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 }
 
 // 获取服务器地址
-- (void)roomGetWhiteBoardOnServerAddrs:(NSNotification *) notification
+- (void)roomWhiteBoardOnServerAddrs:(NSNotification *)notification
 {   // 2
     NSDictionary *dict = [notification.userInfo objectForKey:YSWhiteBoardNotificationUserInfoKey];
     
@@ -2075,7 +2075,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 }
 
 // 教室文件列表的通知
-- (void)roomWhiteBoardFileList:(NSNotification *)notification
+- (void)roomWhiteBoardOnFileList:(NSNotification *)notification
 {   // 3
     NSDictionary *dict = notification.userInfo;
     NSArray *fileList = [dict objectForKey:YSWhiteBoardNotificationUserInfoKey] ;
