@@ -394,6 +394,28 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 
     [self makeCurrentWhiteBoardViewPoint];
 
+    for (NSDictionary *dictionary in self.sharpChangeArray)
+    {
+        NSString *whiteboardID     = [dictionary objectForKey:@"whiteboardID"];
+        
+        if ([whiteboardID isEqualToString:whiteBoardView.whiteBoardId])
+        {
+            [whiteBoardView remotePubMsg:dictionary];
+        }
+        
+//        NSString *ID     = [dictionary objectForKey:@"id"];
+//        NSString *pageID = [ID componentsSeparatedByString:@"_"].lastObject;
+//        NSString *tempFileID = [[ID componentsSeparatedByString:@"_"]
+//            objectAtIndex:[ID componentsSeparatedByString:@"_"].count - 2];
+//
+//        NSDictionary *filedata = [tDataDic bm_dictionaryForKey:@"filedata"];
+//        NSInteger currpage = [filedata bm_uintForKey:@"currpage"];
+//        if ([fileId isEqualToString:tempFileID] && pageID.integerValue == currpage)
+//        {
+//            [self.mainWhiteBoardView remotePubMsg:dictionary];
+//        }
+    }
+    
     return whiteBoardView;
 }
 
@@ -2249,10 +2271,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         else if ([msgName isEqualToString:sYSSignalVideoWhiteboard] || [msgName isEqualToString:sYSSignalSharpsChange] || [msgName isEqualToString:sYSSignalMoreWhiteboardState] || [msgName isEqualToString:sYSSignalMoreWhiteboardGlobalState])
         {
             [newMsgArray addObject:msgDic];
-            if ([msgName isEqualToString:sYSSignalSharpsChange])
-            {
-                [self.sharpChangeArray addObject:msgDic];
-            }
+            
             if (!index)
             {
                 index = msgIndex;
@@ -2649,7 +2668,6 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
                     }
                 }
                 
-                
                 if (self.wbDelegate && [self.wbDelegate respondsToSelector:@selector(onWhiteBoardChangedFileWithFileList:)])
                 {
                     NSMutableArray *fileList = [[NSMutableArray alloc] init];
@@ -2723,6 +2741,8 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     {
         if ([tDataDic bm_isNotEmptyDictionary])
         {
+            [self.sharpChangeArray addObject:tDataDic];
+            
             /// 白板视频标注数据
             NSString *whiteboardID = [tDataDic bm_stringTrimForKey:@"whiteboardID"];
             if ([whiteboardID isEqualToString:YSVideoWhiteboard_Id])
@@ -2806,9 +2826,6 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     // 窗口布局
     else if ([msgName isEqualToString:sYSSignalMoreWhiteboardGlobalState])
     {
-//        NSString * ddd = [YSRoomInterface instance].localUser.peerID;
-//        YSRoomUser *fromeUser = [[YSRoomInterface instance] getRoomUserWithUId:fromId];
-        
         if ([fromId isEqualToString:[YSRoomInterface instance].localUser.peerID])
         {
             return;
@@ -2829,29 +2846,6 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
                 YSWhiteBoardView *whiteBoardView = [self getWhiteBoardViewWithWhiteBoardId:whiteBoardId];
                 if (whiteBoardView)
                 {
-//                    if (whiteBoardView.mediaType != YSWhiteBordMediaType_Audio)
-//                    {
-//                        BOOL iseq = [whiteBoardId isEqualToString:instanceId];
-//
-//                        if ([whiteBoardId isEqualToString:instanceId])
-//                        {
-//                            whiteBoardView.topBar.backgroundColor = YSWhiteBoard_TopBarBackGroudColor;
-//                            [whiteBoardView bm_addShadow:3.0f Radius:0.0f BorderColor:YSWhiteBoard_TopBarBackGroudColor ShadowColor:YSWhiteBoard_BackGroudColor Offset:CGSizeMake(1, 2) Opacity:0.6f];
-//                            whiteBoardView.topBar.isCurrent = YES;
-//                        }
-//                        else
-//                        {
-//                            whiteBoardView.topBar.backgroundColor = [UIColor bm_colorWithHex:0xB6C5EB];
-//                            [whiteBoardView bm_addShadow:3.0f Radius:0.0f BorderColor:[UIColor bm_colorWithHex:0xB6C5EB] ShadowColor:YSWhiteBoard_BackGroudColor Offset:CGSizeMake(1, 2) Opacity:0.6f];
-//
-//                            whiteBoardView.topBar.isCurrent = NO;
-//
-//                            if (whiteBoardView.pageControlView.isAllScreen)
-//                            {
-//                                whiteBoardView.pageControlView.isAllScreen = NO;
-//                            }
-//                        }
-//                    }
                     [whiteBoardView bm_bringToFront];
                 }
             }
