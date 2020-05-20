@@ -347,6 +347,10 @@
     {
         [filedata bm_setString:aDefaultDocment.cospdfpath forKey:@"cospdfpath"];
     }
+    else
+    {
+        [filedata bm_setString:@"" forKey:@"cospdfpath"];
+    }
     
     if (currentPage > 0)
     {

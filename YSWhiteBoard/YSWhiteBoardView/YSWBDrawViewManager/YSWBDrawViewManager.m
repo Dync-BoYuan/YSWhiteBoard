@@ -848,9 +848,11 @@
         {
             NSString *fileId = [[dictionary bm_dictionaryForKey:@"filedata"] bm_stringForKey:@"fileid"];
             BOOL isGeneralFile = [dictionary bm_boolForKey:@"isGeneralFile"];
-            NSUInteger pagecount  = [[dictionary bm_dictionaryForKey:@"filedata"] bm_uintForKey:@"pagenum" withDefault:0];
-            NSUInteger currentPage =
-                [[dictionary bm_dictionaryForKey:@"filedata"] bm_uintForKey:@"currpage" withDefault:1];
+            
+            NSDictionary *fileData = [dictionary bm_dictionaryForKey:@"filedata"];
+            
+            NSUInteger pagecount  = [fileData bm_uintForKey:@"pagenum" withDefault:0];
+            NSUInteger currentPage = [fileData bm_uintForKey:@"currpage" withDefault:1];
 
             BOOL isMedia = [dictionary bm_boolForKey:@"isMedia"];
             if (isMedia)
@@ -864,6 +866,7 @@
 
             [self.fileView.ysDrawView.drawView clearDrawersNameAfterShowPage];
             [self resetEnlargeValue:YSWHITEBOARD_MINZOOMSCALE animated:YES];
+            
             self.fileDictionary = dictionary;
 
             [[UIApplication sharedApplication].keyWindow endEditing:YES];
@@ -907,21 +910,28 @@
                 path = [NSString stringWithFormat:@"%@-%@.%@", com.firstObject, @(currentPage), com.lastObject];
                 NSString *realPath = [NSString stringWithFormat:@"https://%@%@", self.address, path];
                 
-                __block BOOL hasPDF = NO;
-                [[YSWhiteBoardManager shareInstance].docmentList
-                    enumerateObjectsUsingBlock:^(YSFileModel *_Nonnull obj, NSUInteger idx,
-                                                 BOOL *_Nonnull stop) {
-
-                        if ([obj.fileid isEqualToString:fileId])
-                        { //v查找课件库中的对应课件是否可以使用pdf
-                            NSString *cospdfpath = obj.cospdfpath;
-                            if ([cospdfpath bm_isNotEmpty])
-                            {
-                                hasPDF = YES;
-                                *stop  = YES;
-                            }
-                        }
-                    }];
+                BOOL hasPDF = NO;
+                NSString *cospdfpath = [fileData bm_stringTrimForKey:@"cospdfpath"];
+                if ([cospdfpath bm_isNotEmpty])
+                {
+                    hasPDF = YES;
+                }
+                
+//                __block BOOL hasPDF = NO;
+//                [[YSWhiteBoardManager shareInstance].docmentList
+//                    enumerateObjectsUsingBlock:^(YSFileModel *_Nonnull obj, NSUInteger idx,
+//                                                 BOOL *_Nonnull stop) {
+//
+//                        if ([obj.fileid isEqualToString:fileId])
+//                        { //v查找课件库中的对应课件是否可以使用pdf
+//                            NSString *cospdfpath = obj.cospdfpath;
+//                            if ([cospdfpath bm_isNotEmpty])
+//                            {
+//                                hasPDF = YES;
+//                                *stop  = YES;
+//                            }
+//                        }
+//                    }];
 
                 if (hasPDF)
                 {
