@@ -528,10 +528,11 @@ connectH5CoursewareUrlCookies:(NSArray <NSDictionary *> *)connectH5CoursewareUrl
     NSString *url = [dataDic bm_stringForKey:@"url"];
     BOOL isvideo = [dataDic bm_boolForKey:@"video"];
     NSMutableDictionary *param = [NSMutableDictionary dictionaryWithDictionary:[dataDic bm_dictionaryForKey:@"attributes"]];
-    NSString * fileID = [param bm_stringForKey:@"fileid"];
-    NSString * whiteboardID = [YSRoomUtil getwhiteboardIDFromFileId:fileID];
+    NSString *fileID = [param bm_stringForKey:@"fileid"];
+    NSString *whiteboardID = [YSRoomUtil getwhiteboardIDFromFileId:fileID];
 
     [param setObject:whiteboardID forKey:@"whiteboardId"];
+    [param removeObjectForKey:@"instanceId"];
     
 //    NSString *fileId = [NSString stringWithFormat:@"%@_video", [param bm_stringForKey:@"fileid"]];
 //    NSMutableDictionary *paramDic = [NSMutableDictionary dictionaryWithDictionary:param];
