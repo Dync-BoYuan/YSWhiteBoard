@@ -343,6 +343,11 @@
         @"swfpath"  :  aDefaultDocment.swfpath?aDefaultDocment.swfpath:@""
     }];
     
+    if ([aDefaultDocment.cospdfpath bm_isNotEmpty])
+    {
+        [filedata bm_setString:aDefaultDocment.cospdfpath forKey:@"cospdfpath"];
+    }
+    
     if (currentPage > 0)
     {
         [filedata bm_setInteger:currentPage forKey:@"currpage"];
