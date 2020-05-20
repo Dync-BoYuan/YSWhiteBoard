@@ -3032,7 +3032,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         }
         self.mp4WhiteBoardView = nil;
         
-        if (self.isBeginClass)
+        if (self.isBeginClass && [YSRoomInterface instance].localUser.role == YSUserType_Teacher)
         {
             [YSRoomUtil delWhiteBoardMsg:sYSSignalVideoWhiteboard msgID:sYSSignalVideoWhiteboard data:nil completion:nil];
         }
