@@ -396,24 +396,13 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 
     for (NSDictionary *dictionary in self.sharpChangeArray)
     {
-        NSString *whiteboardID     = [dictionary objectForKey:@"whiteboardID"];
+        NSDictionary *filedata = [tDataDic bm_dictionaryForKey:@"filedata"];
+        NSString *whiteboardID = [filedata objectForKey:@"whiteboardID"];
         
         if ([whiteboardID isEqualToString:whiteBoardView.whiteBoardId])
         {
             [whiteBoardView remotePubMsg:dictionary];
         }
-        
-//        NSString *ID     = [dictionary objectForKey:@"id"];
-//        NSString *pageID = [ID componentsSeparatedByString:@"_"].lastObject;
-//        NSString *tempFileID = [[ID componentsSeparatedByString:@"_"]
-//            objectAtIndex:[ID componentsSeparatedByString:@"_"].count - 2];
-//
-//        NSDictionary *filedata = [tDataDic bm_dictionaryForKey:@"filedata"];
-//        NSInteger currpage = [filedata bm_uintForKey:@"currpage"];
-//        if ([fileId isEqualToString:tempFileID] && pageID.integerValue == currpage)
-//        {
-//            [self.mainWhiteBoardView remotePubMsg:dictionary];
-//        }
     }
     
     return whiteBoardView;
@@ -2653,21 +2642,6 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
                 [self setTheCurrentDocumentFileID:fileId];
                 [self.mainWhiteBoardView remotePubMsg:message];
                 
-                for (NSDictionary *dictionary in self.sharpChangeArray)
-                {
-                    NSString *ID     = [dictionary objectForKey:@"id"];
-                    NSString *pageID = [ID componentsSeparatedByString:@"_"].lastObject;
-                    NSString *tempFileID = [[ID componentsSeparatedByString:@"_"]
-                        objectAtIndex:[ID componentsSeparatedByString:@"_"].count - 2];
-                    
-                    NSDictionary *filedata = [tDataDic bm_dictionaryForKey:@"filedata"];
-                    NSInteger currpage = [filedata bm_uintForKey:@"currpage"];
-                    if ([fileId isEqualToString:tempFileID] && pageID.integerValue == currpage)
-                    {
-                        [self.mainWhiteBoardView remotePubMsg:dictionary];
-                    }
-                }
-                
                 if (self.wbDelegate && [self.wbDelegate respondsToSelector:@selector(onWhiteBoardChangedFileWithFileList:)])
                 {
                     NSMutableArray *fileList = [[NSMutableArray alloc] init];
@@ -2741,8 +2715,6 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     {
         if ([tDataDic bm_isNotEmptyDictionary])
         {
-            [self.sharpChangeArray addObject:tDataDic];
-            
             /// 白板视频标注数据
             NSString *whiteboardID = [tDataDic bm_stringTrimForKey:@"whiteboardID"];
             if ([whiteboardID isEqualToString:YSVideoWhiteboard_Id])
@@ -2760,6 +2732,9 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         
         if ([msgId containsString:@"###_SharpsChange"])
         {
+            // 保存画笔数据
+            [self.sharpChangeArray addObject:message];
+            
             NSArray *components = [msgId componentsSeparatedByString:@"_"];
             if (components.count > 2)
             {
