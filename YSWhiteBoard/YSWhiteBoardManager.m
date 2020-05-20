@@ -396,7 +396,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 
     for (NSDictionary *dictionary in self.sharpChangeArray)
     {
-        NSDictionary *filedata = [tDataDic bm_dictionaryForKey:@"filedata"];
+        NSDictionary *filedata = [dictionary bm_dictionaryForKey:@"filedata"];
         NSString *whiteboardID = [filedata objectForKey:@"whiteboardID"];
         
         if ([whiteboardID isEqualToString:whiteBoardView.whiteBoardId])
