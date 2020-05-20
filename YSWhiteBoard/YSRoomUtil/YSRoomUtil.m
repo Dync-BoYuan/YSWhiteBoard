@@ -198,7 +198,7 @@
                    data:(NSDictionary * _Nullable)dataDic
              completion:(completion_block _Nullable)completion
 {
-    if ([msgName isEqualToString:sYSSignalShowPage] || [msgName isEqualToString:sYSSignalExtendShowPage])
+    if ([msgName isEqualToString:sYSSignalShowPage] || [msgName isEqualToString:sYSSignalExtendShowPage] || [msgName isEqualToString:sYSSignalVideoWhiteboard])
     {
         NSString *tellWho = [YSRoomInterface instance].localUser.peerID;
         if ([YSWhiteBoardManager shareInstance].isBeginClass)
