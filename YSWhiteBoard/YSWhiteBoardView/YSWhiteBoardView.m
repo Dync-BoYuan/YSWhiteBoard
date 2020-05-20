@@ -1896,8 +1896,13 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
     
     self.mediaMarkView = [[YSWBMediaMarkView alloc] initWithFrame:CGRectMake(0, YSTopViewHeight, self.bounds.size.width, self.bounds.size.height-YSTopViewHeight)];
     [self addSubview:self.mediaMarkView];
-    self.mediaMarkView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight ;
+    self.mediaMarkView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     
+    UITapGestureRecognizer *oneTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(changeToCurrentBWView:)];
+    oneTap.numberOfTapsRequired = 1;
+    [self.mediaMarkView addGestureRecognizer:oneTap];
+    [self.mp4ControlView bm_bringToFront];
+
     [self.mediaMarkView freshViewWithSavedSharpsData:self.mediaMarkSharpsDatas videoRatio:videoRatio];
 }
 

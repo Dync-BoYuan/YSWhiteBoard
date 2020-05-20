@@ -3031,6 +3031,11 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
             [self removeWhiteBoardViewWithWhiteBoardView:self.mp4WhiteBoardView];
         }
         self.mp4WhiteBoardView = nil;
+        
+        if (self.isBeginClass)
+        {
+            [YSRoomUtil delWhiteBoardMsg:sYSSignalVideoWhiteboard msgID:sYSSignalVideoWhiteboard data:nil completion:nil];
+        }
     }
     else if (self.mediaFileModel.isAudio)
     {
@@ -3116,9 +3121,16 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 {
     [[YSRoomInterface instance] pauseMediaFile:isPlay];
     
-    if (isPlay)
+    if (self.isBeginClass)
     {
-      [YSRoomUtil pubWhiteBoardMsg:sYSSignalVideoWhiteboard msgID:sYSSignalVideoWhiteboard data:@{@"videoRatio":@(self.mediaFileModel.width/self.mediaFileModel.height)} extensionData:nil associatedMsgID:@"" expires:0 completion:nil];
+        if (isPlay)
+        {
+            [YSRoomUtil pubWhiteBoardMsg:sYSSignalVideoWhiteboard msgID:sYSSignalVideoWhiteboard data:@{@"videoRatio":@(self.mediaFileModel.width/self.mediaFileModel.height)} extensionData:nil associatedMsgID:@"" expires:0 completion:nil];
+        }
+        else
+        {
+            [YSRoomUtil delWhiteBoardMsg:sYSSignalVideoWhiteboard msgID:sYSSignalVideoWhiteboard data:nil completion:nil];
+        }
     }
 }
 
