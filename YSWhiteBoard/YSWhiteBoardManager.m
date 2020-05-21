@@ -1283,6 +1283,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     {
         return self.mainWhiteBoardView;
     }
+    // 未判断 default
     if ([fileId isEqualToString:@"0"])
     {
         return self.mainWhiteBoardView;
