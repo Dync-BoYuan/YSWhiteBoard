@@ -1034,11 +1034,19 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 
 - (void)setTheCurrentDocumentFileID:(NSString *)fileId
 {
+    
     [self setTheCurrentDocumentFileID:fileId sendArrange:YES];
 }
 
 - (void)setTheCurrentDocumentFileID:(NSString *)fileId sendArrange:(BOOL)sendArrange
 {
+    
+    if ([self isOneWhiteBoardView])
+    {
+        _currentFileId = fileId;
+        return;
+    }
+    
     if ([fileId isEqualToString:_currentFileId])
     {
         [self.mainWhiteBoardView.collectBtn bm_bringToFront];
