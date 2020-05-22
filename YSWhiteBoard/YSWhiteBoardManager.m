@@ -3157,7 +3157,10 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 - (void)mediaControlviewPlay:(BOOL)isPlay
 {
     [[YSRoomInterface instance] pauseMediaFile:isPlay];
-    
+    if (self.mediaFileModel.isAudio)
+    {
+        return;
+    }
     if (self.isBeginClass)
     {
         if (isPlay)
