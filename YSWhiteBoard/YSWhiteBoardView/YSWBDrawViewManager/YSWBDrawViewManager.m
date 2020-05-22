@@ -881,9 +881,9 @@
             [[UIApplication sharedApplication].keyWindow endEditing:YES];
 
             // 切换文档的时候更新drawview的数据用来分页绘制
-//            [drawView switchFileID:fileId
-//                    andCurrentPage:(int)currentPage
-//                 updateImmediately:YES];
+            [drawView switchFileID:fileId
+                    andCurrentPage:(int)currentPage
+                 updateImmediately:YES];
             [self.fileView.ysDrawView.rtDrawView switchFileID:fileId
                                            andCurrentPage:(int)currentPage
                                         updateImmediately:YES];
