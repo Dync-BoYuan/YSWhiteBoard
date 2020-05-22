@@ -52,7 +52,6 @@
 /// 课件缩放比例
 @property (nonatomic, assign) CGFloat currentScale;
 
-
 @end
 
 @implementation YSWBDrawViewManager
@@ -771,6 +770,16 @@
                 [self drawOnView:self.fileView.ysDrawView.drawView
                              withData:data
                     updateImmediately:YES];
+//                [self.fileView.ysDrawView.drawView switchFileID:fileID
+//                                             andCurrentPage:pageID.intValue
+//                                          updateImmediately:YES];
+
+                if ([self.bwContentView.fileId bm_isNotEmpty] && pageID.intValue != self.bwContentView.currentPage)
+                {
+                    [self.fileView.ysDrawView.drawView switchFileID:self.bwContentView.fileId
+                                                     andCurrentPage:(int)self.bwContentView.currentPage
+                                                  updateImmediately:YES];
+                }
             }
 
             return;
@@ -872,9 +881,9 @@
             [[UIApplication sharedApplication].keyWindow endEditing:YES];
 
             // 切换文档的时候更新drawview的数据用来分页绘制
-            [drawView switchFileID:fileId
-                    andCurrentPage:(int)currentPage
-                 updateImmediately:YES];
+//            [drawView switchFileID:fileId
+//                    andCurrentPage:(int)currentPage
+//                 updateImmediately:YES];
             [self.fileView.ysDrawView.rtDrawView switchFileID:fileId
                                            andCurrentPage:(int)currentPage
                                         updateImmediately:YES];
