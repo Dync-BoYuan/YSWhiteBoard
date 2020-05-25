@@ -2539,7 +2539,10 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         {
             if (!inlist)
             {
-                [self changeCourseWithFileId:self.currentFileId];
+                if ([[YSWhiteBoardManager shareInstance] isCanControlWhiteBoardView])
+                {
+                    [self changeCourseWithFileId:self.currentFileId];
+                }
             }
         }
         else
