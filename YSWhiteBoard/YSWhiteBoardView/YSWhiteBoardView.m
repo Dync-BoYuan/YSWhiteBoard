@@ -1927,6 +1927,7 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
     [self.mp4ControlView bm_bringToFront];
 
     [self.mediaMarkView freshViewWithSavedSharpsData:self.mediaMarkSharpsDatas videoRatio:videoRatio];
+    [self.mediaMarkSharpsDatas removeAllObjects];
 }
 
 /// 绘制白板视频标注
@@ -1946,6 +1947,7 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
 /// 隐藏白板视频标注
 - (void)hideVideoWhiteboard
 {
+    [self.mediaMarkSharpsDatas removeAllObjects];
     if (self.mediaMarkView.superview)
     {
         [self.mediaMarkView removeFromSuperview];

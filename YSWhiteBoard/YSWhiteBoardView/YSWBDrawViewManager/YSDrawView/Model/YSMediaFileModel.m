@@ -60,6 +60,10 @@
     self.isAudio = [dic bm_boolForKey:@"audio"];
     // 视频
     self.isVideo = [dic bm_boolForKey:@"video"];
+    if (self.isVideo)
+    {
+        self.isAudio = NO;
+    }
 
     self.width = [dic bm_doubleForKey:@"width"];
     self.height = [dic bm_doubleForKey:@"height"];

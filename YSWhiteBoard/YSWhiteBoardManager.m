@@ -3171,19 +3171,18 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 - (void)mediaControlviewPlay:(BOOL)isPlay
 {
     [[YSRoomInterface instance] pauseMediaFile:isPlay];
-    if (self.mediaFileModel.isAudio)
+    if (self.mediaFileModel.isVideo)
     {
-        return;
-    }
-    if (self.isBeginClass)
-    {
-        if (isPlay)
+        if (self.isBeginClass)
         {
-            [YSRoomUtil pubWhiteBoardMsg:sYSSignalVideoWhiteboard msgID:sYSSignalVideoWhiteboard data:@{@"videoRatio":@(self.mediaFileModel.width/self.mediaFileModel.height)} extensionData:nil associatedMsgID:@"" expires:0 completion:nil];
-        }
-        else
-        {
-            [YSRoomUtil delWhiteBoardMsg:sYSSignalVideoWhiteboard msgID:sYSSignalVideoWhiteboard data:nil completion:nil];
+            if (isPlay)
+            {
+                [YSRoomUtil pubWhiteBoardMsg:sYSSignalVideoWhiteboard msgID:sYSSignalVideoWhiteboard data:@{@"videoRatio":@(self.mediaFileModel.width/self.mediaFileModel.height)} extensionData:nil associatedMsgID:@"" expires:0 completion:nil];
+            }
+            else
+            {
+                [YSRoomUtil delWhiteBoardMsg:sYSSignalVideoWhiteboard msgID:sYSSignalVideoWhiteboard data:nil completion:nil];
+            }
         }
     }
 }
@@ -3192,6 +3191,13 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 {
     self.isMediaDrag = YES;
     [[YSRoomInterface instance] seekMediaFile:value];
+    if (self.mediaFileModel.isVideo)
+     {
+         if (self.isBeginClass)
+         {
+             [YSRoomUtil delWhiteBoardMsg:sYSSignalVideoWhiteboard msgID:sYSSignalVideoWhiteboard data:nil completion:nil];
+         }
+     }
 }
 
 - (void)mediaControlviewClose
