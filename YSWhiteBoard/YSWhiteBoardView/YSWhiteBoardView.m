@@ -976,6 +976,9 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
                     }
                     [self.drawViewManager setTotalPage:self.totalPage currentPage:self.currentPage];
                 }
+                
+                NSString *log = [NSString stringWithFormat:@"网页课件读取翻页成功%@  currentpage_%@  step_%@", fileId, @(currentPage), file.pptstep];
+                [[YSRoomInterface instance] serverLog:log];
             }
             
             prevPage = [dicPage bm_boolForKey:@"prevPage"];
@@ -1031,6 +1034,16 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
     // 通知刷新白板
     [self refreshWhiteBoard];
     
+    NSDictionary *data = [dic bm_dictionaryForKey:@"data"];
+    NSString *fileid = [data bm_stringForKey:@"fileid" withDefault:@""];
+    NSString *currentpage = [data bm_stringForKey:@"currpage" withDefault:@""];
+    NSString *step = [data bm_stringForKey:@"step" withDefault:@""];
+    NSString *cdn = [data bm_stringForKey:@"cdn" withDefault:@""];
+    NSString *completeCourseUrl = [data bm_stringForKey:@"completeCourseUrl" withDefault:@""];
+    NSString *log = [NSString stringWithFormat:@"网页课件读取结果%@_%@  currentpage_%@  step_%@  cdn_%@  completeCourseUrl_%@", fileid, @(self.isLoadingFinish), currentpage, step, cdn, completeCourseUrl];
+
+    [[YSRoomInterface instance] serverLog:log];
+    
     if (!self.isLoadingFinish && [dic objectForKey:@"data"] != nil)
     {
         [[NSNotificationCenter defaultCenter] postNotificationName:YSWhiteBoardEventLoadFileFail object:dic[@"data"]];
@@ -1051,6 +1064,16 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
     }
     
     NSLog(@"===================onWBWebViewManagerSlideLoadTimeout");
+    
+    NSDictionary *data = [dic bm_dictionaryForKey:@"data"];
+    NSString *fileid = [data bm_stringForKey:@"fileid" withDefault:@""];
+    NSString *currentpage = [data bm_stringForKey:@"currpage" withDefault:@""];
+    NSString *step = [data bm_stringForKey:@"step" withDefault:@""];
+    NSString *cdn = [data bm_stringForKey:@"cdn" withDefault:@""];
+    NSString *completeCourseUrl = [data bm_stringForKey:@"completeCourseUrl" withDefault:@""];
+    NSString *log = [NSString stringWithFormat:@"网页课件读取Timeout%@  currentpage_%@  step_%@  cdn_%@  completeCourseUrl_%@", fileid, currentpage, step, cdn, completeCourseUrl];
+
+    [[YSRoomInterface instance] serverLog:log];
     
     [[NSNotificationCenter defaultCenter] postNotificationName:YSWhiteBoardEventLoadSlideFail object:dic[@"data"]];
     
