@@ -977,7 +977,7 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
                     [self.drawViewManager setTotalPage:self.totalPage currentPage:self.currentPage];
                 }
                 
-                NSString *log = [NSString stringWithFormat:@"网页课件读取翻页成功%@  currentpage_%@  step_%@", fileId, @(currentPage), file.pptstep];
+                NSString *log = [NSString stringWithFormat:@"网页课件读取翻页成功%@  currentpage_%@  step_%@", fileId, @(self.currentPage), file.pptstep];
                 [[YSRoomInterface instance] serverLog:log];
             }
             
