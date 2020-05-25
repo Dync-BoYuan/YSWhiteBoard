@@ -2612,6 +2612,10 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
             {
                 NSDictionary *filedata = [tDataDic bm_dictionaryForKey:@"filedata"];
                 fileId = [filedata bm_stringForKey:@"fileid"];
+                if (![fileId bm_isNotEmpty])
+                {
+                    return;
+                }
             }
 
             [self deleteDocumentWithFileID:fileId];
@@ -2628,6 +2632,10 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         {
             NSDictionary *filedata = [tDataDic bm_dictionaryForKey:@"filedata"];
             fileId = [filedata bm_stringForKey:@"fileid"];
+            if (![fileId bm_isNotEmpty])
+            {
+                return;
+            }
         }
         
         // 后台关联课件是发送showpage信令，多课件时不响应
@@ -2849,9 +2857,12 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         {
             NSArray *sort = [tDataDic bm_arrayForKey:@"sort"];
             
-            NSString * instanceId = [tDataDic bm_stringForKey:@"instanceId"];
+            NSString *instanceId = [tDataDic bm_stringForKey:@"instanceId"];
             NSString *currentFileId = [YSRoomUtil getFileIdFromSourceInstanceId:instanceId];
-            [self setTheCurrentDocumentFileID:currentFileId sendArrange:NO];
+            if ([currentFileId bm_isNotEmpty])
+            {
+                [self setTheCurrentDocumentFileID:currentFileId sendArrange:NO];
+            }
             
             for (NSString *whiteBoardId in sort)
             {
@@ -2900,11 +2911,11 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
 
     if ([msgName isEqualToString:sYSSignalExtendShowPage])
     {
-        NSString * messageId = [message objectForKey:@"id"];
+        NSString *messageId = [message objectForKey:@"id"];
         
         NSString *fileId = nil;
                 
-        NSString * messageIdHead = @"DocumentFilePage_ExtendShowPage_docModule_";
+        NSString *messageIdHead = @"DocumentFilePage_ExtendShowPage_docModule_";
         
         if (messageId.length > messageIdHead.length)
         {
