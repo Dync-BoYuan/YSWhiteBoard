@@ -153,7 +153,12 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)drawVideoWhiteboardWithData:(NSDictionary *)data inList:(BOOL)inlist;
 /// 隐藏白板视频标注
 - (void)hideVideoWhiteboard;
+/// 清除白板视频标注
+- (void)clearDrawVideoMark;
 
+
+#pragma -
+#pragma mark 白板H5课件参数设置
 
 /// 变更H5课件地址参数，此方法会刷新当前H5课件以变更新参数
 - (void)changeConnectH5CoursewareUrlParameters:(nullable NSDictionary *)parameters;

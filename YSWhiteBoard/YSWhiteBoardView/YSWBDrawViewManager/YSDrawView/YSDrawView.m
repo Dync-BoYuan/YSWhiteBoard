@@ -88,6 +88,11 @@
     }
 }
 
+- (void)clearDrawVideoMarkWithMsg
+{
+    [_drawView clearDrawVideoMark];
+}
+
 - (void)clearDrawWithMsg
 {
     [_drawView clearDraw];

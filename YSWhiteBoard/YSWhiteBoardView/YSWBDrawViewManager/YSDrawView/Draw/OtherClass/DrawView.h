@@ -44,6 +44,7 @@
  */
 @property (nonatomic ) CGFloat iFontScale;
 
+- (void)clearDrawVideoMark;
 - (void)clearDraw;
 
 -(void)selectDraw:(int)type;

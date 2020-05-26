@@ -2993,11 +2993,11 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         
         self.mediaFileModel = mediaFileModel;
         
-        [self playMediaFile];
+        [self handlePlayMediaFile];
     }
     else
     {
-        [self stopMediaFile];
+        [self handleStopMediaFile];
     }
 }
 
@@ -3021,7 +3021,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     [self onRoomUpdateMediaStream:duration pos:pos isPlay:isPlay];
 }
 
-- (void)playMediaFile
+- (void)handlePlayMediaFile
 {
     BOOL mineCreat = [self.mediaFileSenderPeerId isEqualToString:[YSRoomInterface instance].localUser.peerID];
     
@@ -3038,8 +3038,6 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
             self.mp4WhiteBoardView = [self createMp4WhiteBoardWithFileId:self.mediaFileModel.fileid isFromLocalUser:mineCreat loadFinishedBlock:nil];
             self.mp4WhiteBoardView.topBar.delegate = self;
             [self addWhiteBoardViewWithWhiteBoardView:self.mp4WhiteBoardView];
-            
-            
         }
 
         BMWeakSelf
@@ -3064,7 +3062,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     }
 }
 
-- (void)stopMediaFile
+- (void)handleStopMediaFile
 {
     [[YSRoomInterface instance] unPlayMediaFile:self.mediaFileSenderPeerId completion:^(NSError *error) {
     }];
@@ -3085,6 +3083,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
         
         if (self.isBeginClass && [YSRoomInterface instance].localUser.role == YSUserType_Teacher)
         {
+            [self clearVideoMark];
             [YSRoomUtil delWhiteBoardMsg:sYSSignalVideoWhiteboard msgID:sYSSignalVideoWhiteboard data:nil completion:nil];
         }
     }
@@ -3165,6 +3164,37 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
     }
 }
 
+/// 发送信令清除白板视频标注
+- (void)clearVideoMark
+{
+    if (!self.isBeginClass)
+    {
+        return;
+    }
+    
+    YSRoomUser *localUser = [YSRoomInterface instance].localUser;
+    if (localUser.role != YSUserType_Teacher)
+    {
+        return;
+    }
+
+    NSString *whiteboardID = YSVideoWhiteboard_Id;
+
+    NSString *key = [NSString stringWithFormat:@"clear_%f", [NSDate date].timeIntervalSince1970];
+    NSDictionary *dic = @{@"eventType" : @"clearEvent", @"actionName" : @"ClearAction", @"clearActionId" : key, @"whiteboardID" : whiteboardID, @"isBaseboard" : @(false), @"nickname" : @"iOS"};
+    NSError *error;
+    NSData *data = [NSJSONSerialization dataWithJSONObject:dic options:0 error:&error];
+    if (error)
+    {
+        return;
+    }
+    NSString *shapeID = [NSString stringWithFormat:@"%@###_SharpsChange_%@_%@", key, YSVideoWhiteboard_Id, @"1"];
+    NSString *dataString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+    NSString *associatedMsgID = @"VideoWhiteboard";//[NSString stringWithFormat:@"%@%@", sYSSignalDocumentFilePage_ExtendShowPage, whiteboardID];
+    [[YSRoomInterface instance] pubMsg:sYSSignalSharpsChange msgID:shapeID toID:YSRoomPubMsgTellAll data:dataString save:YES extensionData:@{} associatedMsgID:associatedMsgID associatedUserID:nil expires:0 completion:^(NSError *error) {
+    }];
+}
+
 
 #pragma mark -YSWBMediaControlviewDelegate
 
@@ -3181,6 +3211,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
             }
             else
             {
+                [self clearVideoMark];
                 [YSRoomUtil delWhiteBoardMsg:sYSSignalVideoWhiteboard msgID:sYSSignalVideoWhiteboard data:nil completion:nil];
             }
         }
@@ -3195,6 +3226,7 @@ static YSWhiteBoardManager *whiteBoardManagerSingleton = nil;
      {
          if (self.isBeginClass)
          {
+             [self clearVideoMark];
              [YSRoomUtil delWhiteBoardMsg:sYSSignalVideoWhiteboard msgID:sYSSignalVideoWhiteboard data:nil completion:nil];
          }
      }

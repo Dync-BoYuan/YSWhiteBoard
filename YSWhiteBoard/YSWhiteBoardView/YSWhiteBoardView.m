@@ -1915,6 +1915,7 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
     if (self.mediaMarkView.superview)
     {
         [self.mediaMarkView removeFromSuperview];
+        self.mediaMarkView = nil;
     }
     
     self.mediaMarkView = [[YSWBMediaMarkView alloc] initWithFrame:CGRectMake(0, YSTopViewHeight, self.bounds.size.width, self.bounds.size.height-YSTopViewHeight)];
@@ -1951,8 +1952,30 @@ static const CGFloat kMp3_Width_iPad = 70.0f;
     if (self.mediaMarkView.superview)
     {
         [self.mediaMarkView removeFromSuperview];
+        self.mediaMarkView = nil;
     }
 }
+
+/// 清除白板视频标注
+- (void)clearDrawVideoMark
+{
+    if (![YSWhiteBoardManager shareInstance].isBeginClass)
+    {
+        return;
+    }
+
+    YSRoomUser *localUser = [YSRoomInterface instance].localUser;
+    if (localUser.role != YSUserType_Teacher)
+    {
+        return;
+    }
+    
+    [self.mediaMarkView clearDrawVideoMark];
+}
+
+
+#pragma -
+#pragma mark 白板H5课件参数设置
 
 /// 变更H5课件地址参数，此方法会刷新当前H5课件以变更新参数
 - (void)changeConnectH5CoursewareUrlParameters:(NSDictionary *)parameters

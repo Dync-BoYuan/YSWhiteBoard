@@ -163,6 +163,26 @@ struct CompareNSString: public std::binary_function<NSString*, NSString*, bool> 
     }
 }
 
+- (void)clearDrawVideoMark
+{
+    NSString *whiteboardID = YSVideoWhiteboard_Id;
+
+    NSString *key = [NSString stringWithFormat:@"clear_%f", [NSDate date].timeIntervalSince1970];
+    NSDictionary *dic = @{@"eventType" : @"clearEvent", @"actionName" : @"ClearAction", @"clearActionId" : key, @"whiteboardID" : whiteboardID, @"isBaseboard" : @(false), @"nickname" : @"iOS"};
+    NSError *error;
+    NSData *data = [NSJSONSerialization dataWithJSONObject:dic options:0 error:&error];
+    if (error)
+    {
+        return;
+    }
+    NSString *shapeID = [NSString stringWithFormat:@"%@###_SharpsChange_%@_%@", key, YSVideoWhiteboard_Id, @"1"];
+    NSString *dataString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+    NSString *associatedMsgID = @"VideoWhiteboard";//[NSString stringWithFormat:@"%@%@", sYSSignalDocumentFilePage_ExtendShowPage, whiteboardID];
+    [[YSRoomInterface instance] pubMsg:sYSSignalSharpsChange msgID:shapeID toID:YSRoomPubMsgTellAll data:dataString save:YES extensionData:@{} associatedMsgID:associatedMsgID associatedUserID:nil expires:0 completion:^(NSError *error) {
+    }];
+    [self setNeedsDisplay];
+}
+
 - (void)clearDraw
 {
     NSString *whiteboardID = [YSRoomUtil getwhiteboardIDFromFileId:self.fileid];

@@ -24,6 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)freshViewWithSavedSharpsData:(NSArray <NSDictionary *> *)sharpsDataArray videoRatio:(CGFloat)videoRatio;
 - (void)freshViewWithData:(NSDictionary *)data savedSharpsData:(NSArray <NSDictionary *> *)sharpsDataArray;
 
+- (void)clearDrawVideoMark;
 
 @end
 

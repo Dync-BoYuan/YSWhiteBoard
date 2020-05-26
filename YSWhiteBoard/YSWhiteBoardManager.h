@@ -190,6 +190,10 @@ NS_ASSUME_NONNULL_BEGIN
 // 改变默认画笔颜色
 - (void)changePrimaryColorHex:(NSString *)colorHex;
 
+
+/// 发送信令清除白板视频标注
+- (void)clearVideoMark;
+
 @end
 
 NS_ASSUME_NONNULL_END

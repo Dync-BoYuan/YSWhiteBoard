@@ -141,6 +141,11 @@
 //    [self freshView];
 //}
 
+- (void)clearDrawVideoMark
+{
+    [self.drawView clearDrawVideoMarkWithMsg];
+}
+
 
 #pragma mark -
 #pragma mark YSDrawViewDelegate
@@ -199,7 +204,7 @@
         
         //MARK: 视频标注绘制
         NSString *whiteboardID = [data bm_stringTrimForKey:@"whiteboardID"];
-        if ([whiteboardID isEqualToString:@"videoDrawBoard"])
+        if ([whiteboardID isEqualToString:YSVideoWhiteboard_Id])
         {
             [self.drawView switchToFileID:whiteboardID pageID:1 refreshImmediately:YES];
             [self.drawView addDrawData:data refreshImmediately:YES];

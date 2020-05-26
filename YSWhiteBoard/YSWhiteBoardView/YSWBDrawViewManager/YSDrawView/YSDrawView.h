@@ -92,6 +92,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)clearDraw:(NSString *)clearID;
 - (void)clearDrawWithMsg;
+- (void)clearDrawVideoMarkWithMsg;
 
 
 /**
